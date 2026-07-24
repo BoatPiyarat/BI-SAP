@@ -1,9 +1,10 @@
 # 20_SAP_PROGRESS.md
 Last Updated: 2026-07-24 (overwrite ได้ — สถานะปัจจุบันเสมอ)
-Overall: ~72% | โหมดปัจจุบัน: **P0 A2 fix ครบทั้ง 8 views แล้ว (live)** — เจอ+แก้ **year-hardcode gap ใน
-sap_view.RCB_NonMotor_process_1_create** (0→95 แถวโผล่ หลังลบ filter ปี 2025 ทิ้ง) — เจอ**การค้นพบใหญ่**:
-pipeline จริงคือ sap-extract-job → sap-order-payment-initial-phase → SAP_LIVE (ไม่ตรงกับที่ design docs
-สมมติ) — รอ Attila แก้ scheduler IAM (401, ล่ม 3 คืน) — secret rotation: ตามคำสั่ง Boat ไม่ rotate ตอนนี้
+Overall: ~74% | โหมดปัจจุบัน: **P0 A2 fix ครบทั้ง 8 views แล้ว (live)** — เจอ+แก้ **year-hardcode gap ใน
+sap_view.RCB_NonMotor_process_1_create** (0→95 แถวโผล่) — **dead-man's-switch deploy จริงแล้ว** (BQ
+scheduled query 22:00 ICT ทุกวัน + failure email) — เจอ**การค้นพบใหญ่**: pipeline จริงคือ sap-extract-job
+→ sap-order-payment-initial-phase → SAP_LIVE (ไม่ตรงกับที่ design docs สมมติ) — รอ Attila แก้ scheduler
+IAM (401, ล่ม 3 คืน) — secret rotation: ตามคำสั่ง Boat ไม่ rotate ตอนนี้
 
 ---
 
@@ -167,15 +168,40 @@ all 12 views) - what's been done is a targeted read-through + spot-check, which 
 bug was found. A full reconciliation would be a bigger, separate piece of work if more assurance is
 wanted later.
 
+## ✅ DEAD-MAN'S-SWITCH — deployed 2026-07-24
+
+Built and deployed (see `sql/ddl/004_dead_mans_switch.sql`):
+- `sap_integration_v3.vw_dead_mans_switch` — freshness check on `SAP_LIVE.U_BatchRunDate`
+  (excludes ~5 anomalous future-dated rows found earlier, which would otherwise always read FRESH)
+- `sap_integration_v3.sp_check_dead_mans_switch` — RAISEs if stale >26h
+- BigQuery scheduled query "sap_dead_mans_switch", daily 15:00 UTC (22:00 ICT), failure-email
+  enabled (direct API PATCH — bq CLI doesn't expose `email_preferences` as a flag). Notifies
+  **data@rabbit.co.th** (the config owner) on failure. Tested end-to-end via manual trigger:
+  SUCCEEDED while fresh.
+- ⚠️ Open question: email goes to `data@rabbit.co.th`, not a personal inbox or team channel —
+  worth deciding if that's the right recipient, or if this should route to Slack instead
+
+## 🔎 sap_view 6-OTHER-VIEWS USAGE CHECK — answered 2026-07-24
+
+Checked 180-day BigQuery job history (query text, not just referenced_tables — that field only
+captures underlying base tables for view queries, not the view name itself) for the 6 A2-fixed
+views not on Boat's confirmed-production list:
+- `RCL 04_new order credit shell_all` — used 2026-07-20 (4 days ago) by **you**
+- `RCL 02_items_cancel` — used 2026-07-01 by **you + suphakornh@rabbit.co.th**
+- `RCL_MOTOR` — used 2026-05-03 (~3 months ago) by you
+- `RCL 04_new order credit shell new tunning`, `sap_fix_rcl_2025`, `sap_fixing_rcl` — **zero
+  queries found in 180 days** — genuinely dead, candidates for eventual archival (not done, no
+  action needed now — the A2 fix already applied to them is harmless either way)
+
 ## ⬜ NEXT
 
 1. **Get Attila to run the `run.invoker` fix** — active incident, 3+ nights and counting
 2. Investigate why the run.invoker binding disappeared - prevent recurrence
-3. Prioritize the dead-man's-switch alert (SAP_DASHBOARD_DESIGN_v1.md Page 1/4) - would have caught
-   the scheduler incident on night one instead of night three
+3. Decide dead-man's-switch email recipient (data@ vs personal vs Slack)
 4. Reconcile 10_SAP_CONTEXT.md / REDESIGN_V3.md architecture sections against the real pipeline found
    this session (SAP_LIVE fed by sap-extract-job → sap-order-payment-initial-phase, not B1/B2 as written)
-5. Decide on the 6 other A2-pattern views not in the confirmed-production list (still open from earlier)
+5. Consider archiving the 3 genuinely-dead views (`RCL 04...new tunning`, `sap_fix_rcl_2025`,
+   `sap_fixing_rcl`) — not urgent
 6. เริ่มใช้ `stg_sap_state` จริงในงานถัดไป (cancel-gen, gap-check, recon) แทนการอ่าน SAP_LIVE_FULL ตรงๆ
 7. P1–P4 ตาม migration plan ใน REDESIGN_V3 §4 / E2E §3 (ยังไม่แตะ) - now needs re-scoping given #4 above
 8. If more assurance is wanted: full charge-driven completeness reconciliation across all 12 sap_view

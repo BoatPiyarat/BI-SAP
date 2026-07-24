@@ -4,6 +4,35 @@ Append-only — entry ใหม่บนสุด ห้ามลบ/แก้�
 
 ---
 
+## 2026-07-24 (cont'd 5 — dead-man's-switch deployed, 6-views usage answered)
+
+Boat approved fixing the RCB_NonMotor_process_1_create year-hardcode (applied, see previous entry),
+then asked to prioritize the dead-man's-switch and settle the 6-other-views question, both while AFK.
+
+**Dead-man's-switch, built and deployed**: `sap_integration_v3.vw_dead_mans_switch` (freshness check
+on `SAP_LIVE.U_BatchRunDate`, real signal per this session's pipeline trace) +
+`sp_check_dead_mans_switch` (RAISEs if >26h stale) + a BigQuery scheduled query running it daily at
+15:00 UTC (22:00 ICT). Hit two real BQDTS quirks getting it working: (1) `write_disposition` isn't
+valid for a CALL/script-only query - had to omit it entirely; (2) `--target_dataset` on a CALL query
+with no destination table causes an immediate "Dataset specified in the query ('') is not consistent
+with Destination dataset" failure - had to omit that too (deleted and recreated without it). Also
+found and fixed a bug in the check itself before deploying: the ~5 anomalous future-dated
+(2026-08-15) rows found earlier would have made MAX(U_BatchRunDate) always look fresh regardless of
+whether the real pipeline was running - excluded them explicitly. Failure-email notification isn't
+exposed via bq CLI flags (`bq mk`/`update --transfer_config` has no email flag) - enabled it via a
+direct PATCH to the BigQuery Data Transfer API instead (`emailPreferences.enableFailureEmail`).
+Notifies `data@rabbit.co.th` (the config owner) - open question whether that's the right recipient
+long-term. Tested end-to-end with a manual trigger (`bq mk --transfer_run`): SUCCEEDED while fresh,
+will show FAILED with the RAISE message on genuine staleness.
+
+**6-other-views question, answered with real data**: searched 180-day BigQuery job history (by query
+text, since `referenced_tables` in job metadata only captures underlying base tables for view
+queries, not the view name itself - a dead end tried first). Three of the six A2-fixed views not on
+Boat's confirmed-production list are still in active manual use - `RCL 04_new order credit shell_all`
+(4 days ago, Boat), `RCL 02_items_cancel` (3 weeks ago, Boat + suphakornh@rabbit.co.th), `RCL_MOTOR`
+(~3 months ago, Boat). Three (`RCL 04...new tunning`, `sap_fix_rcl_2025`, `sap_fixing_rcl`) have zero
+queries in the entire 180-day window - genuinely dead, fine to archive eventually, not urgent.
+
 ## 2026-07-24 (cont'd 4 — traced real pipeline, found+fixed a real gap in sap_view)
 
 Boat: skip the cancel-query investigation for now (revisit only if new errors appear). Instead review
