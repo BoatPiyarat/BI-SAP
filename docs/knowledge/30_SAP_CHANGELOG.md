@@ -4,6 +4,37 @@ Append-only — entry ใหม่บนสุด ห้ามลบ/แก้�
 
 ---
 
+## 2026-07-24 (cont'd 3 — remaining 6 views fixed + scheduler incident found)
+
+Boat: fix the A2 bug in the other 6 views too (don't just leave them), and separately, keep the
+secret rotation deferred but recheck scheduler health.
+
+Pulled, baseline-captured, and fixed all 6: `RCL 02_items_cancel` (2 occurrences), `RCL 04_new order
+credit shell_all` (2), `RCL 04_new order credit shell new tunning` (1, JOIN-condition style like the
+production credit shell view), `sap_fix_rcl_2025` (1, no-space variant), `sap_fixing_rcl` (3),
+`RCL_MOTOR` (3) - 12 occurrences total, all wrapped with `OR motor_item_type IS NULL`. Applied live
+via `CREATE OR REPLACE VIEW`. All 6 grew, none shrank:
+`RCL 02_items_cancel` 633,470→667,377 (+33,907), `RCL 04_new order credit shell_all` 51,884→52,696
+(+812), `RCL 04_new order credit shell new tunning` 56,818→57,405 (+587), `sap_fix_rcl_2025`
+2,625→2,759 (+134), `sap_fixing_rcl` 929,641→963,609 (+33,968), `RCL_MOTOR` 929,641→963,609
+(+33,968 - identical row count to sap_fixing_rcl, strongly suggesting these two are functionally
+the same query kept in two places; not consolidated per Boat's "leave it there").
+
+**Found a live, unrelated incident while checking scheduler health**: `sap-extract-schedule` (the
+20:30 ICT nightly trigger) has been failing every night for at least 3 nights (07-22, 07-23, 07-24)
+with `401 UNAUTHENTICATED` when it tries to invoke `sap-extract-job`. Root cause: `sap-extract-job`'s
+IAM policy is completely empty - the `sap-bucket-csv@...` service account lost the `run.invoker`
+role that was granted 2026-07-15 (per this same changelog). The Cloud Run executions that existed
+at odd hours (05:40, 17:09, 01:17, 17:03, 03:53 UTC) were manual `gcloud run jobs execute` runs by
+someone compensating by hand, not the scheduler working - same pattern visible in
+`auto_load_sap_data_in_bucket_to_bigquery`'s logs (extra off-schedule Pub/Sub triggers same days).
+Tried to fix directly (`gcloud run jobs add-iam-policy-binding ... --role=roles/run.invoker`) -
+`data@rabbit.co.th` got `PERMISSION_DENIED` on `run.jobs.setIamPolicy`. Needs Attila (IAM admin).
+Checked `sap-order-payment`, `sap-order-payment-non-motor`, `auto_load_sap_data_in_bucket_to_bigquery`
+schedulers too - all three healthy, firing on time with no errors.
+
+Also fixed the (now-confirmed-wrong) "SAP truth = raw_sap_live" hard rule in AGENTS.md/CLAUDE.md.
+
 ## 2026-07-24 (cont'd 2 — applied to production, live)
 
 Boat approved all three pending actions and went AFK; proceeded and verified each step before

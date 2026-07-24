@@ -1,8 +1,8 @@
 # 20_SAP_PROGRESS.md
 Last Updated: 2026-07-24 (overwrite ได้ — สถานะปัจจุบันเสมอ)
-Overall: ~68% | โหมดปัจจุบัน: **P0 core ทำเสร็จจริงใน BigQuery แล้ว** — stg_sap_state สร้างแล้ว,
-A2 fix live ใน 2 production views แล้ว (ผลตรวจแล้ว ไม่มี regression) — เหลือ secret rotation + hard-rule
-doc fix + ตัดสินใจเรื่อง 6 views เก่าที่ไม่ใช่ production จริง
+Overall: ~70% | โหมดปัจจุบัน: **P0 A2 fix ครบทั้ง 8 views แล้ว (live)** — แต่เจอ **INCIDENT ใหม่ระหว่างเช็ค
+scheduler: sap-extract-schedule ล่มมา 3 คืนติด (401, IAM invoker หาย)** รอ Attila แก้ (data@ ไม่มีสิทธิ์
+setIamPolicy) — secret rotation: ตามคำสั่ง Boat **ไม่ rotate ตอนนี้** เก็บไว้ก่อน
 
 ---
 
@@ -60,33 +60,71 @@ doc fix + ตัดสินใจเรื่อง 6 views เก่าที�
   SAP_LIVE_FULL (fully_paid's `sap_batchrun`, credit shell's `sap_cancelled`) และทั้งคู่ทำแค่
   `MAX(BatchRunDate)` ต่อ OrderID — **ไม่โดน duplicate bug จริง** (MAX กันซ้ำในตัวอยู่แล้ว) — เป็นแค่
   cleanup ไม่ใช่ live bug
-- ✅ **A2 NULL-safe filter bug — ยืนยันจริง, แก้จริง, LIVE ใน BigQuery แล้ว (2026-07-24):**
-  พบ `motor_item_type != 'MOTOR_TYPE_COMPULSORY'` แบบไม่กัน NULL ใน **9 views จริง** (ค้นด้วย
-  INFORMATION_SCHEMA.VIEWS regex) — เช็ค `sap_view` (12 views, Boat ยืนยันว่านี่คือ production run
-  nightly จริง) แยกต่างหาก: **สะอาด** เจอแค่ 1 จุดที่ใช้ `=` (safe) ไม่มี `!=`/`<>` เลย — ไม่ต้องแก้
-  9 views ที่เจอบั๊กอยู่ใน `sap_integration_v2`/`sap_data_engineer`: `sap_dashboard_carepay_installment`,
-  `RCL 04_new order credit shell` (2 ตัวที่ Boat ชี้ว่า production จริง) + อีก 6 ตัวที่ไม่อยู่ใน list
-  (`RCL 02_items_cancel`, `RCL 04_new order credit shell_all`/`new tunning`, `sap_fix_rcl_2025`,
-  `sap_fixing_rcl`, `RCL_MOTOR`) — **ยังไม่ตัดสินใจว่าของจริงหรือของทิ้งแล้ว รอถาม Boat**
+- ✅ **A2 NULL-safe filter bug — ยืนยันจริง, แก้จริง, LIVE ใน BigQuery ทั้ง 8 views แล้ว (2026-07-24):**
+  พบ `motor_item_type != 'MOTOR_TYPE_COMPULSORY'` แบบไม่กัน NULL ใน **9 views จริง** — เช็ค `sap_view`
+  (12 views, nightly จริง) แยกต่างหาก: **สะอาด** เจอแค่ 1 จุดที่ใช้ `=` (safe) ไม่ต้องแก้
   ยืนยันด้วยข้อมูลจริง: `careos_order_items.motor_item_type` มี NULL 10,559 แถว ทุกแถวเป็น NonMotor
-  → **Applied จริงแล้ว** (`CREATE OR REPLACE VIEW`, ผ่าน bq CLI, location asia-southeast1):
-  - `sap_dashboard_carepay_installment`: 631,487 → 665,388 แถว (**+33,901 แถวที่หายไปกลับมา**)
-  - `RCL 04_new order credit shell`: 13,894 → 14,379 แถว (**+485 แถว**)
-  Sample check แถวที่กลับมา (เช่น L77630866-1 period 3-5/6, health-insurance, paid, ฿13,290) —
-  ข้อมูลสมเหตุสมผล ไม่ใช่ garbage. **แถวเพิ่มขึ้นทั้งคู่ ไม่มีลดลง = ไม่มี regression**
-- ❌ **Secret rotation** — ยังไม่ทำ (ยังไม่ได้ขอ approve, เป็น action ที่กระทบ job ที่รันจริง)
+  → **Applied จริงแล้วทั้ง 8 views** (`CREATE OR REPLACE VIEW`, bq CLI, location asia-southeast1),
+  ทุกตัวแถวเพิ่มขึ้น ไม่มีลดลง = ไม่มี regression:
+  - `sap_dashboard_carepay_installment`: 631,487 → 665,388 (+33,901)
+  - `RCL 04_new order credit shell`: 13,894 → 14,379 (+485)
+  - `RCL 02_items_cancel`: 633,470 → 667,377 (+33,907)
+  - `RCL 04_new order credit shell_all`: 51,884 → 52,696 (+812)
+  - `RCL 04_new order credit shell new tunning`: 56,818 → 57,405 (+587)
+  - `sap_fix_rcl_2025`: 2,625 → 2,759 (+134)
+  - `sap_fixing_rcl`: 929,641 → 963,609 (+33,968)
+  - `RCL_MOTOR`: 929,641 → 963,609 (+33,968, identical to sap_fixing_rcl — likely same underlying query,
+    confirms these two are redundant copies of each other; not consolidated, Boat said fix + leave as-is)
+  Boat's call: fix all 8 (not just the 2 confirmed-production ones), leave everything else about these
+  files untouched (no consolidation of the redundant copies).
 - ✅ **`sap_integration_v3.stg_sap_state` — สร้างจริงแล้วใน BigQuery** (dataset + `pipeline_run_log`
   ผ่าน `001`, proc `sp_refresh_sap_state` ผ่าน `002`, รันแล้วผ่าน `CALL`)
   → 1,649,468 แถวใน SAP_LIVE_FULL → **1,289,839 แถวหลัง dedup, 0 duplicate key เหลือ** (verified)
+- ⏸️ **Secret rotation — Boat's call: keep it, don't rotate now.** Deferred, not forgotten.
+
+## 🆘 NEW INCIDENT (found while rechecking scheduler health, 2026-07-24)
+
+**Symptom**: `sap-extract-schedule` (Cloud Scheduler, fires 20:30 ICT daily, on time every night) —
+the HTTP call it makes to trigger `sap-extract-job` fails every night with `401 UNAUTHENTICATED`.
+Confirmed via Cloud Logging for 2026-07-22, 07-23, 07-24 — **3 nights running**. The Cloud Run job
+executions that DID exist (05:40, 17:09, 01:17, 17:03, 03:53 UTC — all off-schedule) were someone
+manually running `gcloud run jobs execute sap-extract-job` by hand to compensate, not the automation
+working. `auto_load_sap_data_in_bucket_to_bigquery` (the B1 loader, Pub/Sub-triggered, 01:00 ICT) also
+shows extra off-schedule triggers on the same days — consistent with the same person manually
+re-running the downstream loader too after manually running the extract.
+
+**Root cause**: `gcloud run jobs get-iam-policy sap-extract-job` returns an **empty policy** — the
+`sap-bucket-csv@...` service account (the one Cloud Scheduler uses for its OIDC token) has no
+`roles/run.invoker` binding on this job. It was granted 2026-07-15 (see 30_SAP_CHANGELOG.md) but is
+gone now — never diagnosed why (redeploy resetting IAM? manual revert? not investigated further).
+
+**Fix** (prepared, NOT applied — `data@rabbit.co.th` got `PERMISSION_DENIED` on `run.jobs.setIamPolicy`,
+this needs someone with IAM admin on the project, i.e. Attila per 90_TEAM_CONTEXT.md):
+```
+gcloud run jobs add-iam-policy-binding sap-extract-job \
+  --region=asia-southeast1 --project=pacific-plating-282708 \
+  --member="serviceAccount:sap-bucket-csv@pacific-plating-282708.iam.gserviceaccount.com" \
+  --role="roles/run.invoker"
+```
+
+**Other SAP scheduler jobs checked, all healthy** (blank status = success in Cloud Scheduler logs):
+`sap-order-payment` (01:30 ICT), `sap-order-payment-non-motor` (01:30 ICT),
+`auto_load_sap_data_in_bucket_to_bigquery` (01:00 ICT) — all firing on schedule, no errors.
+
+**Lesson**: nobody noticed for 3 nights because someone was quietly running it manually - the "dead
+man's switch" the design docs proposed (Page 1 / 22:00 alert) would have caught this on night one.
+Worth prioritizing that alert.
 
 ## ⬜ NEXT
 
-1. ตัดสินใจเรื่อง 6 views อื่นที่เจอบั๊กเดียวกันแต่ไม่ใช่ production ที่ระบุไว้ (RCL 02_items_cancel ฯลฯ)
-   — ของจริงหรือของทิ้งแล้ว? (sap_view ที่เป็น nightly จริงสะอาดแล้ว ไม่ต้องแตะ)
-2. แก้ hard rule ใน AGENTS.md/CLAUDE.md: "SAP truth = raw_sap_live" → "SAP_LIVE_FULL" (ผิดจากที่เช็คจริง)
-3. Secret Manager rebind + rotation (ค้างตั้งแต่ 16/07)
-4. เริ่มใช้ `stg_sap_state` จริงในงานถัดไป (cancel-gen, gap-check, recon) แทนการอ่าน SAP_LIVE_FULL ตรงๆ
-5. P1–P4 ตาม migration plan ใน REDESIGN_V3 §4 / E2E §3 (ยังไม่แตะ)
+1. **Get Attila to run the `run.invoker` fix above** — active incident, 3 nights and counting
+2. Investigate why the run.invoker binding disappeared (was it ever actually persisted, or does
+   something reset Cloud Run job IAM policies on redeploy?) — prevent recurrence
+3. Prioritize the dead-man's-switch alert (SAP_DASHBOARD_DESIGN_v1.md Page 1/4) - this incident is
+   exactly the scenario it's meant to catch, and it would have surfaced this on 07-22 instead of now
+4. Fix hard rule ใน AGENTS.md/CLAUDE.md: "SAP truth = raw_sap_live" → "SAP_LIVE_FULL" — **done** this session
+5. เริ่มใช้ `stg_sap_state` จริงในงานถัดไป (cancel-gen, gap-check, recon) แทนการอ่าน SAP_LIVE_FULL ตรงๆ
+6. P1–P4 ตาม migration plan ใน REDESIGN_V3 §4 / E2E §3 (ยังไม่แตะ)
 
 ## DECISIONS PENDING (จาก design review)
 
