@@ -1,8 +1,9 @@
 # 20_SAP_PROGRESS.md
 Last Updated: 2026-07-24 (overwrite ได้ — สถานะปัจจุบันเสมอ)
-Overall: ~70% | โหมดปัจจุบัน: **P0 A2 fix ครบทั้ง 8 views แล้ว (live)** — แต่เจอ **INCIDENT ใหม่ระหว่างเช็ค
-scheduler: sap-extract-schedule ล่มมา 3 คืนติด (401, IAM invoker หาย)** รอ Attila แก้ (data@ ไม่มีสิทธิ์
-setIamPolicy) — secret rotation: ตามคำสั่ง Boat **ไม่ rotate ตอนนี้** เก็บไว้ก่อน
+Overall: ~72% | โหมดปัจจุบัน: **P0 A2 fix ครบทั้ง 8 views แล้ว (live)** — เจอ+แก้ **year-hardcode gap ใน
+sap_view.RCB_NonMotor_process_1_create** (0→95 แถวโผล่ หลังลบ filter ปี 2025 ทิ้ง) — เจอ**การค้นพบใหญ่**:
+pipeline จริงคือ sap-extract-job → sap-order-payment-initial-phase → SAP_LIVE (ไม่ตรงกับที่ design docs
+สมมติ) — รอ Attila แก้ scheduler IAM (401, ล่ม 3 คืน) — secret rotation: ตามคำสั่ง Boat ไม่ rotate ตอนนี้
 
 ---
 
@@ -115,16 +116,70 @@ gcloud run jobs add-iam-policy-binding sap-extract-job \
 man's switch" the design docs proposed (Page 1 / 22:00 alert) would have caught this on night one.
 Worth prioritizing that alert.
 
+## 🗺️ REAL ARCHITECTURE DISCOVERED (2026-07-24) — supersedes design docs' B1/B2 framing
+
+While investigating the "is SAP_LIVE_FULL missing records" question, traced the actual live pipeline
+end to end. It does **not** match REDESIGN_V3/10_SAP_CONTEXT's B1 (legacy CSV, sunset) vs B2 (Phase 6,
+target `raw_sap_live`) story:
+
+- `sap-extract-job` (Cloud Run Job, pyodbc → real SAP SQL Server `RCB_LIVE_DB`) genuinely runs, genuinely
+  pulls real rows (confirmed via its own run logs, e.g. 47,888 rows in one run), and writes NDJSON to
+  `gs://rcb-bronze-zone/SAP/production_database/`
+- That GCS write triggers (Eventarc) the Cloud Run **service** `sap-order-payment-initial-phase`, which
+  loads the rows into **`sap_integration_v2.SAP_LIVE`** and deletes the source file
+- So **`SAP_LIVE` is the real, fresh, direct-from-SAP-DB table** — not a legacy stale mirror. It's been
+  running since 2026-07-09, 14/14 runs SUCCESS, zero errors, watermark current to within ~15 min as of
+  this session. `raw_sap_live` (the name in every design doc) was never built - the docs describe a plan,
+  not what got deployed.
+- `gs://sap-bucket-csv` (the vendor CSV-drop bucket the docs describe) **does not exist in this project.**
+- Practical implication: the scheduler incident above is more serious than "a redundant legacy path
+  stalled" - it's the only ingestion path into fresh `SAP_LIVE` data. Data is fine because people have
+  been running it manually; it would go stale if that stopped.
+
+**Docs to eventually reconcile** (not done yet): 10_SAP_CONTEXT.md's B1/B2 section, REDESIGN_V3's
+target architecture diagram, and the 2026-07-23 changelog's "SAP_LIVE_FULL = stale mirror" root-cause
+entry all describe an architecture that isn't what's actually running.
+
+## 🔍 sap_view COMPLETENESS AUDIT (2026-07-24) — "no CareOS charge silently dropped" check
+
+Boat asked to verify the new `sap_view` production process (12 views: RCB/RCL × Motor/NonMotor ×
+create/cancel/change/creditshell/newpayment) doesn't silently drop records. Pulled and read all 12,
+plus 5 more upstream dependencies not yet examined this session (`04_new order credit shell`,
+`03_cancel change orders`, `02_items_cancel`, `1_nonMotor_new order`, `2_nonMotor_items_cancel` -
+distinct from the `RCL 04...`-prefixed ones already A2-fixed).
+
+**Found and fixed**: `RCB_NonMotor_process_1_create` had `interface.OrderDate LIKE '%2025%'` hardcoded
+into its WHERE clause. Since the anti-join against `SAP_LIVE_FULL` already restricts results to
+"not yet in SAP," this date filter was pure leftover, not load-bearing - and it meant **every 2026-dated
+NonMotor Health/Travel one-time order was silently excluded from ever being proposed for SAP creation**.
+The view had been producing **zero rows for months** (checked: 0 before fix). Confirmed against real
+data before fixing: ~3,097 `RCB_HEALTH` rows dated 2026, of which 91 were genuinely absent from SAP
+(most of the rest apparently got there via manual intervention). Fixed (deleted the filter line),
+applied live: **0 → 95 rows** now surfaced.
+
+**Everything else checked out clean**: the other 11 `sap_view` views either have no date restriction or
+an already-open-ended one (e.g. `RCL_Motor_process_4_creditshell` already says
+`OrderDate LIKE '%2025%' OR LIKE '%2026%'` - will need `%2027%` added eventually, not urgent). The 5
+additional dependency views checked for the A2 NULL-unsafe pattern - all clean.
+
+**Not done**: a full formal reconciliation (charge-driven expected population vs. combined output of
+all 12 views) - what's been done is a targeted read-through + spot-check, which is how this specific
+bug was found. A full reconciliation would be a bigger, separate piece of work if more assurance is
+wanted later.
+
 ## ⬜ NEXT
 
-1. **Get Attila to run the `run.invoker` fix above** — active incident, 3 nights and counting
-2. Investigate why the run.invoker binding disappeared (was it ever actually persisted, or does
-   something reset Cloud Run job IAM policies on redeploy?) — prevent recurrence
-3. Prioritize the dead-man's-switch alert (SAP_DASHBOARD_DESIGN_v1.md Page 1/4) - this incident is
-   exactly the scenario it's meant to catch, and it would have surfaced this on 07-22 instead of now
-4. Fix hard rule ใน AGENTS.md/CLAUDE.md: "SAP truth = raw_sap_live" → "SAP_LIVE_FULL" — **done** this session
-5. เริ่มใช้ `stg_sap_state` จริงในงานถัดไป (cancel-gen, gap-check, recon) แทนการอ่าน SAP_LIVE_FULL ตรงๆ
-6. P1–P4 ตาม migration plan ใน REDESIGN_V3 §4 / E2E §3 (ยังไม่แตะ)
+1. **Get Attila to run the `run.invoker` fix** — active incident, 3+ nights and counting
+2. Investigate why the run.invoker binding disappeared - prevent recurrence
+3. Prioritize the dead-man's-switch alert (SAP_DASHBOARD_DESIGN_v1.md Page 1/4) - would have caught
+   the scheduler incident on night one instead of night three
+4. Reconcile 10_SAP_CONTEXT.md / REDESIGN_V3.md architecture sections against the real pipeline found
+   this session (SAP_LIVE fed by sap-extract-job → sap-order-payment-initial-phase, not B1/B2 as written)
+5. Decide on the 6 other A2-pattern views not in the confirmed-production list (still open from earlier)
+6. เริ่มใช้ `stg_sap_state` จริงในงานถัดไป (cancel-gen, gap-check, recon) แทนการอ่าน SAP_LIVE_FULL ตรงๆ
+7. P1–P4 ตาม migration plan ใน REDESIGN_V3 §4 / E2E §3 (ยังไม่แตะ) - now needs re-scoping given #4 above
+8. If more assurance is wanted: full charge-driven completeness reconciliation across all 12 sap_view
+   process views (not just the targeted read-through done this session)
 
 ## DECISIONS PENDING (จาก design review)
 

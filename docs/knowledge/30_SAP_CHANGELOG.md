@@ -4,6 +4,44 @@ Append-only — entry ใหม่บนสุด ห้ามลบ/แก้�
 
 ---
 
+## 2026-07-24 (cont'd 4 — traced real pipeline, found+fixed a real gap in sap_view)
+
+Boat: skip the cancel-query investigation for now (revisit only if new errors appear). Instead review
+whether the new `sap_view` production process is complete - no CareOS charge silently failing to reach
+SAP.
+
+While chasing "is SAP_LIVE_FULL missing DocEntries," traced the actual extraction pipeline end to end
+instead of trusting the design docs. Found: `sap-extract-job` (pyodbc, real SAP SQL Server) writes
+NDJSON to `gs://rcb-bronze-zone/SAP/production_database/`, which triggers (Eventarc) the Cloud Run
+service `sap-order-payment-initial-phase`, which loads into `sap_integration_v2.SAP_LIVE` and deletes
+the source file. This is a real, working, error-free pipeline (14/14 runs SUCCESS since 07-09, watermark
+current). It does not match the design docs' B1 (legacy, sunset) vs B2 (Phase 6, target `raw_sap_live`)
+story at all - `raw_sap_live` was never built, and `gs://sap-bucket-csv` doesn't exist in this project.
+`SAP_LIVE` is genuinely fresh, not a stale legacy mirror as the 07-23 changelog entry concluded.
+Practical consequence: the scheduler incident (see above) is more serious than first framed - it's the
+only path into fresh SAP_LIVE data, currently being manually compensated for.
+
+Given that, found no evidence of genuine extraction failures (no error logs, no gaps beyond ordinary
+quiet weekends) - concluded the repeated cancel-query errors are much more likely explained by the
+already-found SAP_LIVE_FULL duplicate-row problem than by missing records. Boat: skip that for now.
+
+Pulled and read all 12 `sap_view` process views (the real nightly production Boat pointed to) plus 5
+more upstream dependency views not yet examined (`04_new order credit shell`, `03_cancel change
+orders`, `02_items_cancel`, `1_nonMotor_new order`, `2_nonMotor_items_cancel` - distinct objects from
+the `RCL 04...`-prefixed ones already A2-fixed; checked clean of that bug too).
+
+**Found and fixed a real, confirmed completeness gap**: `RCB_NonMotor_process_1_create` had
+`interface.OrderDate LIKE '%2025%'` hardcoded in its WHERE clause - redundant given the anti-join
+against `SAP_LIVE_FULL` already restricts to "not yet in SAP" rows, but load-bearing in a bad way: it
+silently excluded every 2026-dated order. The view had produced **zero rows for months**. Verified
+against real data before fixing: ~3,097 `RCB_HEALTH` rows dated 2026, 91 genuinely absent from SAP.
+Removed the filter, applied live (`CREATE OR REPLACE VIEW`, after baseline-capturing the original):
+**0 → 95 rows** now surfaced. `RCB_TRAVEL` has the same latent bug but 0 rows dated 2026 currently
+(near-dormant table, 29 rows total) - no live impact today.
+
+Everything else in the 12+5 views checked out clean - no other hardcoded exclusions found, other date
+filters already open-ended.
+
 ## 2026-07-24 (cont'd 3 — remaining 6 views fixed + scheduler incident found)
 
 Boat: fix the A2 bug in the other 6 views too (don't just leave them), and separately, keep the
