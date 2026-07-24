@@ -64,9 +64,33 @@ END;
 --
 -- Live as of 2026-07-24: transfer config
 -- projects/919786098205/locations/asia-southeast1/transferConfigs/6a647519-0000-218f-a688-582429d00cdc
--- Runs daily 15:00 UTC (22:00 ICT). Failure email goes to data@rabbit.co.th
--- (the config owner) - if piyaratt@ or a team channel should get it instead,
--- that needs a different owner account or a Slack-webhook-based alert instead.
--- Tested manually (bq mk --transfer_run) end-to-end: SUCCEEDED while fresh;
--- will show FAILED with the RAISE message once real staleness happens.
+-- Runs daily 15:00 UTC (22:00 ICT). Tested manually (bq mk --transfer_run)
+-- end-to-end: SUCCEEDED while fresh; FAILED with the RAISE message when
+-- forced to fail (see below).
+--
+-- Recipients (2026-07-24): Boat asked for piyaratt@rabbit.co.th and
+-- rc_bi@rabbit.co.th specifically. BQDTS's native emailPreferences only
+-- supports ONE recipient (the config owner - currently data@rabbit.co.th,
+-- since that's the account that created it), no multi-recipient field exists
+-- in the API. Left that native email on as a redundant third notification,
+-- and added a proper multi-recipient path via Cloud Monitoring instead:
+--
+--   1. Log-based metric `sap_dead_mans_switch_failure` - counts ERROR-severity
+--      log entries scoped to this transfer config:
+--        gcloud logging metrics create sap_dead_mans_switch_failure \
+--          --log-filter='resource.type="bigquery_dts_config" AND
+--            resource.labels.config_id="6a647519-0000-218f-a688-582429d00cdc"
+--            AND severity="ERROR"'
+--   2. Two email notification channels (gcloud beta monitoring channels create)
+--      for piyaratt@rabbit.co.th and rc_bi@rabbit.co.th
+--   3. Alert policy "SAP dead-man's-switch failure" (projects/pacific-plating-282708/
+--      alertPolicies/2008919338975126785) - fires when the metric > 0,
+--      notifies both channels
+--
+-- Verified end-to-end 2026-07-24: temporarily replaced the procedure body with
+-- an unconditional RAISE, triggered the scheduled query, confirmed via direct
+-- Cloud Monitoring API query that the metric ingested the failure (value=1 in
+-- the exact 1-minute window the error occurred), then immediately reverted the
+-- procedure to its real logic and reconfirmed it passes cleanly. Could not
+-- personally confirm the email landed in either inbox - ask Boat to confirm.
 -- ============================================================================
