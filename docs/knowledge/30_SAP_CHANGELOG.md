@@ -4,6 +4,27 @@ Append-only — entry ใหม่บนสุด ห้ามลบ/แก้�
 
 ---
 
+## 2026-07-24
+
+Bootstrapped `sap-interface-repo` for real (local git at `.../agentic_bootstrap/codex_bootstrap`,
+branch `p0/stg-sap-state`) — was only a pasted design package until now, nothing on disk/git.
+
+Drafted P0 files (not yet run — see below): `sql/ddl/001_create_sap_integration_v3.sql` (dataset +
+`pipeline_run_log`), `sql/ddl/002_sp_refresh_sap_state.sql` (`stg_sap_state` from `raw_sap_live`),
+`sql/ddl/003_PROPOSED_repoint_sap_live_full.sql` (two options, unresolved, not run).
+
+Found: design docs disagree on `stg_sap_state`'s column shape — REDESIGN_V3 keeps raw column
+names (`SELECT r.*`), DATA_PREP_DESIGN renames to a subset with an incomplete "..." placeholder.
+Went with REDESIGN_V3's raw-preserving version pending confirmation (safer against the
+"mirror stored values exactly" rule — a hand-picked list risks dropping a must-mirror column).
+
+Blocked: `gcloud`/`bq` auth expired mid-session, non-interactive reauth not possible (browser
+OAuth) — could not verify `raw_sap_live`/`SAP_LIVE_FULL` real schema, could not run 001/002,
+could not touch Secret Manager for the pending password rotation. Also: no actual current
+production query files (`rcl_installment.sql` etc.) exist anywhere on disk or in the new repo —
+`sql/production/` only ever had a README stub — so the A2 NULL-safe filter fix can't be written
+as a real patch yet, only as a pattern.
+
 ## 2026-07-23
 
 ROOT CAUSE ยืนยัน (ใหญ่สุดของโปรเจกต์): SAP_LIVE_FULL (B1 loader) stale — งวดที่ SAP Paid+invoice

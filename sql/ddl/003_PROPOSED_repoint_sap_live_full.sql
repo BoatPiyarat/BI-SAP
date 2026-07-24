@@ -1,0 +1,41 @@
+-- 003_PROPOSED_repoint_sap_live_full.sql
+-- >>> DO NOT RUN without explicit approval — see AGENTS.md "Destructive ops... propose
+-- >>> first, wait for approval" and "CREATE OR REPLACE" here overwrites a live production
+-- >>> table with a view, which will change its behavior for every existing consumer.
+--
+-- P0 goal (10_SAP_CONTEXT.md ADDENDUM #1, 20_SAP_PROGRESS.md NEXT #1): stop any consumer
+-- from reading SAP_LIVE_FULL (B1, proven stale 2026-07-23) and make it transparently
+-- resolve to the real SAP truth instead, without having to find and rewrite every
+-- consumer query on day one.
+--
+-- ~~ OPEN DECISION — two candidates, not resolved by the design docs, please pick one ~~
+--
+-- (A) 10_SAP_CONTEXT.md ADDENDUM #1 literally says: "repoint ตัว SAP_LIVE_FULL ให้เป็น
+--     view ผูก raw_sap_live เลย" — point straight at the raw extract table.
+--     Risk: raw_sap_live can have >1 row per (U_OrderItem, U_Period) — e.g. a Pending
+--     schedule doc AND a later Paid doc for the same period (see CANCEL_IMPORT_SPEC_v0.9
+--     Q3a). Any consumer that assumed SAP_LIVE_FULL was ~1 row per key will silently
+--     start seeing duplicates/fan-out.
+--
+-- (B) Point at stg_sap_state instead (needs 002_sp_refresh_sap_state.sql run first) —
+--     same underlying source, but already deduped 1-row-per-(item,period) with the
+--     Cancelled > Paid > Pending priority the rest of the v3 design assumes everywhere
+--     else. Matches how gap-check/cancel-gen/recon are all specified to consume it
+--     (SAP_DATA_PREP_DESIGN_v3.md §5, §7 V4).
+--
+-- Recommendation: (B), for consistency with every other v3 consumer of "SAP truth" and
+-- to avoid introducing new duplicate-row surprises — but (A) is what's literally written
+-- in the ADDENDUM, so confirm before running either.
+--
+-- Regardless of A/B: run this ONLY after diffing the current SAP_LIVE_FULL table's
+-- schema/row-count against the chosen source (0-row-diff or documented delta, per
+-- AGENTS.md "every query change" rule) — not verified this session (bq/gcloud auth
+-- expired, see chat).
+
+-- Option A — raw_sap_live directly:
+-- CREATE OR REPLACE VIEW `pacific-plating-282708.sap_integration_v2.SAP_LIVE_FULL` AS
+-- SELECT * FROM `pacific-plating-282708.sap_integration_v2.raw_sap_live`;
+
+-- Option B — deduped stg_sap_state (recommended):
+-- CREATE OR REPLACE VIEW `pacific-plating-282708.sap_integration_v2.SAP_LIVE_FULL` AS
+-- SELECT * FROM `pacific-plating-282708.sap_integration_v3.stg_sap_state`;
