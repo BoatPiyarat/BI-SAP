@@ -4,6 +4,31 @@ Append-only — entry ใหม่บนสุด ห้ามลบ/แก้�
 
 ---
 
+## 2026-07-24 (cont'd 6 — root-caused the IAM gap, renamed alert, live pipeline test)
+
+Boat asked to rename the alert email header to "SAP Data Freshness Monitor" (done - updated the
+alert policy displayName) and to test-run the real pipeline to see CareOS->SAP sync working.
+
+Manually triggered `sap-extract-job`: completed successfully, watermark advanced 14:47->16:29 UTC,
+but 0 new/changed SAP rows (genuinely quiet - nearly midnight Friday). Instead of waiting for new
+data, verified the sync is real using today's actual charges: found order items charged in CareOS
+this morning (e.g. L78666877-M1/V1 at 02:42 UTC, ฿3,877.29) already reflected in SAP as Paid with a
+matching invoice number, batch-dated today. Broader check: 818 of 1,452 order items charged today
+already have a SAP record (existing orders getting new payments); 634 don't yet (new orders created
+today, normal ~1-day latency before tonight's export -> SAP import -> tomorrow's extract confirms
+them - not a gap).
+
+Investigated why the `run.invoker` binding was missing (Boat asked for "more progress" and this was
+next on the list). Audit logs (60-day window) show exactly 2 `SetIamPolicy` calls on `sap-extract-job`,
+both DENIED: one from 2026-07-13 via Cloud Shell (interactive - very likely Boat already tried this
+same fix 11 days ago), one from tonight (me). No successful call exists in the trail. Cross-checked
+the working pipeline (`sap-order-payment-initial-phase`'s Eventarc trigger) - it uses the project's
+default Compute service account, not `sap-bucket-csv@...`. Conclusion: this binding most likely never
+successfully applied in the first place, rather than having regressed - the 2026-07-15 changelog
+entry about Attila granting `run.invoker` almost certainly refers to the Secret Manager grant in the
+same sentence (which demonstrably works), not this Cloud Run job binding. Updated the ask to Attila
+accordingly: this is a first-time grant requiring his IAM Admin rights, not a "restore."
+
 ## 2026-07-24 (cont'd 5 — dead-man's-switch deployed, 6-views usage answered)
 
 Boat approved fixing the RCB_NonMotor_process_1_create year-hardcode (applied, see previous entry),

@@ -195,11 +195,37 @@ views not on Boat's confirmed-production list:
   queries found in 180 days** — genuinely dead, candidates for eventual archival (not done, no
   action needed now — the A2 fix already applied to them is harmless either way)
 
+## 🕵️ WHY THE IAM BINDING WAS MISSING — investigated 2026-07-24 (not a "disappeared" mystery)
+
+Checked Cloud Audit Logs (60-day window) for every `SetIamPolicy` call referencing `sap-extract-job`.
+Found exactly 2, both **DENIED**:
+- 2026-07-13, via Cloud Shell (interactive) — someone (very likely Boat) already tried this exact
+  `gcloud run jobs add-iam-policy-binding ... --role=roles/run.invoker` fix 11 days ago and hit the
+  same `PERMISSION_DENIED` I hit tonight
+- 2026-07-24 (tonight), my own attempt, same error
+
+No successful `SetIamPolicy` call on this resource exists in the audit trail at all. Cross-checked
+against the *working* pipeline (`sap-order-payment-initial-phase`, via Eventarc) - its trigger uses
+`919786098205-compute@developer.gserviceaccount.com` (the project's default Compute service account,
+likely with broad pre-existing permissions), **not** `sap-bucket-csv@...`. So this isn't a binding
+that regressed - it most likely **never successfully applied in the first place**. The 2026-07-15
+changelog entry ("Granted (Attila/DevOps): roles/run.invoker + roles/secretmanager.secretAccessor...
+→ แก้ blocker scheduler self-trigger") most likely refers to the Secret Manager grant (which clearly
+did work - the job successfully reads its DB credentials every run) - the `run.invoker` half appears
+to have never gone through, silently, because whoever ran it (Boat, then me) lacked
+`run.jobs.setIamPolicy` themselves. The pipeline "worked" anyway because everyone's been triggering
+it manually with their own broader account permissions, which masked the scheduler-specific gap.
+
+**Implication for Attila's fix**: this isn't "restore what was lost" - it's "grant this for the first
+time," and it specifically requires his account (IAM Admin), not yours or mine.
+
 ## ⬜ NEXT
 
-1. **Get Attila to run the `run.invoker` fix** — active incident, 3+ nights and counting
-2. Investigate why the run.invoker binding disappeared - prevent recurrence
-3. Decide dead-man's-switch email recipient (data@ vs personal vs Slack)
+1. **Get Attila to run the `run.invoker` fix** — active incident, 3+ nights and counting. Per the
+   investigation above, this is a first-time grant, not a restore - only he can do it (you and I both
+   confirmed lacking `run.jobs.setIamPolicy` ourselves)
+2. ~~Investigate why the run.invoker binding disappeared~~ — **done above**
+3. Decide dead-man's-switch email recipient (data@ vs personal vs Slack) — **done: piyaratt@ + rc_bi@ + data@, verified delivered**
 4. Reconcile 10_SAP_CONTEXT.md / REDESIGN_V3.md architecture sections against the real pipeline found
    this session (SAP_LIVE fed by sap-extract-job → sap-order-payment-initial-phase, not B1/B2 as written)
 5. Consider archiving the 3 genuinely-dead views (`RCL 04...new tunning`, `sap_fix_rcl_2025`,
