@@ -174,12 +174,14 @@ Built and deployed (see `sql/ddl/004_dead_mans_switch.sql`):
 - `sap_integration_v3.vw_dead_mans_switch` — freshness check on `SAP_LIVE.U_BatchRunDate`
   (excludes ~5 anomalous future-dated rows found earlier, which would otherwise always read FRESH)
 - `sap_integration_v3.sp_check_dead_mans_switch` — RAISEs if stale >26h
-- BigQuery scheduled query "sap_dead_mans_switch", daily 15:00 UTC (22:00 ICT), failure-email
-  enabled (direct API PATCH — bq CLI doesn't expose `email_preferences` as a flag). Notifies
-  **data@rabbit.co.th** (the config owner) on failure. Tested end-to-end via manual trigger:
-  SUCCEEDED while fresh.
-- ⚠️ Open question: email goes to `data@rabbit.co.th`, not a personal inbox or team channel —
-  worth deciding if that's the right recipient, or if this should route to Slack instead
+- BigQuery scheduled query "sap_dead_mans_switch", daily 15:00 UTC (22:00 ICT).
+- **Recipients (settled)**: Boat asked for piyaratt@rabbit.co.th + rc_bi@rabbit.co.th. BQDTS native
+  failure-email only supports one recipient (owner, data@rabbit.co.th) — left that on as a backup,
+  added a real multi-recipient path via Cloud Monitoring: log-based metric
+  `sap_dead_mans_switch_failure` → alert policy `SAP dead-man's-switch failure`
+  (alertPolicies/2008919338975126785) → 2 email channels. **Verified end-to-end**: forced a test
+  failure, confirmed via Monitoring API that the metric ingested it, reverted immediately. Could not
+  personally confirm inbox delivery — Boat to confirm the test alert landed.
 
 ## 🔎 sap_view 6-OTHER-VIEWS USAGE CHECK — answered 2026-07-24
 
