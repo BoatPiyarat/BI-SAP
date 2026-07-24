@@ -4,6 +4,38 @@ Append-only — entry ใหม่บนสุด ห้ามลบ/แก้�
 
 ---
 
+## 2026-07-24 (cont'd 2 — applied to production, live)
+
+Boat approved all three pending actions and went AFK; proceeded and verified each step before
+moving to the next, documenting as I went.
+
+**`sap_view` audit (Boat: "this is the production run nightly")**: broad-searched all 12 views
+(RCB/RCL Motor/NonMotor process_1_create..process_4_creditshell) for any MOTOR_TYPE_COMPULSORY
+comparison. Clean - only one `=` (safe) usage, zero `!=`/`<>`. No fix needed here. This is a
+cleaner architecture than sap_integration_v2/sap_data_engineer's shared-view-with-exclusion-filter
+pattern (dedicated Motor vs NonMotor views instead) - the 6 other buggy views found earlier
+(RCL 02_items_cancel, two more RCL 04 variants, sap_fix_rcl_2025, sap_fixing_rcl, RCL_MOTOR) live
+in the older datasets, not here. Still unconfirmed whether those 6 are dead/backup or live via some
+other path - not touched, needs Boat's call.
+
+**Created for real in BigQuery** (`sql/ddl/001` + `002`, region asia-southeast1 - the project's
+default query location is US, had to pass `--location=asia-southeast1` explicitly):
+`sap_integration_v3` dataset, `pipeline_run_log` table, `sp_refresh_sap_state` procedure, then
+executed it. Result: `stg_sap_state` built from `SAP_LIVE_FULL`, 1,649,468 raw rows → 1,289,839
+deduped rows, verified zero remaining duplicate (U_OrderItem, U_Period) keys.
+
+**Applied the A2 NULL-safe fix live** via `CREATE OR REPLACE VIEW` (from the exact files committed
+as diffs against the pulled baseline):
+- `sap_data_engineer.sap_dashboard_carepay_installment`: 631,487 → 665,388 rows (+33,901 recovered)
+- `sap_integration_v2.`RCL 04_new order credit shell``: 13,894 → 14,379 rows (+485 recovered)
+Verified direction is correct (rows only increased, matching "recovering silently-dropped rows",
+not "breaking something") and spot-checked a sample of newly-appearing rows (e.g. L77630866-1,
+health-insurance installment periods 3-5 of 6, paid, ฿13,290/period) - legitimate data, not noise.
+
+Not done yet: secret rotation (still needs explicit approval - touches a live running job), the
+6-other-views decision, and fixing the now-incorrect "SAP truth = raw_sap_live" hard rule in
+AGENTS.md/CLAUDE.md (raw_sap_live doesn't exist - written before this session's verification).
+
 ## 2026-07-24 (cont'd — reauth'd, verified against live BigQuery)
 
 Boat reauth'd gcloud/bq and pointed at the real production objects: `sap_data_engineer.

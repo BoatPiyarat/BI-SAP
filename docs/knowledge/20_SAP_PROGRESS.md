@@ -1,7 +1,8 @@
 # 20_SAP_PROGRESS.md
 Last Updated: 2026-07-24 (overwrite ได้ — สถานะปัจจุบันเสมอ)
-Overall: ~65% | โหมดปัจจุบัน: reauth แล้ว, verify ของจริงใน BigQuery แล้ว — พบ raw_sap_live ไม่มีจริง +
-ยืนยัน A2 bug จริงใน production 2 views — รอ approve ก่อน apply อะไรเข้า BigQuery
+Overall: ~68% | โหมดปัจจุบัน: **P0 core ทำเสร็จจริงใน BigQuery แล้ว** — stg_sap_state สร้างแล้ว,
+A2 fix live ใน 2 production views แล้ว (ผลตรวจแล้ว ไม่มี regression) — เหลือ secret rotation + hard-rule
+doc fix + ตัดสินใจเรื่อง 6 views เก่าที่ไม่ใช่ production จริง
 
 ---
 
@@ -59,29 +60,33 @@ Overall: ~65% | โหมดปัจจุบัน: reauth แล้ว, verif
   SAP_LIVE_FULL (fully_paid's `sap_batchrun`, credit shell's `sap_cancelled`) และทั้งคู่ทำแค่
   `MAX(BatchRunDate)` ต่อ OrderID — **ไม่โดน duplicate bug จริง** (MAX กันซ้ำในตัวอยู่แล้ว) — เป็นแค่
   cleanup ไม่ใช่ live bug
-- ✅ **A2 NULL-safe filter bug — ยืนยันจริงและแก้แล้ว (draft, ยังไม่ apply):**
+- ✅ **A2 NULL-safe filter bug — ยืนยันจริง, แก้จริง, LIVE ใน BigQuery แล้ว (2026-07-24):**
   พบ `motor_item_type != 'MOTOR_TYPE_COMPULSORY'` แบบไม่กัน NULL ใน **9 views จริง** (ค้นด้วย
-  INFORMATION_SCHEMA.VIEWS regex): `sap_dashboard_carepay_installment`, `RCL 04_new order credit shell`
-  (2 ตัวที่ Boat ชี้ว่าเป็น production จริง) + `RCL 02_items_cancel`, `RCL 04_new order credit shell_all`,
-  `RCL 04_new order credit shell new tunning`, `sap_fix_rcl_2025`, `sap_fixing_rcl`, `RCL_MOTOR` (6 ตัวหลัง
-  **ไม่ได้อยู่ใน list production ที่ Boat ให้มา** — อาจเป็นของเก่า/backup ต้องถามก่อนแตะ)
-  ยืนยันด้วยข้อมูลจริง: `careos_order_items.motor_item_type` มี NULL 10,559 แถว **ทุกแถวเป็น NonMotor**
-  (product != car-insurance) — ตรงเป้า A2 เป๊ะ ไม่ใช่ทฤษฎี
-  → แก้แล้วใน `sql/production/sap_dashboard_carepay_installment.sql` (WHERE clause, เพิ่ม
-  `OR motor_item_type IS NULL`) และ `sql/production/RCL_04_new_order_credit_shell.sql` (JOIN condition,
-  เดิมมี `OR cr.Period = 1` อยู่แล้วแต่ไม่กัน NULL สำหรับ period อื่น) — **committed เป็น diff เทียบกับ
-  baseline ที่ pull มาจริง ยังไม่ได้ apply เข้า BigQuery** ต้อง approve ก่อนรัน
+  INFORMATION_SCHEMA.VIEWS regex) — เช็ค `sap_view` (12 views, Boat ยืนยันว่านี่คือ production run
+  nightly จริง) แยกต่างหาก: **สะอาด** เจอแค่ 1 จุดที่ใช้ `=` (safe) ไม่มี `!=`/`<>` เลย — ไม่ต้องแก้
+  9 views ที่เจอบั๊กอยู่ใน `sap_integration_v2`/`sap_data_engineer`: `sap_dashboard_carepay_installment`,
+  `RCL 04_new order credit shell` (2 ตัวที่ Boat ชี้ว่า production จริง) + อีก 6 ตัวที่ไม่อยู่ใน list
+  (`RCL 02_items_cancel`, `RCL 04_new order credit shell_all`/`new tunning`, `sap_fix_rcl_2025`,
+  `sap_fixing_rcl`, `RCL_MOTOR`) — **ยังไม่ตัดสินใจว่าของจริงหรือของทิ้งแล้ว รอถาม Boat**
+  ยืนยันด้วยข้อมูลจริง: `careos_order_items.motor_item_type` มี NULL 10,559 แถว ทุกแถวเป็น NonMotor
+  → **Applied จริงแล้ว** (`CREATE OR REPLACE VIEW`, ผ่าน bq CLI, location asia-southeast1):
+  - `sap_dashboard_carepay_installment`: 631,487 → 665,388 แถว (**+33,901 แถวที่หายไปกลับมา**)
+  - `RCL 04_new order credit shell`: 13,894 → 14,379 แถว (**+485 แถว**)
+  Sample check แถวที่กลับมา (เช่น L77630866-1 period 3-5/6, health-insurance, paid, ฿13,290) —
+  ข้อมูลสมเหตุสมผล ไม่ใช่ garbage. **แถวเพิ่มขึ้นทั้งคู่ ไม่มีลดลง = ไม่มี regression**
 - ❌ **Secret rotation** — ยังไม่ทำ (ยังไม่ได้ขอ approve, เป็น action ที่กระทบ job ที่รันจริง)
+- ✅ **`sap_integration_v3.stg_sap_state` — สร้างจริงแล้วใน BigQuery** (dataset + `pipeline_run_log`
+  ผ่าน `001`, proc `sp_refresh_sap_state` ผ่าน `002`, รันแล้วผ่าน `CALL`)
+  → 1,649,468 แถวใน SAP_LIVE_FULL → **1,289,839 แถวหลัง dedup, 0 duplicate key เหลือ** (verified)
 
 ## ⬜ NEXT
 
-1. Approve ให้รัน 2 ไฟล์ NULL-safe fix จริงบน BigQuery (sap_dashboard_carepay_installment,
-   RCL 04_new order credit shell) — เป็น `CREATE OR REPLACE VIEW` ทับของเดิม เตรียม 0-row-diff ก่อน/หลัง
-2. ตัดสินใจเรื่อง 6 views อื่นที่เจอบั๊กเดียวกัน (RCL 02_items_cancel ฯลฯ) — ของจริงหรือของทิ้งแล้ว?
-3. แก้ hard rule ใน AGENTS.md/CLAUDE.md: "SAP truth = raw_sap_live" → "SAP_LIVE_FULL" (ผิดจากที่เช็คจริง)
-4. Approve รัน `sql/ddl/001` + `002` (สร้าง `sap_integration_v3.stg_sap_state`) — ไม่กระทบของเดิม
-5. Secret Manager rebind + rotation (ค้างตั้งแต่ 16/07)
-6. P1–P4 ตาม migration plan ใน REDESIGN_V3 §4 / E2E §3 (ยังไม่แตะ)
+1. ตัดสินใจเรื่อง 6 views อื่นที่เจอบั๊กเดียวกันแต่ไม่ใช่ production ที่ระบุไว้ (RCL 02_items_cancel ฯลฯ)
+   — ของจริงหรือของทิ้งแล้ว? (sap_view ที่เป็น nightly จริงสะอาดแล้ว ไม่ต้องแตะ)
+2. แก้ hard rule ใน AGENTS.md/CLAUDE.md: "SAP truth = raw_sap_live" → "SAP_LIVE_FULL" (ผิดจากที่เช็คจริง)
+3. Secret Manager rebind + rotation (ค้างตั้งแต่ 16/07)
+4. เริ่มใช้ `stg_sap_state` จริงในงานถัดไป (cancel-gen, gap-check, recon) แทนการอ่าน SAP_LIVE_FULL ตรงๆ
+5. P1–P4 ตาม migration plan ใน REDESIGN_V3 §4 / E2E §3 (ยังไม่แตะ)
 
 ## DECISIONS PENDING (จาก design review)
 
