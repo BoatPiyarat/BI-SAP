@@ -30,7 +30,7 @@ WITH
     'N' Endorse,
     PolicyDate AS PolicyDate,
     U_PolicyNo PolicyNo,
-    CAST(U_EndorsementNo AS STRING) EndorsementNo,
+    CAST(EndorsementNo AS STRING) EndorsementNo,  -- fix 2026-07-25: was U_EndorsementNo, doesn't exist (query wouldn't even parse before this)
     U_ChassisNo ChassisNo,
     U_LicensePlate LicensePlate,
     GrossPremium GrossPremium,

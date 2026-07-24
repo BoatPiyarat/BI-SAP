@@ -8,7 +8,7 @@
 --create new order form credit shell--
 WITH sap AS (
   SELECT distinct U_OrderItem
-  FROM pacific-plating-282708.sap_integration_v2.SAP_LIVE_FULL
+  FROM pacific-plating-282708.sap_integration_v3.stg_sap_state
 )
 
 SELECT DISTINCT interface.*

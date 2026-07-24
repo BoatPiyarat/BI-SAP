@@ -8,7 +8,7 @@
 --Cancel--
 WITH cancel as (SELECT i.human_id
 FROM `pacific-plating-282708.careos.careos_order_items` i 
-LEFT JOIN `pacific-plating-282708.sap_integration_v2.SAP_LIVE_FULL` sap
+LEFT JOIN `pacific-plating-282708.sap_integration_v3.stg_sap_state` sap
 ON sap.U_OrderItem = i.human_id
 WHERE i.product = 'products/health-insurance'
 AND (i.cancel_time IS NOT NULL )

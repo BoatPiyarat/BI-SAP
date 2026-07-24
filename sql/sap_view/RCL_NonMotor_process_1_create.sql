@@ -11,7 +11,7 @@ WITH
         SELECT
             sap.U_OrderItem
         FROM
-             `pacific-plating-282708.sap_integration_v2.SAP_LIVE_FULL` sap 
+             `pacific-plating-282708.sap_integration_v3.stg_sap_state` sap 
     )
 SELECT
     non.*

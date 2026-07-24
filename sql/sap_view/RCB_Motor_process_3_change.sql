@@ -8,7 +8,7 @@
 --cancelled change order--
 WITH cancelled AS (
   SELECT U_OrderItem
-  FROM `pacific-plating-282708.sap_integration_v2.SAP_LIVE_FULL`
+  FROM `pacific-plating-282708.sap_integration_v3.stg_sap_state`
   WHERE (U_OrderID LIKE '%C%' OR TransactionStatus LIKE ('%Cancelled%'))
   AND (PaymentChannel LIKE '%RCB%' OR PaymentChannel = 'Credit Shell')
 )

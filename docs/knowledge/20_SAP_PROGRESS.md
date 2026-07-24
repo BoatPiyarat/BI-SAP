@@ -1,5 +1,5 @@
 # 20_SAP_PROGRESS.md
-Last Updated: 2026-07-24 (overwrite ได้ — สถานะปัจจุบันเสมอ)
+Last Updated: 2026-07-25 (overwrite ได้ — สถานะปัจจุบันเสมอ)
 Overall: ~74% | โหมดปัจจุบัน: **P0 A2 fix ครบทั้ง 8 views แล้ว (live)** — เจอ+แก้ **year-hardcode gap ใน
 sap_view.RCB_NonMotor_process_1_create** (0→95 แถวโผล่) — **dead-man's-switch deploy จริงแล้ว** (BQ
 scheduled query 22:00 ICT ทุกวัน + failure email) — เจอ**การค้นพบใหญ่**: pipeline จริงคือ sap-extract-job
@@ -219,6 +219,53 @@ it manually with their own broader account permissions, which masked the schedul
 **Implication for Attila's fix**: this isn't "restore what was lost" - it's "grant this for the first
 time," and it specifically requires his account (IAM Admin), not yours or mine.
 
+## ⚠️ stg_sap_state REPOINT ATTEMPT — 2026-07-25 (partial success, one real bug caught + fixed)
+
+Boat: wire `stg_sap_state` into real consumers instead of reading `SAP_LIVE_FULL` directly. Attempted
+this across all 11 `sap_view` process views that reference `SAP_LIVE_FULL` (all of them except
+`RCL_Motor_process_2_newpayment`, which doesn't touch it at all).
+
+**Found two genuine, pre-existing bugs first** (unrelated to the repoint, hit while dry-running):
+`RCL_Motor_process_3_cancel` and `RCL_NonMotor_process_2_newpayment` both reference
+`U_EndorsementNo`, which doesn't exist (`SAP_LIVE_FULL`/`stg_sap_state` only have `EndorsementNo`,
+no `U_` prefix) - **both queries wouldn't even parse**. These two views were completely broken
+before tonight, silently. Fixed the column name in both (real bug fix, independent of source table).
+
+**Repointed and verified 5 views as genuinely safe** (pure existence checks - "does this OrderItem
+exist in SAP at all," no status filter - dedup can't change these results, confirmed by exact
+zero row-count delta before/after): `RCB_NonMotor_process_1_create`, `RCL_NonMotor_process_1_create`,
+`RCB_Motor_process_3_change`, `RCB_Motor_process_4_creditshell`, `RCB_NonMotor_process_2_cancel`.
+**These are live on `stg_sap_state` now.**
+
+**Caught a real bug before it did damage**: `RCB_Motor_process_create`'s row count jumped
+1,579 → 16,578 after repointing - way too large to wave through. Sampled the new output: every row
+was an order that had been **Paid, then later Cancelled**. `SAP_LIVE_FULL` kept both the historical
+Paid row and the Cancelled row (its dedup is only by DocEntry), so this view's
+`WHERE TransactionStatus IN ('Paid','paid')` check could still find "was this ever paid" evidence.
+`stg_sap_state` collapses to one row per (OrderItem, Period) with Cancelled beating Paid by design -
+so the same check now says "never paid," and the view wrongly proposed recreating 14,999
+already-cancelled orders in SAP. **This would have been a real, damaging bug shipped straight into
+the create-export pipeline if the count jump hadn't been sanity-checked.**
+
+Given that, treated every non-zero-delta view as equally suspect (not just the confirmed one) and
+**reverted 5 views back to `SAP_LIVE_FULL`**, since I couldn't verify their semantics were safe at
+this hour with no one available to check: `RCB_Motor_process_create`, `RCL_Motor_process_1_create`,
+`RCB_Motor_process_2_cancel_new`, `RCL_Motor_process_4_creditshell`, `RCL_Motor_process_3_cancel`
+(this last one keeps its `EndorsementNo` fix - net improvement from completely-broken to working,
+just on the original source). `RCL_NonMotor_process_2_newpayment` also stays on `SAP_LIVE_FULL`
+(same `TransactionStatus IN Paid` risk pattern found in its `newpayment` CTE) with just its
+column-name fix applied - went from broken to working.
+
+**Net result**: 2 previously-broken views now work; 5 views now correctly deduped; 4 views
+untouched in effect (reverted to their original behavior) pending a properly-designed fix. Verified
+every final count against BigQuery directly before stopping - not just trusting the local files.
+
+**What "properly-designed" would need**: any view that checks a specific status (e.g. "IN Paid") to
+mean "already settled" needs a source that preserves *history*, not just current dominant status -
+either keep reading `SAP_LIVE_FULL` for that specific check, or build a different dedup that
+preserves "has ever been X" alongside "is currently X." Don't just swap the FROM clause on these 5
+without that design work.
+
 ## ⬜ NEXT
 
 1. **Get Attila to run the `run.invoker` fix** — active incident, 3+ nights and counting. Per the
@@ -228,9 +275,12 @@ time," and it specifically requires his account (IAM Admin), not yours or mine.
 3. Decide dead-man's-switch email recipient (data@ vs personal vs Slack) — **done: piyaratt@ + rc_bi@ + data@, verified delivered**
 4. Reconcile 10_SAP_CONTEXT.md / REDESIGN_V3.md architecture sections against the real pipeline found
    this session (SAP_LIVE fed by sap-extract-job → sap-order-payment-initial-phase, not B1/B2 as written)
+   — **done, 2026-07-24**
 5. Consider archiving the 3 genuinely-dead views (`RCL 04...new tunning`, `sap_fix_rcl_2025`,
    `sap_fixing_rcl`) — not urgent
-6. เริ่มใช้ `stg_sap_state` จริงในงานถัดไป (cancel-gen, gap-check, recon) แทนการอ่าน SAP_LIVE_FULL ตรงๆ
+6. **Design a real fix for the 5 reverted `sap_view` views** (see section above) before attempting the
+   `stg_sap_state` repoint on them again - needs actual business input on what "already in SAP" should
+   mean once an order's been through Paid→Cancelled, not a mechanical FROM-clause swap
 7. P1–P4 ตาม migration plan ใน REDESIGN_V3 §4 / E2E §3 (ยังไม่แตะ) - now needs re-scoping given #4 above
 8. If more assurance is wanted: full charge-driven completeness reconciliation across all 12 sap_view
    process views (not just the targeted read-through done this session)

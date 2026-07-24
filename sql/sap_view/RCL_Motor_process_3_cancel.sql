@@ -100,7 +100,7 @@ END
   'N' Endorse,
   PolicyDate AS PolicyDate,
   U_PolicyNo PolicyNo,
-  U_EndorsementNo EndorsementNo,
+  EndorsementNo,  -- fix 2026-07-25: was U_EndorsementNo, which doesn't exist (query wouldn't even parse before this)
   U_ChassisNo ChassisNo,
   U_LicensePlate LicensePlate,
   GrossPremium GrossPremium,
