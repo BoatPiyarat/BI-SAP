@@ -31,7 +31,9 @@ ON
   sap.U_OrderItem = interface.OrderItem
 WHERE
   sap.U_OrderItem IS NULL
-  AND interface.OrderDate LIKE '%2025%'
+  -- year-hardcode fix 2026-07-24: was "AND interface.OrderDate LIKE '%2025%'",
+  -- silently excluded every 2026+ order forever. The LEFT JOIN anti-join above
+  -- already limits this to "not yet in SAP" rows, so no date filter is needed.
   AND interface.TransactionStatus IS NOT NULL
 ORDER BY
   OrderID
