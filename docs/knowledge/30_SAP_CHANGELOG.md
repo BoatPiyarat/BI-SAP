@@ -4,6 +4,28 @@ Append-only — entry ใหม่บนสุด ห้ามลบ/แก้�
 
 ---
 
+## 2026-07-25 (cont'd) — reconciliation email for CareOS/SAP cancelled-installment mismatches
+
+Boat confirmed the business rule that resolved last night's open design question: once an order
+shows Paid periods then Cancelled in SAP, that's final, never modify it. For any inconsistency
+found, the ask is a reporting email, not an automated fix - so the reverted `sap_view` views from
+last night don't need further work; they already behave correctly (leave cancelled orders alone).
+
+Built the reconciliation: `sql/adhoc/reconcile_careos_vs_sap_cancelled_installments.sql`. Grounded
+the approach in a real example first (`L78210940-V1`) before writing anything general - confirmed
+that a cancel-send mirrors every period to `Cancelled` status regardless of real payment history,
+so `U_InvoiceNo` (populated only when a period was actually paid) is the real signal, not current
+status. Excluded Credit Shell orders (`C#` prefix) - they use one invoice for period 1 only, not
+one per period, which would otherwise flood the results with false positives (confirmed: without
+this exclusion, dozens of Credit Shell orders showed as "only 1 of 8 periods paid," which is just
+how they're supposed to look).
+
+Results: 1,072 cancelled installment orders checked, 85 mismatches - 58 off by exactly 1 period
+(very likely last-payment-at-cancellation timing, not real loss), 6 with genuine 2+ period gaps
+(3 missing 5 periods, 3 missing 2 periods each). Sent as a Gmail draft (only `create_draft` is
+available, no direct send) to `rc_sap_interfaceresult@rabbit.co.th` for Boat to review and send.
+No data modified anywhere - purely a visibility report per the policy above.
+
 ## 2026-07-25 — stg_sap_state repoint: 2 bugs fixed, 5 views safely repointed, 1 near-miss caught and reverted
 
 Boat: wire `stg_sap_state` into real consumers instead of `SAP_LIVE_FULL` directly, then went away for

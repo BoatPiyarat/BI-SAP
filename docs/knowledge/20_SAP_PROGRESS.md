@@ -8,6 +8,35 @@ IAM (401, ล่ม 3 คืน) — secret rotation: ตามคำสั่�
 
 ---
 
+## ✅ POLICY CONFIRMED + RECONCILIATION EMAIL SENT — 2026-07-25
+
+**Boat's rule, confirmed**: once an order shows Paid periods then Cancelled in SAP, that's final -
+never modify it. This resolves the open design question from the `stg_sap_state` repoint work
+above - the 5 reverted `sap_view` views don't need "fixing," their current behavior (treat any
+Cancelled-order signal as "leave alone") is already correct. What was actually needed instead was
+a **reporting mechanism**, not automated correction.
+
+Built `sql/adhoc/reconcile_careos_vs_sap_cancelled_installments.sql`: for cancelled installment
+(RCL) orders, compares CareOS's real paid-period count against SAP's. Key finding while building
+this: a cancel-send mirrors **every** period to `TransactionStatus = 'Cancelled'` (verified live,
+e.g. `L78210940-V1` - all 6 periods show Cancelled regardless of real history) - so current status
+can't tell you what was actually paid before cancellation. `U_InvoiceNo` can: it's only populated
+once a period was actually invoiced, so "non-empty invoice among Cancelled periods" = "was paid
+before cancellation." Credit Shell orders (`U_OrderID LIKE 'C#%'`) excluded - different
+single-invoice-on-period-1 pattern, would otherwise look like hundreds of false positives.
+
+**Results**: 1,072 cancelled installment orders checked, 85 mismatches. 58 are off by exactly 1
+period - almost certainly the customer's last payment landing at/around cancellation time, not a
+real gap. **6 show a genuine 2+ period gap** (up to 5 periods missing) - these are real and worth a
+look: `L73727249`, `L74670396`, `L76394133` (5 periods each), `L73400356`, `L73683565`,
+`L76993090` (2 periods each).
+
+**Sent as a Gmail draft** to `rc_sap_interfaceresult@rabbit.co.th` (no direct-send tool available,
+by design - draft is ready for Boat to review and send). Purely informational per the policy above -
+no SAP/CareOS data touched.
+
+---
+
 ## 🔥 IN-FLIGHT
 
 1. **Cancel batch 21 items** — ตก 3 รอบ (root cause สุดท้าย: SAP เก็บหลาย doc ต่องวด + InvoiceNo ต้องตรง doc ปัจจุบัน)
