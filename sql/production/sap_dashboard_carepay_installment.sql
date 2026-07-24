@@ -257,8 +257,8 @@ END AS InvoiceNo,
     ON takeaway_compulsary.transaction_snapshot_id = transaction_snapshots.id
   LEFT JOIN change on change.human_id = orders.human_id
  WHERE 
-  (transaction_snapshot_installment_details.id IS NOT NULL OR transactions.installments > 1) 
-   AND order_items.motor_item_type != 'MOTOR_TYPE_COMPULSORY'
+  (transaction_snapshot_installment_details.id IS NOT NULL OR transactions.installments > 1)
+   AND (order_items.motor_item_type != 'MOTOR_TYPE_COMPULSORY' OR order_items.motor_item_type IS NULL)  -- P0/A2 fix 2026-07-24: NULL motor_item_type silently dropped NonMotor rows (10,559 real rows confirmed NULL)
    AND (follow_ups.transaction_id IS NOT NULL)
    --AND charges.service_provider = 'RABBIT_LENDING' 
 ),

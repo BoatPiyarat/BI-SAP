@@ -488,7 +488,7 @@ combined AS (
   LEFT JOIN order_items oi
     ON oi.order_id = cr.order_pk
    AND oi.is_cancelled IS NOT TRUE
-   AND (oi.motor_item_type != 'MOTOR_TYPE_COMPULSORY' OR cr.Period = 1)
+   AND (oi.motor_item_type != 'MOTOR_TYPE_COMPULSORY' OR oi.motor_item_type IS NULL OR cr.Period = 1)  -- P0/A2 fix 2026-07-24: NULL motor_item_type failed this join for period != 1, then got dropped by the WHERE below
   LEFT JOIN rcl_orders ro ON ro.order_pk = cr.order_pk
   LEFT JOIN transaction_snapshot_price_summaries tsps ON tsps.snapshot_id = cr.snapshot_id
   LEFT JOIN refunds rf ON rf.transaction_id = cr.transaction_id

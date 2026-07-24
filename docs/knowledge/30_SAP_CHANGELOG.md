@@ -4,6 +4,55 @@ Append-only — entry ใหม่บนสุด ห้ามลบ/แก้�
 
 ---
 
+## 2026-07-24 (cont'd — reauth'd, verified against live BigQuery)
+
+Boat reauth'd gcloud/bq and pointed at the real production objects: `sap_data_engineer.
+sap_dashboard_carepay_fully_paid`, `sap_data_engineer.sap_dashboard_carepay_installment`,
+`sap_integration_v2.SAP_LIVE_FULL`, `sap_integration_v2.`RCL 04_new order credit shell``, plus
+granted edit access to `sap_view` (kept as v3 dataset per Boat's call — new objects still go in
+a fresh `sap_integration_v3`, not `sap_view`).
+
+**Correction to the morning's work**: `sap_integration_v2.raw_sap_live` does not exist anywhere in
+the project - Phase 6's B2 extract job was never actually deployed here, it was aspirational in
+the design docs. Boat confirmed `SAP_LIVE_FULL` is the real, current SAP source. This invalidates
+the "SAP truth = raw_sap_live ONLY" hard rule in AGENTS.md/CLAUDE.md as written - it was true of a
+plan, not of this environment. Still needs fixing in both files (not done yet).
+
+Pulled and captured (verbatim, into `sql/production/`, first time these have existed as files
+anywhere outside BigQuery): `SAP_LIVE_FULL`, `sap_dashboard_carepay_fully_paid`,
+`sap_dashboard_carepay_installment`, `RCL 04_new order credit shell`.
+
+Verified `SAP_LIVE_FULL` for real: it unions SAP_LIVE + SAP_LIVE_2024/2025/2026, already dedups by
+DocEntry (ROW_NUMBER by BatchRunDate DESC, "FIXED VERSION" 2026-07-07). But DocEntry-level dedup
+doesn't collapse multiple SAP docs for the same (U_OrderItem, U_Period) - confirmed live: 328,071
+such keys have >1 row, 687,700 of 1,649,468 total rows (~42%). Real example: L73340138-V1 period 2
+has both a Paid doc (DocEntry 750141) and a Cancelled doc (DocEntry 1005571, same InvoiceNo) - this
+is exactly the CANCEL_IMPORT_SPEC_INFERRED_v0.9.md Q3a scenario, not hypothetical.
+TransactionStatus values confirmed: Paid 1,087,891 / Pending 432,840 / Cancelled 90,489 /
+Cancelled (Change order / Rejected) 38,248 - matches what the design docs assumed.
+
+Rewrote `sql/ddl/002_sp_refresh_sap_state.sql` to source from `SAP_LIVE_FULL` (not `raw_sap_live`),
+deduping by (U_OrderItem, U_Period) with Cancelled > Paid > Pending priority. Retired
+`003_PROPOSED_repoint_sap_live_full.sql`'s original plan (repointing SAP_LIVE_FULL itself would be
+circular, since stg_sap_state is built FROM it) - replaced with the real finding that only two
+consumers touch SAP_LIVE_FULL at all, and both already collapse duplicates via MAX(BatchRunDate)
+per OrderID, so they aren't actually broken by the 42%-duplicate-rows problem.
+
+**Confirmed the NULL-safe filter bug (A2) as real and live**, not just a hypothesis from the design
+docs: searched `INFORMATION_SCHEMA.VIEWS` across sap_integration_v2/sap_data_engineer/sap_view with
+a precise regex for `motor_item_type (!=|<>) 'MOTOR_TYPE_COMPULSORY'` with no NULL guard. Found in
+9 real views, including both `sap_dashboard_carepay_installment` and `RCL 04_new order credit
+shell` - the two Boat named as live production. Cross-checked against real data:
+`careos_order_items.motor_item_type` has 10,559 NULL rows, every single one a NonMotor product -
+exactly the rows this filter silently drops. Drafted (not applied) the fix in both files as a
+one-line change against the committed baseline: installment's bare WHERE clause needed
+`OR motor_item_type IS NULL`; credit shell's JOIN condition already had `OR cr.Period = 1` but that
+only rescues period 1, so periods 2+ for NULL-type NonMotor orders were still getting dropped by
+the WHERE below it. The other 6 views with the same pattern (`RCL 02_items_cancel`, two more
+`RCL 04...` variants, `sap_fix_rcl_2025`, `sap_fixing_rcl`, `RCL_MOTOR`) were NOT in Boat's named
+list of live production - flagged, not touched, pending confirmation of whether they're live or
+dead/backup copies.
+
 ## 2026-07-24
 
 Bootstrapped `sap-interface-repo` for real (local git at `.../agentic_bootstrap/codex_bootstrap`,

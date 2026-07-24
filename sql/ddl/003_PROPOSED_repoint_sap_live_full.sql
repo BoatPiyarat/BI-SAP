@@ -1,41 +1,53 @@
--- 003_PROPOSED_repoint_sap_live_full.sql
--- >>> DO NOT RUN without explicit approval — see AGENTS.md "Destructive ops... propose
--- >>> first, wait for approval" and "CREATE OR REPLACE" here overwrites a live production
--- >>> table with a view, which will change its behavior for every existing consumer.
+-- 003_PROPOSED_repoint_consumers_to_stg_sap_state.sql
+-- (renamed in spirit from "repoint SAP_LIVE_FULL" - see below for why)
+-- >>> NOT RUN. Two independent view edits, proposed only, need approval.
 --
--- P0 goal (10_SAP_CONTEXT.md ADDENDUM #1, 20_SAP_PROGRESS.md NEXT #1): stop any consumer
--- from reading SAP_LIVE_FULL (B1, proven stale 2026-07-23) and make it transparently
--- resolve to the real SAP truth instead, without having to find and rewrite every
--- consumer query on day one.
+-- ~~ Original plan retired 2026-07-24 ~~
+-- The original file here proposed making SAP_LIVE_FULL itself a view over either
+-- raw_sap_live or stg_sap_state. Checked against real BigQuery state:
+--   1. raw_sap_live doesn't exist (Phase 6 B2 extract was never actually
+--      deployed here - it was aspirational in the design docs).
+--   2. SAP_LIVE_FULL IS the real, current, only SAP source Boat uses. It's not
+--      a stale mirror to be replaced - stg_sap_state is BUILT FROM it
+--      (002_sp_refresh_sap_state.sql). Making SAP_LIVE_FULL a view over
+--      stg_sap_state would be circular (stg_sap_state reads from SAP_LIVE_FULL).
+-- So "repoint SAP_LIVE_FULL" as originally conceived doesn't apply. What's left
+-- of the real P0 goal - stop reading the un-deduped 42%-duplicate rows where a
+-- deduped read is possible - is two much narrower, real edits instead:
 --
--- ~~ OPEN DECISION — two candidates, not resolved by the design docs, please pick one ~~
+-- Found by searching every SAP_LIVE_FULL reference in sap_integration_v2 +
+-- sap_data_engineer + sap_view (INFORMATION_SCHEMA.VIEWS): only two consumers
+-- actually touch SAP_LIVE_FULL, and both do a narrow, single-purpose lookup -
+-- neither derives InvoiceNo/status from it (that still comes from CareOS/CarePay
+-- charges directly, per the charge-driven principle).
 --
--- (A) 10_SAP_CONTEXT.md ADDENDUM #1 literally says: "repoint ตัว SAP_LIVE_FULL ให้เป็น
---     view ผูก raw_sap_live เลย" — point straight at the raw extract table.
---     Risk: raw_sap_live can have >1 row per (U_OrderItem, U_Period) — e.g. a Pending
---     schedule doc AND a later Paid doc for the same period (see CANCEL_IMPORT_SPEC_v0.9
---     Q3a). Any consumer that assumed SAP_LIVE_FULL was ~1 row per key will silently
---     start seeing duplicates/fan-out.
+-- (A) sql/production/sap_dashboard_carepay_fully_paid.sql - CTE `sap_batchrun`:
+--       SELECT U_OrderID, MAX(BatchRunDate) AS BatchRunDate
+--       FROM `pacific-plating-282708.sap_integration_v2.SAP_LIVE_FULL`
+--       WHERE U_InsuranceType <> 'MOTOR_TYPE_COMPULSORY'
+--       GROUP BY U_OrderID
+--     Only reads U_OrderID + MAX(BatchRunDate) - already collapses duplicates
+--     itself via MAX(). Repointing this to stg_sap_state changes nothing
+--     (MAX(BatchRunDate) is the same whichever table it's computed from) - LOW
+--     priority, cosmetic consistency only.
 --
--- (B) Point at stg_sap_state instead (needs 002_sp_refresh_sap_state.sql run first) —
---     same underlying source, but already deduped 1-row-per-(item,period) with the
---     Cancelled > Paid > Pending priority the rest of the v3 design assumes everywhere
---     else. Matches how gap-check/cancel-gen/recon are all specified to consume it
---     (SAP_DATA_PREP_DESIGN_v3.md §5, §7 V4).
+-- (B) sql/production/RCL_04_new_order_credit_shell.sql - CTE `sap_cancelled`:
+--       SELECT U_OrderID, MAX(PARSE_TIMESTAMP('%d%m%Y', BatchRunDate)) AS sap_batch_ts
+--       FROM `pacific-plating-282708.sap_integration_v2.SAP_LIVE_FULL`
+--       WHERE TransactionStatus = 'Cancelled (Change order / Rejected)'
+--         AND BatchRunDate IS NOT NULL
+--       GROUP BY U_OrderID
+--     Same shape - MAX() per U_OrderID, already collapses the duplicate-row
+--     problem for this specific purpose. LOW priority.
 --
--- Recommendation: (B), for consistency with every other v3 consumer of "SAP truth" and
--- to avoid introducing new duplicate-row surprises — but (A) is what's literally written
--- in the ADDENDUM, so confirm before running either.
+-- Net finding: the 328k-duplicate-key problem in SAP_LIVE_FULL is real and
+-- worth fixing at the source (stg_sap_state, 002) for anything built on top of
+-- it going forward - but neither of the two CURRENT consumers is actually
+-- broken by it today, because both only ever take a MAX(BatchRunDate) per
+-- OrderID, which is duplicate-safe by construction. Repointing them is optional
+-- cleanup, not a live bug fix - unlike the NULL-safe filter (A2), which IS a
+-- live bug (see 30_SAP_CHANGELOG.md 2026-07-24).
 --
--- Regardless of A/B: run this ONLY after diffing the current SAP_LIVE_FULL table's
--- schema/row-count against the chosen source (0-row-diff or documented delta, per
--- AGENTS.md "every query change" rule) — not verified this session (bq/gcloud auth
--- expired, see chat).
-
--- Option A — raw_sap_live directly:
--- CREATE OR REPLACE VIEW `pacific-plating-282708.sap_integration_v2.SAP_LIVE_FULL` AS
--- SELECT * FROM `pacific-plating-282708.sap_integration_v2.raw_sap_live`;
-
--- Option B — deduped stg_sap_state (recommended):
--- CREATE OR REPLACE VIEW `pacific-plating-282708.sap_integration_v2.SAP_LIVE_FULL` AS
--- SELECT * FROM `pacific-plating-282708.sap_integration_v3.stg_sap_state`;
+-- If you still want to repoint (A)/(B) to stg_sap_state for consistency once
+-- 001/002 are running, the change is a one-line FROM-clause swap in each file -
+-- ask and I'll draft it as a real diff against the committed baseline.
