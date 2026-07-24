@@ -17,7 +17,11 @@ minimize interface errors / manual adjustments, มี traceability ครบ, m
 
 ---
 
-## ARCHITECTURE — ⚠️ มี 2 pipeline คู่ขนาน (clarified 2026-07-16)
+## ARCHITECTURE — ⚠️ CORRECTED 2026-07-24 (การค้นพบใหญ่ — traced จริงใน BigQuery/gcloud ไม่ใช่เดา)
+
+**กติกาเก่า (07-16) "มี 2 pipeline คู่ขนาน B1(เก่า)/B2(ใหม่, Phase 6→raw_sap_live)" — ผิด**
+`raw_sap_live` **ไม่เคยถูกสร้างจริง** และ `gs://sap-bucket-csv` **ไม่มีอยู่จริงใน project นี้เลย**
+— ทั้งคู่เป็นแผนใน design docs ที่ไม่เคย deploy จริง ตรวจสอบแล้ว 2026-07-24
 
 **Path A — Interface ขาออก (CareOS → SAP):**
 ```
@@ -25,17 +29,31 @@ CareOS → BigQuery raw → stg_* → Business Logic (per BU×stage) → Validat
 → sap_export_* → CSV → gs://interface-file/<BU>/ → SAP pull รายชั่วโมง (Vendor Aware — ห้ามแตะ)
 ```
 
-**Path B — ขากลับ (SAP DB → BigQuery เพื่อ recon):** มี 2 รุ่นซ้อนกันอยู่
-- **B1 (เก่า, loader-based):** ไฟล์ JSON ใน `gs://sap-bucket-csv` → **loader service**
-  (pre-existing, ไม่ใช่ของ BI, schedule ของตัวเอง) → `sap_integration_v2.SAP_LIVE`
-  - Loader ต้องการ **ONE JSON array ต่อไฟล์ — NDJSON พัง** ("Extra data: line 2 column 1")
-  - Time-coupled กับ extract (เปราะ) → เป็นเหตุ incident 07-14 (ไฟล์เขียนแล้วแต่ SAP_LIVE ไม่อัปเดต)
-  - Unresolved: error `position 1866902` ครั้งแรก — สงสัย partial file, ยังไม่ root-cause
-- **B2 (ใหม่, Phase 6):** Cloud Run Job `sap-extract-job` → SAP DB (pyodbc ผ่าน WireGuard)
-  → NDJSON ลง `gs://rcb-bronze-zone` (audit) → **MERGE ตรงเข้า `raw_sap_live`** (key: DocEntry)
-  → watermark ใน `sap_extract_control`
-- `⏳ PENDING`: ยืนยันแผน sunset B1 หรือให้ B1/B2 อยู่คู่กัน + ตาราง SAP_LIVE vs raw_sap_live
-  ตัวไหนเป็น source ของ recon Layer 6
+**Path B — ขากลับ (SAP DB → BigQuery เพื่อ recon): pipeline จริงมีเส้นเดียว (ไม่ใช่ 2 คู่ขนาน)**
+```
+SAP DB (RCB_LIVE_DB, ผ่าน WireGuard) --[pyodbc]--> sap-extract-job (Cloud Run JOB)
+  --[NDJSON]--> gs://rcb-bronze-zone/SAP/production_database/ (ไฟล์ชั่วคราว ลบทันทีหลังโหลด)
+  --[Eventarc trigger]--> sap-order-payment-initial-phase (Cloud Run SERVICE)
+  --[load]--> sap_integration_v2.SAP_LIVE (ลบไฟล์ต้นฉบับหลังโหลดสำเร็จ)
+```
+- `sap-extract-job` มีจริง ทำงานจริง (verified: real rows processed, watermark เดินจริง,
+  `sap_extract_control`/`_extract_control/_watermark_state.json` ใน bronze zone) — **แต่ไม่เคยเขียนเข้า
+  BigQuery เอง** แค่เขียน NDJSON ชั่วคราวแล้วให้ตัวถัดไปกิน
+- `sap-order-payment-initial-phase` คือตัวที่ทำ load จริงเข้า `SAP_LIVE` — trigger ผ่าน Eventarc
+  (`trigger-sap-order-payment-initial-phase`, service account = default Compute SA ของ project,
+  **ไม่ใช่** `sap-bucket-csv@...`)
+- `SAP_LIVE` = **SAP truth ที่สดจริง** (14/14 runs SUCCESS นับจาก 07-09, ไม่มี error, watermark
+  ปัจจุบันภายใน ~15 นาทีเวลาที่เช็ค) — ไม่ใช่ stale mirror ที่ต้อง sunset ตามที่ ADDENDUM 07-23 สรุปไว้เดิม
+- `SAP_LIVE_FULL` (view, `sap_integration_v2`) = UNION ของ SAP_LIVE + SAP_LIVE_2024/2025/2026,
+  dedup ด้วย DocEntry (ROW_NUMBER by BatchRunDate DESC) — **แต่ยังมี duplicate ที่ระดับ
+  (OrderItem, Period)** (328,071 keys ยืนยันจริง 07-24, เช่น doc Pending + doc Cancelled/Paid
+  ของงวดเดียวกันอยู่พร้อมกัน) → ใช้ `sap_integration_v3.stg_sap_state` แทนถ้าต้องการ 1 แถว/(item,period)
+- **`sap-extract-schedule` (Cloud Scheduler, 20:30 ICT) ล่มอยู่ตอนนี้** — 401 UNAUTHENTICATED,
+  IAM binding (`run.invoker` สำหรับ `sap-bucket-csv@...` บน `sap-extract-job`) น่าจะไม่เคย apply
+  สำเร็จเลย (audit log ไม่เจอ SetIamPolicy ที่ granted=true บน resource นี้) ไม่ใช่ "หลุดไป" — ดู
+  30_SAP_CHANGELOG.md 2026-07-24 (cont'd 6) รอ Attila แก้ (ต้อง IAM Admin เท่านั้น)
+- Dead-man's-switch (`sap_integration_v3.vw_dead_mans_switch` / scheduled query "SAP Data Freshness
+  Monitor") เฝ้าดูความสดของ `SAP_LIVE` แทนที่จะรอเจอปัญหาเอง — deploy แล้ว 2026-07-24
 
 **6-Layer Standard (v2.1):** Extraction → Staging → Business Logic → Validation → Export →
 Reconciliation & Monitoring (Layer 6 อ่านอย่างเดียว ไม่ mutate)
@@ -88,15 +106,21 @@ generate ไม่ใช่ signal จากต้นทาง (Data Dictionary/
 
 ---
 
-## EXTRACT JOB (Phase 6) — ข้อเท็จจริงยืนยันแล้ว
+## EXTRACT JOB (Phase 6) — ข้อเท็จจริงยืนยันแล้ว (แก้ 2026-07-24: ตัด reference ถึง raw_sap_live/B1 ทิ้ง)
 
 - SAP DB timezone = Asia/Bangkok (UTC+7); `UpdateTime` format HHMM
-- Watermark-based (ไม่ใช่ date window) — scheduler delay ไม่ทำข้อมูลหาย
+- Watermark-based (ไม่ใช่ date window) — scheduler delay ไม่ทำข้อมูลหาย; state จริงอยู่ที่
+  `gs://rcb-bronze-zone/SAP/_extract_control/_watermark_state.json` (ไม่ใช่แค่ `sap_extract_control`
+  ใน BigQuery)
 - Filter: `U_InsuranceGroup <> 'B2B'`
-- Deploy env จริง: `GCS_BUCKET=rcb-bronze-zone` (⚠️ PHASE6_DEPLOY.md เขียน bucket คนละชื่อ — doc drift)
+- Deploy env จริง (verified 07-24): `SAP_DB_HOST=172.25.25.3`, `SAP_DB_NAME=RCB_LIVE_DB`,
+  `GCS_BUCKET=rcb-bronze-zone`, `GCS_PREFIX=SAP/production_database` — เขียน NDJSON ที่นี่ **ชั่วคราว
+  เท่านั้น** ตัวถัดไป (`sap-order-payment-initial-phase`, Cloud Run service แยกต่างหาก) กินไฟล์แล้วลบทิ้ง
+  หลังโหลดเข้า `SAP_LIVE` สำเร็จ — งานนี้เอง**ไม่ได้เขียนเข้า BigQuery โดยตรง** (ผิดจากที่เข้าใจเดิม)
 - Secrets ต้อง bind ผ่าน `--update-secrets` (`sap-db-username`, `sap-db-password`) —
   code อ่าน env var ตรงๆ ถูกแล้ว, ห้าม deploy ด้วย `--set-env-vars` plaintext อีก
-- `sed` corrupt password ที่มี `&`/`\`; loader-side: single JSON array เท่านั้น
+- `sed` corrupt password ที่มี `&`/`\`
+- **`sap-extract-schedule` ล่มอยู่** (401, IAM binding ไม่เคย apply สำเร็จ) — ดู ARCHITECTURE ด้านบน
 
 ---
 
@@ -121,9 +145,11 @@ Posting Periods Unlocked→PaymentDate | invalid date→ต้อง DDMMYYYY
 
 ## ⚠️ ADDENDUM 2026-07-23 — กติกาใหม่ที่สำคัญที่สุด (override ส่วนที่ขัดกันด้านบน)
 
-1. **SAP truth = `raw_sap_live` เท่านั้น** — SAP_LIVE / SAP_LIVE_FULL / SAP_LIVE_2025/2026 (B1)
-   เป็น stale mirror (พิสูจน์ 23/07: งวด Paid+invoice โชว์เป็น Pending/ว่าง) ห้ามใช้ตัดสินสถานะ/InvoiceNo
-   — ระหว่างเปลี่ยนผ่าน: repoint ชื่อ SAP_LIVE_FULL เป็น view ทับ raw_sap_live ได้
+1. **⚠️ แก้ 2026-07-24 (ของเดิมผิด — `raw_sap_live` ไม่มีอยู่จริง, verified ผ่าน bq/gcloud ไม่ใช่เดา):**
+   **SAP truth = `sap_integration_v2.SAP_LIVE_FULL`** (ดู ARCHITECTURE ด้านบนสำหรับ pipeline จริงที่ป้อนมัน)
+   — ใช้ `sap_integration_v3.stg_sap_state` แทนเมื่อต้องการ 1 แถว/(OrderItem, Period) แบบ dedup แล้ว
+   (SAP_LIVE_FULL เองยังมี duplicate 328k+ keys ที่ระดับนี้ — dedup แค่ระดับ DocEntry) ห้ามใช้
+   SAP_LIVE_2024/2025/2026 หรือ SAP_LIVE ตรงๆแยกกัน (เป็นแค่ shard ดิบที่ SAP_LIVE_FULL union รวม)
 2. **Cancel import spec (inferred, รอ Aware confirm — SPEC_INFERRED_v0.9):** ครบงวด 1..TotalPeriods,
    งวดละ 1 แถวเท่านั้น, InvoiceNo ต้องตรง doc ปัจจุบันใน SAP เป๊ะ, งวดอื่นต้อง Paid/Pending,
    order ที่ cancelled แล้วห้ามส่งซ้ำ — SAP validate ทั้ง order เป็นชุด พังหนึ่งพังหมด
