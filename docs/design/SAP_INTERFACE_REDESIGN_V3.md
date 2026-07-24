@@ -2,6 +2,16 @@
 Date: 2026-07-23 | Owner: Boat (BI) | Status: PROPOSAL
 Objectives: **(1) CareOS → SAP integration ถูกต้อง** | **(2) ใช้ resource ต่ำ**
 
+> ⚠️ **STATUS UPDATE 2026-07-24 — อ่านก่อนเชื่อ `raw_sap_live` ในเอกสารนี้:** ตรวจสอบจริงผ่าน bq/gcloud
+> แล้วพบว่า `raw_sap_live` (B2/Phase 6 target ตลอดเอกสารนี้) **ไม่เคยถูกสร้างขึ้นจริง** และ `gs://sap-bucket-csv`
+> (B1 source) **ไม่มีอยู่จริงใน project** — pipeline จริงคือ `sap-extract-job` → GCS ชั่วคราว →
+> `sap-order-payment-initial-phase` → **`sap_integration_v2.SAP_LIVE`** (รายละเอียดเต็มดู
+> `docs/knowledge/10_SAP_CONTEXT.md` §ARCHITECTURE + `docs/knowledge/30_SAP_CHANGELOG.md` 2026-07-24).
+> P0 ได้ทำจริงแล้วโดยสร้าง `sap_integration_v3.stg_sap_state` จาก **`SAP_LIVE_FULL`** (ไม่ใช่
+> `raw_sap_live` ตามที่ § 2.1 ด้านล่างเขียนไว้) — ทุกจุดในเอกสารนี้ที่พูดถึง `raw_sap_live`/B1-sunset
+> ให้อ่านเป็น `SAP_LIVE_FULL`/`stg_sap_state` แทน ยังไม่ได้แก้ทั้งฉบับ (ไม่เร่งด่วน) — นี่คือ pointer
+> เดียวจนกว่าจะรีไรท์เต็ม
+
 ---
 
 ## 1. Problem Inventory (รวมทุกอย่างที่เจอ 07/07–23/07)
@@ -79,6 +89,10 @@ raw_sap_live ─▶  stg_sap_state        (1 แถว/(item,period), Paid-prior
 
 ### 2.1 stg_sap_state — SAP truth เดียว (แก้ C1, B3)
 
+> ✅ **สร้างจริงแล้ว 2026-07-24** — ดู `sql/ddl/002_sp_refresh_sap_state.sql` ใน repo (source จริงคือ
+> `SAP_LIVE_FULL` ไม่ใช่ `raw_sap_live` ด้านล่าง ซึ่งไม่มีอยู่จริง — โค้ดข้างล่างเก็บไว้เป็น reference
+> เดิม logic เหมือนกันทุกอย่างยกเว้นบรรทัด FROM)
+
 ```sql
 CREATE OR REPLACE TABLE `...sap_integration_v3.stg_sap_state`
 CLUSTER BY U_OrderItem AS
@@ -91,7 +105,7 @@ SELECT * EXCEPT(rn) FROM (
              WHEN TransactionStatus IN ('Paid','paid') THEN 1 ELSE 2 END,
         CASE WHEN IFNULL(U_InvoiceNo,'') != '' THEN 0 ELSE 1 END
     ) AS rn
-  FROM `...sap_integration_v2.raw_sap_live` r
+  FROM `...sap_integration_v2.SAP_LIVE_FULL` r  -- (เดิมเขียน raw_sap_live — ไม่มีอยู่จริง, แก้ 07-24)
 ) WHERE rn = 1;
 ```
 - Source: **raw_sap_live เท่านั้น** — SAP_LIVE* ใช้ได้เฉพาะ historical fallback ชั่วคราวระหว่าง backfill raw ให้ครบ แล้ว sunset
