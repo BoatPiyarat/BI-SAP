@@ -1,0 +1,89 @@
+# SAP Import Validation Spec — CANCEL (Installment) — INFERRED v0.9
+Status: DRAFT FOR VENDOR CONFIRMATION | Prepared by: BI (RabbitCare) | 2026-07-23
+Evidence base: import logs 20884, 20888, 20908*, 20912 (22–23 Jul 2026)
+(*log ids by filename timestamps)
+
+Purpose: We reverse-engineered the validation rules of the RCB/RCL cancel import
+from observed error responses. Please CONFIRM or CORRECT each rule below.
+Reviewing this list should take ~15 minutes — no need to write documentation
+from scratch.
+
+---
+
+## Inferred rules — please mark ✔ correct / ✘ wrong (+ correction)
+
+**R1. Full-schedule requirement**
+A cancel set for an installment order must cover ALL periods 1..TotalPeriods.
+Evidence: `Period: Status Cancelled must be end to TotalPeriod(6)` (log 20888 Row#30)
+[ ] confirm
+
+**R2. One row per period**
+Each period may appear exactly once in the cancel set. Duplicate periods →
+`Period: Sequence of Period invalid`.
+Evidence: log 20912 (file contained multiple docs per period → every row flagged)
+[ ] confirm
+
+**R3. InvoiceNo must match the stored value of the current document**
+For rows whose stored status is Paid or Cancelled, the InvoiceNo in the file
+must equal the stored InvoiceNo exactly, else
+`InvoiceNo: Cannot change InvoiceNo when status Paid,Cancelled`.
+[ ] confirm
+**Q3a: When a period has MULTIPLE documents in SAP (e.g. an original Pending
+schedule doc + a later Paid payment doc), which document's InvoiceNo must the
+cancel row reference?** ← คำถามสำคัญสุด
+
+**R4. Status precondition on other periods**
+Cancelling requires every other period of the same order in DB to be in
+status Paid or Pending:
+`PolicyStatus: Cancelled order other period in DB must be Status Paid,Pending before`.
+[ ] confirm
+**Q4a: Which statuses block? (e.g. Overdue? partially-cancelled?)**
+
+**R5. First-period precondition**
+`PolicyStatus: Cancelled order first period in DB must be Status Paid before`
+→ period 1 must be Paid before any cancel.
+[ ] confirm
+
+**R6. Already-cancelled orders reject re-interface**
+`PolicyStatus: In DB Status Cancelled not allow to interface`.
+[ ] confirm
+
+**R7. Row grouping / atomicity**
+Rows of the same OrderId are validated as one set (errors reference
+`Ref.Row[N]`); one failing row rejects the entire order set, and the "anchor"
+row N is reported.
+[ ] confirm
+**Q7a: Does row ORDER inside the file matter (must periods be ascending)?**
+
+**R8. InvoiceNo uniqueness within file**
+`InvoiceNo: is duplicated` — the same InvoiceNo (including empty?) may not
+appear on more than one row of the same import scope.
+[ ] confirm
+**Q8a: scope = per order, per file, or per DB?**
+**Q8b: are EMPTY InvoiceNo values exempt for Pending periods?**
+
+**R9. Balance check on cancel**
+`FullPayment: Not balance transaction` also applies to cancel rows —
+TotalAmount must equal component sum.
+[ ] confirm
+
+---
+
+## Open questions beyond error evidence
+
+**Q10.** Correct way to cancel an order where customer payments continued
+after CareOS cancellation (periods Paid in SAP after cancel date): cancel all
+periods as-is, or must a refund/credit memo flow precede?
+
+**Q11.** For a cancel row on a Pending (unpaid) period: required values for
+ActualReceived / PaymentDate / InvoiceNo (empty vs mirror)?
+
+**Q12.** Is there an idempotency key — if the same cancel file is imported
+twice, what happens?
+
+---
+
+## Why this matters
+Nightly cancel batches currently fail for ~100 orders/night against these
+undocumented rules. Confirming this one page eliminates the trial-and-error
+cycle on both sides (fewer bad files hitting your import too).

@@ -1,0 +1,5 @@
+# sql/adhoc
+Query เฉพาะกิจที่ใช้ซ้ำ (จาก urgent sessions ก.ค. 2026):
+- action_classifier.sql / gap_diagnostic.sql / mirror_comparison.sql
+- quickfix_edc_onetime.sql / quickfix_rcl_newpayment_charge_driven.sql / cancel_resend_v4.sql
+เก็บไว้เป็นจุดตั้งต้น — เป้าหมายระยะยาวคือแปลงเป็น stored procedures ตาม DATA_PREP_DESIGN

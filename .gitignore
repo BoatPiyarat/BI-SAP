@@ -1,0 +1,8 @@
+# credentials / local state - never commit
+*.env
+.env.*
+*credentials*.json
+*service-account*.json
+secrets/
+.vscode/
+.DS_Store
