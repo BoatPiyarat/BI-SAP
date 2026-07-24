@@ -260,7 +260,7 @@ rcb_voluntary_installment_details AS (
     ON takeaway_compulsary.transaction_snapshot_id = transaction_snapshots.id
   WHERE 
     transaction_snapshot_installment_details.id IS NOT NULL
-    AND order_items.motor_item_type != 'MOTOR_TYPE_COMPULSORY'
+    AND (order_items.motor_item_type != 'MOTOR_TYPE_COMPULSORY' OR order_items.motor_item_type IS NULL)  -- A2 fix 2026-07-24
     and (follow_ups.transaction_id is  null)
 ),
 --------------------------------------------------------------------------------------------------------
@@ -400,7 +400,7 @@ rcl_voluntary_installment_details AS (
     ON takeaway_compulsary.transaction_snapshot_id = transaction_snapshots.id
   WHERE 
     transaction_snapshot_installment_details.id IS NOT NULL
-    AND order_items.motor_item_type != 'MOTOR_TYPE_COMPULSORY'
+    AND (order_items.motor_item_type != 'MOTOR_TYPE_COMPULSORY' OR order_items.motor_item_type IS NULL)  -- A2 fix 2026-07-24
     and (follow_ups.transaction_id is not null)
 ),
 --------------------------------------------------------------------------------------------------------
@@ -530,7 +530,7 @@ voluntary_onetime_no_installment_details AS (
   WHERE 
     transaction_snapshot_installment_details.id IS NULL
     AND transaction_snapshot_price_summaries.id IS NOT NULL
-    AND order_items.motor_item_type != 'MOTOR_TYPE_COMPULSORY'
+    AND (order_items.motor_item_type != 'MOTOR_TYPE_COMPULSORY' OR order_items.motor_item_type IS NULL)  -- A2 fix 2026-07-24
     AND orders.create_time >= "2024-03-28"
     AND transactions.installments = 1
     AND transactions.status = 'SUCCESSFUL'

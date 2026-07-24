@@ -276,7 +276,7 @@ order_items.is_cancelled items_cancel,
   LEFT JOIN change on change.human_id = orders.human_id
   WHERE 
     transaction_snapshot_installment_details.id IS NOT NULL
-    AND order_items.motor_item_type != 'MOTOR_TYPE_COMPULSORY'
+    AND (order_items.motor_item_type != 'MOTOR_TYPE_COMPULSORY' OR order_items.motor_item_type IS NULL)  -- A2 fix 2026-07-24
     and (follow_ups.transaction_id IS NULL)
     AND charges.service_provider != 'ICOLLECTION'
 ),
@@ -437,7 +437,7 @@ order_items.is_cancelled items_cancel,
   LEFT JOIN change on change.human_id = orders.human_id
   WHERE 
     transaction_snapshot_installment_details.id IS NOT NULL
-    AND order_items.motor_item_type != 'MOTOR_TYPE_COMPULSORY'
+    AND (order_items.motor_item_type != 'MOTOR_TYPE_COMPULSORY' OR order_items.motor_item_type IS NULL)  -- A2 fix 2026-07-24
     and (follow_ups.transaction_id IS NOT NULL)
     --AND charges.service_provider != 'ICOLLECTION'
 

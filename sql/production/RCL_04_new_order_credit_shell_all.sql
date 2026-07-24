@@ -283,7 +283,7 @@ order_items.is_cancelled items_cancel,
   LEFT JOIN multic ON multic.transaction_id =  charges.transaction_id
   WHERE 
     transaction_snapshot_installment_details.id IS NOT NULL
-    AND order_items.motor_item_type != 'MOTOR_TYPE_COMPULSORY'
+    AND (order_items.motor_item_type != 'MOTOR_TYPE_COMPULSORY' OR order_items.motor_item_type IS NULL)  -- A2 fix 2026-07-24
     AND (follow_ups.transaction_id IS NULL)
     --AND charges.service_provider != 'ICOLLECTION'
     --AND orders.create_time >= '2025-01-01'
@@ -443,7 +443,7 @@ order_items.is_cancelled items_cancel,
   LEFT JOIN multic ON multic.transaction_id =  charges.transaction_id
   WHERE 
     transaction_snapshot_installment_details.id IS NOT NULL
-    AND order_items.motor_item_type != 'MOTOR_TYPE_COMPULSORY'
+    AND (order_items.motor_item_type != 'MOTOR_TYPE_COMPULSORY' OR order_items.motor_item_type IS NULL)  -- A2 fix 2026-07-24
     AND (follow_ups.transaction_id IS NOT NULL)
 
 ),
