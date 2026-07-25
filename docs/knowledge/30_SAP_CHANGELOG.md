@@ -4,6 +4,31 @@ Append-only — entry ใหม่บนสุด ห้ามลบ/แก้�
 
 ---
 
+## 2026-07-25 (cont'd 5) — found the actual root cause: SAP posting-period lock, not our export
+
+Boat asked to sample one stuck installment in full: `L78115086-V1`, a 6-period Motor order created
+2026-01-29, period 1 Paid at creation (by design), periods 2-6 left Pending. CareOS showed periods
+2-5 actually paid on 2026-04-16/05-14/06-09/07-03; all still Pending in SAP with a real DocEntry
+since January. Confirmed via job history that the correct "mark Paid" query has run via the
+existing automated Cloud Function every night for 10+ days straight and computes the right
+InvoiceNo/PaymentDate/status already - the export has been doing its job correctly the whole time.
+
+Boat then shared a real SAP import error log from 2026-07-16 (an INSURANCE_RCB_CANCEL batch,
+confirmed "submitted in correct validation to SAP"). It shows the real mechanism: **SAP's own
+accounting posting-period lock** (`Posting Periods must be Unlocked` / `RCL Posting Periods must
+be Unlocked`) rejecting any transaction dated into an already-closed period, permanently, until
+someone unlocks it on the SAP side - a standard SAP B1 control, not a bug. Also present:
+`InvoiceNo: Cannot change InvoiceNo when status Paid,Cancelled` (matches the existing immutability
+rule) and `PolicyStatus: Cancelled order first period in DB must be Status Paid before` (directly
+compounds the ~1,960 period-1-never-invoiced orders found earlier - those can't even be cleanly
+cancelled until period 1 is Paid).
+
+Conclusion: this is not a BigQuery/query/export problem. The interface file has been correct every
+night; SAP's posting-period lock is the actual blocker, squarely Aware's territory. Open question
+for Boat, not yet answered: does Aware/SAP finance periodically reopen old posting periods, and if
+so is there a way to get the ~46,420 stuck periods reprocessed once reopened? Aware escalation not
+yet drafted.
+
 ## 2026-07-25 (cont'd 4) — root-caused MISSING_FROM_SAP before any backfill; built dashboard views
 
 Boat, before authorizing a backfill: "before you run backfill to fill the gap, please check

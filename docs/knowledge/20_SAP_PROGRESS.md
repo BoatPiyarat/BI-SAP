@@ -78,6 +78,47 @@ which doesn't exist yet (P2 territory).
 
 ---
 
+## 🔒 ROOT CAUSE FOUND: SAP POSTING-PERIOD LOCK — 2026-07-25 (cont'd 5)
+
+Boat asked me to sample one stuck installment in detail (`L78115086-V1`: created 2026-01-29 with
+6 periods, period 1 Paid at creation, periods 2-6 left Pending by design). CareOS showed periods
+2-5 actually paid on 2026-04-16 / 05-14 / 06-09 / 07-03 - all still Pending in SAP with a real
+DocEntry assigned since January. Confirmed via `INFORMATION_SCHEMA.JOBS_BY_PROJECT` that the
+correct "mark this period Paid" query has run via the automated Cloud Function every single night
+for 10+ days straight (18:30 UTC daily) and already computes the right InvoiceNo/PaymentDate/
+status - so the export side has been doing its job correctly the whole time.
+
+Boat then shared a real SAP import error log (`import_20260716-163056018.txt`, an
+`INSURANCE_RCB_CANCEL` batch from 2026-07-16, confirmed "job submitted in correct validation to
+SAP"). It reveals the actual mechanism: **SAP's own accounting posting-period lock.**
+Recurring errors across hundreds of rows:
+- `PaymentDate:Posting Periods must be Unlocked,PaymentDate:RCL Posting Periods must be Unlocked` -
+  SAP refuses any transaction dated into an already-closed accounting period, permanently, until
+  someone unlocks that period on the SAP side. This is a standard SAP B1 accounting control, not a
+  bug - but it means once a period closes, our correctly-generated nightly "mark Paid" row for that
+  period will keep failing forever, silently, with no retry ever succeeding.
+- `InvoiceNo: Cannot change InvoiceNo when status Paid,Cancelled` - SAP refusing to touch InvoiceNo
+  on anything already Paid/Cancelled (matches the existing "InvoiceNo immutable" hard rule).
+- `PolicyStatus: Cancelled order first period in DB must be Status Paid before` - SAP won't allow
+  cancelling an order unless period 1 is already Paid in its own DB - directly compounds the
+  ~1,960 period-1-never-invoiced orders found earlier: those can't even be cleanly cancelled later.
+
+**Conclusion: this is not a BigQuery/export/query problem at all.** The interface file has been
+correct and complete every night. The block is entirely SAP's own posting-period lock policy -
+squarely Aware's territory per the hard rule ("SAP-side import program - Aware owns these").
+Also explains why some orders DO progress fine (99,599 order-items found earlier with genuinely
+sequential Paid dates) vs others permanently stall: whether the relevant posting period happened
+to still be open when the payment was first attempted.
+
+**Not yet done**: drafting the Aware escalation with this evidence (the channel failure-rate
+breakdown + the `L78115086-V1` sample + this error log). Open question for Boat: does Aware/SAP
+finance periodically reopen old posting periods, or is there a policy for how far back RCL
+payments can post before being permanently rejected? That would clarify whether the ~46,420
+stuck periods are recoverable at all without a posting-period reopen, or genuinely lost to this
+lock.
+
+---
+
 ## 🎯 REAL EXPORT MECHANISM FOUND — 2026-07-25 (Boat AFK, "fix missing from SAP" request)
 
 Boat asked to fix the `MISSING_FROM_SAP` gap (48,993 order-periods, ~108M THB in 2026), run a
