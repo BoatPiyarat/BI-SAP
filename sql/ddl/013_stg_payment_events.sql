@@ -13,8 +13,16 @@
 -- schedule. Without this, every consumer of this table would inherit the same fan-out bug this
 -- session spent real effort finding and fixing once already.
 
+-- NOTE (fixed 2026-07-25, before expected_state was built on top of this): charges.id (UUID) and
+-- charges.third_party_id (e.g. "OR6610021650539" for bank refs, or Omise's own "chrg_..." format
+-- for card/QR channels) are DIFFERENT fields - confirmed by checking real rows, not assumed. The
+-- real InvoiceNo comes from third_party_id (falling back to order_items.human_id when null on a
+-- successful charge, per the real production logic in sap_dashboard_carepay_installment), never
+-- from charges.id. charge_id (= charges.id) stays as this table's own unique key; third_party_id
+-- is carried separately so callers can pass the correct value to fn_invoice_no.
 CREATE TABLE IF NOT EXISTS `pacific-plating-282708.sap_integration_v3.stg_payment_events` (
   charge_id STRING,
+  third_party_id STRING,
   order_item STRING,
   order_id STRING,
   transaction_id STRING,
@@ -40,6 +48,9 @@ BEGIN
     WITH charge_link_raw AS (
       SELECT
         c.id AS charge_id,
+        -- fallback matches the real production InvoiceNo rule: successful charge with no
+        -- third_party_id falls back to the order_item's own human_id
+        COALESCE(c.third_party_id, oi.human_id) AS third_party_id,
         c.transaction_id,
         c.installment_number AS period,
         c.amount,
@@ -60,8 +71,8 @@ BEGIN
         AND c.update_time > watermark
     )
     SELECT
-      charge_id, transaction_id, period, amount, charge_time, payment_option, lead_human_id,
-      order_id, order_item, CURRENT_TIMESTAMP() AS event_refreshed_at
+      charge_id, third_party_id, transaction_id, period, amount, charge_time, payment_option,
+      lead_human_id, order_id, order_item, CURRENT_TIMESTAMP() AS event_refreshed_at
     FROM charge_link_raw
     WHERE item_rank = 1
   ) S
@@ -69,6 +80,7 @@ BEGIN
   WHEN MATCHED THEN UPDATE SET
     order_item = S.order_item,
     order_id = S.order_id,
+    third_party_id = S.third_party_id,
     transaction_id = S.transaction_id,
     period = S.period,
     amount = S.amount,
@@ -77,10 +89,10 @@ BEGIN
     lead_human_id = S.lead_human_id,
     event_refreshed_at = S.event_refreshed_at
   WHEN NOT MATCHED THEN INSERT (
-    charge_id, order_item, order_id, transaction_id, period, amount, charge_time, payment_option,
-    lead_human_id, event_refreshed_at
+    charge_id, third_party_id, order_item, order_id, transaction_id, period, amount, charge_time,
+    payment_option, lead_human_id, event_refreshed_at
   ) VALUES (
-    S.charge_id, S.order_item, S.order_id, S.transaction_id, S.period, S.amount, S.charge_time,
-    S.payment_option, S.lead_human_id, S.event_refreshed_at
+    S.charge_id, S.third_party_id, S.order_item, S.order_id, S.transaction_id, S.period, S.amount,
+    S.charge_time, S.payment_option, S.lead_human_id, S.event_refreshed_at
   );
 END;
