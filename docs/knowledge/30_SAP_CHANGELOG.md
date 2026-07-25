@@ -4,6 +4,36 @@ Append-only — entry ใหม่บนสุด ห้ามลบ/แก้�
 
 ---
 
+## 2026-07-25 (cont'd 8) — B1 InvoiceNo standard resolved; starting the P1 staging-layer build
+
+Boat resolved the long-open B1 decision from `SAP_INTERFACE_REDESIGN_V3.md` §5: **InvoiceNo =
+raw `third_party_id`, no prefix, for anything new; the existing `2_` prefix stays untouched
+wherever `newpayment`/`cancel` mirror an already-existing SAP record** (InvoiceNo is immutable
+once set - these flows must match what's already there, not reformat it). Checked the actual
+create-flow views (`RCL_Motor_process_1_create` -> `sap_dashboard_carepay_installment`): already
+uses raw `charges.third_party_id`, no code change needed - just documents the standard in
+CLAUDE.md, resolving the ambiguity that was blocking anyone from confidently building new
+create-flow logic.
+
+Boat: "start building" P1-P3 (the actual V3 architectural rebuild - stg_order_dim/stg_payment_events/
+spine, the L3 engine+router, delta export, single scheduler chain - none of which existed before
+today; everything up to now patched the old per-flow queries in place). Beginning with P1.
+
+Boat also resolved A1's routing ambiguity: **`CREDIT_CARD_INSTALLMENT` routes to ONETIME (RCB),
+TotalPeriods=1** - "remains the same, only change to Onetime(RCB)" - confirming exactly what
+§2.4's router table already proposed (bank pays in full; the installment plan is the bank's
+concern, not SAP's). Baked directly into `stg_schedule`'s total_periods logic as it's built, since
+that's precisely where getting this wrong would generate a bogus multi-period schedule instead.
+
+Built `011_stg_order_dim.sql` (P1, §2.2): materializes the ~15 JSON_VALUE(orders.data, ...)
+extractions (InsuredID/Title/Name/Chassis/LicensePlate/BillingAddress/oicCode) ONCE per order_item
+via `sp_refresh_stg_order_dim`, MERGE-only orders whose update_time changed since the last refresh
+watermark - field mappings copied verbatim from the real production source
+(`sap_data_engineer.sap_dashboard_carepay_installment`), not reinterpreted. Directly targets D2
+("JSON parse x15 fields x every order x every run - heaviest CPU cost in the pipeline" per the
+design doc's own audit). Table + procedure deployed live (one type-mismatch fix mid-deploy:
+`gross_premium` is FLOAT64 in `careos_order_items.net_premium`, not NUMERIC as first drafted).
+
 ## 2026-07-25 (cont'd 7) — corrected the backfill (full period per order) and re-pushed, chunked
 
 Boat caught a real bug in the first backfill (previous entry) after the fact: the real RCL
