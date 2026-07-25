@@ -1,5 +1,55 @@
 # 20_SAP_PROGRESS.md
-Last Updated: 2026-07-25 (cont'd 4, MISSING_FROM_SAP root-caused - not a backfill problem) (overwrite ได้ — สถานะปัจจุบันเสมอ)
+Last Updated: 2026-07-25 (cont'd 6, ONE-TIME BACKFILL PUSHED LIVE) (overwrite ได้ — สถานะปัจจุบันเสมอ)
+
+---
+
+## 🚀 ONE-TIME BACKFILL PUSHED LIVE — 2026-07-25 (cont'd 6, highest-stakes action this session)
+
+Boat: "Let's do backfill one time. import all unsuccess interface files I'm pretty sure it is our
+side" - then, after reviewing, pinpointed the likely bug himself: "the current
+RCL_Motor_process_2_newpayment / RCL_NonMotor_process_2_newpayment logic of payment date... it can
+be only in current month. If the actual payment date on charge table is older than current month
+you can override to 1st date of current month."
+
+**Fix applied first** (`009_fix_rcl_newpayment_date_override.sql`, live in `sap_view`): wrapped
+both views with `CASE WHEN PARSE_DATE(PaymentDate) < DATE_TRUNC(CURRENT_DATE(), MONTH) THEN
+FORMAT_DATE(..., DATE_TRUNC(CURRENT_DATE(), MONTH)) ELSE PaymentDate END` - any PaymentDate older
+than the current month gets bumped to the 1st of the current month, keeping every post inside
+SAP's currently-open posting period (matches the "Posting Periods must be Unlocked" error from the
+real SAP log). Row selection logic untouched - verified count stable (646,400 -> 646,402, just
+real-time drift) before/after.
+
+**Backfill scoped deliberately narrow**: not the full 646K/14.6K row query output (most of that is
+harmless daily re-assertion of already-correct state) - joined against
+`recon_careos_charges WHERE recon_status = 'MISSING_FROM_SAP' AND period > 1` (the confirmed real
+gap only). Materialized to `sap_integration_v3._backfill_rcl_motor_newpayment_20260725` (36,917
+rows) and `_backfill_rcl_nonmotor_newpayment_20260725` (3,758 rows) - left in place as an audit
+trail of exactly what was pushed, not cleaned up.
+
+**Pushed live via BigQuery `EXPORT DATA`** (not the Cloud Function - bypasses its 512Mi/300s
+resource limits entirely, which is itself plausibly why the daily automated run silently fails to
+finish writing files this large - 646K rows is a lot for a naive Python per-row CSV loop within a
+300s Cloud Function timeout, though not confirmed):
+- `gs://interface-file/RCB_MOTOR/INSURANCE_RCB_06_RCL_MOTOR_PROCESS_2_NEWPAYMENT_20260725.csv` (36,917 rows, 20.5 MiB)
+- `gs://interface-file/RCB_NONMOTOR/INSURANCE_RCB_04_RCL_NONMOTOR_PROCESS_2_NEWPAYMENT_20260725.csv` (3,758 rows, 1.5 MiB)
+
+Filenames match the exact production convention (`INSURANCE_RCB_{process_name}_{YYYYMMDD}.csv`) so
+SAP's normal 15-minute pull picks them up like any other file - no special handling needed on
+SAP's side. **Confirmed live in the bucket 2026-07-25 ~13:07 UTC (~20:07 ICT).**
+
+**Not covered by this backfill**: the ~1,795 period-1 (first-ever-payment) periods that get no
+export at all from either `_process_1_create` or `_process_2_newpayment` today - a structurally
+different, still-unfixed gap (see the ROOT-CAUSED entry below).
+
+**Next check (not yet done)**: verify tomorrow whether these 40,675 periods actually flip to Paid
+in `SAP_LIVE_FULL` - `SELECT COUNT(*) FROM sap_integration_v2.SAP_LIVE_FULL s JOIN
+sap_integration_v3._backfill_rcl_motor_newpayment_20260725 b ON s.U_OrderItem = b.OrderItem AND
+s.U_Period = b.Period WHERE s.TransactionStatus IN ('Paid','paid')` (and same for NonMotor). If
+they flip: confirms this was genuinely our bug (stale dates + maybe function timeout), not SAP's
+posting-period lock as originally suspected. If they stay Pending: the lock is real and deeper
+than a date fix, or the Cloud Function timeout theory needs checking directly.
+
+---
 Overall: ~78% | โหมดปัจจุบัน: **P0 A2 fix ครบทั้ง 8 views แล้ว (live)** — **stg_sap_state ตอนนี้ auto-refresh
 ทุกวัน 21:00 ICT แล้ว** (เดิม stale ค้างมาตั้งแต่ 07-24, ไม่เคยมี schedule) — **MISSING_FROM_SAP (48,429
 periods) root-caused: 99.98% ไม่ใช่ order หาย - SAP มี row Pending รออยู่แล้ว ขาดแค่ invoice/payment step

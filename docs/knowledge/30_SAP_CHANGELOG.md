@@ -4,6 +4,33 @@ Append-only — entry ใหม่บนสุด ห้ามลบ/แก้�
 
 ---
 
+## 2026-07-25 (cont'd 6) — one-time RCL backfill pushed live to gs://interface-file/
+
+Boat: "Let's do backfill one time. import all unsuccess interface files I'm pretty sure it is our
+side" - then pinpointed the likely bug: RCL newpayment PaymentDate should never be older than the
+current month; override to the 1st of the current month when it is, matching SAP's own
+posting-period lock behavior confirmed in the 2026-07-16 error log (previous entry).
+
+Applied `009_fix_rcl_newpayment_date_override.sql` to `sap_view.RCL_Motor_process_2_newpayment`
+and `sap_view.RCL_NonMotor_process_2_newpayment` (both live, row selection logic unchanged -
+verified 646,400 -> 646,402, real-time drift only). Then generated a backfill scoped to the
+confirmed real gap only (`recon_status = 'MISSING_FROM_SAP' AND period > 1`, not the full
+646K/14.6K query output, most of which is harmless daily re-assertion): 36,917 Motor + 3,758
+NonMotor rows, materialized to `sap_integration_v3._backfill_rcl_{motor,nonmotor}_newpayment_20260725`
+(left in place as an audit trail) and pushed via BigQuery `EXPORT DATA` directly to:
+- `gs://interface-file/RCB_MOTOR/INSURANCE_RCB_06_RCL_MOTOR_PROCESS_2_NEWPAYMENT_20260725.csv`
+- `gs://interface-file/RCB_NONMOTOR/INSURANCE_RCB_04_RCL_NONMOTOR_PROCESS_2_NEWPAYMENT_20260725.csv`
+
+Used `EXPORT DATA` rather than the Cloud Function specifically to sidestep its 512Mi/300s limits -
+a plausible (not yet confirmed) explanation for why the automated daily run may silently fail to
+finish writing a file this large. Filenames match the exact production convention so SAP's normal
+15-minute pull picks them up with no special handling. Confirmed live in the bucket 2026-07-25
+~13:07 UTC.
+
+Does NOT cover the ~1,795 period-1 (first-ever-payment) periods with zero export today - a
+separate, still-open gap. Follow-up needed tomorrow: check whether these 40,675 periods actually
+flip to Paid in `SAP_LIVE_FULL` - confirms our-side bug if yes, deeper SAP-side lock if no.
+
 ## 2026-07-25 (cont'd 5) — found the actual root cause: SAP posting-period lock, not our export
 
 Boat asked to sample one stuck installment in full: `L78115086-V1`, a 6-period Motor order created
