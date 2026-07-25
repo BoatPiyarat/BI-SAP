@@ -4,6 +4,38 @@ Append-only — entry ใหม่บนสุด ห้ามลบ/แก้�
 
 ---
 
+## 2026-07-25 (cont'd 7) — corrected the backfill (full period per order) and re-pushed, chunked
+
+Boat caught a real bug in the first backfill (previous entry) after the fact: the real RCL
+interface rule requires submitting an order's **full period range** every time a period moves
+Pending -> Paid ("the full periods starting with the old paid (on SAP) together with new payment
+period and anything unpaid is remain pending"). The first attempt scoped by (order_item, period)
+against MISSING_FROM_SAP, which stripped out each order's already-Paid anchor and still-Pending
+tail periods - a malformed partial submission. Boat: "no need to pull back... SAP will reject it
+anyway" - correct; the files were already pulled from the bucket by the time this was caught,
+nothing left to undo.
+
+Built `010_rcl_backfill_full_period_chunked.sql` -
+`sp_backfill_rcl_newpayment_chunked(run_label, n_chunks_motor, n_chunks_nonmotor)` - scopes by
+whole OrderItem, pulls each affected order's complete period range from the (already date-fixed)
+production view, and chunks via `MOD(ABS(FARM_FINGERPRINT(OrderItem)), N)` so one order's periods
+can never split across two files. Verified directly on the `L78115086-V1` sample: all 6 periods
+landed together in the same chunk. Kept as a reusable procedure per Boat's ask ("keep the backfill
+script as validation"), not a one-off script.
+
+Boat also asked to split into smaller files. Scoping by full-period-per-order grew the row count
+naturally (135,607 Motor / 20,530 orders, 13,577 NonMotor / 1,590 orders) - chunked into 40 Motor
+files (~1.7-2.0 MiB each) + 4 NonMotor files (~1.2-1.3 MiB each), 44 files total (~78 MiB). Pushed
+via EXPORT DATA to temp wildcard paths, renamed to the production filename convention with a
+`_chunkN` suffix, confirmed live in the bucket ~13:30-13:36 UTC (~20:30-20:43 ICT - already evening
+in Bangkok, satisfies "run it one time tonight"). Audit tables kept:
+`sap_integration_v3._backfill_rcl_{motor,nonmotor}_newpayment_20260725b`.
+
+Open question not yet resolved: whether SAP's import scans the whole folder for matching CSVs
+(the daily Cloud Function's own 8 distinctly-named files already coexist and get processed, which
+is a working precedent for this) vs a single hardcoded filename - only tomorrow's SAP_LIVE_FULL
+check will confirm the chunked files were actually picked up.
+
 ## 2026-07-25 (cont'd 6) — one-time RCL backfill pushed live to gs://interface-file/
 
 Boat: "Let's do backfill one time. import all unsuccess interface files I'm pretty sure it is our

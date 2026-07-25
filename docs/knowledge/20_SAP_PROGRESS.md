@@ -1,9 +1,59 @@
 # 20_SAP_PROGRESS.md
-Last Updated: 2026-07-25 (cont'd 6, ONE-TIME BACKFILL PUSHED LIVE) (overwrite ได้ — สถานะปัจจุบันเสมอ)
+Last Updated: 2026-07-25 (cont'd 7, CORRECTED chunked backfill pushed live) (overwrite ได้ — สถานะปัจจุบันเสมอ)
 
 ---
 
-## 🚀 ONE-TIME BACKFILL PUSHED LIVE — 2026-07-25 (cont'd 6, highest-stakes action this session)
+## ✅ BACKFILL CORRECTED + RE-PUSHED, CHUNKED — 2026-07-25 (cont'd 7)
+
+The first backfill (below) violated the real RCL interface rule, which Boat clarified after the
+fact: **"when you want the new period payment change from pending to paid - you need to interface
+the full periods starting with the old paid (on SAP) together with new payment period and
+anything unpaid is remain pending."** The first attempt scoped by `(order_item, period)` against
+`MISSING_FROM_SAP`, which stripped out each order's already-Paid anchor period and still-Pending
+tail periods - sending a fragment of an order's state instead of its full, self-consistent picture.
+Boat: "no need to pull back... SAP will reject it anyway, malformatted file" - confirmed correct,
+the files were already gone (pulled) by the time this was caught, nothing to undo.
+
+**Fix**: `010_rcl_backfill_full_period_chunked.sql` - `sp_backfill_rcl_newpayment_chunked(run_label,
+n_chunks_motor, n_chunks_nonmotor)`. Scopes by whole `OrderItem` (any order with >=1 currently-
+missing period), then pulls that order's **complete** period range from the unmodified production
+view - Paid periods keep their real invoice, unpaid periods stay Pending. Chunks via
+`MOD(ABS(FARM_FINGERPRINT(OrderItem)), N)` so every period for a given order always lands in the
+same file - chunking can never split one order's periods across two files, which would reintroduce
+the same violation. Verified directly: `L78115086-V1`'s all 6 periods (1 Paid anchor, 2-5 newly
+Paid, 6 still Pending) landed together in the same chunk (`chunk_id=1`).
+
+Boat also asked to split the backfill into smaller files (first attempt was one 36,917-row/20.5MB
+file). Re-scoping to full-period-per-order naturally grew the row count (as expected - it's no
+longer just the gap, it's every affected order's complete history) to 135,607 Motor rows / 20,530
+orders and 13,577 NonMotor rows / 1,590 orders. Chunked into 40 Motor files (~1.7-2.0 MiB each) and
+4 NonMotor files (~1.2-1.3 MiB each) - 44 files total, ~78 MiB combined.
+
+**Pushed live** via `EXPORT DATA` to a temp wildcard path per chunk, then renamed to match the
+production filename convention with a `_chunkN` suffix:
+- `gs://interface-file/RCB_MOTOR/INSURANCE_RCB_06_RCL_MOTOR_PROCESS_2_NEWPAYMENT_20260725_chunk{0..39}.csv`
+- `gs://interface-file/RCB_NONMOTOR/INSURANCE_RCB_04_RCL_NONMOTOR_PROCESS_2_NEWPAYMENT_20260725_chunk{0..3}.csv`
+
+Confirmed live in the bucket 2026-07-25 ~13:30-13:36 UTC (~20:30-20:43 ICT - already evening in
+Bangkok, so this satisfies "run it one time tonight" without needing to wait further). Audit
+tables kept: `sap_integration_v3._backfill_rcl_{motor,nonmotor}_newpayment_20260725b`.
+
+Not yet confirmed whether SAP's import scans a folder for *all* matching CSVs (like the daily
+Cloud Function's own 8 distinctly-named files coexisting in the same folder, which is a working
+precedent) vs a single hardcoded filename per process-type - the `_chunkN` suffix is a reasonable
+bet given that precedent, but only the follow-up check (below) will confirm it was actually picked
+up and processed rather than silently skipped.
+
+**Next check (not yet done)**: same as below - query `SAP_LIVE_FULL` for these OrderItem+Period
+pairs tomorrow to see whether they flipped to Paid. If yes: confirms this really was our bug
+(stale PaymentDate + malformed partial submissions), not SAP's posting-period lock. If the specific
+periods pushed in *this* corrected run still don't flip, but the *previous* malformed run's periods
+also didn't flip, that at least isolates the malformed-submission theory from the date-override
+theory as two separate, now both-tested fixes.
+
+---
+
+## 🚀 ONE-TIME BACKFILL PUSHED LIVE (FIRST ATTEMPT - LATER CORRECTED ABOVE) — 2026-07-25 (cont'd 6)
 
 Boat: "Let's do backfill one time. import all unsuccess interface files I'm pretty sure it is our
 side" - then, after reviewing, pinpointed the likely bug himself: "the current
