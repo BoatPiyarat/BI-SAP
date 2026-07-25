@@ -1,5 +1,60 @@
 # 20_SAP_PROGRESS.md
-Last Updated: 2026-07-25 (cont'd 7, CORRECTED chunked backfill pushed live) (overwrite ได้ — สถานะปัจจุบันเสมอ)
+Last Updated: 2026-07-25 (cont'd 8, P1 STAGING LAYER BUILT AND LIVE) (overwrite ได้ — สถานะปัจจุบันเสมอ)
+
+---
+
+## 🏗️ P1 BUILT: STAGING LAYER LIVE, WIRED INTO NIGHTLY SCHEDULE — 2026-07-25 (cont'd 8)
+
+Boat: "start building" the actual V3 architectural rebuild (P1-P3) - everything before today
+patched the old per-flow queries in place, none of the new staging/engine/delta-export design had
+been built. Also: "you can start next phase without waiting me. anything need confirmation you can
+skip to other tasks" - proceeding autonomously, flagging anything genuinely undecided rather than
+guessing or blocking.
+
+**Two open V3 decisions resolved by Boat first:**
+- **B1 InvoiceNo standard**: raw `third_party_id`, no prefix, for anything new. Existing `2_`
+  prefix stays untouched wherever `newpayment`/`cancel` mirror an already-existing SAP record
+  (immutable once set). Checked the real create-flow source
+  (`sap_data_engineer.sap_dashboard_carepay_installment`) - already compliant, no code change
+  needed, just documents the standard (CLAUDE.md updated).
+- **A1 CREDIT_CARD_INSTALLMENT routing**: "remains the same, only change to Onetime(RCB)" -
+  confirms exactly what §2.4's router table already proposed (TotalPeriods=1, bank pays in full).
+  Baked directly into `stg_schedule`.
+
+**P1 (§2.2/§2.3) - three staging tables, all live and verified against real data:**
+- **`stg_order_dim`** (`011_stg_order_dim.sql`) - materializes the ~15 `JSON_VALUE(orders.data,
+  ...)` extractions once per order_item instead of every one of the 8 daily interface queries
+  repeating them from scratch (D2 - the heaviest CPU cost in the pipeline per the design doc's own
+  audit). Field mappings copied verbatim from the real production source, not reinterpreted.
+  `sp_refresh_stg_order_dim()` MERGEs only orders whose `update_time` changed. Verified: 755,231
+  rows, matches expected order_item count.
+- **`stg_schedule`** (`012_stg_schedule.sql`) - the "spine": one row per (order_item, period),
+  driven by real transactions, not follow_ups/snapshot presence (fixes A3, A4). Encodes the
+  confirmed router: CREDIT_CARD_INSTALLMENT/FULL_PAYMENT/unknown -> ONETIME (TotalPeriods=1),
+  RABBIT_CARE_INSTALLMENT + MOTOR_TYPE_COMPULSORY -> RCL_CMI (TotalPeriods=1),
+  RABBIT_CARE_INSTALLMENT + not compulsory -> RCL (TotalPeriods = GREATEST-of-3-signals formula,
+  fixes A5). **Caught before building**: the design doc's router table names a `RABBIT_LENDING`
+  payment_option for the compulsory case - checked real data first, this value doesn't exist
+  (only FULL_PAYMENT/RABBIT_CARE_INSTALLMENT/CREDIT_CARD_INSTALLMENT/PAYMENT_OPTION_UNKNOWN are
+  real) - built on the actual, already-verified motor_item_type split instead of the doc's stale
+  text. Verified: `L78115086-V1` shows exactly 6 periods, matching real SAP data. 876,723 RCL rows/
+  140,420 orders, 554,920 ONETIME rows/orders (1:1 as expected), 33,405 RCL_CMI rows/orders (1:1).
+  **Not yet handled**: Credit Shell's recursive/pool schedule - flagged as a real gap, not guessed
+  at (orders in `cancelled_change_orders` are currently excluded from the spine entirely).
+- **`stg_payment_events`** (`013_stg_payment_events.sql`) - the actual charge-driven population
+  source (successful charges only). Reuses the item_rank de-fanout fix (compulsory vs voluntary
+  item on a bundled charge) already verified live in `sp_recon_all_charges`, so every future
+  consumer inherits the fix instead of re-discovering it. Verified: 1,189,734 rows, 1:1 with
+  distinct charge_id (no fan-out duplication).
+
+**Wired into the existing schedule, no new schedule needed** (`014_extend_nightly_refresh_with_
+p1_staging.sql`): extended `sp_nightly_state_and_recon_refresh` (already running daily 21:00 ICT)
+to refresh all three P1 tables before the existing SAP-state/recon refresh - matches decision #5's
+own preference ("ต่อท้าย extract 20:30 ทั้งเส้น" - append one chain, don't stand up a second).
+
+**Next (P2, in progress)**: `fn_invoice_no` UDF (implements the resolved B1 standard as reusable
+code), the L3 `expected_state` engine (joins the three staging tables into what SAP *should* show),
+and `sap_validation_error` (the blocking-validation output sink) - none of these exist yet.
 
 ---
 
