@@ -4,6 +4,48 @@ Append-only — entry ใหม่บนสุด ห้ามลบ/แก้�
 
 ---
 
+## 2026-07-25 (cont'd 3) — found the real export mechanism; RCL automation confirmed absent
+
+Boat asked to fix MISSING_FROM_SAP, run a one-time backfill, and add it to the pipeline - then
+went AFK, saying to close gaps where possible and otherwise prep the Looker Studio data source.
+
+Before writing anything toward a real SAP-bound export, traced how `gs://interface-file/` (what
+SAP actually pulls hourly) gets fed - never actually verified this session, despite hours spent on
+query logic. Initial search (BigQuery scheduled queries, `EXPORT DATA` SQL text, Composer DAGs)
+found nothing - the bucket itself looked essentially empty (just 2024 folder markers). Turned out
+the search method was wrong: `EXPORT DATA` is a SQL statement job type, but the real export uses
+BigQuery's separate `EXTRACT`-type job (Console/CLI-driven, doesn't appear in query-text search).
+Corrected the search and found 61 real EXTRACT jobs in the last 7 days, most recent hours old - the
+export pipeline is alive and running regularly; the bucket "looking empty" is the same ephemeral-
+file pattern as the bronze zone found earlier tonight (consumed quickly after being written, not
+a sign of failure).
+
+Traced the real chain: Cloud Scheduler (`sap-order-payment` / `sap-order-payment-non-motor`,
+confirmed healthy) -> Pub/Sub (`motor-order-payment-sap-interface` /
+`non-motor-order-payment-sap-interface`) -> Cloud Functions (2-stage: `*-order-payment-1` then
+`*-order-payment-sap-bucket-1`) -> `gs://interface-file/{RCB_MOTOR,RCB_NONMOTOR,ADB_MOTOR}/`.
+
+Also found and ruled out a second, older, already-dead pipeline along the way: BigQuery scheduled
+queries `SQ_SAP_2025_*` writing to `SAP.SQ_sap_daily_order_payment` (refreshed by
+`truncate_sap_order_payment_table`), using the old non-RCL-prefixed views. Confirmed not the real
+path (`SQ_SAP_2025_new_create_order`'s transfer config state is `FAILED`, stale since 2026-06-17).
+Not investigated further - flagged as cleanup for later.
+
+**The actual finding**: checked the complete Cloud Functions list - there is no RCL-equivalent
+export automation at all. RCB Motor, RCB NonMotor, and ADB Motor each have the real 2-stage
+scheduler pipeline; RCL has nothing. This matches problem A7 from `SAP_INTERFACE_REDESIGN_V3.md`
+("RCL flows have no daily scheduler, fully manual") - not a new discovery, but now empirically
+confirmed against real infrastructure rather than assumed from an old doc. Explains ~70% of the
+`MISSING_FROM_SAP` recon (34,434 of 48,993 - RABBIT_CARE_INSTALLMENT specifically): it's one
+missing piece of automation, not scattered bugs.
+
+Did not attempt the actual backfill or build new export automation while Boat was away - this is
+the single most consequential possible action in this whole pipeline (creates real records SAP
+imports), there's no established RCL bucket-folder convention to follow, and the "never bypass
+validation before export" hard rule applies regardless of urgency. Documented what's needed
+(extend the RCB pattern to RCL) for Boat's review, then moved to preparing the Looker Studio data
+source instead, per Boat's own fallback instruction.
+
 ## 2026-07-25 (cont'd) — reconciliation email for CareOS/SAP cancelled-installment mismatches
 
 Boat confirmed the business rule that resolved last night's open design question: once an order

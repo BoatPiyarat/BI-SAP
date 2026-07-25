@@ -1,5 +1,5 @@
 # 20_SAP_PROGRESS.md
-Last Updated: 2026-07-25 (overwrite ได้ — สถานะปัจจุบันเสมอ)
+Last Updated: 2026-07-25 (cont'd, real export mechanism found) (overwrite ได้ — สถานะปัจจุบันเสมอ)
 Overall: ~74% | โหมดปัจจุบัน: **P0 A2 fix ครบทั้ง 8 views แล้ว (live)** — เจอ+แก้ **year-hardcode gap ใน
 sap_view.RCB_NonMotor_process_1_create** (0→95 แถวโผล่) — **dead-man's-switch deploy จริงแล้ว** (BQ
 scheduled query 22:00 ICT ทุกวัน + failure email) — เจอ**การค้นพบใหญ่**: pipeline จริงคือ sap-extract-job
@@ -7,6 +7,58 @@ scheduled query 22:00 ICT ทุกวัน + failure email) — เจอ**ก
 IAM (401, ล่ม 3 คืน) — secret rotation: ตามคำสั่ง Boat ไม่ rotate ตอนนี้
 
 ---
+
+## 🎯 REAL EXPORT MECHANISM FOUND — 2026-07-25 (Boat AFK, "fix missing from SAP" request)
+
+Boat asked to fix the `MISSING_FROM_SAP` gap (48,993 order-periods, ~108M THB in 2026), run a
+one-time backfill, and add it to the pipeline. Before touching anything that writes toward real
+SAP, traced how `gs://interface-file/` (the bucket SAP actually pulls from hourly) really gets
+fed - this had never been verified all session; every fix so far touched query *logic*, not the
+actual export step.
+
+**Found the real chain, finally**: Cloud Scheduler (`sap-order-payment` /
+`sap-order-payment-non-motor`, confirmed healthy earlier tonight) → Pub/Sub topics
+(`motor-order-payment-sap-interface` / `non-motor-order-payment-sap-interface`) → Cloud Functions
+(`rcb-motor-order-payment-1` → `rcb-motor-order-payment-sap-bucket-1`, same 2-stage pattern for
+NonMotor and ADB Motor) → `gs://interface-file/{RCB_MOTOR,RCB_NONMOTOR,ADB_MOTOR}/`. Confirmed via
+real `EXTRACT`-type BigQuery jobs (not `EXPORT DATA` SQL - a different job type, missed on first
+search): 61 extracts in the last 7 days, most recent hours before this check. **This pipeline is
+alive and running regularly.** The bucket looking "empty" just now is the same ephemeral-file
+pattern found earlier tonight for the bronze zone - files get pulled and consumed quickly, not a
+sign of failure.
+
+Along the way, also found (and ruled out as the actual export path) an **older, separate,
+already-broken** pipeline: BigQuery scheduled queries `SQ_SAP_2025_new_create_order` /
+`_cancelled_order` / `_credit_shell` / `_cancelled_change_order`, writing into
+`SAP.SQ_sap_daily_order_payment`, refreshed by `truncate_sap_order_payment_table`. These use the
+*old* non-RCL-prefixed views (`04_new order credit shell`, `03_cancel change orders`, etc.), not
+tonight's `sap_view.RCB_Motor_process_*`. `SQ_SAP_2025_new_create_order`'s transfer config state is
+literally `FAILED`, last touched 2026-06-17 - over a month stale. Not investigated further since
+it's confirmed not the live path; flagged as another dead pipeline worth cleaning up eventually.
+
+**The real finding, and it changes the whole picture**: there is **no equivalent automated export
+for RCL (installment) at all** - checked the complete Cloud Functions list, nothing named
+rcl-anything exists. RCB Motor, RCB NonMotor, and ADB Motor each have a real 2-stage
+scheduler→function pipeline; RCL has nothing. This isn't a new discovery - it's exactly problem
+**A7** from `SAP_INTERFACE_REDESIGN_V3.md` ("RCL flows ไม่มี daily scheduler... ทั้งสาย RCL เป็น
+manual"), now empirically confirmed against real infrastructure rather than taken on faith. It
+directly explains why `RABBIT_CARE_INSTALLMENT` was ~70% (34,434 of 48,993) of the
+`MISSING_FROM_SAP` recon: **it's not a bug scattered across many queries - it's one missing piece
+of automation.**
+
+**Did not attempt the actual fix** (generate + push a real RCL export to `gs://interface-file/`,
+or build new export automation) while Boat is AFK. This would be the single most consequential
+action possible in this entire pipeline - it creates real records SAP will import - and:
+1. There's no established RCL bucket-folder convention to follow (unlike RCB_MOTOR/RCB_NONMOTOR/
+   ADB_MOTOR, which are established patterns)
+2. A one-time backfill of 34,434 periods needs validation-stage review first (hard rule: "never
+   bypass validation before export, no exceptions including urgent") - haven't built/wired
+   sp_validate for this yet
+3. This needs Boat's own review before anything real ships to SAP, full stop
+
+**What's ready for Boat's decision, not yet built**: extending the RCB pattern to RCL - a new
+Pub/Sub topic + Cloud Function (or reusing `sap_view.RCL_*` process views, already fixed/verified
+tonight, as the source query) + a new Cloud Scheduler job, matching the existing 3-flow pattern.
 
 ## ✅ POLICY CONFIRMED + RECONCILIATION EMAIL SENT — 2026-07-25
 
