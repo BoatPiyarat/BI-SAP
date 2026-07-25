@@ -1,10 +1,80 @@
 # 20_SAP_PROGRESS.md
-Last Updated: 2026-07-25 (cont'd, real export mechanism found) (overwrite ได้ — สถานะปัจจุบันเสมอ)
-Overall: ~74% | โหมดปัจจุบัน: **P0 A2 fix ครบทั้ง 8 views แล้ว (live)** — เจอ+แก้ **year-hardcode gap ใน
-sap_view.RCB_NonMotor_process_1_create** (0→95 แถวโผล่) — **dead-man's-switch deploy จริงแล้ว** (BQ
-scheduled query 22:00 ICT ทุกวัน + failure email) — เจอ**การค้นพบใหญ่**: pipeline จริงคือ sap-extract-job
-→ sap-order-payment-initial-phase → SAP_LIVE (ไม่ตรงกับที่ design docs สมมติ) — รอ Attila แก้ scheduler
-IAM (401, ล่ม 3 คืน) — secret rotation: ตามคำสั่ง Boat ไม่ rotate ตอนนี้
+Last Updated: 2026-07-25 (cont'd 4, MISSING_FROM_SAP root-caused - not a backfill problem) (overwrite ได้ — สถานะปัจจุบันเสมอ)
+Overall: ~78% | โหมดปัจจุบัน: **P0 A2 fix ครบทั้ง 8 views แล้ว (live)** — **stg_sap_state ตอนนี้ auto-refresh
+ทุกวัน 21:00 ICT แล้ว** (เดิม stale ค้างมาตั้งแต่ 07-24, ไม่เคยมี schedule) — **MISSING_FROM_SAP (48,429
+periods) root-caused: 99.98% ไม่ใช่ order หาย - SAP มี row Pending รออยู่แล้ว ขาดแค่ invoice/payment step
+(= RCL automation gap ที่เจอก่อนหน้านี้) - ห้าม backfill แบบ "create" เพราะจะซ้ำซ้อน order เดิม** —
+dead-man's-switch deploy จริงแล้ว (BQ scheduled query 22:00 ICT ทุกวัน + failure email) — Looker Studio
+dashboard views (4 views) พร้อมใช้ — รอ Attila แก้ scheduler IAM (401, ล่ม 3 คืน) — secret rotation:
+ตามคำสั่ง Boat ไม่ rotate ตอนนี้
+
+---
+
+## 🔍 MISSING_FROM_SAP ROOT-CAUSED: NOT A BACKFILL PROBLEM — 2026-07-25 (cont'd 4)
+
+Boat, before authorizing any backfill: "check SAP_LIVE_FULL or raw to have actual records on SAP"
+— and separately, on scope: "you can pull data from SAP all the missing doc entry I don't mind
+other BU eg. B2B will come out, rather have it 100% better than guess." Both checks done before
+touching anything that writes toward real SAP. Both changed the picture.
+
+**B2B exclusion: real, but currently a non-issue.** `SAP_LIVE_FULL` (sap_integration_v2) hardcodes
+`WHERE U_InsuranceGroup <> 'B2B'` in all 4 unioned branches (confirmed live via
+`bq show --view`). Built `sap_integration_v3.SAP_LIVE_FULL_ALL_BU` (`007_sap_live_full_all_bu.sql`)
+— identical view (same DocEntry-partition dedup, same column mapping), minus that filter, so
+recon/state work never has to guess at BU scope again. Verified: **0 rows with
+`U_InsuranceGroup = 'B2B'` exist in the raw source tables right now** — the filter is dead code
+today, not hiding anything. Left the ALL_BU view live for the future since it costs nothing and
+matches Boat's "don't guess" instruction.
+
+**`stg_sap_state` was stale — this was the real distortion, not B2B.** Built once
+(`002_sp_refresh_sap_state.sql`, 2026-07-24) and **never scheduled anywhere** — checked every
+transfer config in the project, confirmed none call `sp_refresh_sap_state`. Comparing the 48,993
+`MISSING_FROM_SAP` periods directly against raw `SAP_LIVE_FULL` found 584 that already had a real
+`Paid` status + invoice in current raw data, but still showed a month-old `Pending`/no-invoice
+snapshot in `stg_sap_state`. Refreshed it live, re-ran recon: `MISSING_FROM_SAP` 48,993 → 48,429.
+Built `sp_nightly_state_and_recon_refresh` (`008_schedule_state_recon_refresh.sql`), scheduled
+daily 21:00 ICT with failure email, so this can't go stale again — also directly serves Boat's
+goal #2 ("make the job cover all transaction (recon) - auto").
+
+**The real, current, verified split of the 48,429 (checked directly against fresh raw
+`SAP_LIVE_FULL`, not just `stg_sap_state`):**
+- **48,420 (99.98%, ~107M THB) already have a row in raw `SAP_LIVE_FULL`** — status `Pending`,
+  no invoice. SAP already knows these orders exist. This is **not** a missing-order problem — it's
+  the RCL invoice/payment step never running (the automation gap found earlier tonight, see below).
+  A "create" backfill for these would risk **duplicating orders SAP already has**. The correct fix
+  is the missing RCL payment-export automation, not a backfill.
+- **9 periods (~16K THB) are a "Paid then Cancelled" edge case in the recon model itself**, not a
+  real gap — genuinely paid (real invoice), then legitimately cancelled later. The 3-bucket recon
+  model (IN_SAP/MISSING_FROM_SAP/NO_ORDER_ITEM) has no bucket for that, so they land in
+  `MISSING_FROM_SAP` even though nothing is wrong. Consistent with Boat's "Paid→Cancelled is final"
+  rule. Negligible — not worth adding a 4th bucket for 9 rows.
+- **0 periods have zero row in SAP at all**, checked directly against raw `SAP_LIVE_FULL`. There is
+  currently no genuine "SAP never heard of this order" case in the 2026 scope.
+
+**Bottom line: there is no safe "backfill" action to run right now.** Every real gap in this number
+is the missing RCL export automation, already scoped below. Building that closes ~107M THB /
+48,420 periods safely, because it only ever adds the missing *payment* record to an order SAP
+already has — it never creates a new order, so no duplicate-order risk. Still not attempted without
+Boat's explicit go-ahead, per the stakes noted below.
+
+## 📊 LOOKER STUDIO DASHBOARD VIEWS BUILT — 2026-07-25 (cont'd 3, AFK fallback task)
+
+Built `006_dashboard_views.sql` (4 views in `sap_integration_v3`), Boat's explicitly-authorized AFK
+fallback ("if you have nothing to do then go prepare data for dashboard Looker studio data
+source"). Connect Looker Studio directly to these (BigQuery connector, project
+`pacific-plating-282708`, dataset `sap_integration_v3`) — each is pre-shaped for one chart, no
+Looker-side transforms needed:
+- `vw_dash_completeness` — daily/payment-option/gap-category breakdown, for a funnel or backlog-
+  by-flow chart. Verified live: 1,189 rows, 213,579 total periods across all rows.
+- `vw_dash_completeness_summary` — single-row KPI tile. Verified live: 76.03% completeness
+  (162,384 IN_SAP / 213,579 total) as of this build.
+- `vw_dash_export_pipeline_health` — real `EXTRACT`-type job history (the real export mechanism
+  found tonight, not `EXPORT DATA` SQL text), 90-day window. Verified live: real daily job counts,
+  e.g. 2026-07-24 showed 6 successful extracts.
+- `vw_dash_freshness` — wraps `vw_dead_mans_switch`. Verified live: FRESH, 26h since last load.
+
+Not built: Page 3 "Correctness" from `SAP_DASHBOARD_DESIGN_v1.md` — needs `sap_validation_error`,
+which doesn't exist yet (P2 territory).
 
 ---
 

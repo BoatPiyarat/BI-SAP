@@ -26,7 +26,9 @@ minimize interface errors / manual adjustments, มี traceability ครบ, m
 **Path A — Interface ขาออก (CareOS → SAP):**
 ```
 CareOS → BigQuery raw → stg_* → Business Logic (per BU×stage) → Validation
-→ sap_export_* → CSV → gs://interface-file/<BU>/ → SAP pull รายชั่วโมง (Vendor Aware — ห้ามแตะ)
+→ sap_export_* → CSV → gs://interface-file/{RCB_MOTOR,RCB_NONMOTOR,ADB_MOTOR}/
+→ SAP pull (Vendor Aware — ห้ามแตะ): ทุก 15 นาทีจากต้นชั่วโมง (นาทีที่ 0/15/30/45), process จริงที่นาทีที่
+30 ของทุกชั่วโมง (ยืนยันจาก Boat 2026-07-25 — แก้ไข "รายชั่วโมง" เดิมที่เป็นการประมาณคร่าวๆ)
 ```
 
 **Path B — ขากลับ (SAP DB → BigQuery เพื่อ recon): pipeline จริงมีเส้นเดียว (ไม่ใช่ 2 คู่ขนาน)**

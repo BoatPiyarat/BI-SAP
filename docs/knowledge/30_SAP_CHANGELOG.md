@@ -4,6 +4,44 @@ Append-only — entry ใหม่บนสุด ห้ามลบ/แก้�
 
 ---
 
+## 2026-07-25 (cont'd 4) — root-caused MISSING_FROM_SAP before any backfill; built dashboard views
+
+Boat, before authorizing a backfill: "before you run backfill to fill the gap, please check
+SAP_LIVE_FULL or raw to have actual records on SAP." Also confirmed the real interface bucket
+pull cadence: `gs://interface-file/{RCB_MOTOR,RCB_NONMOTOR,ADB_MOTOR}/` gets pulled by SAP every
+15 min from the top of each hour, processed at minute 30 (updates `10_SAP_CONTEXT.md`'s "รายชั่วโมง"
+approximation with the real cadence).
+
+Checked B2B exclusion first (Boat: "I don't mind other BU eg. B2B will come out, rather have it
+100% better than guess"). `SAP_LIVE_FULL` hardcodes `WHERE U_InsuranceGroup <> 'B2B'` in all 4
+unioned branches - confirmed via `bq show --view`. Built `sap_integration_v3.SAP_LIVE_FULL_ALL_BU`
+(`007_sap_live_full_all_bu.sql`), identical minus that filter. Result: **0 B2B rows exist in the
+raw source right now** - the filter is currently a no-op, not hiding anything. Kept the ALL_BU view
+live anyway for future-proofing.
+
+Then did what Boat asked: checked the 48,993 `MISSING_FROM_SAP` periods directly against raw
+`SAP_LIVE_FULL` (not just `stg_sap_state`) before considering any backfill. Found `stg_sap_state`
+was **stale since 2026-07-24** (built once, never scheduled - checked every transfer config,
+confirmed none call `sp_refresh_sap_state`). 584 of the "missing" periods already had a real Paid
+invoice in current raw data. Refreshed `stg_sap_state`, re-ran recon:
+`MISSING_FROM_SAP` 48,993 → 48,429. Built and scheduled `sp_nightly_state_and_recon_refresh`
+(`008_schedule_state_recon_refresh.sql`, daily 21:00 ICT + failure email) so this can't recur.
+
+Re-checked the new 48,429 directly against fresh raw `SAP_LIVE_FULL`: **48,420 (99.98%) already
+have a Pending row in SAP with no invoice yet** - not a missing-order problem, the RCL
+payment/invoice step never ran (matches the automation gap found in the previous entry). A
+"create" backfill for these would risk duplicating orders SAP already has. 9 periods (~16K THB)
+are a "Paid then Cancelled" edge case in the 3-bucket recon model itself (no bucket for that state)
+- consistent with Boat's "Paid→Cancelled is final" rule, not a real gap. **0 periods have zero row
+in SAP at all.** Conclusion: there is no safe backfill to run today - the entire real gap is the
+missing RCL export automation, and fixing that (not a backfill) is the correct, safe close because
+it only ever adds a payment record to an order SAP already has.
+
+Also built `006_dashboard_views.sql` (4 Looker Studio views in `sap_integration_v3`) per Boat's AFK
+instruction to prep dashboard data if there was nothing safer to close - `vw_dash_completeness`,
+`vw_dash_completeness_summary`, `vw_dash_export_pipeline_health`, `vw_dash_freshness`. All 4
+verified live with real query results (76.03% completeness, real EXTRACT job counts, FRESH status).
+
 ## 2026-07-25 (cont'd 3) — found the real export mechanism; RCL automation confirmed absent
 
 Boat asked to fix MISSING_FROM_SAP, run a one-time backfill, and add it to the pipeline - then
