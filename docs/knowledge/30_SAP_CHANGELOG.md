@@ -4,6 +4,78 @@ Append-only — entry ใหม่บนสุด ห้ามลบ/แก้�
 
 ---
 
+## 2026-07-26 (cont'd) — SCHEDULE_GAP validation check root-caused and re-enabled
+
+Picked this back up (previously disabled, root cause unknown - see entry below) while root-causing
+the column-reordering incident, since both needed re-verifying BigQuery query behavior with live
+tests.
+
+**Isolated via a sequence of minimal reproductions run directly against BigQuery**: ruled out
+procedure-vs-script context, UNION ALL, `CLUSTER BY`, and shared destination table state - each
+tested independently, none explained the discrepancy alone. **Real cause**: the query computed
+`COUNT(DISTINCT period)` and `MAX(total_periods)` twice - once in the SELECT list's CONCAT (for the
+`detail` message) and again in the HAVING clause. Run in the same script *after* another
+aggregation query (the real `sp_run_validation` shape: PK_DUP first, then SCHEDULE_GAP), this
+duplication caused HAVING to stop filtering, producing ~728,736 false-positive rows instead of 0.
+Confirmed with a minimal repro: same query selecting only `order_item` (no duplicate aggregates)
+was clean; adding the aggregates back into SELECT reproduced the bug immediately.
+
+**Fix**: compute each aggregate once via a CTE, filter/format from the pre-computed columns
+(`WHERE` on the CTE, not `HAVING` on raw aggregate calls). Applied to `017_sap_validation_error.sql`,
+verified live via `CALL sp_run_validation()`: SCHEDULE_GAP now returns 0 rows, matching hand-checked
+clean orders. Re-enabled.
+
+**Lesson**: never repeat an aggregate expression across SELECT and HAVING in a query that runs
+after another aggregation query in the same script/procedure - this pipeline's validation/export
+layer is built entirely from sequential steps in shared scripts, so this pattern needs to be avoided
+project-wide going forward, not just in this one check.
+
+---
+
+## 2026-07-26 — URGENT: self-caused column-reordering bug found via real import error logs, fixed
+
+**Symptom**: Boat shared 9 real SAP import error log files from the night of 2026-07-25/26. Several
+failed identically: `Conversion failed when converting the nvarchar value 'X' to data type int` -
+a whole-file rejection with no row/field detail. Affected both my in-progress NonMotor backfill
+chunks AND that night's real, regular automated NonMotor RCL newpayment production file.
+
+**Hypotheses tested and rejected**: (1) GrossPremium/VAT fractional (cents) values causing an int
+conversion - disproven, near-universal across historically-successful rows (645k+/647k Motor rows
+have this trait), so can't be the fatal one. (2) An extraneous `ExpectedReceived` column not
+present in SAP's real destination schema - a draft fix was built (`019_remove_expectedreceived_column.sql`)
+but never deployed.
+
+**Root cause (identified directly by Boat)**: "this is interface column, I know the root cause.
+Your backfill file reordering column." Earlier that day, `009_fix_rcl_newpayment_date_override.sql`
+implemented the PaymentDate override using `SELECT * EXCEPT(PaymentDate), <expr> AS PaymentDate FROM base`.
+In BigQuery this pattern moves the re-added column to the END of the result set instead of
+preserving its original position. SAP's import is column-position-based, not header-name-based
+(now confirmed) - so this silently shifted every column after PaymentDate by one, eventually
+landing a decimal value in an Int-typed column (Period/TotalPeriods), producing exactly the
+observed error. This fix had been live on the real production views since earlier that day, so it
+is the very likely cause of that night's real automated import failure, not a pre-existing issue.
+
+**Fix**: `019_fix_column_reordering_bug.sql` (commit `758ce99`), replacing the pattern with
+`SELECT * REPLACE(<expr> AS PaymentDate) FROM base` for both `RCL_Motor_process_2_newpayment` and
+`RCL_NonMotor_process_2_newpayment` - `REPLACE` overwrites a column's value in place without
+moving it. Verified via `INFORMATION_SCHEMA.COLUMNS` (PaymentDate back at ordinal 45/56, correct)
+and a row-count sanity check (Motor view: 647,345 rows, matching expected scale).
+
+**Incidental second fix in the same deploy**: `sap_data_engineer.RCL_HEALTH` (external table) had
+drifted to 56 columns (gained `InsuranceProduct`) since the view's last successful deploy earlier
+that day, breaking the NonMotor view's UNION ALL (55 vs 56 columns). Added `InsuranceProduct`
+(from `SAP_LIVE_FULL`'s `U_InsuranceProduct`) to the `sap` CTE to match.
+
+**Lesson**: `SELECT * EXCEPT(col), new_expr AS col` silently reorders columns in BigQuery - never
+use it for anything feeding a column-position-based downstream import. `SELECT * REPLACE(new_expr AS col)`
+is the safe equivalent. Open: confirming the fix holds on tonight's real nightly run; whether to
+re-attempt the 44-file backfill (failed twice now, for two different reasons - needs Boat's
+go-ahead before writing to `gs://interface-file/` again); the other real errors in the same log
+batch (PolicyStatus duplicated, InsuranceGroup/InsurerCode not found, Period sequence invalid,
+Cancelled-order rules) remain untriaged.
+
+---
+
 ## 2026-07-25 (cont'd 8) — B1 InvoiceNo standard resolved; starting the P1 staging-layer build
 
 Boat resolved the long-open B1 decision from `SAP_INTERFACE_REDESIGN_V3.md` §5: **InvoiceNo =

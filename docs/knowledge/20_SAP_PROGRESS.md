@@ -1,5 +1,94 @@
 # 20_SAP_PROGRESS.md
-Last Updated: 2026-07-25 (cont'd 9, P2 engine + P3 delta_export built and cross-validated) (overwrite ได้ — สถานะปัจจุบันเสมอ)
+Last Updated: 2026-07-26 (URGENT column-reordering fix + SCHEDULE_GAP validation check root-caused and re-enabled) (overwrite ได้ — สถานะปัจจุบันเสมอ)
+
+---
+
+## ✅ SCHEDULE_GAP VALIDATION CHECK: ROOT-CAUSED AND RE-ENABLED — 2026-07-26
+
+Picked back up the previously-disabled SCHEDULE_GAP check (see `sql/ddl/017_sap_validation_error.sql`)
+while root-causing the column-reordering incident above, since both involved re-verifying BigQuery
+query behavior. Ran a sequence of minimal reproductions directly against BigQuery (not guessed at)
+to isolate the exact trigger:
+
+- Ruled out, in order: procedure-vs-script execution context, UNION ALL combining, `CLUSTER BY` on
+  the destination table, and the destination table already holding rows from the PK_DUP check -
+  each was tested in isolation and still reproduced (or didn't reproduce) independent of the real
+  bug.
+- **Actual root cause**: the old SCHEDULE_GAP query computed `COUNT(DISTINCT period)` and
+  `MAX(total_periods)` TWICE - once inside the SELECT list's CONCAT (building the `detail` message)
+  and again in the HAVING clause. When this query ran in the same script *after* another
+  aggregation query (exactly the real shape: PK_DUP's CREATE OR REPLACE TABLE, then SCHEDULE_GAP),
+  the duplicated aggregate expressions caused the HAVING filter to stop filtering, returning
+  ~728,736 rows instead of the correct 0. Isolated with a minimal repro: the same query selecting
+  only `order_item` (no duplicate aggregates in SELECT) was clean; adding the CONCAT with the
+  aggregates back in reproduced the bug immediately, independent of everything else.
+- **Fix**: compute each aggregate exactly once via a CTE, then reference the already-materialized
+  columns in both the SELECT list and the filter (`WHERE` on the CTE, not `HAVING` on raw
+  aggregates). Never repeat an aggregate expression across SELECT/HAVING in a query that runs after
+  another aggregation query in the same script/procedure - this project's validation and export
+  queries are exactly this shape (nightly chain, sequential steps), so this is now a standing
+  pattern to avoid, not a one-off.
+- **Verified live**: deployed the fix, called the real `sp_run_validation()` stored procedure
+  end-to-end, `SCHEDULE_GAP` now returns 0 rows - matches every order checked by hand as clean.
+  Re-enabled (previously commented out).
+
+---
+
+## 🚨 URGENT INCIDENT: SELF-CAUSED PRODUCTION BUG FOUND AND FIXED — 2026-07-26
+
+Boat shared real SAP import error logs from the night of 2026-07-25/26. Multiple files failed
+identically: `Conversion failed when converting the nvarchar value 'X' to data type int` - a
+whole-file bulk-insert rejection, no field name or row number. This hit both my NonMotor backfill
+chunks AND, critically, **that night's real, regular, automated NonMotor RCL newpayment production
+file** - a file this session never touched directly, but which reads from a view this session DID
+modify earlier that same day.
+
+**Root cause, identified by Boat directly** ("this is interface column, I know the root cause.
+Your backfill file reordering column") after he shared the real SAP destination interface schema:
+the PaymentDate override fix from earlier (`009_fix_rcl_newpayment_date_override.sql`) used
+`SELECT * EXCEPT(PaymentDate), <expr> AS PaymentDate FROM base`. In BigQuery, `* EXCEPT(col)`
+followed by re-adding that column as a new expression **moves it to the end of the output** - it
+does not preserve the original column position. Since SAP's import is column-position-based (not
+header-name-based, now confirmed), this silently shifted every column after PaymentDate's real
+slot by one, eventually landing a decimal value in an Int-typed destination column
+(Period/TotalPeriods) - exactly matching the error. **My own earlier fix, deployed to the real
+production views that day, is the very likely cause of that night's real automated NonMotor import
+failure** - not a pre-existing data-quality issue as first assumed.
+
+Two wrong hypotheses were chased and dropped before the real cause surfaced: (1) GrossPremium/VAT
+fractional values (disproven - near-universal across historically-successful rows, so can't be
+fatal); (2) an extraneous `ExpectedReceived` column not in SAP's schema (a draft fix,
+`019_remove_expectedreceived_column.sql`, was built but never deployed, then deleted once Boat
+corrected the diagnosis).
+
+**Fixed** (`019_fix_column_reordering_bug.sql`, committed `758ce99`): replaced with
+`SELECT * REPLACE(<expr> AS PaymentDate) FROM base` for both `RCL_Motor_process_2_newpayment` and
+`RCL_NonMotor_process_2_newpayment` - `REPLACE` overwrites a column's value without moving it.
+Verified via `INFORMATION_SCHEMA.COLUMNS`: PaymentDate back at its correct position (45 of 56),
+immediately before Period/TotalPeriods. Row-count sanity check post-fix: Motor view = 647,345 rows,
+matching expected scale - fix didn't break anything else.
+
+**Also fixed in the same pass** (unrelated schema drift hit while redeploying): external table
+`sap_data_engineer.RCL_HEALTH` gained an `InsuranceProduct` column since this view last deployed
+successfully earlier that same day, breaking the NonMotor view's `sap`/`interface` UNION ALL column
+count (55 vs 56). Added `InsuranceProduct` (from `SAP_LIVE_FULL`'s `U_InsuranceProduct`) into the
+`sap` CTE in the correct position.
+
+**Lesson for this pipeline going forward**: `SELECT * EXCEPT(col), new_expr AS col` silently
+reorders columns in BigQuery and must never be used for anything that feeds a
+column-position-based downstream import (i.e. anything in this pipeline) -
+`SELECT * REPLACE(new_expr AS col)` is the only safe way to override a column's value in place.
+
+**Not yet done / needs Boat's input:**
+- Confirming this actually fixes tonight's real import - won't know until the next nightly cycle
+  produces a fresh log.
+- Whether/how to re-attempt the 44-file backfill now that the underlying bug is fixed - this exact
+  backfill has now failed twice for two different reasons, so re-running it automatically without
+  asking felt like the wrong call given it writes real files to `gs://interface-file/`.
+- The other real production errors visible in the same pasted logs (PolicyStatus duplicated,
+  InsuranceGroup/InsurerCode not found in DB, Period sequence invalid, various Cancelled-order
+  rules) - read but not yet triaged; likely pre-existing data-quality issues, separate from this
+  bug.
 
 ---
 

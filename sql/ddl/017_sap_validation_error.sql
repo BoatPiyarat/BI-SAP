@@ -14,18 +14,23 @@
 -- provably correct than five where three are guesses. Cancel preflight (§2.6 #4) needs the L5
 -- delta-export layer to exist first (it validates the cancel file itself, not expected_state).
 
--- NOTE (fixed 2026-07-25): this used to be a single CREATE TABLE ... AS <PK_DUP SELECT> UNION ALL
--- <SCHEDULE_GAP SELECT>. Confirmed live that combining the two into one UNION ALL query produces
--- 728,745 false-positive SCHEDULE_GAP rows even though every order checked by hand is completely
--- clean (e.g. total_periods=6, exactly periods 1-6 present, MAX(total_periods)=6=COUNT(DISTINCT
--- period)). Reproduced standalone outside the procedure: the SCHEDULE_GAP branch alone (grouped
--- by order_item) returns 0 rows; the SAME branch combined via UNION ALL with the PK_DUP branch
--- (grouped by order_item, period) over the SAME source table returns 728,745. This is a real
--- BigQuery engine quirk when two differently-grouped aggregations over one table share a query,
--- not a logic bug - worked around by splitting into two sequential steps (CREATE then INSERT) so
--- the two aggregations never share one query plan. An earlier fix attempt (ANY_VALUE -> MAX) did
--- NOT resolve this - that was a real but different, smaller issue; this UNION ALL interaction is
--- the actual cause of the 728,745 figure.
+-- NOTE (root-caused and fixed 2026-07-26): this used to produce ~728,745 false-positive
+-- SCHEDULE_GAP rows when called via `CALL sp_run_validation()`, even though the identical HAVING
+-- logic returned 0 rows as a standalone ad hoc query. Originally written up as an unexplained
+-- BigQuery engine quirk and disabled.
+--
+-- Actual root cause, isolated via a sequence of reproduction tests (see 20_SAP_PROGRESS.md for the
+-- full trail): the old SCHEDULE_GAP query computed COUNT(DISTINCT period) and MAX(total_periods)
+-- TWICE - once inside the SELECT list's CONCAT (for the `detail` message) and again in the HAVING
+-- clause. When this query ran in the same script/procedure AFTER another CREATE OR REPLACE TABLE
+-- ... GROUP BY ... query (i.e. exactly the real sp_run_validation shape, PK_DUP first then
+-- SCHEDULE_GAP), the duplicated aggregate expressions caused the HAVING filter to stop filtering -
+-- reproduced down to a minimal, deterministic repro. It was NOT about UNION ALL, CLUSTER BY, script
+-- vs stored procedure, or destination table sharing - all of those were tested and ruled out first.
+-- Fix: compute each aggregate exactly once in a CTE, then reference the already-materialized
+-- columns in both the SELECT list and the filter (WHERE on the CTE, not HAVING) - never repeat an
+-- aggregate expression across SELECT/HAVING in a query that runs after another aggregation query in
+-- the same script. Verified: 0 rows after the fix, consistent with hand-checked clean orders.
 CREATE OR REPLACE PROCEDURE `pacific-plating-282708.sap_integration_v3.sp_run_validation`()
 BEGIN
   CREATE OR REPLACE TABLE `pacific-plating-282708.sap_integration_v3.sap_validation_error`
@@ -37,21 +42,16 @@ BEGIN
   GROUP BY order_item, period
   HAVING COUNT(*) > 1;
 
-  -- SCHEDULE_GAP disabled 2026-07-25 - genuinely unreliable, not yet root-caused. Confirmed live:
-  -- the exact same HAVING COUNT(DISTINCT period) != MAX(total_periods) logic returns 0 rows when
-  -- run as a plain ad hoc SELECT, but 728,745 rows when run via this procedure (reproduced even
-  -- after splitting the UNION ALL into two sequential steps, ruling out that theory too).
-  -- Spot-checked specific flagged order_items directly against expected_state at the same moment
-  -- and found them completely clean (single row, period=total_periods=1). Root cause not yet
-  -- found - do not trust this check's output until it is. PK_DUP above is unaffected and safe to
-  -- use; only SCHEDULE_GAP is disabled.
-  --
-  -- INSERT INTO `pacific-plating-282708.sap_integration_v3.sap_validation_error`
-  -- SELECT order_item, CAST(NULL AS INT64) AS period, 'SCHEDULE_GAP' AS check_name,
-  --   CONCAT('expected periods 1..', CAST(MAX(total_periods) AS STRING),
-  --          ', found ', CAST(COUNT(DISTINCT period) AS STRING), ' distinct periods') AS detail,
-  --   CURRENT_TIMESTAMP() AS detected_at
-  -- FROM `pacific-plating-282708.sap_integration_v3.expected_state`
-  -- GROUP BY order_item
-  -- HAVING COUNT(DISTINCT period) != MAX(total_periods);
+  INSERT INTO `pacific-plating-282708.sap_integration_v3.sap_validation_error`
+  WITH agg AS (
+    SELECT order_item, COUNT(DISTINCT period) AS n_periods, MAX(total_periods) AS n_total_periods
+    FROM `pacific-plating-282708.sap_integration_v3.expected_state`
+    GROUP BY order_item
+  )
+  SELECT order_item, CAST(NULL AS INT64) AS period, 'SCHEDULE_GAP' AS check_name,
+    CONCAT('expected periods 1..', CAST(n_total_periods AS STRING),
+           ', found ', CAST(n_periods AS STRING), ' distinct periods') AS detail,
+    CURRENT_TIMESTAMP() AS detected_at
+  FROM agg
+  WHERE n_periods != n_total_periods;
 END;
