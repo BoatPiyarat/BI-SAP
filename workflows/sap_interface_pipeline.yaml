@@ -3,22 +3,33 @@
 # Replaces the hand-written Python Cloud Function chain (rcb-motor-order-payment-sap-bucket-1,
 # rcb-nonmotor-order-payment-sap-bucket-1) with a Cloud Workflows orchestration, per Boat's request
 # (2026-07-26): "change the design to be triggered by previous process every night... recon before
-# and after... if something failed, allow rerun 2nd time... split the running time to less."
+# and after... if something failed, allow rerun 2nd time... split the running time to less" and,
+# more specifically, "split the run time, eg. filter by period of data for all RCL newpayment
+# timeout."
 #
 # Motivation: both Python functions run ALL their steps sequentially inside ONE function
 # invocation sharing ONE timeout (Motor 300s, NonMotor 60s). Watched live the same day: Motor's
 # last step (RCL newpayment) got killed mid-query by the shared timeout, losing that day's real
-# newpayment file entirely; NonMotor nearly hit its own ceiling too. Splitting each interface file
-# into its own independent step - each a plain `EXPORT DATA ... FROM sap_view.<view>` BigQuery job,
-# not Python code - removes the shared-timeout failure mode structurally: a BigQuery export job
-# isn't bound by a Cloud Function's timeout at all, and each step gets its own `retry: max_retries: 1`.
+# newpayment file entirely; NonMotor nearly hit its own ceiling too (58.8s/60s). Splitting each
+# interface file into its own independent step - each a plain `EXPORT DATA ... FROM sap_view.<view>`
+# BigQuery job, not Python code - removes the shared-timeout failure mode structurally: a BigQuery
+# export job isn't bound by a Cloud Function's timeout at all, and each step gets its own
+# `retry: max_retries: 1`.
+#
+# The two RCL newpayment views specifically (Motor: ~648k rows, confirmed the slow/timing-out
+# query when tested directly - ~100s+ just to scan; NonMotor: much smaller but complex
+# RCL_HEALTH-joined query) are further split by Period range into 3 sub-exports each
+# (Period 1-3 / 4-6 / 7+), based on the real row-count-by-period distribution checked for Motor
+# (roughly even ~86k-104k per period across 1-6, tapering to ~10k-25k for 7-10) - each sub-export
+# is now roughly a third of the original query's scan, and gets its own independent retry, so one
+# slow period range failing doesn't require re-running the whole newpayment export.
 #
 # Also closes two known automation gaps found earlier the same day while investigating this:
 # `RCL_Motor_process_3_cancel` and `RCL_Motor_process_4_creditshell` both exist as correct, working
 # views but were never wired into the daily Motor chain - added as steps 07/08 here.
 #
-# Chain: extract job -> recon (before) -> Motor export steps (01-08, each retried once) ->
-# NonMotor export steps (01-04, each retried once) -> recon (after).
+# Chain: extract job -> recon (before) -> Motor export steps (each retried once) -> NonMotor
+# export steps (each retried once) -> recon (after).
 #
 # Caveat (told to Boat): "recon after" confirms the EXPORT step itself succeeded (query ran, file
 # written) - it cannot confirm SAP has ACCEPTED the file, since SAP's own hourly pull/import runs
@@ -28,6 +39,8 @@
 # Cloud Functions/scheduler jobs (sap-order-payment, sap-order-payment-non-motor) are NOT yet
 # disabled - deliberately kept running in parallel until this workflow is proven reliable via
 # manual test runs, per the standing "don't cut over live automation without verifying first" rule.
+# Also currently blocked on an IAM grant (run.jobs.run for the extract step) - Boat has asked
+# Attila to grant it.
 
 main:
   params: [args]
@@ -39,20 +52,24 @@ main:
           - now: '${sys.now()}'
           - today: '${text.substring(time.format(now), 0, 10)}'
           - date_compact: '${text.replace_all(today, "-", "")}'
+          # all steps EXCEPT the two RCL newpayment views, which are period-split below
           - motor_views:
               - { n: '01', v: 'RCB_Motor_process_create' }
               - { n: '02', v: 'RCB_Motor_process_2_cancel_new' }
               - { n: '03', v: 'RCB_Motor_process_3_change' }
               - { n: '04', v: 'RCB_Motor_process_4_creditshell' }
               - { n: '05', v: 'RCL_Motor_process_1_create' }
-              - { n: '06', v: 'RCL_Motor_process_2_newpayment' }
               - { n: '07', v: 'RCL_Motor_process_3_cancel' }
               - { n: '08', v: 'RCL_Motor_process_4_creditshell' }
           - nonmotor_views:
               - { n: '01', v: 'RCB_NonMotor_process_1_create' }
               - { n: '02', v: 'RCB_NonMotor_process_2_cancel' }
               - { n: '03', v: 'RCL_NonMotor_process_1_create' }
-              - { n: '04', v: 'RCL_NonMotor_process_2_newpayment' }
+          # period-range splits for the two RCL newpayment views (Period 1-3 / 4-6 / 7+)
+          - newpayment_splits:
+              - { suffix: '_P1TO3', filter: ' WHERE Period BETWEEN 1 AND 3' }
+              - { suffix: '_P4TO6', filter: ' WHERE Period BETWEEN 4 AND 6' }
+              - { suffix: '_P7PLUS', filter: ' WHERE Period >= 7' }
 
     - run_extract:
         call: run_extract_job
@@ -80,6 +97,32 @@ main:
                     view_name: '${item.v}'
                     folder: 'RCB_MOTOR'
                     date_compact: '${date_compact}'
+                    file_suffix: ''
+                    period_filter_sql: ''
+                retry:
+                  predicate: ${always_retry_once}
+                  max_retries: 1
+                  backoff:
+                    initial_delay: 10
+                    max_delay: 30
+                    multiplier: 2
+
+    - export_motor_newpayment_loop:
+        for:
+          value: split
+          in: '${newpayment_splits}'
+          steps:
+            - do_export_motor_newpayment:
+                try:
+                  call: export_view_to_gcs
+                  args:
+                    project_id: '${project_id}'
+                    step_num: '06'
+                    view_name: 'RCL_Motor_process_2_newpayment'
+                    folder: 'RCB_MOTOR'
+                    date_compact: '${date_compact}'
+                    file_suffix: '${split.suffix}'
+                    period_filter_sql: '${split.filter}'
                 retry:
                   predicate: ${always_retry_once}
                   max_retries: 1
@@ -102,6 +145,32 @@ main:
                     view_name: '${item.v}'
                     folder: 'RCB_NONMOTOR'
                     date_compact: '${date_compact}'
+                    file_suffix: ''
+                    period_filter_sql: ''
+                retry:
+                  predicate: ${always_retry_once}
+                  max_retries: 1
+                  backoff:
+                    initial_delay: 10
+                    max_delay: 30
+                    multiplier: 2
+
+    - export_nonmotor_newpayment_loop:
+        for:
+          value: split
+          in: '${newpayment_splits}'
+          steps:
+            - do_export_nonmotor_newpayment:
+                try:
+                  call: export_view_to_gcs
+                  args:
+                    project_id: '${project_id}'
+                    step_num: '04'
+                    view_name: 'RCL_NonMotor_process_2_newpayment'
+                    folder: 'RCB_NONMOTOR'
+                    date_compact: '${date_compact}'
+                    file_suffix: '${split.suffix}'
+                    period_filter_sql: '${split.filter}'
                 retry:
                   predicate: ${always_retry_once}
                   max_retries: 1
@@ -226,14 +295,18 @@ poll_bq_job:
         return: true
 
 # --- Per-view export step ---
+# period_filter_sql: empty string for a normal full-view export, or " WHERE Period BETWEEN X AND Y"
+# (leading space required) for a period-range sub-export. file_suffix: empty string normally, or a
+# distinguishing suffix (e.g. "_P1TO3") so period-range sub-exports of the SAME view don't
+# overwrite each other's GCS object.
 
 export_view_to_gcs:
-  params: [project_id, step_num, view_name, folder, date_compact]
+  params: [project_id, step_num, view_name, folder, date_compact, file_suffix, period_filter_sql]
   steps:
     - build_query:
         assign:
-          - uri: '${"gs://interface-file/" + folder + "/INSURANCE_RCB_" + step_num + "_" + view_name + "_" + date_compact + "*.csv"}'
-          - sql: '${"EXPORT DATA OPTIONS(uri=\"" + uri + "\", format=\"CSV\", overwrite=true, header=true) AS SELECT * FROM `" + project_id + ".sap_view." + view_name + "`"}'
+          - uri: '${"gs://interface-file/" + folder + "/INSURANCE_RCB_" + step_num + "_" + view_name + file_suffix + "_" + date_compact + "*.csv"}'
+          - sql: '${"EXPORT DATA OPTIONS(uri=\"" + uri + "\", format=\"CSV\", overwrite=true, header=true) AS SELECT * FROM `" + project_id + ".sap_view." + view_name + "`" + period_filter_sql}'
     - run_it:
         call: run_bq_query_and_wait
         args:
