@@ -1,5 +1,45 @@
 # 20_SAP_PROGRESS.md
-Last Updated: 2026-07-26 (cont'd) - P2/P3 wired into nightly chain; confirmed prod does NOT self-heal the missing-installment gap (overwrite ได้ — สถานะปัจจุบันเสมอ)
+Last Updated: 2026-07-26 (cont'd) - manual backfill exported to gs://interface-file/RCB_MOTOR/ for the confirmed 279-row newpayment gap (overwrite ได้ — สถานะปัจจุบันเสมอ)
+
+---
+
+## 📤 MANUAL BACKFILL EXPORTED TO PRODUCTION — 2026-07-26 (cont'd)
+
+Closed the confirmed, real subset of the missing-installment gap per Boat's direction ("list the
+backfill and reverify, if it is real missing - use one of the production query to generate
+interface and let's close the gap today"). Full reverification trail (see `021_backfill_motor_newpayment_gap_20260726.sql`):
+
+- Of ~3,575 recent (2026) `MISSING_NO_ROW_IN_SAP` periods, 1,201 are still expected_status=Pending
+  (not real gaps - SAP just hasn't reached them yet), 73 (all NonMotor) are Paid but have no
+  resolved invoice_no yet (separate open issue), leaving 2,301 genuinely actionable rows.
+- Of those 2,301, only 279 order_items already have an existing row in SAP (any period) - a real
+  "newpayment gap" (order exists, one period never posted). The other ~2,022 have ZERO rows in SAP
+  at all - the CREATE flow never ran for them, a much bigger and different problem, deliberately
+  **excluded** from this backfill and flagged for separate investigation.
+- All 279 are voluntary Motor items (TYPE_1/2_PLUS/3/3_PLUS) - zero MOTOR_TYPE_COMPULSORY, zero
+  RCB-channel, zero cancelled orders.
+- Row content sourced entirely from `sap_data_engineer.sap_dashboard_carepay_installment` - the
+  SAME table the real, live `RCL 05_newpayment` view already uses for its financial breakdown
+  fields (GrossPremium, interest/principal, etc.). Nothing invented - every value is
+  already-computed CareOS data, confirmed present for all 279 target rows before use.
+- Validated: 279/279 unique (order_item, period), all TransactionStatus=Paid, all have InvoiceNo,
+  all PaymentDate in correct DDMMYYYY format, no null required fields. Schema matches the real
+  production view's 56-column layout exactly (verified via INFORMATION_SCHEMA), built with the
+  column-preserving `REPLACE` pattern (not `EXCEPT`+re-add) per the reordering-bug fix earlier
+  today.
+
+**Exported** (Boat confirmed naming just needs to contain "INSURANCE_RCB", rest is free text) to
+`gs://interface-file/RCB_MOTOR/RCB_MOTOR_INSURANCE_RCB_MANUALCLOSE_NEWPAYMENT_GAP_20260726*.csv` -
+167,411 bytes, confirmed landed via `gsutil ls`. This will be picked up by the vendor's normal
+hourly pull - **watch tomorrow's import log to confirm all 279 rows import clean** (same log
+location as the column-reordering incident).
+
+**Staged in BigQuery** (not yet cleaned up): `sap_integration_v3.manual_close_20260726_motor_newpayment_gap`
+- kept for reference/audit until the import is confirmed clean.
+
+**Not done**: the ~2,022 orders with zero SAP rows need their own root-cause investigation (why
+did CREATE never run?) before any file can be generated for them - a create-flow gap, not a
+newpayment gap, and likely much higher stakes given the volume.
 
 ---
 

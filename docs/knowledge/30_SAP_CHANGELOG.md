@@ -4,6 +4,27 @@ Append-only — entry ใหม่บนสุด ห้ามลบ/แก้�
 
 ---
 
+## 2026-07-26 (cont'd) — Manual backfill exported: 279-row confirmed Motor newpayment gap closed
+
+Boat: "list the backfill and reverify, if it is real missing - use one of the production query to
+generate interface and let's close the gap today." Reverified the missing-installment list down
+from ~3,575 recent MISSING_NO_ROW_IN_SAP rows to 2,301 genuinely actionable (Paid, has invoice_no)
+- of those, only 279 order_items already exist in SAP (real newpayment gap); the other ~2,022 have
+zero SAP rows at all (a separate, bigger create-flow problem, explicitly excluded here).
+
+Built `021_backfill_motor_newpayment_gap_20260726.sql`: sources the full interface row from
+`sap_data_engineer.sap_dashboard_carepay_installment` (the same table the real `RCL 05_newpayment`
+view uses) - no invented values. Excludes MOTOR_TYPE_COMPULSORY, RCB-channel, cancelled orders to
+match production's own eligibility rules. Validated 279/279 clean (unique, Paid, has InvoiceNo,
+correct date format, schema matches production's 56-column layout exactly).
+
+Exported to `gs://interface-file/RCB_MOTOR/RCB_MOTOR_INSURANCE_RCB_MANUALCLOSE_NEWPAYMENT_GAP_20260726*.csv`
+(167,411 bytes) - confirmed landed. Will be picked up by the vendor's normal hourly pull; watch
+tomorrow's import log to confirm clean. The ~2,022-order create-flow gap remains open, needs its
+own investigation.
+
+---
+
 ## 2026-07-26 (cont'd) — Confirmed prod can't self-heal the gap; wired P2/P3 into nightly chain
 
 Boat asked: would just re-running production close the ~1,900-3,500 missing-installment gap? Tested
