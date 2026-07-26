@@ -1,0 +1,241 @@
+# sap_interface_pipeline.yaml
+#
+# Replaces the hand-written Python Cloud Function chain (rcb-motor-order-payment-sap-bucket-1,
+# rcb-nonmotor-order-payment-sap-bucket-1) with a Cloud Workflows orchestration, per Boat's request
+# (2026-07-26): "change the design to be triggered by previous process every night... recon before
+# and after... if something failed, allow rerun 2nd time... split the running time to less."
+#
+# Motivation: both Python functions run ALL their steps sequentially inside ONE function
+# invocation sharing ONE timeout (Motor 300s, NonMotor 60s). Watched live the same day: Motor's
+# last step (RCL newpayment) got killed mid-query by the shared timeout, losing that day's real
+# newpayment file entirely; NonMotor nearly hit its own ceiling too. Splitting each interface file
+# into its own independent step - each a plain `EXPORT DATA ... FROM sap_view.<view>` BigQuery job,
+# not Python code - removes the shared-timeout failure mode structurally: a BigQuery export job
+# isn't bound by a Cloud Function's timeout at all, and each step gets its own `retry: max_retries: 1`.
+#
+# Also closes two known automation gaps found earlier the same day while investigating this:
+# `RCL_Motor_process_3_cancel` and `RCL_Motor_process_4_creditshell` both exist as correct, working
+# views but were never wired into the daily Motor chain - added as steps 07/08 here.
+#
+# Chain: extract job -> recon (before) -> Motor export steps (01-08, each retried once) ->
+# NonMotor export steps (01-04, each retried once) -> recon (after).
+#
+# Caveat (told to Boat): "recon after" confirms the EXPORT step itself succeeded (query ran, file
+# written) - it cannot confirm SAP has ACCEPTED the file, since SAP's own hourly pull/import runs
+# later and independently. Real acceptance still needs a later/next-day check.
+#
+# NOT YET DONE: this workflow is deployed but not yet wired to Cloud Scheduler and the OLD
+# Cloud Functions/scheduler jobs (sap-order-payment, sap-order-payment-non-motor) are NOT yet
+# disabled - deliberately kept running in parallel until this workflow is proven reliable via
+# manual test runs, per the standing "don't cut over live automation without verifying first" rule.
+
+main:
+  params: [args]
+  steps:
+    - init:
+        assign:
+          - project_id: 'pacific-plating-282708'
+          - region: 'asia-southeast1'
+          - now: '${sys.now()}'
+          - today: '${text.substring(time.format(now), 0, 10)}'
+          - date_compact: '${text.replace_all(today, "-", "")}'
+          - motor_views:
+              - { n: '01', v: 'RCB_Motor_process_create' }
+              - { n: '02', v: 'RCB_Motor_process_2_cancel_new' }
+              - { n: '03', v: 'RCB_Motor_process_3_change' }
+              - { n: '04', v: 'RCB_Motor_process_4_creditshell' }
+              - { n: '05', v: 'RCL_Motor_process_1_create' }
+              - { n: '06', v: 'RCL_Motor_process_2_newpayment' }
+              - { n: '07', v: 'RCL_Motor_process_3_cancel' }
+              - { n: '08', v: 'RCL_Motor_process_4_creditshell' }
+          - nonmotor_views:
+              - { n: '01', v: 'RCB_NonMotor_process_1_create' }
+              - { n: '02', v: 'RCB_NonMotor_process_2_cancel' }
+              - { n: '03', v: 'RCL_NonMotor_process_1_create' }
+              - { n: '04', v: 'RCL_NonMotor_process_2_newpayment' }
+
+    - run_extract:
+        call: run_extract_job
+        args:
+          project_id: '${project_id}'
+          region: '${region}'
+
+    - recon_before:
+        call: run_bq_query_and_wait
+        args:
+          project_id: '${project_id}'
+          query: '${"CALL `" + project_id + ".sap_integration_v3.sp_nightly_state_and_recon_refresh`()"}'
+
+    - export_motor_loop:
+        for:
+          value: item
+          in: '${motor_views}'
+          steps:
+            - do_export_motor:
+                try:
+                  call: export_view_to_gcs
+                  args:
+                    project_id: '${project_id}'
+                    step_num: '${item.n}'
+                    view_name: '${item.v}'
+                    folder: 'RCB_MOTOR'
+                    date_compact: '${date_compact}'
+                retry:
+                  predicate: ${always_retry_once}
+                  max_retries: 1
+                  backoff:
+                    initial_delay: 10
+                    max_delay: 30
+                    multiplier: 2
+
+    - export_nonmotor_loop:
+        for:
+          value: item
+          in: '${nonmotor_views}'
+          steps:
+            - do_export_nonmotor:
+                try:
+                  call: export_view_to_gcs
+                  args:
+                    project_id: '${project_id}'
+                    step_num: '${item.n}'
+                    view_name: '${item.v}'
+                    folder: 'RCB_NONMOTOR'
+                    date_compact: '${date_compact}'
+                retry:
+                  predicate: ${always_retry_once}
+                  max_retries: 1
+                  backoff:
+                    initial_delay: 10
+                    max_delay: 30
+                    multiplier: 2
+
+    - recon_after:
+        call: run_bq_query_and_wait
+        args:
+          project_id: '${project_id}'
+          query: '${"CALL `" + project_id + ".sap_integration_v3.sp_nightly_state_and_recon_refresh`()"}'
+
+    - finish:
+        return: 'SAP interface pipeline complete'
+
+# --- Retry predicate: always allow the one retry, regardless of failure reason ---
+# (Boat: "if something failed, allow rerun 2nd time" - literal, not conditional on error type)
+
+always_retry_once:
+  params: [e]
+  steps:
+    - retry_regardless:
+        return: true
+
+# --- Cloud Run Job (extract) helpers ---
+
+run_extract_job:
+  params: [project_id, region]
+  steps:
+    - start_execution:
+        call: http.post
+        args:
+          url: '${"https://run.googleapis.com/v2/projects/" + project_id + "/locations/" + region + "/jobs/sap-extract-job:run"}'
+          auth:
+            type: OAuth2
+        result: exec_result
+    - get_execution_name:
+        assign:
+          - execution_name: '${exec_result.body.metadata.name}'
+    - poll_extract:
+        call: poll_run_execution
+        args:
+          execution_name: '${execution_name}'
+
+poll_run_execution:
+  params: [execution_name]
+  steps:
+    - loop:
+        steps:
+          - sleep_step:
+              call: sys.sleep
+              args:
+                seconds: 15
+          - check_status:
+              call: http.get
+              args:
+                url: '${"https://run.googleapis.com/v2/" + execution_name}'
+                auth:
+                  type: OAuth2
+              result: status_result
+          - evaluate:
+              switch:
+                - condition: '${"completionTime" in status_result.body and "failedCount" in status_result.body and status_result.body.failedCount > 0}'
+                  raise: '${"extract job execution failed - " + json.encode_to_string(status_result.body)}'
+                - condition: '${"completionTime" in status_result.body}'
+                  next: done
+                - condition: true
+                  next: loop
+    - done:
+        return: true
+
+# --- BigQuery job helpers (used for both recon calls and EXPORT DATA steps) ---
+
+run_bq_query_and_wait:
+  params: [project_id, query]
+  steps:
+    - submit_job:
+        call: googleapis.bigquery.v2.jobs.insert
+        args:
+          projectId: '${project_id}'
+          body:
+            configuration:
+              query:
+                query: '${query}'
+                useLegacySql: false
+        result: job_insert_result
+    - extract_job_id:
+        assign:
+          - job_id: '${job_insert_result.jobReference.jobId}'
+    - poll_job:
+        call: poll_bq_job
+        args:
+          project_id: '${project_id}'
+          job_id: '${job_id}'
+
+poll_bq_job:
+  params: [project_id, job_id]
+  steps:
+    - loop:
+        steps:
+          - sleep_step:
+              call: sys.sleep
+              args:
+                seconds: 5
+          - check_status:
+              call: googleapis.bigquery.v2.jobs.get
+              args:
+                projectId: '${project_id}'
+                jobId: '${job_id}'
+              result: job_status
+          - evaluate:
+              switch:
+                - condition: '${job_status.status.state == "DONE" and "errorResult" in job_status.status}'
+                  raise: '${job_status.status.errorResult}'
+                - condition: '${job_status.status.state == "DONE"}'
+                  next: done
+                - condition: true
+                  next: loop
+    - done:
+        return: true
+
+# --- Per-view export step ---
+
+export_view_to_gcs:
+  params: [project_id, step_num, view_name, folder, date_compact]
+  steps:
+    - build_query:
+        assign:
+          - uri: '${"gs://interface-file/" + folder + "/INSURANCE_RCB_" + step_num + "_" + view_name + "_" + date_compact + "*.csv"}'
+          - sql: '${"EXPORT DATA OPTIONS(uri=\"" + uri + "\", format=\"CSV\", overwrite=true, header=true) AS SELECT * FROM `" + project_id + ".sap_view." + view_name + "`"}'
+    - run_it:
+        call: run_bq_query_and_wait
+        args:
+          project_id: '${project_id}'
+          query: '${sql}'
