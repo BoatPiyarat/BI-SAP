@@ -4,6 +4,19 @@ Append-only — entry ใหม่บนสุด ห้ามลบ/แก้�
 
 ---
 
+## 2026-07-26 (cont'd) — PolicyStatus duplicate root cause not found; 3 hypotheses ruled out with evidence
+
+Tested 3 hypotheses for why RCB Credit-Shell import failed with `PolicyStatus: is duplicated`:
+shared PolicyNo with the already-Paid old order (ruled out - only 14/41 old orders exist in SAP at
+all, and none of their PolicyNos matched), a race with another process (ruled out - the order_items
+still don't exist in SAP even now), and a within-file duplicate PolicyNo (ruled out - none found).
+Root cause remains unknown from BigQuery alone - likely something in SAP's internal Policy master
+not mirrored anywhere in this project's tables. Documented so the same ground isn't re-covered;
+flagged that resubmitting the same 41 rows would fail again until the real cause is found (needs
+Aware/vendor input).
+
+---
+
 ## 2026-07-26 (cont'd) — RCL Credit-Shell backfill succeeded, RCB Credit-Shell mostly blocked on shared-policy conflict
 
 Real import results: RCL Credit-Shell (37 rows) imported clean with real SAP journal entries. RCB

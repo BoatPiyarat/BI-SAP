@@ -1,5 +1,36 @@
 # 20_SAP_PROGRESS.md
-Last Updated: 2026-07-26 (cont'd) - Real import results in: RCL Credit-Shell backfill succeeded (37/37); RCB Credit-Shell backfill mostly failed on PolicyStatus duplicate (overwrite ได้ — สถานะปัจจุบันเสมอ)
+Last Updated: 2026-07-26 (cont'd) - PolicyStatus duplicate root cause NOT found (3 hypotheses tested and ruled out); moving to balance/master validation checks (overwrite ได้ — สถานะปัจจุบันเสมอ)
+
+---
+
+## ❓ RCB CREDIT-SHELL "PolicyStatus is duplicated" — 3 HYPOTHESES TESTED, ALL RULED OUT — 2026-07-26 (cont'd)
+
+Boat's lead ("PolicyStatus duplicated means it exists on SAP as Paid") pointed at a shared-PolicyNo
+conflict with the superseded (`old_human_id`) order. Tested this and two follow-up hypotheses
+directly against real data, using `stg_sap_state` (properly deduped, unlike the earlier raw
+`SAP_LIVE_FULL` attempt which returned misleading blank PolicyNo values):
+
+1. **Shared PolicyNo with the old order, already Paid** - RULED OUT. Only 14 of the 41 old
+   (`old_human_id`) orders even exist in `stg_sap_state` at all (the other 27 have no SAP record
+   whatsoever for the old order); and searching SAP directly by the 27 PolicyNo values my backfill
+   actually submitted found ZERO matches anywhere in `stg_sap_state` (which does have PolicyNo
+   populated generally - 791,061/1,291,581 rows - so this isn't a systemically blank field).
+2. **Race condition** (another process created these same order_items independently between my
+   verification and SAP processing my file, like the earlier Motor newpayment 4-row race) - RULED
+   OUT. None of the 41 `current_human_id` order_items exist in `stg_sap_state` even now, after the
+   import.
+3. **Duplicate PolicyNo within my own 41-row submission** (e.g. one policy referenced by two
+   different order_items in the same file) - RULED OUT. Zero PolicyNo values repeat within the
+   file.
+
+**Not resolved**: what SAP's "PolicyStatus is duplicated" check is actually keying on remains
+unknown from BigQuery alone - it isn't OrderItem, isn't the old order's PolicyNo, and isn't an
+in-file duplicate. Likely checks something in SAP's own internal Policy master that isn't mirrored
+in any table this project has access to. Needs either Aware's (the vendor's) input on what this
+validation rule actually checks, or a different investigation angle (e.g. asking SAP support to
+pull the specific existing record it's conflicting against) - not something to keep guessing at via
+BigQuery queries alone. **Do not re-attempt this same 41-row export as-is** - whatever the real
+conflict is, resubmitting the identical rows will hit it again.
 
 ---
 
