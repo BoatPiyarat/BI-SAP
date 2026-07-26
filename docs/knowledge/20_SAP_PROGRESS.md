@@ -30,8 +30,22 @@ row) - not yet re-run with a proper DISTINCT/period-aware query.
 underlying policy is already Paid is unclear - does SAP need a different flag/mechanism (e.g. an
 OrderID reassignment on the existing record) rather than a fresh Paid insert under the new order_item?
 This needs a proper design discussion, not another blind backfill attempt - re-submitting the same
-41 rows as-is would fail the same way. The `InsurerCode not found` and `Posting Periods must be
-Unlocked` errors on the 2 other rows are separate, smaller data-quality issues not yet triaged.
+41 rows as-is would fail the same way.
+
+**The 2 other, unrelated errors triaged**:
+- `L79977888` - `InsurerCode: is not found in DB` - submitted code `29` (Motor) has no matching
+  entry in SAP's Insurer master (missing Vendor/Customer code mapping). A SAP-side master-data
+  setup gap, not fixable from BigQuery - needs whoever manages SAP's Business Partner/Insurer setup
+  to add code 29 properly.
+- `L80346837` - `PaymentDate:Posting Periods must be Unlocked` - submitted `24062026` (June 2026),
+  which is now a closed/locked accounting period. **Found a real gap in my own backfill scripts**:
+  `009_fix_rcl_newpayment_date_override.sql`/`019_fix_column_reordering_bug.sql` already roll a
+  stale PaymentDate forward to the start of the current month specifically to avoid this, but
+  `022_backfill_rcl_creditshell_20260726.sql`/`023_backfill_rcb_creditshell_20260726.sql` never
+  carried that same safeguard over. Not fixing this in isolation right now since the RCB
+  Credit-Shell backfill's bigger blocker (PolicyStatus duplicate, above) needs a design decision
+  first - flagging so the PaymentDate rollover gets added whenever that Credit-Shell backfill
+  approach gets redesigned, not forgotten.
 
 ---
 
