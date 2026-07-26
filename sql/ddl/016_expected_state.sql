@@ -29,7 +29,19 @@ CREATE OR REPLACE PROCEDURE `pacific-plating-282708.sap_integration_v3.sp_refres
 BEGIN
   CREATE OR REPLACE TABLE `pacific-plating-282708.sap_integration_v3.expected_state`
   CLUSTER BY order_item AS
-  WITH order_txn_any_paid AS (
+  WITH payment_events_dedup AS (
+    -- PK_DUP fix, found by the validation layer: a single (order_item, period) can have multiple
+    -- SUCCESSFUL charges (verified live: L74421938-V1 period 1 had 10 distinct successful
+    -- charges - retries/re-attempts, not 10 real payments). Pick the earliest as canonical - the
+    -- first time this period was actually paid - not every attempt.
+    SELECT * EXCEPT(rn) FROM (
+      SELECT *, ROW_NUMBER() OVER (
+        PARTITION BY order_item, period ORDER BY charge_time ASC
+      ) AS rn
+      FROM `pacific-plating-282708.sap_integration_v3.stg_payment_events`
+    ) WHERE rn = 1
+  ),
+  order_txn_any_paid AS (
     -- order-level signal for RCL_CMI: does this transaction have ANY successful charge at all,
     -- regardless of which sibling item stg_payment_events attributed it to
     SELECT DISTINCT
@@ -74,7 +86,7 @@ BEGIN
     pe.amount AS charge_amount,
     CURRENT_TIMESTAMP() AS computed_at
   FROM `pacific-plating-282708.sap_integration_v3.stg_schedule` s
-  LEFT JOIN `pacific-plating-282708.sap_integration_v3.stg_payment_events` pe
+  LEFT JOIN payment_events_dedup pe
     ON pe.order_item = s.order_item AND pe.period = s.period
   LEFT JOIN order_txn_any_paid otp
     ON s.flow = 'RCL_CMI' AND otp.transaction_id = s.transaction_id;
