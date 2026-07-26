@@ -1,5 +1,43 @@
 # 20_SAP_PROGRESS.md
-Last Updated: 2026-07-26 (cont'd) - MASTER_INSURER_UNKNOWN + MASTER_PAYMENTDATE_LOCKED validation checks shipped and verified live; V3 backlog now clear except deferred Balance check (overwrite ได้ — สถานะปัจจุบันเสมอ)
+Last Updated: 2026-07-26 (cont'd) - Ran full live pipeline (extract -> interface -> bucket); caught Motor losing its newpayment file to timeout in real time; timeout fix applied and confirmed live (overwrite ได้ — สถานะปัจจุบันเสมอ)
+
+---
+
+## 🔴 LIVE FULL-PIPELINE RUN: CAUGHT THE TIMEOUT BUG LOSING DATA IN REAL TIME — 2026-07-26 (cont'd)
+
+Boat asked to run the entire chain live end-to-end (extract -> interface Cloud Functions -> bucket)
+to see it happen. Ran: `gcloud run jobs execute sap-extract-job --wait` (succeeded), then triggered
+both interface Cloud Functions via their real Cloud Scheduler jobs (`sap-order-payment`,
+`sap-order-payment-non-motor`).
+
+**Result, watched live**:
+- **NonMotor**: reported `timeout` (58.8s vs its 60s limit) but all 4 files landed in GCS anyway,
+  including the last one (newpayment, 6MB) - the timeout hit after the actual upload completed, so
+  no real data loss this specific run. Still a thin margin worth watching.
+- **Motor**: reported `timeout` at 299.1s (vs 300s limit) and **this time it genuinely lost data** -
+  confirmed via `gsutil ls`: steps 01-05 (RCB create/cancel/change/creditshell, RCL create) all
+  landed, but **step 06 (RCL Motor newpayment) never wrote at all** - the function was killed
+  mid-query. This is the exact mechanism flagged earlier today as a hypothesis, now directly
+  observed happening to real data in real time.
+
+**Fixed live, with Boat at the keyboard**: ran `scripts/fix_motor_function_timeout.sh` (the
+REST-API `updateMask=timeout` approach, since a `gcloud functions deploy` redeploy still isn't safe
+without the real source). PATCH submitted, propagated over ~1-2 minutes, confirmed via
+`gcloud functions describe`: **timeout is now 540s** (was 300s). Not yet re-tested against a live
+run to confirm this actually prevents the newpayment step from being killed - worth checking on the
+next real invocation (tonight's actual scheduled run, or another manual trigger).
+
+**Boat's follow-up ask, still open**: (1) redesign the trigger chain so extract -> recon -> Motor
+interface -> NonMotor interface -> recon (after) are properly sequenced with automatic retry-once
+on failure, instead of independent Cloud Scheduler cron times; (2) split each interface step's
+runtime so no single step risks a shared timeout ceiling again. Proposed: replace the hand-written
+Python Cloud Function entirely with a **Cloud Workflows** orchestration - each of the 10 interface
+steps (6 Motor + 4 NonMotor) becomes its own `EXPORT DATA ... FROM sap_view.<view>` step with a
+native `retry: {max_retries: 1}` block, BigQuery recon calls bracket the whole chain (before/after),
+and the extract job runs first via the Workflows Run connector. Caveat given to Boat: "recon after"
+can only confirm the export step itself succeeded - SAP's own hourly pull/import happens later and
+independently, so real acceptance still needs a next-day check. **Awaiting Boat's go-ahead before
+building/deploying this** - it replaces live production automation, not something to build silently.
 
 ---
 
