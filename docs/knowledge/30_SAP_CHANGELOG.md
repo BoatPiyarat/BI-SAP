@@ -4,6 +4,35 @@ Append-only — entry ใหม่บนสุด ห้ามลบ/แก้�
 
 ---
 
+## 2026-07-26 (cont'd) — Both Credit-Shell backfills closed; RCL Credit-Shell has no daily export step at all
+
+Closed the 135-order Credit-Shell gap in two pieces: RCL (37 rows, `022_backfill_rcl_creditshell_20260726.sql`)
+and RCB (41 rows, `023_backfill_rcb_creditshell_20260726.sql`), both exported to
+`gs://interface-file/RCB_MOTOR/`. Both source views had real duplicate/null-InvoiceNo rows that
+needed cleaning first - not safe to export raw.
+
+Found the actual gap for RCL: `RCL_Motor_process_4_creditshell` exists and works correctly, but the
+Motor Cloud Function's daily chain has no step that calls it at all (confirmed
+`RCL_Motor_process_1_create`'s `current_human_id` exclusion is correct-by-design, not the bug -
+it's the missing 7th automation step that's the real gap). This needs adding to the function's
+source alongside the timeout fix - not doable via CLI this session.
+
+Also got real production feedback on the earlier 268-row Motor newpayment backfill: SAP's import
+result (LogID 21018) was "success with error" - only 4 rows flagged with `Period: Sequence of
+Period invalid`. Checked directly: all 4 order_items already show Paid in SAP via the regular daily
+pipeline, which closed the same gaps on its own between verification and import - a harmless race,
+not a bug. 264/268 succeeded.
+
+Delivered `scripts/fix_motor_function_timeout.sh` - a REST-API `updateMask=timeout` partial update
+(avoids `gcloud functions deploy`'s risk of rebuilding from the wrong local source). Not yet run -
+needs someone with `cloudfunctions.functions.update` permission to execute it.
+
+Confirmed the nightly `delta_export` refresh will now catch any future Credit-Shell gap
+automatically (via the stg_schedule fix + existing nightly wiring) - the open piece is specifically
+the daily export automation missing the RCL Credit-Shell step, not diagnostic visibility.
+
+---
+
 ## 2026-07-26 (cont'd) — Found Cloud Function root cause for create-flow investigation; timeout fix needs Console access
 
 Continuing the create-flow gap root cause: traced the actual GCS-writing mechanism to Cloud

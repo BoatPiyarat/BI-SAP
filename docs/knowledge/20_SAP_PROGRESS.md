@@ -1,5 +1,56 @@
 # 20_SAP_PROGRESS.md
-Last Updated: 2026-07-26 (cont'd) - Cloud Function root cause found: Motor export times out daily on newpayment step, needs a Console-side timeout bump (overwrite ได้ — สถานะปัจจุบันเสมอ)
+Last Updated: 2026-07-26 (cont'd) - Both Credit-Shell backfills exported (78 rows total); found the RCL Credit-Shell daily export step is entirely missing from automation; timeout fix script delivered (overwrite ได้ — สถานะปัจจุบันเสมอ)
+
+---
+
+## ✅ CREDIT-SHELL BACKFILLS CLOSED; RCL CREDIT-SHELL AUTOMATION GAP FOUND — 2026-07-26 (cont'd)
+
+Boat: "do backfill, make sure the new design will cover the missing daily. The timeout fix, give me
+the script." Closed both halves of the 135-order Credit-Shell gap:
+
+- **RCL Credit-Shell (37 rows)**: `RCL_Motor_process_4_creditshell` already exists and correctly
+  identifies real candidates (confirmed live), but **the Motor Cloud Function's daily chain has no
+  step for it at all** - the 6-step chain covers RCB create/cancel/change/creditshell + RCL
+  create/newpayment, with RCL Credit-Shell simply never wired in. This is a structural automation
+  gap, not a query bug - confirmed `RCL_Motor_process_1_create`'s exclusion of `current_human_id`
+  is correct by design (it deliberately routes those orders to this dedicated view instead).
+  Raw view output needed cleaning first: 129 rows, only 115 distinct (OrderItem, Period), 78 with
+  null InvoiceNo. Deduped to 37 clean rows (`022_backfill_rcl_creditshell_20260726.sql`), exported
+  to `gs://interface-file/RCB_MOTOR/INSURANCE_RCB_MANUALCLOSE_RCL_CREDITSHELL_20260726*.csv`.
+- **RCB Credit-Shell (41 rows)**: identified earlier today but not yet exported before the
+  investigation moved on. `RCB_Motor_process_4_creditshell`'s raw output also had duplicates (51
+  rows, 41 distinct) - deduped preferring `PaymentChannel='RCB-Credit Shell'`
+  (`023_backfill_rcb_creditshell_20260726.sql`), exported to
+  `gs://interface-file/RCB_MOTOR/INSURANCE_RCB_MANUALCLOSE_RCB_CREDITSHELL_20260726*.csv`.
+
+**Real-time confirmation the earlier Motor newpayment backfill worked**: SAP's actual import result
+for `RCB_MOTOR_INSURANCE_RCB_MANUALCLOSE_NEWPAYMENT_GAP_20260726CORRECTED*.csv` (Upload LogID 21018)
+came back "success with error" - only 4 of 268 rows flagged (`Period: Sequence of Period invalid`
+for L78526086/L78560110/L78560667/L80313656). Checked directly: all 4 already show
+`Period 1, Paid` in SAP with a real InvoiceNo - the regular daily production pipeline closed these
+exact same gaps on its own between when I verified "missing" and when SAP processed my file hours
+later. Harmless race, not a bug - **264/268 of the original backfill succeeded**.
+
+**"Cover the missing daily" - two separate mechanisms, one still open**:
+1. **Diagnostic visibility (delta_export)**: already fixed. Since `stg_schedule` now correctly
+   includes `current_human_id` orders as normal schedule rows (see the stg_schedule fix above) and
+   the nightly chain refreshes `expected_state`/`delta_export` automatically, any FUTURE Credit-Shell
+   gap will show up as `MISSING_NO_ROW_IN_SAP` in tomorrow's refresh without anyone needing to
+   re-run today's investigation from scratch.
+2. **Actual daily export automation**: **still has a real hole** - the RCL Credit-Shell step needs
+   to be added to `rcb-motor-order-payment-sap-bucket-1`'s script (alongside the timeout fix), or
+   this same gap reaccumulates. This requires editing the function's deployed source, which is not
+   something doable safely via CLI this session (same reachability issue as the timeout fix) -
+   needs whoever owns that source repo to add a 7th step calling
+   `RCL_Motor_process_4_creditshell`, with the same dedup logic used in 022 baked in (the raw view
+   has real duplicate/null-InvoiceNo rows, so a naive direct export would reintroduce today's data
+   quality problem daily).
+
+**Timeout fix script delivered**: `scripts/fix_motor_function_timeout.sh` - uses the Cloud
+Functions v1 REST API's `updateMask=timeout` partial update (not `gcloud functions deploy`, which
+would try to rebuild from a local directory and risk replacing the function's real source). Asks
+for confirmation before applying. Not yet run - hand-off to whoever has
+`cloudfunctions.functions.update` permission on this function.
 
 ---
 
