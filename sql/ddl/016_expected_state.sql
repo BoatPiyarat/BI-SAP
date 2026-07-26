@@ -15,7 +15,7 @@
 -- inlined here, so this can never drift into its own prefixing convention (the actual root cause
 -- of B1).
 --
--- RCL_CMI (compulsory) fix, found by checking real data before trusting this table: the item_rank
+-- Compulsory-item fix, found by checking real data before trusting this table: the item_rank
 -- de-fanout in stg_payment_events (prefer non-compulsory item on a bundled charge - correct, and
 -- needed to stop fake period-2+ showing up on compulsory items) has a side effect - it attributes
 -- ALL of an order's charges to the voluntary sibling, including the compulsory item's own
@@ -24,6 +24,14 @@
 -- stg_payment_events, leaving the compulsory item permanently "Pending" even though it was paid.
 -- Compulsory items need order-level recognition ("was anything paid on this order's transaction
 -- at all"), not the item-attributed join used for the real per-period voluntary schedule.
+--
+-- WIDENED 2026-07-25 (caught via delta_export's UNEXPECTED_ALREADY_PAID category): the first fix
+-- only special-cased flow = 'RCL_CMI', but compulsory items can also route to ONETIME (e.g.
+-- FULL_PAYMENT bundles that include a compulsory item) - motor_item_type = 'MOTOR_TYPE_COMPULSORY'
+-- is the actual underlying condition, independent of flow. Verified: L80385949-M1, L78292154-M1,
+-- L78331526-M1 all showed expected_status=Pending while SAP already correctly shows Paid - all
+-- three are -M1 (compulsory) items classified as ONETIME, not RCL_CMI, so the narrower fix missed
+-- them entirely.
 
 CREATE OR REPLACE PROCEDURE `pacific-plating-282708.sap_integration_v3.sp_refresh_expected_state`()
 BEGIN
@@ -42,8 +50,10 @@ BEGIN
     ) WHERE rn = 1
   ),
   order_txn_any_paid AS (
-    -- order-level signal for RCL_CMI: does this transaction have ANY successful charge at all,
-    -- regardless of which sibling item stg_payment_events attributed it to
+    -- order-level signal for compulsory items: does this transaction have ANY successful charge
+    -- at all, regardless of which sibling item stg_payment_events attributed it to. Keyed by
+    -- motor_item_type, not flow - a compulsory item can route to ONETIME or RCL_CMI depending on
+    -- the order's overall payment_option, but either way it needs this same order-level check.
     SELECT DISTINCT
       s.transaction_id,
       FIRST_VALUE(c.id) OVER (
@@ -58,7 +68,7 @@ BEGIN
     FROM `pacific-plating-282708.sap_integration_v3.stg_schedule` s
     JOIN `pacific-plating-282708.careos.carepay_charges` c
       ON c.transaction_id = s.transaction_id AND c.status = 'SUCCESSFUL'
-    WHERE s.flow = 'RCL_CMI'
+    WHERE s.motor_item_type = 'MOTOR_TYPE_COMPULSORY'
   )
   SELECT
     s.order_item,
@@ -68,26 +78,26 @@ BEGIN
     s.flow,
     s.payment_option,
     CASE
-      WHEN s.flow = 'RCL_CMI' THEN IF(otp.transaction_id IS NOT NULL, 'Paid', 'Pending')
+      WHEN s.motor_item_type = 'MOTOR_TYPE_COMPULSORY' THEN IF(otp.transaction_id IS NOT NULL, 'Paid', 'Pending')
       ELSE IF(pe.charge_id IS NOT NULL, 'Paid', 'Pending')
     END AS expected_status,
     CASE
-      WHEN s.flow = 'RCL_CMI' AND otp.transaction_id IS NOT NULL THEN
+      WHEN s.motor_item_type = 'MOTOR_TYPE_COMPULSORY' AND otp.transaction_id IS NOT NULL THEN
         `pacific-plating-282708.sap_integration_v3.fn_invoice_no`(otp.first_third_party_id)
-      WHEN s.flow != 'RCL_CMI' AND pe.charge_id IS NOT NULL THEN
+      WHEN s.motor_item_type != 'MOTOR_TYPE_COMPULSORY' AND pe.charge_id IS NOT NULL THEN
         `pacific-plating-282708.sap_integration_v3.fn_invoice_no`(pe.third_party_id)
       ELSE NULL
     END AS expected_invoice_no,
     CASE
-      WHEN s.flow = 'RCL_CMI' THEN DATE(otp.first_charge_time)
+      WHEN s.motor_item_type = 'MOTOR_TYPE_COMPULSORY' THEN DATE(otp.first_charge_time)
       ELSE DATE(pe.charge_time)
     END AS expected_payment_date,
-    COALESCE(IF(s.flow = 'RCL_CMI', otp.first_charge_id, NULL), pe.charge_id) AS charge_id,
+    COALESCE(IF(s.motor_item_type = 'MOTOR_TYPE_COMPULSORY', otp.first_charge_id, NULL), pe.charge_id) AS charge_id,
     pe.amount AS charge_amount,
     CURRENT_TIMESTAMP() AS computed_at
   FROM `pacific-plating-282708.sap_integration_v3.stg_schedule` s
   LEFT JOIN payment_events_dedup pe
     ON pe.order_item = s.order_item AND pe.period = s.period
   LEFT JOIN order_txn_any_paid otp
-    ON s.flow = 'RCL_CMI' AND otp.transaction_id = s.transaction_id;
+    ON s.motor_item_type = 'MOTOR_TYPE_COMPULSORY' AND otp.transaction_id = s.transaction_id;
 END;
