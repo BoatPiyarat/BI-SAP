@@ -1,5 +1,30 @@
 # 20_SAP_PROGRESS.md
-Last Updated: 2026-07-26 (cont'd) - PolicyStatus duplicate root cause NOT found (3 hypotheses tested and ruled out); moving to balance/master validation checks (overwrite ได้ — สถานะปัจจุบันเสมอ)
+Last Updated: 2026-07-26 (cont'd) - Balance check formula NOT verified (deferred, negative result documented); building Master check instead (overwrite ได้ — สถานะปัจจุบันเสมอ)
+
+---
+
+## ❌ BALANCE CHECK (§2.6 #3) FORMULA NOT VERIFIED - REMAINS DEFERRED — 2026-07-26 (cont'd)
+
+Attempted to verify the design doc's formula (`TotalAmount = GrossPremium+StampDuty+VAT+WHT+TotalEIR+TotalSBT+fees-Discount`)
+against real `stg_sap_state` data before building it as a blocking check. Result: only holds for
+~60% of rows (775,142/1,291,581) at whole-dataset scale, despite matching perfectly on an initial
+20-row sample - a reminder that small samples can look clean while missing the real pattern.
+Mismatch concentrates in Motor (~46% mismatch) while most NonMotor groups (Life, Home, TA,
+Personal Accident) are ~100% clean - not a period-1-vs-later-period split (checked, roughly even
+mismatch in both). Mismatch amounts cluster around specific values (225, 177, 198, 236, 375, 219,
+264, 207, 183, 465, 450, ...) rather than random noise, suggesting a genuine missing/extra term
+specific to Motor, not measurement error.
+
+**Tested one candidate fix**: adding `InterestThisPeriod + PrincipleThisPeriod + InterestEIRThisPeriod
++ PrincipleEIRThisPeriod` to the formula - made it WORSE (887,467 mismatches, up from 513,625),
+meaning these fields are likely already reflected inside GrossPremium/TotalEIR rather than being
+additional components - do not add them.
+
+**Decision**: not shipping this check with a guessed formula - same discipline as the SCHEDULE_GAP
+false-positive earlier today (verify or don't ship, don't guess into a blocking gate). Remains
+deferred. Whoever revisits this needs either Motor-specific field documentation from
+Aware/accounting, or a wider empirical sweep isolating exactly which Motor sub-population
+(installment vs one-time? which fee combination?) drives the ~46% mismatch.
 
 ---
 
