@@ -1,5 +1,32 @@
 # 20_SAP_PROGRESS.md
-Last Updated: 2026-07-26 (cont'd) - Balance check formula NOT verified (deferred, negative result documented); building Master check instead (overwrite ได้ — สถานะปัจจุบันเสมอ)
+Last Updated: 2026-07-26 (cont'd) - MASTER_INSURER_UNKNOWN + MASTER_PAYMENTDATE_LOCKED validation checks shipped and verified live; V3 backlog now clear except deferred Balance check (overwrite ได้ — สถานะปัจจุบันเสมอ)
+
+---
+
+## ✅ MASTER CHECKS (§2.6 #5) SHIPPED - LAST OPEN BACKLOG ITEM CLOSED — 2026-07-26 (cont'd)
+
+Boat: "continue until the whole process complete." Closed the last remaining item from the V3
+backlog (`020_extend_nightly_refresh_with_p2_p3.sql`'s validation layer, originally scoped to
+PK_DUP + SCHEDULE_GAP only).
+
+Built and shipped **`MASTER_INSURER_UNKNOWN`** and **`MASTER_PAYMENTDATE_LOCKED`** in
+`017_sap_validation_error.sql` - directly motivated by TODAY's real SAP rejections (InsurerCode 29
+not found; PaymentDate hitting a locked posting period). Both check the actual create/newpayment
+candidate source tables (`sap_dashboard_carepay_fully_paid`, `sap_dashboard_carepay_installment`)
+BEFORE a file gets generated, restricted to rows not already in SAP:
+- InsurerCode check builds a "known good" master from `stg_sap_state`'s own history
+  (`SPLIT(U_InsurerCode,'-')[OFFSET(1)]` - confirmed this transform matches the candidate tables'
+  plain-numeric format, e.g. `VRY-27` -> `27`). Verified InsurerCode 29 (today's real failure) has
+  zero matches anywhere in SAP history before shipping.
+- PaymentDate check flags any candidate PaymentDate before the current accounting month.
+
+Verified live via `CALL sp_run_validation()`: 24 real `MASTER_INSURER_UNKNOWN` rows (6 distinct
+codes), 0 `MASTER_PAYMENTDATE_LOCKED` (sane baseline), PK_DUP/SCHEDULE_GAP unaffected (still 0).
+
+**This closes the V3 build-out backlog from today's session except the Balance check (§2.6 #3),
+which stays deliberately deferred** - tested twice against real data (~60% match, then worse after
+adding Interest/Principle fields) and not shippable without a correct formula, which needs either
+Aware/accounting input or a much deeper empirical sweep than time allowed today.
 
 ---
 
