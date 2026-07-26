@@ -21,12 +21,20 @@
 -- voluntary split is driven by motor_item_type, confirmed empirically this session - not a
 -- distinct payment_option value.
 --
--- NOT YET HANDLED: Credit Shell's recursive/pool schedule (§2.4 last row) - a cross-cutting
--- concern (an order can be RABBIT_CARE_INSTALLMENT AND part of a cancelled_change_orders chain
--- at once) whose exact recursive logic hasn't been independently verified against real data yet.
--- Flagged here rather than guessed at - orders in `careos.cancelled_change_orders` are excluded
--- from this spine for now (matches how several existing production views already exclude them),
--- pending a dedicated look at the actual credit-shell chain structure.
+-- CORRECTED 2026-07-26 (Boat): `careos.cancelled_change_orders` identifies Credit-Shell
+-- change-order chains - old_human_id is the superseded order (should interface to SAP as
+-- Cancelled (Change order)), current_human_id is the real replacement order (should interface as
+-- Paid with PaymentChannel "RCB Credit-Shell"). The original version of this file had this
+-- backwards: it excluded current_human_id (the real, active order) and did NOT exclude
+-- old_human_id (the superseded one) - meaning ~20k real paid order_items were invisible to this
+-- entire spine/expected_state/delta_export pipeline, while ~25k superseded order_items were
+-- flowing through as if they were normal active schedules. Caught only after a live backfill
+-- (021) picked up 11 old_human_id rows and generated wrong newpayment interface rows for them -
+-- corrected before the vendor's pull, see 30_SAP_CHANGELOG.md 2026-07-26 entries.
+-- Fix: exclude old_human_id only. current_human_id orders now flow through normally as regular
+-- schedule rows - NOT yet specially flagged with a distinct Credit-Shell flow/channel marker
+-- (stg_schedule doesn't carry PaymentChannel at all), which is still a real gap if a future
+-- Credit-Shell-aware export step needs to emit "RCB Credit-Shell" specifically.
 --
 -- total_periods formula (§2.3): GREATEST across 3 independent signals, never trust
 -- number_of_installment alone (A5) - matches installment_details actual max period, the current
@@ -71,7 +79,9 @@ BEGIN
     JOIN `pacific-plating-282708.careos.carepay_transactions` t
       ON CONCAT('transactions/', t.id) = o.payment
     WHERE o.human_id NOT IN (
-      SELECT current_human_id FROM `pacific-plating-282708.careos.cancelled_change_orders`
+      -- exclude only the superseded (old_human_id) side of a Credit-Shell change-order chain -
+      -- current_human_id is the real, active replacement order and must NOT be excluded
+      SELECT old_human_id FROM `pacific-plating-282708.careos.cancelled_change_orders`
     )
   ),
   routed AS (
