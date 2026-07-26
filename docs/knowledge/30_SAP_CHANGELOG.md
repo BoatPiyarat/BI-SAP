@@ -4,6 +4,24 @@ Append-only — entry ใหม่บนสุด ห้ามลบ/แก้�
 
 ---
 
+## 2026-07-26 (cont'd) — Confirmed prod can't self-heal the gap; wired P2/P3 into nightly chain
+
+Boat asked: would just re-running production close the ~1,900-3,500 missing-installment gap? Tested
+directly rather than assuming - joined recent (2026) `MISSING_NO_ROW_IN_SAP` rows from
+`delta_export` against the real `RCL_Motor_process_2_newpayment`/`RCL_NonMotor_process_2_newpayment`
+views. Result: only ~6% (Motor only) would surface on a re-run; 0% of NonMotor and 0% of
+MOTOR_TYPE_COMPULSORY missing periods would be caught - those legacy views are a forward-looking
+feed, not a diff against reality, so they structurally cannot close a historical gap.
+
+Extended `sp_nightly_state_and_recon_refresh` (`020_extend_nightly_refresh_with_p2_p3.sql`) to also
+call `sp_refresh_expected_state` -> `sp_run_validation` -> `sp_refresh_delta_export` nightly, after
+the existing P1 staging + `stg_sap_state` + recon steps. Verified live: `expected_state` and
+`delta_export` both landed at 1,465,025 rows, `sap_validation_error` = 0. This only refreshes the
+diagnostic tables - no file is written to `gs://interface-file/` from this yet; that's gated on
+reverifying the specific missing rows and passing them through validation first.
+
+---
+
 ## 2026-07-26 (cont'd) — SCHEDULE_GAP validation check root-caused and re-enabled
 
 Picked this back up (previously disabled, root cause unknown - see entry below) while root-causing

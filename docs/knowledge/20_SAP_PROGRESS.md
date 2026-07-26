@@ -1,5 +1,37 @@
 # 20_SAP_PROGRESS.md
-Last Updated: 2026-07-26 (URGENT column-reordering fix + SCHEDULE_GAP validation check root-caused and re-enabled) (overwrite ได้ — สถานะปัจจุบันเสมอ)
+Last Updated: 2026-07-26 (cont'd) - P2/P3 wired into nightly chain; confirmed prod does NOT self-heal the missing-installment gap (overwrite ได้ — สถานะปัจจุบันเสมอ)
+
+---
+
+## 🔌 P2/P3 WIRED INTO NIGHTLY CHAIN — 2026-07-26 (cont'd)
+
+Boat asked directly: will the existing production process detect and close the ~1,900-3,500 missing
+installments (orders with a real successful charge in CareOS that never got exported to SAP)? Tested
+this empirically instead of guessing - joined the recent (2026-only) `MISSING_NO_ROW_IN_SAP` rows
+from `delta_export` against the actual `RCL_Motor_process_2_newpayment` / `RCL_NonMotor_process_2_newpayment`
+views (the queries that really generate the nightly interface files). **Answer: no.** Of ~3,575
+genuinely-recent missing periods, only ~205 (~6%, Motor only) would surface if production ran again;
+**0% of NonMotor missing periods and 0% of MOTOR_TYPE_COMPULSORY missing periods would be caught** -
+the legacy per-flow queries are a forward-looking "what's newly payable today" feed, not a diff
+against reality, so they cannot self-heal a historical gap. This is exactly why `delta_export` was
+built.
+
+Boat's direction based on this: (1) wire the new P2/P3 refresh into the nightly chain so the gap is
+tracked going forward, (2) reverify the missing list and manually close today's backfill using a
+production query, after validation.
+
+**Done**: `sp_nightly_state_and_recon_refresh` (021, see 008/014 history) extended to call
+`sp_refresh_expected_state` -> `sp_run_validation` -> `sp_refresh_delta_export` after the existing
+P1 staging + `stg_sap_state` + recon refresh (order matters: expected_state needs stg_schedule/
+stg_payment_events refreshed first; delta_export needs both expected_state AND stg_sap_state).
+Deployed and run live end-to-end: `expected_state` and `delta_export` both landed at 1,465,025 rows
+(consistent 1:1), `sap_validation_error` = 0 (PK_DUP and SCHEDULE_GAP both clean). This closes the
+"wire into nightly schedule" item that had been open since P2/P3 were first built.
+
+**Not done yet**: this only refreshes the diagnostic tables nightly - it does NOT write any file to
+`gs://interface-file/`. Boat's "put everything in the bucket" ask is the next step, gated on
+validating the reverified missing list first (in progress) - per CLAUDE.md's hard rule, nothing
+gets written to that bucket without passing validation first, no exceptions.
 
 ---
 
