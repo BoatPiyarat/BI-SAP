@@ -1,5 +1,50 @@
 # 20_SAP_PROGRESS.md
-Last Updated: 2026-07-25 (cont'd 8, P1 STAGING LAYER BUILT AND LIVE) (overwrite ได้ — สถานะปัจจุบันเสมอ)
+Last Updated: 2026-07-25 (cont'd 9, P2 engine + P3 delta_export built and cross-validated) (overwrite ได้ — สถานะปัจจุบันเสมอ)
+
+---
+
+## 🏗️ P2 ENGINE + P3 DELTA_EXPORT BUILT — 2026-07-25 (cont'd 9)
+
+Continued "start building" P1-P3 per Boat's "skip to next tasks you can do without my new input."
+Auth expired mid-session (gcloud token), Boat re-authenticated, work resumed cleanly - nothing lost.
+
+**P2 built, all three real bugs caught by checking real data before trusting output:**
+- **`fn_invoice_no`** (`015_fn_invoice_no.sql`) - single UDF implementing the resolved B1 standard
+  (raw `third_party_id`, no prefix). Every future create-flow query should call this instead of
+  writing its own CONCAT/prefix logic.
+- **`expected_state`** (`016_expected_state.sql`) - the L3 engine, joins stg_schedule +
+  stg_payment_events into "what SAP should show." **Bug #1 caught**: `charges.id` (UUID) and
+  `charges.third_party_id` (real InvoiceNo source) are different fields - stg_payment_events
+  originally only captured `id`. Fixed before expected_state was built on top of it. **Bug #2
+  caught**: compulsory items' charges all get attributed to their voluntary sibling by the
+  item_rank de-fanout, leaving compulsory items permanently "Pending" even when SAP shows Paid -
+  fixed via order-level "any successful charge on this transaction" recognition, gated on
+  `motor_item_type = 'MOTOR_TYPE_COMPULSORY'` (not `flow` - a compulsory item can route to
+  ONETIME too, a narrower first fix missed those). **Bug #3 caught**: a single (order_item,
+  period) can have multiple SUCCESSFUL charges (verified: one period had 10 retry charges) -
+  fixed via dedup to the earliest charge per period.
+- **`sap_validation_error`** (`017_sap_validation_error.sql`) - PK_DUP check is live and clean (0
+  errors after the dedup fix). **SCHEDULE_GAP check disabled** - genuinely unreliable, not yet
+  root-caused (identical HAVING logic gives 0 rows as a plain SELECT but 728,745 rows via the
+  stored procedure, reproduced even after splitting a suspected UNION ALL interaction into two
+  sequential steps). Flagged for future investigation, not guessed at further.
+
+**P3 started - `delta_export`** (`018_delta_export.sql`, §2.7 L5): diffs `expected_state` against
+`stg_sap_state` at (order_item, period) grain - the modern successor to the 3-bucket
+`recon_careos_charges` model. **Cross-validated against the earlier, independently-built recon**:
+after excluding pre-2026 historical noise (259,396 rows from 2023 alone - the exact same
+historical-scope trap the recon already learned to avoid), genuinely-recent
+`MISSING_NO_ROW_IN_SAP` is 1,909 - close to the ~1,963 found completely independently earlier this
+session via the ad-hoc recon table. Two very different construction methods converging on
+basically the same number is a strong signal both are finding the same real thing, not an
+artifact of either approach.
+
+Not yet built: actual file generation (delta_export identifies what should change, but nothing
+writes a CSV from it), balance/master validation checks (§2.6 #3/#5 - deferred, no verified
+formula yet), Credit Shell's recursive schedule (still excluded from stg_schedule entirely),
+2026-scoping convenience view for delta_export (currently includes all-history noise, same as
+raw stg_schedule/expected_state - by design, for future reusability, but needs a scoped view for
+practical day-to-day use).
 
 ---
 
