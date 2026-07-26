@@ -1,5 +1,37 @@
 # 20_SAP_PROGRESS.md
-Last Updated: 2026-07-26 (cont'd) - Both Credit-Shell backfills exported (78 rows total); found the RCL Credit-Shell daily export step is entirely missing from automation; timeout fix script delivered (overwrite ได้ — สถานะปัจจุบันเสมอ)
+Last Updated: 2026-07-26 (cont'd) - Real import results in: RCL Credit-Shell backfill succeeded (37/37); RCB Credit-Shell backfill mostly failed on PolicyStatus duplicate (overwrite ได้ — สถานะปัจจุบันเสมอ)
+
+---
+
+## 📥 REAL IMPORT RESULTS: RCL CREDIT-SHELL SUCCEEDED, RCB CREDIT-SHELL MOSTLY BLOCKED — 2026-07-26 (cont'd)
+
+Both Credit-Shell backfills (022/023) came back from SAP:
+
+- **RCL Credit-Shell (37 rows, Upload LogID 21020)**: `Status: success` - all 37 rows imported clean,
+  real SAP journal entry references created (`RCB-JE-InstallmentRCL1stPeriod`, `RCL-JE-InstallmentRCL`).
+- **RCB Credit-Shell (41 rows, Upload LogID 21019)**: `Status: error` - nearly every row failed with
+  `PolicyStatus: is duplicated` (one row, L80395333, also showed
+  `PolicyStatus:In DB Status Cancelled not allow to interface`). One unrelated row (L79977888) failed
+  separately on `InsurerCode: is not found in DB`. One row (L80346837) failed on
+  `PaymentDate:Posting Periods must be Unlocked`.
+
+**Root cause, confirmed by Boat**: "PolicyStatus duplicated means it exists on SAP as Paid." These
+RCB Credit-Shell orders share their underlying PolicyNo with the superseded (`old_human_id`) order,
+and that policy is ALREADY marked Paid in SAP via the old order's own record. My backfill tried to
+create a fresh "Paid" record for the new (`current_human_id`) order under the same policy, which
+SAP correctly rejects as a duplicate - **this means most of these 41 "gaps" were never actually
+missing in the sense assumed**; the policy's Paid status already exists in SAP, just attached to the
+old order_item id rather than the new one. Attempted a live query to verify this via shared
+`U_PolicyNo` directly but it returned blank for both old/new order (likely because `SAP_LIVE_FULL`
+has multiple period-rows per OrderID and the query grabbed an unfiltered one, not the canonical
+row) - not yet re-run with a proper DISTINCT/period-aware query.
+
+**Open, not yet resolved**: the correct interfacing model for Credit-Shell orders where the
+underlying policy is already Paid is unclear - does SAP need a different flag/mechanism (e.g. an
+OrderID reassignment on the existing record) rather than a fresh Paid insert under the new order_item?
+This needs a proper design discussion, not another blind backfill attempt - re-submitting the same
+41 rows as-is would fail the same way. The `InsurerCode not found` and `Posting Periods must be
+Unlocked` errors on the 2 other rows are separate, smaller data-quality issues not yet triaged.
 
 ---
 

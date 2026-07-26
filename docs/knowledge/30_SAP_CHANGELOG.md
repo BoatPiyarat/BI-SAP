@@ -4,6 +4,18 @@ Append-only — entry ใหม่บนสุด ห้ามลบ/แก้�
 
 ---
 
+## 2026-07-26 (cont'd) — RCL Credit-Shell backfill succeeded, RCB Credit-Shell mostly blocked on shared-policy conflict
+
+Real import results: RCL Credit-Shell (37 rows) imported clean with real SAP journal entries. RCB
+Credit-Shell (41 rows) mostly failed with `PolicyStatus: is duplicated` - confirmed by Boat this
+means the policy already exists in SAP as Paid, via the superseded order that shares the same
+PolicyNo. Most of these 41 rows were not actually missing in the sense assumed; the correct
+interfacing model for a Credit-Shell order whose policy is already Paid under the old order_item
+needs a design decision, not another backfill attempt. Two unrelated smaller errors also surfaced
+(InsurerCode not found in DB; Posting Periods must be Unlocked) - not yet triaged.
+
+---
+
 ## 2026-07-26 (cont'd) — Both Credit-Shell backfills closed; RCL Credit-Shell has no daily export step at all
 
 Closed the 135-order Credit-Shell gap in two pieces: RCL (37 rows, `022_backfill_rcl_creditshell_20260726.sql`)
