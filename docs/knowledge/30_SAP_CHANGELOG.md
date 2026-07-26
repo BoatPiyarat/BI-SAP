@@ -4,6 +4,34 @@ Append-only — entry ใหม่บนสุด ห้ามลบ/แก้�
 
 ---
 
+## 2026-07-26 (cont'd) — Found Cloud Function root cause for create-flow investigation; timeout fix needs Console access
+
+Continuing the create-flow gap root cause: traced the actual GCS-writing mechanism to Cloud
+Function `rcb-motor-order-payment-sap-bucket-1` (triggered via Pub/Sub topic
+`motor-order-payment-sap-interface`, published daily 01:30 ICT by Cloud Scheduler job
+`sap-order-payment`). This one function runs 6 BigQuery export steps sequentially in a single
+invocation (RCB create/cancel/change/creditshell, RCL create, RCL newpayment) with a 300s timeout.
+
+Logs confirm it has **timed out every day for 5 straight days** (2026-07-21 to 2026-07-25), always
+killed around 296-299s while running step 6 (RCL newpayment - the exact view fixed for
+column-reordering earlier today). Steps 1 and 5 (the CREATE exports) complete successfully every
+day before the timeout hits, which rules out "the create file never gets generated" as the cause of
+the ~2,022-order gap - the real cause is either SAP-side rejection (no import logs available to
+confirm) or an intermittent exclusion not yet found. Left open per Boat - no further logs available
+this session.
+
+Attempted to fix the timeout via `gcloud functions deploy --timeout=540s` - blocked: the deployed
+source isn't reachable via CLI (no persistent archive URL), and omitting `--source` would have
+zipped up the wrong local directory. Did not proceed with an unsafe redeploy of a live production
+function. Needs a Console-side Edit (source-safe single-field change) from whoever has access -
+Boat approved raising it to 540s.
+
+Checked NonMotor's equivalent function (60s timeout): healthy 6 of 7 days (~33-37s runs), one
+59s/timeout spike on 2026-07-25 - the exact day of the column-reordering incident - looks like a
+one-off tied to that, not a chronic pattern.
+
+---
+
 ## 2026-07-26 (cont'd) — Credit-Shell chain bug fixed in stg_schedule; contaminated backfill caught and corrected
 
 While investigating the ~2,022-order create-flow gap, Boat clarified the real semantics of

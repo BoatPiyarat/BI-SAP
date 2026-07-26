@@ -1,5 +1,51 @@
 # 20_SAP_PROGRESS.md
-Last Updated: 2026-07-26 (cont'd) - Credit-Shell chain bug found in stg_schedule, fixed; contaminated backfill rows caught and corrected before vendor pull (overwrite ได้ — สถานะปัจจุบันเสมอ)
+Last Updated: 2026-07-26 (cont'd) - Cloud Function root cause found: Motor export times out daily on newpayment step, needs a Console-side timeout bump (overwrite ได้ — สถานะปัจจุบันเสมอ)
+
+---
+
+## 🚨 CLOUD FUNCTION ROOT CAUSE: rcb-motor-order-payment-sap-bucket-1 TIMES OUT DAILY — 2026-07-26 (cont'd)
+
+Continued the ~2,022-order create-flow gap investigation (Boat: "keep going into the create-flow
+root cause"). Found the actual GCS-writing mechanism: Pub/Sub topic
+`motor-order-payment-sap-interface` (published by Cloud Scheduler job `sap-order-payment`, daily
+01:30 ICT) triggers Cloud Function **`rcb-motor-order-payment-sap-bucket-1`** (asia-southeast1,
+Python 3.12, 512MB, `entryPoint: extract_and_store`).
+
+**This single function runs SIX BigQuery export steps sequentially in one invocation**, in this
+order: `01_RCB_Motor_process_1_create` → `02_RCB_Motor_process_2_cancel_new` →
+`03_RCB_Motor_process_3_change` → `04_RCB_Motor_process_4_creditshell` →
+`05_RCL_Motor_process_1_create` → `06_RCL_Motor_process_2_newpayment` (the exact view fixed for
+column-reordering earlier today). Configured timeout: **300s**.
+
+**Confirmed via logs: this function has timed out every single day for the last 5 consecutive
+days** (2026-07-21 through 2026-07-25), always killed at ~296-299s. Reading the logs chronologically:
+steps 1-5 complete and confirm their GCS writes successfully within the first ~70 seconds every
+day; step 6 (RCL newpayment) starts, logs its target filename, then the function is killed by the
+300s timeout before it can confirm that file was written. (Before that, 2026-07-19/20 it was
+crashing after only ~25-29s - a different, apparently since-resolved failure mode.)
+
+**Implication for the create-flow gap**: since steps 1 (RCB create) and 5 (RCL create) DO complete
+and write their CSVs successfully every day, "the create file never gets generated" is ruled out as
+the cause of the ~2,022-order gap. Two possibilities remain, neither confirmed: (a) these specific
+orders are being exported daily but SAP is silently rejecting them on import (nobody has been
+watching CREATE-flow import results the way NEWPAYMENT was watched today), or (b) something
+intermittently excludes them from the daily candidate set that I haven't found. Boat confirmed no
+SAP import logs are available for the CREATE-flow files specifically, so this couldn't be resolved
+further this session - **still open**.
+
+**Timeout fix NOT applied**: attempted `gcloud functions deploy ... --timeout=540s` (540s is the
+gen1 max) but the deployed source isn't reachable via CLI (no persistent `sourceArchiveUrl`, only a
+one-time signed `sourceUploadUrl` from the original deploy; omitting `--source` makes gcloud try to
+zip up the local working directory instead, which is wrong and was caught before doing anything
+destructive). **Needs Boat or whoever has Cloud Console access to bump the timeout to 540s via the
+Console's Edit UI** (a source-safe single-field change) - Boat approved this fix, just couldn't be
+completed via CLI this session.
+
+**Checked the NonMotor equivalent** (`rcb-nonmotor-order-payment-sap-bucket-1`, timeout 60s): runs
+in a healthy ~33-37s on 6 of the last 7 days (status 'ok'). Only 2026-07-25 - the exact day of the
+column-reordering incident and the RCL_HEALTH schema-drift fix - spiked to 59s and timed out. Looks
+like a one-off tied to that day's real incident, not a chronic pattern like Motor's. Still worth
+noting the margin is thin (60s limit vs ~35s typical runtime) if NonMotor's data volume grows.
 
 ---
 
