@@ -18,10 +18,12 @@ view uses) - no invented values. Excludes MOTOR_TYPE_COMPULSORY, RCB-channel, ca
 match production's own eligibility rules. Validated 279/279 clean (unique, Paid, has InvoiceNo,
 correct date format, schema matches production's 56-column layout exactly).
 
-Exported to `gs://interface-file/RCB_MOTOR/RCB_MOTOR_INSURANCE_RCB_MANUALCLOSE_NEWPAYMENT_GAP_20260726*.csv`
-(167,411 bytes) - confirmed landed. Will be picked up by the vendor's normal hourly pull; watch
+Exported to `gs://interface-file/RCB_MOTOR/` (167,411 bytes) - confirmed landed. Naming correction:
+the real template is `INSURANCE_RCB_<free text>`, not embedded mid-filename as I first used; Boat
+corrected it and the file was renamed to `INSURANCE_RCB_MANUALCLOSE_NEWPAYMENT_GAP_20260726*.csv`
+(same bytes/content, confirmed). Will be picked up by the vendor's normal hourly pull; watch
 tomorrow's import log to confirm clean. The ~2,022-order create-flow gap remains open, needs its
-own investigation.
+own investigation (in progress - see next entry).
 
 ---
 

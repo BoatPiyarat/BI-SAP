@@ -29,10 +29,12 @@ interface and let's close the gap today"). Full reverification trail (see `021_b
   today.
 
 **Exported** (Boat confirmed naming just needs to contain "INSURANCE_RCB", rest is free text) to
-`gs://interface-file/RCB_MOTOR/RCB_MOTOR_INSURANCE_RCB_MANUALCLOSE_NEWPAYMENT_GAP_20260726*.csv` -
-167,411 bytes, confirmed landed via `gsutil ls`. This will be picked up by the vendor's normal
-hourly pull - **watch tomorrow's import log to confirm all 279 rows import clean** (same log
-location as the column-reordering incident).
+`gs://interface-file/RCB_MOTOR/INSURANCE_RCB_MANUALCLOSE_NEWPAYMENT_GAP_20260726*.csv` (corrected
+naming: template is `INSURANCE_RCB_<free text>`, not embedded mid-name - my first export used the
+wrong prefix, Boat corrected it, file was renamed to match, same 167,411 bytes/content) - confirmed
+landed via `gsutil ls`. This will be picked up by the vendor's normal hourly pull - **watch
+tomorrow's import log to confirm all 279 rows import clean** (same log location as the
+column-reordering incident).
 
 **Staged in BigQuery** (not yet cleaned up): `sap_integration_v3.manual_close_20260726_motor_newpayment_gap`
 - kept for reference/audit until the import is confirmed clean.
