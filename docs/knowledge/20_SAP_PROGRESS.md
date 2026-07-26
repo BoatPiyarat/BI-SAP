@@ -1,5 +1,49 @@
 # 20_SAP_PROGRESS.md
-Last Updated: 2026-07-26 (cont'd) - manual backfill exported to gs://interface-file/RCB_MOTOR/ for the confirmed 279-row newpayment gap (overwrite ได้ — สถานะปัจจุบันเสมอ)
+Last Updated: 2026-07-26 (cont'd) - Credit-Shell chain bug found in stg_schedule, fixed; contaminated backfill rows caught and corrected before vendor pull (overwrite ได้ — สถานะปัจจุบันเสมอ)
+
+---
+
+## 🔧 CREDIT-SHELL CHAIN BUG FOUND AND FIXED IN stg_schedule — 2026-07-26 (cont'd)
+
+While investigating the ~2,022 "never created in SAP" orders, Boat corrected a wrong hypothesis
+(I'd found none were Credit-Shell by PaymentChannel) with the real semantics: **`careos.cancelled_change_orders`
+identifies Credit-Shell change-order chains** - `old_human_id` is the superseded order (should
+interface to SAP as `Cancelled (Change order)`), `current_human_id` is the real replacement order
+(should interface as `Paid` with `PaymentChannel = "RCB Credit-Shell"`).
+
+`012_stg_schedule.sql` had this **exactly backwards**: it excluded `current_human_id` (the real,
+active order - ~20,249 order_items with real successful charges were invisible to the entire
+V3 pipeline) and did NOT exclude `old_human_id` (the superseded order - ~25,009 order_items were
+flowing through stg_schedule/expected_state/delta_export as if they were normal active schedules).
+
+**Impact check before fixing further**: of the ~20,249 wrongly-excluded current_human_id items,
+20,114 (99.3%) are already correctly in SAP via some other path (not the dedicated
+`sap_integration_v2."04_new order credit shell"` view, which only covers 8,713 of them - most
+went through the normal create flow). Only ~135 are genuinely missing from SAP - much smaller than
+the raw exclusion count suggested. Not yet closed - flagged for the same backfill treatment as the
+279-row Motor gap, pending confirmation these went through the "RCB Credit-Shell" channel
+correctly wherever they did land.
+
+**Caught contamination in the already-exported 279-row Motor newpayment backfill** (see prior
+entry): 11 of those 279 rows were actually `old_human_id` (superseded) order_items - the bug meant
+my reverification never excluded them. The exported file
+(`gs://interface-file/RCB_MOTOR/INSURANCE_RCB_MANUALCLOSE_NEWPAYMENT_GAP_20260726*.csv`) had NOT
+yet been pulled by the vendor's hourly process - removed the contaminated file and re-exported a
+corrected 268-row version (`...20260726CORRECTED*.csv`, 161,160 bytes) before the next pull.
+
+**Fixed** `012_stg_schedule.sql`: exclude `old_human_id` only (not `current_human_id`). Deployed,
+ran the full nightly chain live: `stg_schedule`/`expected_state`/`delta_export` all at 1,462,333
+rows (down from 1,465,025 - net effect of removing ~25k superseded rows and adding back ~20k real
+ones, weighted by schedule length), `sap_validation_error` = 0 (both checks still clean).
+`delta_export` category counts post-fix are sane (OK: 1,036,380; MISSING_NO_ROW_IN_SAP: 376,073;
+NEEDS_PAID_UPDATE: 48,573; UNEXPECTED_ALREADY_PAID: 1,307) - no explosion, pipeline healthy.
+
+**Not yet done**: `current_human_id` orders now flow through as normal schedule rows, but
+`stg_schedule` still has no `PaymentChannel` field - if a future export step needs to specifically
+emit `"RCB Credit-Shell"` for these, that's a real, separate gap (not yet built). The ~135 genuinely
+missing current_human_id order_items still need their own backfill. The ~2,022-order create-flow
+gap from earlier (dominated by ONETIME/FULL_PAYMENT, confirmed NOT Credit-Shell-related) is still
+open and unresolved.
 
 ---
 

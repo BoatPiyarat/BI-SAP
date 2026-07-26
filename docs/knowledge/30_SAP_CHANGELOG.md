@@ -4,6 +4,36 @@ Append-only — entry ใหม่บนสุด ห้ามลบ/แก้�
 
 ---
 
+## 2026-07-26 (cont'd) — Credit-Shell chain bug fixed in stg_schedule; contaminated backfill caught and corrected
+
+While investigating the ~2,022-order create-flow gap, Boat clarified the real semantics of
+`careos.cancelled_change_orders`: it identifies Credit-Shell change-order chains -
+`old_human_id` = superseded order (should be `Cancelled (Change order)` in SAP), `current_human_id`
+= real replacement order (should be `Paid` with `PaymentChannel = "RCB Credit-Shell"`).
+
+`012_stg_schedule.sql` had this backwards: excluded `current_human_id` (~20,249 real, paid
+order_items made invisible to the whole V3 pipeline) and did NOT exclude `old_human_id` (~25,009
+superseded order_items flowing through as normal active schedules, contaminating every
+delta_export/validation result built on top).
+
+Checked impact before fixing: of the ~20,249 wrongly-excluded current_human_id items, 20,114
+(99.3%) are already correctly in SAP via some other path - only ~135 are a genuine gap.
+
+Caught real contamination in the already-exported 279-row Motor backfill (from the entry above):
+11 rows were old_human_id (superseded) orders. The file hadn't been pulled by the vendor yet -
+removed it and re-exported a corrected 268-row version before the next hourly pull.
+
+Fixed `stg_schedule` to exclude `old_human_id` only. Deployed, ran the full nightly chain live:
+1,462,333 rows across stg_schedule/expected_state/delta_export, `sap_validation_error` = 0, category
+breakdown sane (OK 1,036,380 / MISSING_NO_ROW_IN_SAP 376,073 / NEEDS_PAID_UPDATE 48,573 /
+UNEXPECTED_ALREADY_PAID 1,307).
+
+Open: `stg_schedule` still has no PaymentChannel field to specifically mark "RCB Credit-Shell" for
+a future export step; the ~135 genuinely-missing current_human_id items still need backfilling; the
+~2,022-order create-flow gap (confirmed unrelated to Credit-Shell) is still unresolved.
+
+---
+
 ## 2026-07-26 (cont'd) — Manual backfill exported: 279-row confirmed Motor newpayment gap closed
 
 Boat: "list the backfill and reverify, if it is real missing - use one of the production query to
