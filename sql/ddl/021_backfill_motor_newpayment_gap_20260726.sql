@@ -19,6 +19,15 @@
 --     (which don't use this periodic newpayment flow at all), zero RCB-channel (routed
 --     differently per Boat's A1 decision), zero cancelled orders.
 --
+-- CORRECTED same day after export: Boat clarified `careos.cancelled_change_orders` identifies
+-- Credit-Shell change-order chains - old_human_id should interface as Cancelled (Change order),
+-- current_human_id as Paid with PaymentChannel "RCB Credit-Shell". stg_schedule (012) only
+-- excludes current_human_id, NOT old_human_id - so 11 of the original 279 rows were actually
+-- old_human_id (superseded/cancelled) order_items that should never have gotten a normal
+-- newpayment row. Excluded below. The already-exported file
+-- (gs://interface-file/RCB_MOTOR/INSURANCE_RCB_MANUALCLOSE_NEWPAYMENT_GAP_20260726*.csv) is being
+-- replaced with this corrected 268-row version before the vendor's next hourly pull.
+--
 -- Source of truth for the row content: NOT re-derived or invented. `RCL 05_newpayment` (the real
 -- view feeding today's live NonMotor... err Motor newpayment production file) sources its full
 -- per-period financial breakdown (GrossPremium, interest/principal, etc.) from
@@ -52,6 +61,15 @@ WITH target AS (
     AND s.motor_item_type != 'MOTOR_TYPE_COMPULSORY'
     AND d.order_item IN (
       SELECT DISTINCT U_OrderItem FROM `pacific-plating-282708.sap_integration_v2.SAP_LIVE_FULL`
+    )
+    AND d.order_item NOT IN (
+      -- exclude superseded (old_human_id) orders from a Credit-Shell change-order chain -
+      -- these should never get a normal newpayment row, they belong to the Cancelled
+      -- (Change order) side of the chain, not the Paid side
+      SELECT DISTINCT oi.human_id
+      FROM `pacific-plating-282708.careos.cancelled_change_orders` cco
+      JOIN `pacific-plating-282708.careos.careos_orders` o ON o.human_id = cco.old_human_id
+      JOIN `pacific-plating-282708.careos.careos_order_items` oi ON oi.order_id = o.id
     )
 ),
 inst AS (
