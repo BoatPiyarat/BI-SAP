@@ -29,10 +29,14 @@
 --   delta_export before this change. Re-run and re-compared AFTER the view swap (see
 --   30_SAP_CHANGELOG.md 2026-07-27) — 0 unexplained diffs.
 --
--- Column contract preserved: sap_mirror_state has 2 extra columns (docs_considered,
--- resolution_confidence) beyond the original stg_sap_state 57. The view excludes both so any
--- existing `SELECT *` consumer sees an identical schema to before. Anything that wants the
--- provisional-pick flag should read sap_mirror_state directly, not stg_sap_state.
+-- Column contract: sap_mirror_state has 2 extra columns (docs_considered, resolution_confidence)
+-- beyond the original stg_sap_state 57. *** CHANGED 2026-07-27 (Boat, away-window plan item 3.2:
+-- "tag PROVISIONAL everywhere the picking rule appears") ***: initially excluded both to preserve
+-- an exact `SELECT *` schema match - reconsidered, since that meant nothing downstream of
+-- stg_sap_state (delta_export, interface_daily_status) could see which rows are provisional
+-- pending Aware's Q3a. Checked all real consumers first: none do `SELECT *` against stg_sap_state
+-- (delta_export and interface_daily_status both use named-column joins), so exposing the 2 extra
+-- columns is safe. `stg_sap_state` is now `SELECT * FROM sap_mirror_state` verbatim (no EXCEPT).
 --
 -- sp_refresh_sap_state (002) is NOT deleted (history/reference), but is no longer called by the
 -- nightly chain below — calling it now would fail anyway (CREATE OR REPLACE TABLE against a name
@@ -43,8 +47,9 @@
 DROP TABLE IF EXISTS `pacific-plating-282708.sap_integration_v3.stg_sap_state`;
 
 CREATE VIEW `pacific-plating-282708.sap_integration_v3.stg_sap_state` AS
-SELECT * EXCEPT(docs_considered, resolution_confidence)
-FROM `pacific-plating-282708.sap_integration_v3.sap_mirror_state`;
+SELECT * FROM `pacific-plating-282708.sap_integration_v3.sap_mirror_state`;
+-- (2026-07-27: was `SELECT * EXCEPT(docs_considered, resolution_confidence)` - now exposes both,
+-- see note above)
 
 -- Step 2: repoint the nightly chain (was 020_extend_nightly_refresh_with_p2_p3.sql) to refresh
 -- sap_mirror_doc + sap_mirror_state instead of the now-retired sp_refresh_sap_state.

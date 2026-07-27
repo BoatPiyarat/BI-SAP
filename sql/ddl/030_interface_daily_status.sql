@@ -46,6 +46,7 @@ BEGIN
       e.order_item, e.order_id, e.period, e.flow, e.expected_status, e.expected_invoice_no,
       e.expected_payment_date,
       s.TransactionStatus AS sap_status, s.U_InvoiceNo AS sap_invoice_no,
+      s.resolution_confidence,  -- added 2026-07-27: surfaces PROVISIONAL_PENDING_AWARE_Q3A rows
       SAFE.PARSE_DATE('%d%m%Y', s.PaymentDate) AS sap_payment_date,
       IFNULL(oi.is_cancelled, FALSE) AS is_cancelled,
       DATE(oi.cancel_time) AS cancel_date
@@ -75,7 +76,7 @@ BEGIN
   )
   SELECT
     order_item, order_id, period, flow, expected_status, expected_invoice_no, expected_payment_date,
-    sap_status, sap_invoice_no, is_cancelled, age_days, status,
+    sap_status, sap_invoice_no, resolution_confidence, is_cancelled, age_days, status,
     CURRENT_TIMESTAMP() AS computed_at
   FROM classified;
 

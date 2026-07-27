@@ -27,6 +27,7 @@ BEGIN
     e.expected_payment_date,
     s.TransactionStatus AS sap_status,
     s.U_InvoiceNo AS sap_invoice_no,
+    s.resolution_confidence,  -- added 2026-07-27: surfaces PROVISIONAL_PENDING_AWARE_Q3A rows
     CASE
       WHEN s.U_OrderItem IS NULL THEN 'MISSING_NO_ROW_IN_SAP'
       WHEN e.expected_status = 'Paid' AND IFNULL(s.U_InvoiceNo, '') = '' THEN 'NEEDS_PAID_UPDATE'

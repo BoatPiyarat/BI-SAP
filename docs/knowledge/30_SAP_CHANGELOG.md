@@ -4,6 +4,25 @@ Append-only — entry ใหม่บนสุด ห้ามลบ/แก้�
 
 ---
 
+## 2026-07-27 (cont'd) — 3.2: PROVISIONAL now visible downstream; new Q3a sub-question added
+
+Boat's item 3.2: tag the picking rule as PROVISIONAL everywhere it appears. Found a real gap:
+`stg_sap_state` (the view built earlier today over `sap_mirror_state`) deliberately excluded
+`docs_considered`/`resolution_confidence` to preserve an exact 57-column match with the old table -
+which meant nothing downstream (`delta_export`, `interface_daily_status`) could see which rows were
+`PROVISIONAL_PENDING_AWARE_Q3A` at all. Checked all real consumers first: none do `SELECT *`
+against `stg_sap_state` (both use named-column joins), so exposing the 2 extra columns is safe -
+`stg_sap_state` is now `SELECT * FROM sap_mirror_state` verbatim. Added `resolution_confidence` to
+`delta_export` and `interface_daily_status`'s own output columns too, so it's visible without an
+extra join.
+
+Also added a new Q3a sub-question to `SAP_CANCEL_IMPORT_SPEC_INFERRED_v0.9.md`: some multi-document
+periods have **no BatchRunDate at all** on any candidate (confirmed - 442 of 496 rows in the
+`Invoice` junk case, and the `SaleOrder` case entirely) - when there's no date signal whatsoever,
+what should indicate the current document? Currently falls through to `DocEntry DESC` alone.
+
+---
+
 ## 2026-07-27 (cont'd) — 1.4 daily digest retimed to 07:00 ICT; 2.2 (A2) interface_daily_status built
 
 **1.4**: retimed the existing RemoteTrigger email routine to exactly 07:00 ICT (was 06:00),

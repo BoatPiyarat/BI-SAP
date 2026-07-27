@@ -32,6 +32,18 @@ must equal the stored InvoiceNo exactly, else
 schedule doc + a later Paid payment doc), which document's InvoiceNo must the
 cancel row reference?** ← คำถามสำคัญสุด
 
+**Q3a (added 2026-07-27, same question, a harder sub-case)**: some multi-document periods have
+**no `BatchRunDate` at all** on any of their candidate documents — confirmed live, e.g. the 45-row
+`SaleOrder` junk-label case and 442 of the 496 `Invoice` junk-label rows
+(`docs/FINDINGS_SAP_MIRROR_20260726.md` §13) have `BatchRunDate = NULL`, and this isn't only a
+junk-label phenomenon — any real multi-doc period could in principle have the same gap. When
+**none** of the candidate documents have a date to order by at all, the current picking rule's
+last tiebreak (`BatchRunDate DESC`, then `DocEntry DESC`) falls through to `DocEntry` alone. **What
+should indicate which document is current when there is no date signal whatsoever?** (Options to
+put to Aware: DocEntry as a proxy for creation order — already the de facto fallback; some other
+SAP-side sequence/timestamp field not currently extracted; or treat undated multi-doc periods as
+inherently unresolvable and route them to a human queue instead of auto-picking.)
+
 **R4. Status precondition on other periods**
 Cancelling requires every other period of the same order in DB to be in
 status Paid or Pending:
