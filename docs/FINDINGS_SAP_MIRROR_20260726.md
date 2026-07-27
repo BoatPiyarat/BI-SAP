@@ -375,3 +375,63 @@ concrete than the 496/>10-doc "artifact" question.** Recommending Boat loop in w
 trusting any total it has ever produced. Not modifying this view myself — it's outside
 `sap_integration_v3` and outside this task's scope, and per the standing "propose first" rule this
 needs Boat's call on both the fix and who else needs to know. Logged in `docs/INPUTS_NEEDED.md`.
+
+---
+
+## ADDENDUM 4 (2026-07-27) — §14: sap_integrety_2025_RCL consumers, THB impact, and the 6 related views (one table, per Boat's ask)
+
+**⚠️ Kept strictly internal per Boat's instruction: not modifying any of these views, not
+notifying anyone outside the team, holding for Boat's return 2026-07-30.**
+
+**90-day consumer check** (`region-asia-southeast1.INFORMATION_SCHEMA.JOBS_BY_PROJECT`, exact
+view-name text match, not memory):
+
+| View | Real external consumers, last 90 days | Verdict |
+|---|---|---|
+| `sap_integrety_2025_RCL` | **None** — only 5 hits, all `data@rabbit.co.th` today (2026-07-27), all from this investigation itself | Structurally buggy but **dormant** — nobody has queried it directly in 90 days |
+| `sap_integrety_2025_Q1` | **None** — same pattern, 1 hit today from this investigation | Dormant |
+| `audit_010_careos_missing_in_sap_detail` | **Yes** — `piyaratt@rabbit.co.th` on 2026-05-06, 2026-05-29 (×2), 2026-06-05 — genuine, if infrequent, real usage | **Live** — this is the one that actually matters if it shares the bug |
+| `int_01_careos_missing_in_sap_summary` | None found in the same search window | Appears dormant (not exhaustively re-verified) |
+| `int_020_careos_cancelled_missing_summary` | None found | Appears dormant (not exhaustively re-verified) |
+| `sap_integrety_2025` | None found | Appears dormant (not exhaustively re-verified) |
+| `reconcile_revenue 202508_booking` | Not re-located during this pass (name suggests `sap_data_engineer` but wasn't found there under this exact search - **UNVERIFIED**, needs a proper re-check, not confirmed either way) | Unknown |
+
+**All 5 of the other `sap_integrety_2025*`/`int_0*` views also `SUM()` an amount field with no
+visible per-DocEntry/per-period dedup** (checked via `INFORMATION_SCHEMA.VIEWS` regex for
+`ROW_NUMBER`/`QUALIFY`/`DISTINCT DocEntry` — none present in any of the 5). **Structurally the same
+risk as `sap_integrety_2025_RCL`, not individually quantified** (time-boxed this investigation to
+the one confirmed-consumed view plus the one with the largest name-recognition; a full per-view
+THB quantification is a reasonable next step but wasn't done here).
+
+**THB delta by year × business unit for `sap_integrety_2025_RCL` specifically** (summed amount
+minus a single-document pick, for every (OrderID, OrderItem, Period) group where they differ;
+junk `Invoice`/`SaleOrder` OrderItem values excluded; grouped by `U_InsuranceGroup` and the batch
+year of the contributing documents):
+
+| Year | Business Unit | Affected groups | THB delta (summed − single-doc) |
+|---|---|---|---|
+| 2024 | Motor | 48,065 | +231,279,163.14 |
+| 2024 | Health | 4 | +93,691.56 |
+| 2024 | Corporate | 4 | +778.96 |
+| 2025 | Motor | 54,564 | +165,218,368.46 |
+| 2025 | Corporate | 63 | +13,986,701.70 |
+| 2025 | Health | 1,708 | +11,975,938.62 |
+| 2025 | Motorbike | 6 | +17,978.73 |
+| 2026 | Health | 7,531 | −14,710,900.18 |
+| 2026 | Motor | 30,435 | −10,383,320.68 |
+| 2026 | Inter | 2 | +36,712.00 |
+
+**Read this carefully before treating it as "double-counted money"**: this is the raw arithmetic
+difference between what this view's `SUM(NetAmount) GROUP BY (OrderID, OrderItem, Period)` produces
+today vs. what a single-authoritative-document pick would produce, for every group where they
+differ. It is **not** confirmed that all of it is erroneous overstatement — some portion is very
+plausibly genuine (real endorsements/adjustments producing multiple real documents with
+legitimately different amounts for the same period, which arguably *should* net together in some
+cases). What **is** confirmed: the view has no defined rule for when summing vs. picking-one is
+correct, so today's totals are unreliable by construction, in either direction (note 2026 shows
+**negative** deltas — summed-lower-than-single-doc — the opposite direction, consistent with
+inconsistent/undefined behavior rather than one-directional inflation). Given `sap_integrety_2025_RCL`
+itself is dormant (no real consumer in 90 days), there's no evidence anyone has acted on a wrong
+number from it recently — but `audit_010_careos_missing_in_sap_detail` **is** actively used and
+has not been checked for the same pattern in this pass (time-boxed) — that's the one to check
+first when this is picked back up.

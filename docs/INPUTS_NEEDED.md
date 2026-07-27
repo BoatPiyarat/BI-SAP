@@ -86,6 +86,19 @@ that inbox to yours, (c) tell me and I can look into whether the transfer config
 recreated under different ownership (would need to be done under the right identity, not
 something I can just reassign).
 
+## Boat — sap_integrety_2025_RCL follow-up (§14 in FINDINGS): dormant, but audit_010 isn't
+
+90-day consumer check: `sap_integrety_2025_RCL` and `sap_integrety_2025_Q1` have **no real
+consumers** in 90 days (only my own investigation queries today) - the bug is real but currently
+dormant. **`audit_010_careos_missing_in_sap_detail` IS actively used by you** (3 times in 90 days)
+and has the same unguarded-SUM pattern - not yet individually checked for the same double-counting
+risk (time-boxed this pass to the one confirmed-consumer view). Check that one first when you're
+back. THB delta for `sap_integrety_2025_RCL` computed by year/BU - see FINDINGS §14; note the sign
+flips between years (2024/2025 positive, 2026 negative), consistent with undefined/inconsistent
+behavior rather than one-directional overstatement - don't read the raw totals as "money lost."
+`reconcile_revenue 202508_booking` (one of the 6 remaining views) wasn't relocated in this pass -
+genuinely unverified, not confirmed dormant or active.
+
 ## Boat — URGENT, found 2026-07-27: a live view is double-counting money
 
 `sap_integration_v2.sap_integrety_2025_RCL` (301,188 rows, name suggests a Finance-facing
