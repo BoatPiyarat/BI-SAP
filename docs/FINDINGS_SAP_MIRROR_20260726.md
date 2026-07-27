@@ -1,0 +1,377 @@
+# FINDINGS — SAP Mirror Gap Discovery (2026-07-26)
+
+Executed against `TASK_CLEAN_SAP_MIRROR.md` STEP 1 (discovery-only, read-only, no approval needed).
+All commands run live against `pacific-plating-282708`. **Nothing built yet — this is the report,
+per the task's "Stop here and report. Do not build anything yet."**
+
+## 1. Objects found
+
+### `sap_integration_v2` (relevant subset — full list is 50+ objects, mostly ad-hoc analysis views)
+| Object | Type | Rows | Distinct DocEntry | Batch date range | Verdict |
+|---|---|---|---|---|---|
+| `SAP_LIVE` | TABLE | 151,024 | 106,873 | 2026-04-30 → 2026-08-15* | **TRUSTED but append-only (duplicates)** |
+| `SAP_LIVE_2024` | TABLE | 538,548 | 538,548 | 2024-01-31 → 2024-12-30 | TRUSTED (historical shard, 1:1) |
+| `SAP_LIVE_2025` | TABLE | 681,067 | 681,067 | 2024-12-30 → 2025-12-31 | TRUSTED (historical shard, 1:1) |
+| `SAP_LIVE_2026` | TABLE | 573,706 | 386,485 | 2025-12-30 → 2026-06-30 | **Has duplicates too** (1.49 rows/doc) |
+| `SAP_LIVE_FULL` | VIEW | 1,652,811 (post-dedup) | 1,652,811 | 2024-01-31 → 2026-08-15* | TRUSTED as a DocEntry-grain mirror, dedup logic is sound |
+| `sap_extract_control` | TABLE | 0 | — | — | **DEAD / unused** — real watermark lives in GCS, not here |
+
+*2026-08-15 max is 5 rows only (see §5, minor anomaly, not systemic staleness).
+
+`sap_integration_v3` already has the P0–P3 objects built earlier this project (`stg_sap_state`,
+`delta_export`, `expected_state`, `sap_validation_error`, `pipeline_run_log`, etc.) — unaffected by
+this task, not re-examined here.
+
+`SAP` dataset: legacy carepay reconciliation views/external tables (`IN_SAP_*`, `sap_carepay_view_*`).
+Nothing here is a fresher or more complete SAP mirror than `sap_integration_v2.SAP_LIVE_FULL` —
+these are all downstream analysis views built on top of it or its predecessors. **Branch A (a
+fresher mirror exists elsewhere) does not apply.**
+
+## 2. `SAP_LIVE_FULL` definition (read directly from BigQuery, not the repo)
+
+Unions `SAP_LIVE`, `SAP_LIVE_2024`, `SAP_LIVE_2025`, `SAP_LIVE_2026` (all `sap_integration_v2`),
+filters `WHERE U_InsuranceGroup <> 'B2B'` in every branch, then dedups by
+`ROW_NUMBER() OVER (PARTITION BY DocEntry ORDER BY BatchRunDate DESC) = 1`. Per its own header
+comment, this was already fixed 2026-07-07 to add the DocEntry-based dedup (previously used
+`SELECT DISTINCT *`, which silently merged rows that had one differing column and lost data).
+No row-dropping date filters beyond the B2B exclusion. **This view's logic is sound as a
+DocEntry-grain mirror** — the "missing records" problem is not inside this view's SQL.
+
+All 4 raw tables show **`b2b_rows = 0`** — B2B rows aren't merely filtered at this view, they don't
+exist in any raw table today. Cannot confirm from BigQuery alone whether B2B is filtered at extract
+(the repo's `main.py` copy) or simply doesn't apply to this business line — **needs Boat/Aware**,
+not resolvable by query.
+
+## 3. What the extract job actually does (contradicts the task doc's working assumption)
+
+`sap-extract-job` (Cloud Run Job, watermark-based incremental, VPC connector `sap-connector` to
+`172.25.25.3`):
+- Writes **one JSON-array file per run** to `gs://rcb-bronze-zone/SAP/production_database/Results_<ts>_<uuid>.json`
+- Watermark is tracked in **`gs://rcb-bronze-zone/SAP/_extract_control/_watermark_state.json`**
+  (currently `2026-07-26T13:43:53Z`), **not** in the `sap_extract_control` BigQuery table (which is
+  empty — dead code/table, safe to ignore or drop later, not urgent).
+- Confirmed via live logs: recent runs 07-24 through 07-26 all `success`, `caught_up=True`, 1,593–5,454
+  rows each.
+
+## 4. The loader — found and confirmed WORKING (task doc's "Branch B" assumption is wrong)
+
+The task doc assumed "nothing loads \[the GCS files\] reliably" (Branch B, called "most likely").
+**This is not what the evidence shows.** The real loader is:
+
+- **Cloud Run service `sap-order-payment-initial-phase`** (not a Cloud Function — a full Cloud Run
+  service, `extract_sap_data_to_big_query` handler), triggered via an **Eventarc trigger**
+  (`trigger-sap-order-payment-initial-phase`) subscribed to Pub/Sub topic
+  `eventarc-asia-southeast1-trigger-sap-order-payment-initial-phase-861`.
+- That topic is published to by **Cloud Scheduler job `auto_load_sap_data_in_bucket_to_bigquery`**,
+  schedule `0 1 * * *` **Asia/Bangkok** (01:00 ICT nightly).
+- Live logs confirm the full chain works: `Successfully loaded to pacific-plating-282708.sap_integration_v2.SAP_LIVE`
+  → `Removed file SAP/production_database/Results_*.json`. This is why the GCS output folder is
+  currently empty — **the loader deletes source files after a successful load, it isn't losing them.**
+- Recent history (last 3 days of logs): loaded successfully every time it found files; logged
+  `"No .json files to process"` on runs where the extract hadn't produced anything new (expected,
+  not an error).
+- **Loader only writes to `SAP_LIVE`** (the rolling/current table) — never touches the frozen
+  `SAP_LIVE_2024/2025/2026` year shards, which is correct/expected (those are historical, one-time).
+- **The loader appears to be a plain load-into-table (append), not a MERGE** — evidenced by
+  `SAP_LIVE` having 151,024 rows for only 106,873 distinct `DocEntry` (1.41 rows/doc). This matches
+  the task doc's predicted "Extract defect #3" (no DELETE/dedup branch) almost exactly, except it's
+  in the **loader**, not a BigQuery MERGE step — same effect either way: `SAP_LIVE_FULL`'s
+  `ROW_NUMBER()...ORDER BY BatchRunDate DESC` is currently the **only** place dedup happens.
+
+**Verdict: the extract → GCS → load → SAP_LIVE chain is fundamentally working and reasonably fresh
+(loaded as recently as today).** This directly contradicts the "stale/broken mirror" framing the
+task doc opened with. The missing-records problem is very likely **not** "the mirror isn't being
+refreshed" — see §6 for what the evidence actually points to.
+
+## 5. Freshness anomaly (minor, contained — not the root cause)
+
+5 rows in `SAP_LIVE` have `U_BatchRunDate = 2026-08-15` (3 weeks in the future relative to today).
+All 5 are `RF*`/`RR*`/`RC*`-prefixed `U_OrderItem` values (refund/reversal/credit-note flows, not
+`L`-prefixed motor/nonmotor orders) — looks like a distinct business flow with its own date
+semantics, not a systemic clock/watermark bug. Flagging for Boat's awareness; **not blocking**,
+doesn't change the branch recommendation below.
+
+## 6. Multi-document grain — this is where the real "wrong decisions" evidence is
+
+```
+n_docs per (OrderItem, Period)   item_periods (count)
+1                                 964,543
+2                                 300,319
+3                                  25,241
+4                                   2,705
+5–13                                   81
+45                                      1
+496                                     1   <-- one (OrderItem, Period) has 496 DocEntry rows
+```
+
+**31% of all (OrderItem, Period) combinations have 2+ DocEntry rows.** A flat DocEntry-grain mirror
+(`SAP_LIVE_FULL` as-is) has no way to answer "what's the true state of this OrderItem/Period" when
+there are multiple documents for it (change orders, endorsements, cancel-and-rebook, credit-shell
+reissues) — a consumer that naively picks "any row" or "first row" for that combination can and will
+get a stale/wrong status. **This is very likely the actual root cause of "rows SAP shows as Paid
+appear Pending"** — not staleness, but **ambiguous document-to-state resolution** exactly as the
+task doc's Step 3 (`sap_mirror_doc` + `sap_mirror_state` two-layer design) anticipated.
+
+Ground-truth spot check (5 known orders, corrected for the real `U_OrderItem` suffix format —
+`-V1`/`-M1`, not bare order IDs as originally listed in the task doc) confirms this pattern directly
+and confirms the mirror is NOT globally stale at the raw level: e.g. `L80100211-V1` shows Period 2
+= Pending and Period 3 = Paid (a later period paid before an earlier one — real, present in the
+data, not a staleness artifact), and `L77921401` has separate `-M1` and `-V1` variants both present
+for Period 1 with different `DocEntry`s. The raw data has the right facts; a flat single-row-per-doc
+mirror just doesn't have a rule for picking among them.
+
+## 7. SAP DB direct reachability (task item 1.8)
+
+Not reachable from this environment — confirmed via `Test-NetConnection 172.25.25.3:1433` →
+`TcpTestSucceeded: False`. The SAP DB is only reachable from inside the `sap-connector` VPC that
+`sap-extract-job` runs in. **Cannot get true source-side row counts or `null_update_rows`/`b2b_rows`
+without Boat running a query from within that job's environment (or granting a path).** Per the
+task's own instruction, not guessing this number — marking as needs-Boat.
+
+## 8. Branch decision
+
+**None of Branch A/B/C as literally described fit.** The evidence says:
+- The extract and load chain **is** working and reasonably fresh (contra Branch B's core assumption).
+- No fresher/more-complete mirror exists elsewhere (contra Branch A).
+- The data is not globally untrustworthy (contra Branch C).
+
+**Recommended target: proceed straight to STEP 3 (build `sap_mirror_doc` + `sap_mirror_state` in
+`sap_integration_v3`), skipping the Branch B "build our own loader" work** — the existing legacy
+loader doesn't need replacing, it needs a proper two-layer mirror built **on top of** its output
+(`SAP_LIVE_FULL`), because the actual defect is at the **resolution layer** (many DocEntry rows per
+OrderItem/Period, no consistent priority rule), not at the **ingestion layer**. This is a narrower,
+lower-risk task than Branch B/C implied — no need to touch the extract job, the loader, or build a
+new external table/backfill pipeline.
+
+Two things worth fixing opportunistically while building `sap_mirror_doc`/`sap_mirror_state` (both
+cheap, both already anticipated by the task doc's "Extract defects to verify" section):
+1. Confirm with Boat/Aware whether B2B should ever appear (currently 0 rows everywhere, at both
+   extract and view level) — low priority, no evidence it's actively causing the reported problem.
+2. Note for Boat: the append-only `SAP_LIVE` table (1.41 rows/DocEntry and growing forever) is a
+   storage/cost concern longer-term, not correctness (since `SAP_LIVE_FULL` already dedups
+   correctly) — no action needed now.
+
+**Stopping here per the task's instruction. Not building `sap_mirror_doc`/`sap_mirror_state` yet —
+want your confirmation on the branch call above before I start, since it changes scope from what the
+task doc originally laid out.**
+
+---
+
+## ADDENDUM (2026-07-26, after go-ahead) — pre-build forensics + build result
+
+Boat approved STEP 3 conditional on two additional checks before building the state layer. Both
+done, both reported below, then `sap_mirror_doc`/`sap_mirror_state` were built and validated.
+
+### 9. Duplicate-document forensics
+
+Full distribution of DocEntry count per `(U_OrderItem, U_Period)`:
+
+| n_docs | (item,period) keys | | n_docs | (item,period) keys |
+|---|---|---|---|---|
+| 1 | 964,543 | | 8 | 5 |
+| 2 | 300,319 | | 9 | 2 |
+| 3 | 25,241 | | 11 | 1 |
+| 4 | 2,705 | | 13 | 5 |
+| 5 | 37 | | 45 | 1 |
+| 6 | 25 | | 496 | 1 |
+| 7 | 11 | | | |
+
+**The two largest buckets (496 and 45 docs) are data-quality artifacts, not real orders**:
+`U_OrderItem = 'Invoice'` (496 rows, all `Period=1`, `BatchRunDate` 02–29 Apr 2024, mixed
+Paid/Cancelled) and `U_OrderItem = 'SaleOrder'` (45 rows, all `Period=1`, all Paid, **NULL**
+`BatchRunDate`) are SAP object-type labels that leaked into the OrderItem column — not real order
+IDs. Excluded at the state layer (see §11).
+
+The remaining genuine high-duplicate items (`L76956324-V1`, `L76915860-V1`, `L74212597-V1`, 6
+`(item,period)` keys with 11–13 docs each) were inspected row-by-row. Pattern: **same
+`GrossPremium`/`TotalPremium` across every duplicate, mostly identical `TransactionStatus =
+Pending`, no `U_InvoiceNo`, and DocEntry values clustered tightly (often within a few hundred of
+each other) on a small number of specific `BatchRunDate`s** (e.g. 10 distinct DocEntry rows for
+`L76956324-V1` period 3, all dated `21032024`) — **not** one new row appearing every subsequent
+night. This is not "real distinct SAP postings" in any obvious business sense (10 legitimate
+separate documents for the same still-unpaid installment, same date, same amount, no invoice, is
+not a plausible real-world SAP workflow) — it looks much more like **an extract-query fan-out
+artifact, or genuine duplicate schedule rows that already exist in the source table itself**.
+Cannot fully distinguish the two without SAP DB/Aware input — **flagged for Aware, not resolved
+here.**
+
+### 10. Completeness evidence without SAP DB access
+
+**DocEntry gap analysis** (the strongest available signal): sorted all distinct `DocEntry` values
+in `SAP_LIVE_FULL` and measured consecutive-pair gaps. **98.2% (1,622,566 of 1,652,810) of
+consecutive pairs are perfectly contiguous (gap = 1).** Only 389 gaps exceed 100, only 45 exceed
+1,000, biggest single gap 24,919. Since the extract's source is a single SAP table
+(`[RCB_LIVE_DB].[dbo].[@INSURANCE]`), near-total contiguity is a strong completeness signal — the
+existing gaps are consistent with the confirmed B2B exclusion (0 B2B rows in any table today) and
+other non-installment row types the extract's own source query never selects, not with a systemic
+hole.
+
+**Concrete missing-DocEntry number** (re-run 2026-07-27, per Boat's A5 ask — closing the open
+"add the number" item): summing every gap (`DocEntry - previous_DocEntry - 1`) across all
+1,656,763 distinct `DocEntry` values in `SAP_LIVE_FULL` today (range 367,560 → 2,398,293) gives
+**373,971 DocEntry values absent from the mirror** — 29,931 of 1,656,762 consecutive pairs
+(1.8%) have any gap at all, one single gap accounts for 24,918 of that total (see below). This is
+a **ceiling, not an estimate of real loss**: `DocEntry` is very likely a shared auto-increment
+across SAP's whole `@INSURANCE`-adjacent table set, not an insurance-installment-only sequence, so
+most of this gap is plausibly other business-object types the extract's own source query never
+selects (confirmed intentional: the B2B exclusion alone is 0 rows today, not the explanation) —
+not confirmable further without SAP DB access. Logged as an open item in `docs/INPUTS_NEEDED.md`
+(a 2-minute query for Boat/Aware to run at source: total `@INSURANCE` row count and a breakdown by
+row type, to convert this ceiling into a real number).
+
+**Log-based reconciliation**: only possible since **~2026-07-20** — earlier executions (07-12
+through 07-16) produced no structured row-count logging at all (an older code revision; the
+`secrets-fixed: 20260720` label marks when this changed). Since 07-20, every successful execution
+reported `caught_up=True`, including the run that absorbed a 3.75-day apparent outage
+(2026-07-16 13:30 → 2026-07-20 09:13) in one 4-chunk, 47,888-row catch-up with no sign of loss. The
+watermark file only advances on success (confirmed: 7 of ~20 lifetime executions failed, clustered
+around initial deploy 07-12 and the 07-20 fix, and none of them advanced the watermark) — an
+idempotent, retry-safe design that doesn't silently skip a failed window.
+
+**Both checks point the same direction: ingestion completeness is not the problem.** This
+reinforces the STEP 1 conclusion — the gap Boat is seeing is a resolution-layer problem
+(§6/§9), not a missing-data problem.
+
+### 11. Built: `sap_mirror_doc` + `sap_mirror_state`
+
+- **`sap_mirror_doc`** (`sql/ddl/024_sap_mirror_doc.sql`, `sp_refresh_sap_mirror_doc`): same 4
+  source tables and same per-DocEntry resolution as `SAP_LIVE_FULL`, but **no B2B filter** in any
+  branch — "เก็บครบ, ห้าม dedup ข้าม DocEntry" as instructed. Deployed and run live:
+  **1,652,811 rows = 1,652,811 distinct DocEntry** (matches `SAP_LIVE_FULL` exactly today, since
+  B2B is still 0 everywhere — this table just won't silently start dropping them if that changes).
+- **`sap_mirror_state`** (`sql/ddl/025_sap_mirror_state.sql`, `sp_refresh_sap_mirror_state`): one
+  row per `(U_OrderItem, U_Period)`, built on `sap_mirror_doc`. The picking rule is isolated in a
+  single, clearly-marked `ORDER BY` block (reused verbatim from `stg_sap_state`'s already-validated
+  logic: Cancelled > Paid > Pending, non-empty InvoiceNo wins ties, latest BatchRunDate wins
+  remaining ties) — the comment marks it as the one place to change when Aware answers Q3a. Every
+  row carries `docs_considered` (fan-out count) and `resolution_confidence`
+  (`UNAMBIGUOUS` when only one candidate existed, `PROVISIONAL_PENDING_AWARE_Q3A` when the picking
+  rule actually had to choose among 2+). `'Invoice'`/`'SaleOrder'` junk rows excluded before ranking.
+  Deployed and run live: **1,292,894 rows** (964,543 `UNAMBIGUOUS` + 328,351
+  `PROVISIONAL_PENDING_AWARE_Q3A`, i.e. 25% of the state layer is a provisional pick pending Aware).
+  Confirmed 0 rows with `U_OrderItem IN ('Invoice','SaleOrder')` made it through.
+
+**Not done yet, deliberately**: neither table is wired into the nightly refresh chain
+(`sp_nightly_state_and_recon_refresh`) or read by any consumer — that's a cutover decision (task
+doc STEP 5), separate from building them, and needs its own explicit go-ahead.
+
+---
+
+## ADDENDUM 2 (2026-07-27) — §12: definitive forensics on the >10-doc cases (per Boat's ask, before touching stg_sap_state)
+
+Boat asked for a hard answer — real SAP posting or artifact — on the 496-doc case and every
+`(OrderItem, Period)` key with >10 documents, checked on three specific signals: does amount
+repeat, does `BatchRunDate` progress nightly like a re-export, are `DocEntry` values genuinely
+different. Queried `sap_mirror_doc` directly (live, 2026-07-27). All 8 keys with `n_docs > 10`:
+
+| U_OrderItem | Period | n_docs | distinct DocEntry | distinct amount | distinct BatchRunDate | date range | statuses |
+|---|---|---|---|---|---|---|---|
+| `Invoice` (junk) | 1 | 496 | 496 | 374 | 21 | 2024-03-06 → 2024-05-08 | Cancelled, Paid |
+| `SaleOrder` (junk) | 1 | 45 | 45 | 40 | 0 (all NULL) | — | Paid |
+| `L76956324-V1` | 4 | 13 | 13 | **1** | 4 | 2024-03-19 → 2024-04-06 | Pending only |
+| `L76956324-V1` | 5 | 13 | 13 | **1** | 4 | 2024-03-19 → 2024-04-06 | Pending only |
+| `L76956324-V1` | 6 | 13 | 13 | **1** | 4 | 2024-03-19 → 2024-04-06 | Pending only |
+| `L76915860-V1` | 3 | 13 | 13 | **1** | 4 | 2024-03-19 → 2024-04-02 | Pending, Paid |
+| `L74212597-V1` | 6 | 11 | 11 | **1** | 3 | 2024-03-19 → 2024-04-04 | Pending only |
+
+**Answering the 3 questions directly:**
+1. **Amount duplicated?** Yes, for the 5 real-order keys — every single duplicate row within a key
+   shares one identical `U_TotalAmount` (18,523.82 / 7,516.16 / 9,570.64×3). Not true for the 2 junk
+   keys (374 and 40 distinct amounts across 496/45 rows — see below, different phenomenon).
+2. **Does BatchRunDate progress nightly (re-export pattern)?** No. Row-level detail (pulled for all
+   5 real-order keys) shows every duplicate clusters into **3-4 distinct dates total**, all inside a
+   single ~2.5-week window (**2024-03-19 → 2024-04-06**), and **nothing recurs after that window** —
+   not one new duplicate since. A true nightly re-export would show ~1 distinct date per doc,
+   continuing to the present; this is the opposite — a closed, one-time historical cluster.
+3. **Are DocEntry genuinely different?** Yes, every row (all 8 keys) has a distinct real `DocEntry` —
+   this is not the same document appearing twice under different keys.
+
+**The smoking gun (`L76915860-V1` period 3, row-level)**: 12 of its 13 rows are `Pending`,
+`U_ActualReceived = 0`, `U_InvoiceNo = NULL` — dead placeholders that were never paid or invoiced,
+ever. Exactly **one** row (`DocEntry 867756`) is `Paid`, carries a real `U_InvoiceNo`
+(`P670231006408`) and a real `PaymentDate` (2024-03-29) — same amount as all the others. This is
+the clearest possible evidence: one real posting, N inert duplicate placeholders. The other 4 keys
+(all-Pending, zero ever invoiced/paid) are the same pattern minus the one real event — i.e. these
+installments simply never got paid, and whatever process generated the schedule rows generated
+10-13 duplicates of the not-yet-existing invoice instead of one.
+
+**Verdict: artifact, not real repeated SAP postings.** None of this meets the "real distinct
+business postings" bar that would require stopping and escalating to Finance — no case shows more
+than one row per key ever carrying real money (`ActualReceived > 0` + real `InvoiceNo`), amounts
+never differ within a key (real adjustments/endorsements would differ), and the entire phenomenon
+is contained to a single ~2.5-week window over 2 years ago with zero recurrence since. Most likely
+cause: a batch/schedule-generation defect (extract-side or SAP-side) active only during that
+2024-03-19 → 2024-04-06 window — not confirmable further without SAP DB/Aware access, but not an
+active or ongoing risk either way. `sap_mirror_state`'s picking rule (Paid > Pending, non-empty
+InvoiceNo wins ties) already resolves every one of these keys correctly today — confirmed
+`L76915860-V1`/period 3 picks `DocEntry 867756` (the real Paid+invoiced row), not one of the 12
+dead Pending duplicates.
+
+**Separate, smaller finding on the 2 junk keys** (`Invoice`/`SaleOrder`): these are NOT duplicate
+postings of one order — `n_distinct_docentry = n_docs` (496=496, 45=45) and amounts vary widely
+(374 distinct values across 496 rows), spread over weeks (`Invoice`) or with no BatchRunDate at all
+(`SaleOrder`). This means **541 real, distinct SAP documents lost their true `U_OrderItem` value to
+a literal type-label string** — a genuine (if old, 2024-03 to 2024-05, non-recurring) data-quality
+defect, different in kind from the duplicate-schedule-row issue above. Already correctly excluded
+from `sap_mirror_state` (§11); not re-opening this investigation further without SAP DB/Aware
+access to trace why the real OrderItem was lost — noted in `docs/INPUTS_NEEDED.md`.
+
+---
+
+## ADDENDUM 3 (2026-07-27) — §13: reopened verdict on the 496 case + a real double-counting risk found elsewhere
+
+Boat asked to reopen §12's verdict before trusting it: re-confirm the 496 case is really distinct
+DocEntry, check whether it's a nightly re-export pattern, and — separately — check whether any
+existing view/report `SUM`s over `SAP_LIVE(_FULL)` in a way that would multiply a total by however
+many documents exist per period. If real documents genuinely exist in SAP, escalate regardless of
+whether our own mirror already dedups correctly.
+
+**1. Re-confirmed distinctness (`Invoice`, period 1, 496 rows)**: `COUNT(DISTINCT DocEntry) = 496`
+— every row is still a genuinely separate document, not the same DocEntry counted twice. Unchanged
+from §12.
+
+**2. Re-checked the re-export-pattern question with a finer breakdown — found something §12 missed**:
+grouping by `BatchRunDate` shows **442 of the 496 rows (89%) have a NULL `BatchRunDate`**, not
+spread across the "21 distinct dates" §12 reported (that figure only counted the non-null 54 rows —
+`COUNT(DISTINCT x)` silently excludes NULLs, and this wasn't caught before). The 442 NULL-date rows
+still show wide amount variance (345 distinct amounts, min 108.07 to max 2,936,480.82) — the
+opposite of what a single-document re-export would look like (which would show one narrow amount
+repeating). Per-date breakdown of the remaining 54 non-null rows: 1-10 rows per date, scattered
+across 21 dates from 2024-03-06 to 2024-05-08, with 1-8 distinct amounts per date (not 1) — still
+consistent with **many different real transactions**, not one thing re-exported nightly. Verdict
+from §12 stands: this is 496 genuinely distinct real transactions with a corrupted `OrderItem`
+field, not duplicate postings of one order. (Correction noted for the record: the NULL-BatchRunDate
+majority should have been called out in §12 and wasn't — fixed here.)
+
+**3. The real finding: searched the repo + live BigQuery for any `SUM(...)` reading `SAP_LIVE`/
+`SAP_LIVE_FULL` directly.** Found **`sap_integration_v2.sap_integrety_2025_RCL`** (a live, queryable
+view, 301,188 rows) doing exactly the risky pattern Boat asked about:
+```sql
+sap_raw AS (
+  SELECT REGEXP_REPLACE(U_OrderId, r'^C#', '') AS OrderID, U_OrderItem AS OrderItem,
+         SAFE_CAST(U_Period AS INT64) AS Period,
+         ROUND(SAFE_CAST(U_TotalAmount AS FLOAT64), 2) * CASE WHEN U_OrderId LIKE 'C#%' THEN -1 ELSE 1 END AS NetAmount
+  FROM `pacific-plating-282708.sap_integration_v2.SAP_LIVE_FULL`
+),
+sap_net AS (
+  SELECT OrderID, OrderItem, Period, SUM(NetAmount) AS SAP_NetAmount, ...
+  FROM sap_raw GROUP BY OrderID, OrderItem, Period
+)
+```
+This reads `SAP_LIVE_FULL` with **no per-(OrderItem,Period) dedup at all** before summing — every
+extra document for a period adds its full amount into the total. Quantified live: of 1,508,026
+(OrderID, OrderItem, Period) groups this logic produces, **144,013 (9.55%) have more than one
+document contributing to the sum, and in 142,381 of those the summed total is measurably different
+from what a single-document pick would give** — i.e. this view is producing a wrong total for
+~142K real groups *right now*, independent of anything in `sap_integration_v3`. Related views found
+by the same search, not yet individually re-verified: `sap_integrety_2025`, `sap_integrety_2025_Q1`,
+`audit_010_careos_missing_in_sap_detail`, `int_01_careos_missing_in_sap_summary`,
+`int_020_careos_cancelled_missing_summary`, `reconcile_revenue 202508_booking` (all in
+`sap_integration_v2`/`sap_data_engineer`, all matched `SUM(...)` + `SAP_LIVE` in the same search).
+
+**This is a real, confirmed, currently-live double-counting exposure — separate from and more
+concrete than the 496/>10-doc "artifact" question.** Recommending Boat loop in whoever owns/consumes
+`sap_integrety_2025_RCL` (name suggests a Finance-facing integrity/reconciliation report) before
+trusting any total it has ever produced. Not modifying this view myself — it's outside
+`sap_integration_v3` and outside this task's scope, and per the standing "propose first" rule this
+needs Boat's call on both the fix and who else needs to know. Logged in `docs/INPUTS_NEEDED.md`.

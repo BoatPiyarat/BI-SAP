@@ -1,5 +1,94 @@
 # 20_SAP_PROGRESS.md
-Last Updated: 2026-07-26 (cont'd) - Ran full live pipeline (extract -> interface -> bucket); caught Motor losing its newpayment file to timeout in real time; timeout fix applied and confirmed live (overwrite ได้ — สถานะปัจจุบันเสมอ)
+Last Updated: 2026-07-27 (cont'd) - PHASE 0 done; stg_sap_state collapsed into sap_mirror_state (2 real bugs found+fixed in the process); AS_BUILT_V3.md + INPUTS_NEEDED.md created; continuing into PHASE A (overwrite ได้ — สถานะปัจจุบันเสมอ)
+
+---
+
+## 🐛 TWO REAL BUGS FOUND AND FIXED WHILE COLLAPSING stg_sap_state/sap_mirror_state — 2026-07-27 (cont'd)
+
+Boat, after PHASE 0: collapse the two independently-computed "1 row per (OrderItem,Period)"
+tables into one (`stg_sap_state` → a view over `sap_mirror_state`), verify `expected_state`/
+`delta_export` unchanged first. Diffing the two live (before touching anything) found 46,642
+disagreeing keys, not the ~2 expected from junk exclusion alone — investigated instead of
+assuming either side was right:
+
+1. **`sap_mirror_doc`'s per-DocEntry dedup (024) was sorting `BatchRunDate` as a string, not a
+   date** — `ORDER BY BatchRunDate DESC` on the DDMMYYYY-formatted output column sorts
+   lexicographically (`"31032026"` > `"16062026"` alphabetically, even though 16 Jun is 3 months
+   *later* than 31 Mar). Silently kept stale rows for **44,781** keys. Fixed with
+   `SAFE.PARSE_DATE('%d%m%Y', BatchRunDate) DESC`.
+2. **Both picking rules had no final tiebreak for same-day same-status multi-invoice periods**
+   (e.g. two real "additional payment" charges both Paid the same date) — **1,861** keys picked
+   differently between the two implementations, arbitrarily. Fixed by adding `DocEntry DESC` as
+   the last `ORDER BY` key in both `002` and `025`.
+
+Re-verified clean (0 unexplained diffs) after both fixes, then executed the collapse
+(`026_collapse_stg_sap_state_to_view.sql`): `stg_sap_state` is now `SELECT * EXCEPT(docs_considered,
+resolution_confidence) FROM sap_mirror_state` (same 57-column contract, no consumer changes
+needed); nightly chain repointed to refresh `sap_mirror_doc`/`sap_mirror_state` instead of the
+retired `sp_refresh_sap_state`. Post-swap: `expected_state`/`delta_export` both **1,462,333 rows,
+identical to baseline**; `sap_validation_error` **24 → 22** (2 false positives from bug #1
+resolved); all 5 sampled real orders matched baseline except `L78199908-V1` period 2, which
+correctly flipped `NEEDS_PAID_UPDATE`/Pending → `OK`/Paid — proof the fix matters for real data.
+
+Also done: `docs/AS_BUILT_V3.md` (full live object inventory: tables/views/routines × ddl file ×
+scheduled? × documented?, compiled from `INFORMATION_SCHEMA` + `bq ls --transfer_config`, not
+memory) and `docs/INPUTS_NEEDED.md` (consolidates every open cross-team question: Attila's IAM
+grant, Aware's Q3a + SAP-DB-access items, Boat/accounting's 4 standing decisions).
+
+**A5 closed**: `FINDINGS_SAP_MIRROR_20260726.md` §10 now has a concrete number —
+**373,971 DocEntry values absent** from `SAP_LIVE_FULL`'s range (a ceiling, not a loss estimate;
+`DocEntry` is very likely a shared cross-object-type sequence, not insurance-installment-only —
+noted in INPUTS_NEEDED for Aware to convert into a real percentage).
+
+**Full duplicate-document forensics also closed** (Boat's other PHASE-A-adjacent ask, before any
+of the above): the 496-doc and all >10-doc `(OrderItem,Period)` keys were checked row-by-row for
+amount duplication, BatchRunDate progression, and DocEntry distinctness — verdict: **artifact, not
+real repeated SAP postings** (at most 1 row per key ever carried real money; the whole phenomenon
+is confined to a single ~2.5-week window in March-April 2024 with zero recurrence since). No
+Finance escalation triggered. Full detail: `FINDINGS_SAP_MIRROR_20260726.md` §12.
+
+---
+
+## 📄 TASK_V3_GAP_CLOSURE_v2 PHASE 0 CLOSED: design docs corrected — 2026-07-27
+
+Started the new gap-closure task (supersedes v1, built on the pre-07-24 architecture). Verified
+status per the task's own preamble, cross-checked against this file's history — all still true:
+V3 produces no interface file yet (legacy `sap_view.*` still generates every real file); `SAP_LIVE`
+is genuinely fresh (the earlier "stale mirror" diagnosis was wrong — real defect is 328,071
+multi-document (OrderItem, Period) keys with no agreed picking rule); `sap-extract-schedule` is
+still failing 401 UNAUTHENTICATED, still blocked on Attila's IAM grant.
+
+PHASE 0 (cheap, do-first, doc-only — no production change): grepped the whole repo for
+`raw_sap_live`/`sap-bucket-csv`/`auto_load_sap_data_in_bucket_to_bigquery`/`B1` (21 files). Most
+were already correctly annotated from the 2026-07-24 correction (CLAUDE.md, AGENTS.md,
+`10_SAP_CONTEXT.md`, `SAP_INTERFACE_REDESIGN_V3.md`, all the `sql/ddl/*` hits, this file and the
+changelog themselves as historical record). Fixed the ones that weren't:
+`SAP_PIPELINE_E2E_DESIGN_v3.md` (correction banner + diagram/timeline/decision-table fixes),
+`SAP_DASHBOARD_DESIGN_v1.md` (Page 4 freshness widget repointed + new extract-scheduler-health
+widget added — the current 401 failure would've been invisible on the old design),
+`SAP_DATA_PREP_DESIGN_v3.md` (banner + explicit two-layer rule: `sap_mirror_doc` evidence/no-dedup
+vs `sap_mirror_state`/`stg_sap_state` opinion/1-row-per-period), `SAP_RUNBOOK_v3.md` (D1 check),
+`sql/ddl/README.md` (was stale at 3/25 files listed — rewrote with the full current list). Full
+detail in `30_SAP_CHANGELOG.md` 2026-07-27 entry.
+
+**Status table (built / verified / still-assumed) for PHASE 0**:
+| Item | Status |
+|---|---|
+| Repo-wide grep for stale raw_sap_live/B1 refs | ✅ done, verified — 21 hits triaged, 6 files fixed |
+| "Fresh session reading only docs/ can't conclude raw_sap_live exists" (acceptance criterion) | ✅ verified — no un-annotated live-sounding reference remains |
+| PHASE A (safety net over legacy pipeline: A0-A5) | ⏳ not started |
+| PHASE B/C/D (expected_state completeness, shadow export, cutover) | ⏳ not started |
+
+**Not yet done**: PHASE A0 (draft the exact IAM ask for Attila into `docs/INPUTS_NEEDED.md` — file
+doesn't exist yet, needs creating), A1 (column-contract guard), A2 (daily recon+alert on legacy
+output), A3 (import-log ingestion), A4 (multi-document resolution reconciliation — note:
+`sap_mirror_doc`/`sap_mirror_state` from the prior `TASK_CLEAN_SAP_MIRROR.md` session already exist
+and likely satisfy this item's intent; A4 explicitly says reconcile with `stg_sap_state` rather than
+build a third definition — needs a decision, not a silent build), A5 (completeness evidence — also
+likely already covered by the DocEntry gap analysis in `FINDINGS_SAP_MIRROR_20260726.md` §10).
+Housekeeping's "renumber duplicate 019_*.sql" is moot — checked `ls sql/ddl/`, no duplicate exists
+(the draft `019_remove_expectedreceived_column.sql` mentioned in the 2026-07-26 changelog was
+already deleted before this session).
 
 ---
 

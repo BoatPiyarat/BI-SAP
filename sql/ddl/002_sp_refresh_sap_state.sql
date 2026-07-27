@@ -55,7 +55,11 @@ BEGIN
                WHEN TransactionStatus IN ('Paid', 'paid') THEN 1
                ELSE 2 END,
           CASE WHEN IFNULL(U_InvoiceNo, '') != '' THEN 0 ELSE 1 END,
-          PARSE_TIMESTAMP('%d%m%Y', BatchRunDate) DESC
+          PARSE_TIMESTAMP('%d%m%Y', BatchRunDate) DESC,
+          DocEntry DESC  -- final deterministic tiebreak, added 2026-07-27 to match
+                         -- 025_sap_mirror_state.sql's picking rule exactly (same-day
+                         -- same-status multi-invoice ties were otherwise arbitrary) —
+                         -- see 30_SAP_CHANGELOG.md 2026-07-27
       ) AS rn
     FROM `pacific-plating-282708.sap_integration_v2.SAP_LIVE_FULL` r
   )

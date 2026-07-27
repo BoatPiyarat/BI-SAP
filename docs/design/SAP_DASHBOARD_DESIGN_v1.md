@@ -42,9 +42,17 @@ Source ทั้งหมด = ตารางระบบที่ pipeline เ
 
 ## Page 4 — Freshness (คำถาม: ข้อมูลที่ใช้ตัดสินใจ สดแค่ไหน)
 
+> ⚠️ **แก้ 2026-07-27**: `raw_sap_live` ไม่มีอยู่จริง (ดู `docs/knowledge/10_SAP_CONTEXT.md`
+> §ARCHITECTURE). "SAP truth age" ต้องอ่านจาก `SAP_LIVE`/`sap_extract_control`/
+> `_watermark_state.json` แทน — คือ source จริงที่ `sap-extract-job` → Eventarc →
+> `sap-order-payment-initial-phase` เขียนเข้า. เพิ่ม widget ใหม่สำหรับ extract-scheduler
+> health ด้วย (ไม่มีของเดิมเลย — การล่ม 401 ของ `sap-extract-schedule` 3+ คืนที่ผ่านมาจะ invisible
+> บน design เดิม 100%).
+
 | Widget | นิยาม | Threshold |
 |---|---|---|
-| SAP truth age | NOW − MAX(extracted_at) ของ raw_sap_live | เขียว <26 ชม. / แดง >30 ชม. |
+| SAP truth age | NOW − MAX(BatchRunDate) ของ `SAP_LIVE` (ไม่ใช่ `raw_sap_live`) | เขียว <26 ชม. / แดง >30 ชม. |
+| **Extract-scheduler health** (ของใหม่) | สถานะ run ล่าสุดของ `sap-extract-schedule` (Cloud Scheduler → `sap-extract-job`) จาก Cloud Logging/`sap_extract_control`/`_watermark_state.json` — แยกจาก "SAP truth age" เพราะ scheduler ล่มแบบ 401 ไม่ทำให้ watermark ขยับผิดปกติทันที | แดง = execution ล่าสุด ≠ SUCCESS หรือไม่มี execution ภายใน 26 ชม. |
 | Watermark lag ต่อ staging | NOW − watermark (order_dim / events / schedule) | <26 ชม. |
 | Export → Ack lag | เวลาเฉลี่ย exported → acked (rolling 7 วัน) | เป้า ≤ D+1 |
 | Extract volume trend | rows_extracted ต่อคืน 30 วัน | ดิ่งผิดปกติ = E2 ใน runbook |

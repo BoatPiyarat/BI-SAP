@@ -50,7 +50,7 @@ ORDER BY started_at;
 | **X1** ไฟล์ไม่โผล่ใน gs://interface-file | `SELECT * FROM pipeline_run_log WHERE step='export'` + `gsutil ls -l gs://interface-file/<BU>/ | tail` | ถ้า sp สำเร็จแต่ไฟล์ไม่มี = สิทธิ์ GCS → เช็ค SA ของ BQ EXPORT DATA |
 | **S1** SAP import error กลับมา (log จาก Aware) | upload log เข้า `sap_import_result` แล้ว `SELECT error_type, COUNT(*) ... GROUP BY 1` | duplicated = แถวเคยเข้าแล้ว (ตรวจ recon ว่าทำไม delta ไม่กัน); InvoiceNo = เทียบ `stg_sap_state.sap_invoice_no` กับไฟล์; sequence = เช็ค V2 ว่าหลุดได้ไง — ทุกเคสเปิด incident ลง INCIDENT_LOG |
 | **F1** Recon MISSING ค้าง > D+2 | `SELECT * FROM recon_careos_interface WHERE status='MISSING' AND age_days>2` | ดูว่า item ติด validation (→แก้ข้อมูล) หรือ export แล้ว SAP ไม่รับ (→ดู sap_import_result) |
-| **D1** Dashboard freshness แดง (sap_state เก่า) | เทียบ `MAX(extracted_at)` ใน raw_sap_live กับตอนนี้ | = extract ไม่วิ่ง → E1/W0 |
+| **D1** Dashboard freshness แดง (sap_state เก่า) | เทียบ `MAX(BatchRunDate)` ใน `SAP_LIVE` กับตอนนี้ (ไม่ใช่ `raw_sap_live` — ไม่มีอยู่จริง, แก้ 07-27) | = extract ไม่วิ่ง → E1/W0 |
 
 ## 4. Urgent Request ระหว่างวัน (FA ส่ง list มา ไม่รอ 20:30)
 

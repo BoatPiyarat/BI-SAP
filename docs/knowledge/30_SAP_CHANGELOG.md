@@ -4,6 +4,95 @@ Append-only — entry ใหม่บนสุด ห้ามลบ/แก้�
 
 ---
 
+## 2026-07-27 (cont'd) — stg_sap_state collapsed into a view over sap_mirror_state; 2 real bugs found and fixed in the process
+
+Boat, after PHASE 0: collapse the two independently-computed "1 row per (OrderItem, Period)"
+definitions (`stg_sap_state` from `002_sp_refresh_sap_state.sql`, `sap_mirror_state` from
+`025_sap_mirror_state.sql`) into one, verify `expected_state`/`delta_export` unchanged (row count +
+5 spot-check orders) before touching anything.
+
+**Before collapsing, diffed the two live (both refreshed back-to-back for a fair comparison):
+46,642 (OrderItem, Period) keys disagreed** (row counts themselves matched almost exactly - 2-row
+diff, exactly the known `Invoice`/`SaleOrder` junk-key exclusion). Investigated rather than assumed
+either side was right:
+
+1. **Real bug, 44,781 of the 46,642 (96%)**: `024_sap_mirror_doc.sql`'s per-DocEntry dedup did
+   `ROW_NUMBER() OVER (PARTITION BY DocEntry ORDER BY BatchRunDate DESC)`, but by that point in the
+   query `BatchRunDate` is the DDMMYYYY **string** output column, not a date - `"31032026"` (31 Mar)
+   sorts ahead of `"16062026"` (16 Jun) lexicographically. This silently kept a stale row for every
+   DocEntry whose true latest batch didn't also sort highest as a string - confirmed with a direct
+   example (`L78199908-V1` period 2, DocEntry 2078950): `sap_mirror_doc` showed it Pending from a
+   31-Mar-2026 batch while `SAP_LIVE_FULL`/`stg_sap_state` correctly showed the same DocEntry Paid
+   from its real 16-Jun-2026 latest batch. Fixed with `SAFE.PARSE_DATE('%d%m%Y', BatchRunDate) DESC`.
+2. **Real gap, 1,861 of the 46,642 (4%)**: same-day, same-status, multi-invoice periods (e.g. two
+   real "additional payment" charges both Paid the identical BatchRunDate - confirmed example
+   `L80305712-V1` period 1, DocEntry 2333190 vs 2333191, both Paid, invoices `2_L80305712-V1` vs
+   `1_L80305712-V1`) had no final deterministic tiebreak in either picking rule's `ORDER BY`, so
+   which one "won" varied unpredictably between the two separately-computed queries. Added
+   `DocEntry DESC` as the last tiebreak to both `002` and `025` (highest DocEntry = most recently
+   created document).
+
+Re-verified after both fixes: **0 unexplained diffs** between `stg_sap_state` and `sap_mirror_state`
+(only the intentional 2-row junk exclusion remains).
+
+**Collapse executed** (`026_collapse_stg_sap_state_to_view.sql`): dropped `stg_sap_state` as a
+table, recreated it as `SELECT * EXCEPT(docs_considered, resolution_confidence) FROM
+sap_mirror_state` - exact original 57-column contract preserved, no consumer needs to change.
+Repointed `sp_nightly_state_and_recon_refresh` to call `sp_refresh_sap_mirror_doc` +
+`sp_refresh_sap_mirror_state` instead of the now-retired `sp_refresh_sap_state` (kept for history,
+no longer called - would now fail anyway since `CREATE OR REPLACE TABLE` can't target a view).
+
+**Post-swap verification** (re-ran `expected_state` → `sp_run_validation` → `delta_export`):
+`expected_state`/`delta_export` both **1,462,333 rows, identical to the pre-swap baseline**.
+`sap_validation_error` dropped **24 → 22** (2 fewer - false positives caused by bug #1's stale
+statuses, now resolved). All 5 sampled real order_items (`L79510892-V1`, `L78199908-V1`,
+`L78322469-V1`, `L77764180-V1`, `L78250933-V1`) matched the baseline exactly, **except**
+`L78199908-V1` period 2, which correctly flipped from `NEEDS_PAID_UPDATE`/Pending (the bug) to
+`OK`/Paid (the fix) - a live demonstration of bug #1 actually mattering for real data, not just a
+theoretical edge case.
+
+---
+
+## 2026-07-27 — TASK_V3_GAP_CLOSURE_v2 PHASE 0: design docs corrected, `raw_sap_live`/B1 confirmed never real
+
+Started `TASK_V3_GAP_CLOSURE_v2.md`. PHASE 0 (documentation-only, no production change) closed
+first per the task's own "cheap, do this first" sequencing.
+
+Grepped the whole repo for `raw_sap_live`, `sap-bucket-csv`, `auto_load_sap_data_in_bucket_to_bigquery`,
+`B1` (21 files matched). Confirmed by file:
+- **Already correctly annotated, no change needed**: `CLAUDE.md`, `AGENTS.md`, `docs/knowledge/10_SAP_CONTEXT.md`
+  (the authoritative source — has the full 2026-07-24 ARCHITECTURE correction + 2026-07-23 ADDENDUM
+  override), `docs/design/SAP_INTERFACE_REDESIGN_V3.md` (has its own 2026-07-24 STATUS UPDATE banner),
+  `sql/ddl/002_sp_refresh_sap_state.sql`, `003_PROPOSED_repoint_sap_live_full.sql`,
+  `005_recon_all_charges.sql`, `006_dashboard_views.sql`, `015_fn_invoice_no.sql`,
+  `016_expected_state.sql` (all mention `raw_sap_live`/B1 only to say it doesn't exist / was the root
+  cause of a since-fixed bug), `docs/knowledge/_draft_message_attila.md` (its `sap-bucket-csv@...`
+  reference is a real, still-relevant service account, not a stale pipeline name), `20_SAP_PROGRESS.md`/
+  `30_SAP_CHANGELOG.md` themselves (append-only historical record — not touched, per house rule) and
+  `docs/tasks/*` / `docs/FINDINGS_SAP_MIRROR_20260726.md` (already accurate).
+- **Fixed** (genuinely misleading, no prior annotation):
+  - `docs/design/SAP_PIPELINE_E2E_DESIGN_v3.md` (0.1): added a correction banner; fixed the ทิศ-2
+    diagram (`MERGE → raw_sap_live` → real `sap-order-payment-initial-phase` → `SAP_LIVE` chain),
+    removed the "☠ SUNSET B1" line and component-inventory rows, fixed the pull-cadence timeline
+    (15-min/:30 processing, not "รายชั่วโมง"/"21:00"), and marked decision #4 (backfill scope) moot.
+  - `docs/design/SAP_DASHBOARD_DESIGN_v1.md` (0.2): Page 4 freshness widget repointed to
+    `SAP_LIVE`/`sap_extract_control`/`_watermark_state.json`; added a new extract-scheduler-health
+    widget (the current 401 IAM failure would have been invisible on the old design).
+  - `docs/design/SAP_DATA_PREP_DESIGN_v3.md` (0.3): added a correction banner explaining
+    `stg_sap_state` sources `SAP_LIVE_FULL`, and stated the two-layer rule explicitly
+    (`sap_mirror_doc` = evidence/no-dedup, `sap_mirror_state`/`stg_sap_state` = opinion/1-row-per-period,
+    picking rule in one place, `PROVISIONAL_PENDING_AWARE_Q3A` pending Aware's Q3a).
+  - `docs/design/SAP_RUNBOOK_v3.md`: fixed the D1 diagnostic query (`raw_sap_live` → `SAP_LIVE`).
+  - `sql/ddl/README.md`: was badly stale (only listed 3 of 25 files, described 002/003 against
+    `raw_sap_live`) — rewrote with the current full file list and corrected 002/003 descriptions.
+
+Net effect: a fresh session reading only `docs/` can no longer conclude `raw_sap_live` exists as a
+real, current object — every remaining mention is either historical (changelog/progress, correctly
+read as "this used to be believed") or explicitly annotated as wrong. Acceptance criterion from
+`TASK_V3_GAP_CLOSURE_v2.md` PHASE 0 met.
+
+---
+
 ## 2026-07-26 (cont'd) — PolicyStatus duplicate root cause not found; 3 hypotheses ruled out with evidence
 
 Tested 3 hypotheses for why RCB Credit-Shell import failed with `PolicyStatus: is duplicated`:

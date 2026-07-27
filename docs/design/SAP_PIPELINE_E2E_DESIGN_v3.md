@@ -2,6 +2,30 @@
 Date: 2026-07-23 | Status: DESIGN REVIEW (ก่อนลงมือ P0)
 คู่กับ: SAP_INTERFACE_REDESIGN_V3.md (query/logic layer) — ฉบับนี้คือ orchestration + ภาพรวมทั้งระบบ
 
+> ⚠️ **CORRECTION 2026-07-27 — อ่านก่อนเชื่อ `raw_sap_live`/B1 ในเอกสารนี้:** ทั้งสองไม่มีอยู่จริง
+> (verified ผ่าน bq/gcloud 2026-07-24 — authoritative source: `docs/knowledge/10_SAP_CONTEXT.md`
+> §ARCHITECTURE). ทิศ 2 (SAP → BigQuery) ทำงานจริงตามนี้แทน: `sap-extract-job` เขียน NDJSON
+> **ชั่วคราว** ลง `gs://rcb-bronze-zone/SAP/production_database/` → Eventarc trigger
+> **`sap-order-payment-initial-phase`** (Cloud Run **service**, ไม่ใช่ Cloud Function) → load เข้า
+> `sap_integration_v2.SAP_LIVE` แล้วลบไฟล์ต้นทาง — ทุกจุดด้านล่างที่เขียน "MERGE → raw_sap_live"
+> ให้อ่านเป็นขั้นตอนนี้แทน
+>
+> **"☠ SUNSET B1" ไม่มีความหมายอีกต่อไป** — ไม่เคยมี B1/B2 คู่ขนานจริง มีแค่ path เดียวข้างบน.
+> `SAP_LIVE_FULL` (union ของ SAP_LIVE + SAP_LIVE_2024/2025/2026, dedup by DocEntry) คือ SAP source
+> เดียวที่มีจริง — ใช้ต่อได้ ไม่ต้อง sunset. ต้องการ 1 แถว/(OrderItem, Period) ใช้
+> `sap_integration_v3.stg_sap_state` แทน (SAP_LIVE_FULL เองมี duplicate 328k+ keys ที่ระดับนี้).
+>
+> **Path B ข้างต้น "event-driven" อยู่แล้ว** (extract → Eventarc → loader — ไม่ต้องสร้างใหม่ตามที่
+> เอกสารนี้เสนอ). ของที่ยังขาดจริงคือการ chain **V3 SQL steps** (sap_state → recon → expected_state →
+> validate → export) เข้าด้วยกันเป็นเส้นเดียว — ดู `TASK_V3_GAP_CLOSURE_v2.md` PHASE A/B/C.
+>
+> **Pull cadence แก้ไข**: SAP ดึงไฟล์ทุก 15 นาที (:00/:15/:30/:45) แต่ประมวลผลจริงที่นาที **:30**
+> ของทุกชั่วโมง (Boat ยืนยัน 07-25) — ไม่ใช่ "รายชั่วโมง"/"21:00" ตามที่เขียนไว้เดิมด้านล่าง; คำนวณ
+> timing claim ใดๆ ใหม่จากจุดนี้ก่อนเชื่อ.
+>
+> ยังไม่ได้แก้ทั้งฉบับ (โครง orchestration/decision list ด้านล่างยังใช้เป็น reference ได้) — นี่คือ
+> pointer เดียวจนกว่าจะรีไรท์เต็ม.
+
 ---
 
 ## 1. ภาพใหญ่ทั้งสองทิศ
@@ -29,8 +53,9 @@ Date: 2026-07-23 | Status: DESIGN REVIEW (ก่อนลงมือ P0)
 │    │  20:30 ICT (จุด anchor เวลาเดียวของทั้งระบบ)                                       │
 │    ▼                                                                                   │
 │  sap-extract-job (Cloud Run Job, watermark-based)                                      │
-│    ├─▶ NDJSON audit → gs://rcb-bronze-zone   (เก็บหลักฐาน)                             │
-│    └─▶ MERGE → raw_sap_live                  (SAP truth — B2)                          │
+│    └─▶ NDJSON ชั่วคราว → gs://rcb-bronze-zone (ลบทิ้งหลัง load)                        │
+│    ▼  [Eventarc trigger ต่อทันที — ทำงานจริงอยู่แล้ว ไม่ต้องสร้าง]                     │
+│  sap-order-payment-initial-phase (Cloud Run service) → MERGE → SAP_LIVE                │
 │    ▼  [EVENT CHAIN ต่อทันที ไม่รอ]                                                     │
 │  stg_sap_state (1 แถว/(item,period), priority Cancelled>Paid>Pending)                  │
 │    ▼                                                                                   │
@@ -38,7 +63,7 @@ Date: 2026-07-23 | Status: DESIGN REVIEW (ก่อนลงมือ P0)
 │    ▼                                                                                   │
 │  [ack] item ที่กลับมาเป็น Paid = official confirmation (v2.1 §6.4)                     │
 │                                                                                        │
-│  ☠ SUNSET: B1 (gs://sap-bucket-csv → loader 01:00 → SAP_LIVE/SAP_LIVE_FULL/2025/2026)  │
+│  (ไม่มี B1/legacy loader ให้ sunset — SAP_LIVE/SAP_LIVE_FULL/2025/2026 คือ path เดียวจริง)│
 └────────────────────────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -77,9 +102,9 @@ on_error ทุก step → alert พร้อมชื่อ step   # dead man'
 
 | Component | สถานะ | หมายเหตุ |
 |---|---|---|
-| `sap-extract-job` + scheduler 20:30 | ✅ มีแล้ว ใช้ต่อ | ค้าง: secret rebind + rotate password (หนี้ P0) |
-| `raw_sap_live` | ✅ มีแล้ว | ต้อง backfill ย้อนหลังให้คลุม order เก่า (ก่อน watermark 07-09) |
-| `stg_sap_state` | 🆕 สร้าง (P0) | sp_refresh_sap_state |
+| `sap-extract-job` + scheduler 20:30 | ⚠️ กำลังล่ม (401 IAM, รอ Attila) | ค้าง: secret rebind + rotate password (หนี้ P0) |
+| `sap-order-payment-initial-phase` → `SAP_LIVE`/`SAP_LIVE_FULL` | ✅ มีแล้ว จริง ใช้ต่อ (ไม่ใช่ `raw_sap_live` — ไม่มีอยู่จริง) | Eventarc-triggered, ไม่ต้อง backfill แยก — เป็น source เดียวที่มี |
+| `stg_sap_state` | ✅ มีแล้ว (P0, `sql/ddl/002`) | sp_refresh_sap_state, source = SAP_LIVE_FULL |
 | `stg_order_dim` / `stg_payment_events` / `stg_schedule` | 🆕 สร้าง (P1) | incremental MERGE by watermark |
 | L3 Engine + UDF `fn_invoice_no` | 🆕 สร้าง (P2) | รอ decision InvoiceNo standard |
 | `sap_validation_error` + sp_validate | 🆕 สร้าง (P2) | รวม cancel preflight (รอ Aware confirm spec v0.9) |
@@ -87,7 +112,7 @@ on_error ทุก step → alert พร้อมชื่อ step   # dead man'
 | `recon_careos_interface` + `interface_daily_status` | 🆕 สร้าง (P4→เลื่อนขึ้น P0-lite ได้) | recon แบบง่ายทำได้ทันทีที่มี sap_state |
 | **Cloud Workflow `wf-sap-pipeline`** | 🆕 สร้าง (P3) | แทน schedule แยกทั้งหมด |
 | Scheduler `sap-order-payment`, `-non-motor` (01:30) | ♻️ ย้ายเข้า workflow แล้วปิด | ระหว่าง migration รันคู่ได้ |
-| **B1 ทั้งเส้น**: `auto_load_sap_data_in_bucket_to_bigquery` (01:00), `gs://sap-bucket-csv`, `SAP_LIVE`, `SAP_LIVE_FULL`, `SAP_LIVE_2025/2026` | ☠ SUNSET (P4) | หลัง consumer ทุกตัวย้ายไป sap_state + backfill ครบ; เก็บ table แบบ freeze อ่านอย่างเดียว 1 เดือนก่อนลบ |
+| ~~B1 ทั้งเส้น~~ | ไม่มีอยู่จริง (`gs://sap-bucket-csv`/`auto_load_sap_data_in_bucket_to_bigquery` ไม่มี B1 คู่ขนาน — ลบแผน sunset นี้ทิ้ง) | `SAP_LIVE`/`SAP_LIVE_FULL`/`SAP_LIVE_2025/2026` ใช้ต่อถาวร ไม่ sunset |
 | RCL manual queries (05_paid, 05_newpayment, 04 credit shell, 02 cancel-new) | ♻️ ยุบเข้า Engine | หมด hardcoded list |
 
 ---
@@ -106,11 +131,11 @@ on_error ทุก step → alert พร้อมชื่อ step   # dead man'
 
 | เวลา (ICT) | เหตุการณ์ |
 |---|---|
-| ทั้งวัน | SAP pull `gs://interface-file` รายชั่วโมง (Aware — เดิม) |
+| ทั้งวัน | SAP pull `gs://interface-file` ทุก 15 นาที (:00/:15/:30/:45), ประมวลผลจริงที่นาที :30 ของทุกชั่วโมง (Aware — แก้ 07-25, ไม่ใช่ "รายชั่วโมง"/"21:00" เดิม) |
 | 20:30 | Scheduler ยิง `wf-sap-pipeline` |
-| ~20:31–20:40 | extract → raw_sap_live → sap_state → recon |
+| ~20:31–20:40 | extract → SAP_LIVE (ผ่าน Eventarc, ทำงานอยู่แล้ว) → sap_state → recon |
 | ~20:40–20:45 | expected_state → validate → **delta export _01/_02** |
-| 21:00 | SAP pull รอบแรกที่เห็นไฟล์ใหม่ → import คืนนั้นเลย |
+| :30 ถัดไป | SAP pull รอบแรกที่เห็นไฟล์ใหม่ → import รอบนั้นเลย (คำนวณใหม่จาก cadence จริง ไม่ใช่ 21:00 คงที่) |
 | D+1 20:30 | รอบถัดไปเห็นผล import → recon ack อัตโนมัติ |
 | 22:00 | Dead man's switch ตรวจว่าเส้นวิ่งครบ |
 
@@ -123,6 +148,6 @@ on_error ทุก step → alert พร้อมชื่อ step   # dead man'
 | 1 | Orchestration | **B (Workflows)** — ขอ confirm |
 | 2 | InvoiceNo standard | raw id + rank prefix เฉพาะ additional — รอบัญชี ack |
 | 3 | Cancel spec | ส่ง v0.9 ให้ Aware confirm (ร่างพร้อมแล้ว) |
-| 4 | raw_sap_live backfill scope | ต้องกำหนดช่วง (ทั้งหมด? 2024+?) — กระทบ storage/รอบแรก |
+| 4 | ~~raw_sap_live backfill scope~~ | **moot — raw_sap_live ไม่มีอยู่จริง, ไม่มี backfill ต้องทำ.** ของจริงที่ยังค้างคือ chain V3 SQL steps (sap_state→recon→expected_state→validate→export) — ดู TASK_V3_GAP_CLOSURE_v2.md PHASE A/B/C |
 | 5 | EDC channel matrix | มีแค่ KBANK — ขอ list bank ที่เหลือจากบัญชี |
 | 6 | คู่ขนานช่วง migration | รัน pipeline เดิม + ใหม่คู่กัน เทียบ 0-row-diff กี่วันก่อนสลับ (เสนอ 5 วันทำการ) |

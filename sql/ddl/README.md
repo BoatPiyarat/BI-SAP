@@ -4,13 +4,43 @@ New objects for `sap_integration_v3` (dataset, tables, stored procedures) introd
 the v3 redesign. Distinct from `sql/production` (the *existing* per-flow queries being
 migrated) and `sql/adhoc` (one-off urgent-session scripts).
 
-Numbered so they can be applied in order the first time the dataset is stood up:
+> ⚠️ **Corrected 2026-07-27**: this table only listed the first 3 files and described 002/003
+> against `raw_sap_live`, which never existed (see `docs/knowledge/10_SAP_CONTEXT.md`
+> §ARCHITECTURE). All of `sap_integration_v3` is built from `sap_integration_v2.SAP_LIVE_FULL`.
+> Full up-to-date file list below; see `docs/knowledge/30_SAP_CHANGELOG.md` for build history.
 
-| File | Purpose | Status |
-|---|---|---|
-| 001_create_sap_integration_v3.sql | Dataset + `pipeline_run_log` control table | Ready to run |
-| 002_sp_refresh_sap_state.sql | `stg_sap_state` from `raw_sap_live` (P0) | Ready to run, pending schema check (see file header) |
-| 003_PROPOSED_repoint_sap_live_full.sql | Repoint `SAP_LIVE_FULL` to `raw_sap_live` | **DO NOT RUN** — proposal only, needs approval (see file header) |
+Numbered so they can be applied in order the first time the dataset is stood up. Live status
+of each is whatever's currently deployed in BigQuery — check `pipeline_run_log` / the changelog,
+not this table, for day-to-day freshness.
+
+| File | Purpose |
+|---|---|
+| 001_create_sap_integration_v3.sql | Dataset + `pipeline_run_log` control table |
+| 002_sp_refresh_sap_state.sql | **Retired 2026-07-27** — built `stg_sap_state` as its own table from `SAP_LIVE_FULL`; superseded by 026 (`stg_sap_state` is now a view over `sap_mirror_state`). No longer called by the nightly chain; kept for history/the `DocEntry DESC` tiebreak fix reference |
+| 003_PROPOSED_repoint_sap_live_full.sql | **Retired 2026-07-24** — original plan (repoint `SAP_LIVE_FULL` to `raw_sap_live`) moot since that table never existed; kept for history only, do not run |
+| 004_dead_mans_switch.sql | Freshness check on `SAP_LIVE.BatchRunDate` + scheduled-query alert |
+| 005_recon_all_charges.sql | 3-bucket CareOS↔SAP charge reconciliation |
+| 006_dashboard_views.sql | 4 Looker Studio views (`vw_dash_*`) |
+| 007_sap_live_full_all_bu.sql | `SAP_LIVE_FULL_ALL_BU` — same as `SAP_LIVE_FULL` minus the B2B filter (future-proofing; 0 B2B rows currently) |
+| 008_schedule_state_recon_refresh.sql | Nightly scheduled query wiring `sp_refresh_sap_state` + recon |
+| 009_fix_rcl_newpayment_date_override.sql | PaymentDate-in-locked-period fix for RCL newpayment views |
+| 010_rcl_backfill_full_period_chunked.sql | `sp_backfill_rcl_newpayment_chunked` — full-period-per-order backfill, chunked export |
+| 011_stg_order_dim.sql | P1 staging: materialized order-dimension JSON parse |
+| 012_stg_schedule.sql | P1 staging: 1 row/(order_item, period) spine |
+| 013_stg_payment_events.sql | P1 staging: charge-driven population source |
+| 014_extend_nightly_refresh_with_p1_staging.sql | Wires P1 staging into the nightly refresh chain |
+| 015_fn_invoice_no.sql | `fn_invoice_no` UDF — single InvoiceNo standard (raw `third_party_id`, rank-prefixed only for additional payments) |
+| 016_expected_state.sql | P2 L3 engine: joins P1 staging into "what SAP should show" |
+| 017_sap_validation_error.sql | Blocking validation checks (PK_DUP, SCHEDULE_GAP, MASTER_INSURER_UNKNOWN, MASTER_PAYMENTDATE_LOCKED) |
+| 018_delta_export.sql | P3: diffs `expected_state` vs `stg_sap_state` at (order_item, period) grain |
+| 019_fix_column_reordering_bug.sql | Fixes the `SELECT * EXCEPT(col), expr AS col` column-reordering bug (use `* REPLACE` instead) |
+| 020_extend_nightly_refresh_with_p2_p3.sql | Wires P2/P3 (expected_state, validation, delta_export) into the nightly chain |
+| 021_backfill_motor_newpayment_gap_20260726.sql | One-off: 279-row confirmed Motor newpayment gap backfill |
+| 022_backfill_rcl_creditshell_20260726.sql | One-off: 37-row RCL Credit-Shell gap backfill |
+| 023_backfill_rcb_creditshell_20260726.sql | One-off: 41-row RCB Credit-Shell gap backfill |
+| 024_sap_mirror_doc.sql | Doc-grain SAP mirror, one row per `DocEntry`, no dedup (evidence layer). **Fixed 2026-07-27**: per-DocEntry dedup was ordering by the DDMMYYYY BatchRunDate *string* (lexicographic, not chronological) — now parses to a real date first |
+| 025_sap_mirror_state.sql | State-grain SAP mirror, one row per (OrderItem, Period), picking rule tagged `PROVISIONAL_PENDING_AWARE_Q3A` where ambiguous. **Fixed 2026-07-27**: added `DocEntry DESC` as a final deterministic tiebreak for same-day same-status multi-invoice periods |
+| 026_collapse_stg_sap_state_to_view.sql | Collapses `stg_sap_state` (was its own table, 002) into a view over `sap_mirror_state` — one picking rule instead of two; repoints the nightly chain to refresh `sap_mirror_doc`/`sap_mirror_state` instead of calling the now-retired `sp_refresh_sap_state` |
 
 Every file is a full runnable script (per AGENTS.md: no diffs-as-answer). Apply with:
 ```

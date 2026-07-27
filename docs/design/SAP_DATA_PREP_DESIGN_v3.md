@@ -2,6 +2,27 @@
 Date: 2026-07-23 | Status: FOR REVIEW (Boat) | คู่กับ: REDESIGN_V3 (why) + E2E_DESIGN (orchestration) + RUNBOOK + DASHBOARD
 Scope: ทุก query/stored procedure จาก data source ถึงไฟล์ export — reviewable ทีละ stage
 
+> ⚠️ **CORRECTION 2026-07-27**: `raw_sap_live` (§0, §5 ด้านล่าง) ไม่มีอยู่จริง — verified ผ่าน
+> bq/gcloud 2026-07-24, authoritative source: `docs/knowledge/10_SAP_CONTEXT.md` §ARCHITECTURE.
+> §5's `stg_sap_state` สร้างจริงแล้วจาก **`sap_integration_v2.SAP_LIVE_FULL`** (ดู
+> `sql/ddl/002_sp_refresh_sap_state.sql`), ไม่ใช่ `raw_sap_live` — โค้ดใน §5 เก็บไว้เป็น reference
+> เดิม logic เหมือนกันทุกอย่างยกเว้นบรรทัด `FROM`.
+>
+> **กติกาสองชั้น (two-layer rule), ยืนยันจริงจาก TASK_CLEAN_SAP_MIRROR.md 2026-07-26**: มี 2 ระดับ
+> แยกกัน ไม่ใช่ตารางเดียว —
+> - **`sap_mirror_doc`** (evidence layer) = 1 แถว/`DocEntry`, **ไม่ dedup ข้าม DocEntry เลย** — ใช้
+>   สำหรับ cancel mirroring, invoice lookup, audit (ที่ต้องเห็นทุก doc จริงที่ SAP เก็บ)
+> - **`sap_mirror_state`**/`stg_sap_state` (opinion layer) = 1 แถว/(OrderItem, Period), picking rule
+>   จุดเดียว (Cancelled > Paid > Pending, non-empty InvoiceNo ชนะ, BatchRunDate ล่าสุดชนะ) — ใช้
+>   สำหรับ delta export/recon/dashboard ที่ต้องการคำตอบเดียวต่อ period
+>
+> **เหตุผลที่ต้องแยก**: 31% ของ (OrderItem, Period) keys มี 2+ candidate documents จริง (328,071 keys)
+> — ถ้ายุบเป็นตารางเดียวแบบ opinion-only จะเสีย evidence สำหรับ cancel-mirroring ที่ต้องอ้างอิง
+> DocEntry ที่ถูกต้องเป๊ะ; ถ้าเก็บแบบ evidence-only (ไม่ dedup) ทุก consumer ต้องเขียน picking logic
+> ซ้ำเอง เสี่ยง logic ไม่ตรงกันข้าม view (บทเรียนจาก duplicate-document forensics 07-26 — ดู
+> `docs/FINDINGS_SAP_MIRROR_20260726.md` §9-11). ทุก picking-rule ambiguity ยังรอ Aware ตอบ Q3a
+> (`SAP_CANCEL_IMPORT_SPEC_INFERRED_v0.9.md`) — แท็ก `PROVISIONAL_PENDING_AWARE_Q3A` ไว้จนกว่าจะตอบ.
+
 ---
 
 ## 0. Data Sources & Contracts
@@ -13,7 +34,7 @@ Scope: ทุก query/stored procedure จาก data source ถึงไฟล
 | CarePay | transaction_snapshots (+installment_details, price_summaries) | ยอด/งวด/ดอกเบี้ย | snapshot มีหลายรุ่น → ใช้ latest เท่านั้น; `number_of_installment` ไม่น่าเชื่อถือเดี่ยวๆ |
 | CarePay | carepay_follow_ups | due date เท่านั้น | **ห้ามเป็นเงื่อนไขบังคับ** (บทเรียน A3) |
 | CareOS | cancelled_change_orders | credit shell chain | recursive ได้หลายชั้น |
-| SAP | **raw_sap_live** (B2) | SAP truth เดียว | ห้ามใช้ SAP_LIVE* (stale — บทเรียน C1) |
+| SAP | **`SAP_LIVE_FULL`** (ไม่ใช่ `raw_sap_live` — ไม่มีอยู่จริง, แก้ 07-27) | SAP truth เดียว (doc-grain, ไม่ dedup ข้าม OrderItem/Period) | ต้องการ 1 แถว/(OrderItem,Period) ใช้ `stg_sap_state`/`sap_mirror_state` แทน — ดู two-layer rule ด้านบน |
 | Master | sap_accounting_cutoff_dates, insurer master | PaymentDate shift, InsurerCode check | Finance confirm รายเดือน ห้าม hardcode |
 
 Dataset ใหม่: `sap_integration_v3` (แยกจาก v2 เพื่อรันคู่ขนาน) + ตารางระบบ `pipeline_run_log`
@@ -26,7 +47,7 @@ Dataset ใหม่: `sap_integration_v3` (แยกจาก v2 เพื่�
 sp_refresh_order_dim      : careos_orders(+items,leads) ──▶ stg_order_dim        [incremental]
 sp_refresh_payment_events : carepay_charges(+txn)       ──▶ stg_payment_events   [incremental]
 sp_refresh_schedule       : snapshots(+details,followup)──▶ stg_schedule         [incremental]
-sp_refresh_sap_state      : raw_sap_live                ──▶ stg_sap_state        [full, เร็ว]
+sp_refresh_sap_state      : SAP_LIVE_FULL (ไม่ใช่ raw_sap_live) ──▶ stg_sap_state [full, เร็ว]
 sp_build_expected_state   : stg_* ทั้งหมด               ──▶ expected_state       [56 col]
 sp_validate               : expected_state + sap_state  ──▶ export_ready / sap_validation_error
 sp_export_delta           : export_ready ⊖ sap_state    ──▶ GCS _01_create/_02_cancel + export_archive
@@ -133,7 +154,7 @@ LEFT JOIN ..._price_summaries ps ON ps.snapshot_id = tp.snapshot_id
 - Credit Shell ไม่มี details → spine ยัง gen งวดครบ, expected_amount NULL → engine เติมตามกติกา CS (INCIDENT-001 ตายถาวร)
 - follow_ups เป็นแค่ผู้ให้ due_date — ไม่ตัด row ใครอีก
 
-## 5. S4 — stg_sap_state (SAP truth)
+## 5. S4 — stg_sap_state (SAP truth) — โค้ดด้านล่างเป็น reference เดิม, จริงสร้างจาก SAP_LIVE_FULL (ดู banner ด้านบน)
 
 ```sql
 CREATE OR REPLACE TABLE stg_sap_state CLUSTER BY order_item AS
@@ -147,9 +168,10 @@ SELECT * EXCEPT(rn) FROM (
            ORDER BY CASE WHEN TransactionStatus IN ('Cancelled','Cancelled (Change order / Rejected)') THEN 0
                          WHEN TransactionStatus IN ('Paid','paid') THEN 1 ELSE 2 END,
                     CASE WHEN IFNULL(U_InvoiceNo,'') != '' THEN 0 ELSE 1 END) rn
-  FROM raw_sap_live) WHERE rn = 1;
+  FROM SAP_LIVE_FULL) WHERE rn = 1;  -- แก้ 07-27: raw_sap_live ไม่มีอยู่จริง, source จริงคือ SAP_LIVE_FULL
 ```
-⏳ รอ Aware Q3a — ถ้าคำตอบชี้ doc อื่น ปรับ ORDER BY จุดเดียว
+⏳ รอ Aware Q3a — ถ้าคำตอบชี้ doc อื่น ปรับ ORDER BY จุดเดียว (จุดเดียวกับที่ `sap_mirror_state`'s
+picking rule ใช้ — ดู `sql/ddl/025_sap_mirror_state.sql`, ไม่ใช่จุดที่สอง/สาม)
 
 ## 6. S5 — sp_build_expected_state (หัวใจ: router + 56 columns)
 
