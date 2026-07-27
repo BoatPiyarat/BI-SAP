@@ -81,6 +81,26 @@ SLA ที่บอก FA ได้: ส่ง list → ไฟล์พร้อ
 > - Lxxxxxxx: ยอด TotalAmount ไม่ balance (ต่าง x.xx)
 > - Lxxxxxxx: มีการชำระเงินต่อหลังยกเลิก — ยืนยัน intent (cancel+refund?)
 
+## 5b. SAP import-log ingestion (manual — no automatic delivery exists)
+
+**A3, confirmed 2026-07-27**: Aware/SAP does not deliver import-result logs automatically anywhere
+in this project — every past diagnosis (column-reordering incident, PolicyStatus duplicate,
+InsurerCode not found, etc.) started from Boat pasting/sharing log text by hand. `sap_import_result`
+(`sql/ddl/031_sap_import_result.sql`) exists to hold whatever gets shared — there is no pipeline
+to build here, just this manual step, done as soon as a log arrives:
+
+1. Get the raw log text/file from Aware/Boat (via email, chat, or a shared file).
+2. Parse it into rows (`batch_label`, `file_name`, `order_item` where identifiable, `error_type`,
+   `message`, `reported_at` if known) — for a short log, hand-write the `INSERT` statements; for a
+   large one, save as CSV/NDJSON and `bq load` it:
+   ```bash
+   bq load --source_format=CSV --skip_leading_rows=1 \
+     sap_integration_v3.sap_import_result gs://<wherever-you-saved-it>/import_log.csv \
+     batch_label:STRING,file_name:STRING,order_item:STRING,error_type:STRING,message:STRING,reported_at:TIMESTAMP,ingested_at:TIMESTAMP
+   ```
+3. Set `ingested_at = CURRENT_TIMESTAMP()` for whatever you just loaded.
+4. Then: `SELECT error_type, COUNT(*) FROM sap_integration_v3.sap_import_result WHERE batch_label = '<this batch>' GROUP BY 1 ORDER BY 2 DESC` — this is what Dashboard Page 3 ("SAP import errors by type") is meant to read from once populated.
+
 ## 6. Escalation & ownership
 
 | เรื่อง | ติดต่อ |
