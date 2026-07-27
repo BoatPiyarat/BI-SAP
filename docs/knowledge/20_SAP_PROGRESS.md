@@ -1,5 +1,36 @@
 # 20_SAP_PROGRESS.md
-Last Updated: 2026-07-27 (cont'd) - PHASE 0 done; stg_sap_state collapsed into sap_mirror_state (2 real bugs found+fixed in the process); AS_BUILT_V3.md + INPUTS_NEEDED.md created; continuing into PHASE A (overwrite ได้ — สถานะปัจจุบันเสมอ)
+Last Updated: 2026-07-27 (cont'd) - Boat away-window plan: Sections 1-3 DONE (unattended hardening, PHASE A finished, carryover items); PHASE B/C NOT STARTED (genuinely out of scope for one session, needs dedicated follow-up) - see docs/AWAY_20260726_30.md for the full handover (overwrite ได้ — สถานะปัจจุบันเสมอ)
+
+---
+
+## ✅ AWAY-WINDOW PLAN (Boat away 26-30 July): Sections 1-3 closed, PHASE B/C explicitly not started — 2026-07-27 (cont'd)
+
+Full detail in `docs/AWAY_20260726_30.md` (the handover doc) and today's several `30_SAP_CHANGELOG.md`
+entries. Summary only here:
+
+**Done and verified**: full SAP scheduler/function/Eventarc inventory
+(`docs/SAP_SCHEDULER_INVENTORY.md`) with one real timezone bug found and fixed (V3 nightly chain
+was firing 7h later than designed); missed-extract alert message upgraded to a phone-actionable
+format; 4 email alerts built and genuinely tested end-to-end for the first time in this project
+(missed-extract, column-contract guard, validation-regression, interface-daily-status); daily
+digest retimed to 07:00 ICT with the exact 5-item content spec; A1 (column-contract guard),
+A2 (`interface_daily_status` with the full OK/PENDING_ACK/MISSING/STATUS_CONFLICT/
+PAID_AFTER_CANCEL/UNROUTED status set), A3 (`sap_import_result` + documented manual runbook step)
+all built and deployed; `resolution_confidence`/PROVISIONAL now visible all the way through
+`stg_sap_state` → `delta_export`/`interface_daily_status`; Q3a extended with the NULL-BatchRunDate
+sub-question; `sap_integrety_2025_RCL` consumer/impact investigation closed (dormant view, but
+`audit_010_careos_missing_in_sap_detail` is actively used and shares the same risk, not yet
+individually checked - flagged, not fixed, not told to anyone outside the team per Boat's
+instruction).
+
+**Explicitly NOT started, not compressed into a stub**: PHASE B (`expected_state` full 56-column
+rebuild across all 5 flows including Credit Shell, + the legacy-file diff harness) and PHASE C
+(shadow-mode export). Both are substantial sub-projects in their own right; sections 1-3 above
+took the full session per Boat's own "do the hardening first" ordering. Needs a dedicated
+follow-up session. Acceptance for PHASE B stays the golden-file test against the 3 fixture files
+Boat brings back 2026-07-30 - not lowered to a parallel-run-only bar in the meantime.
+
+---
 
 ---
 
