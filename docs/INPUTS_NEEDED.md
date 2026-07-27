@@ -54,6 +54,25 @@ directly from this environment):
 
 ---
 
+## Boat — interface_daily_status (A2) alert gap: MISSING/STATUS_CONFLICT can't be alerted on yet
+
+`interface_daily_status` (built 2026-07-27, `030_interface_daily_status.sql`) implements the
+OK/PENDING_ACK/MISSING/STATUS_CONFLICT/PAID_AFTER_CANCEL/UNROUTED status set you asked for, but
+literally alerting on "MISSING/STATUS_CONFLICT present" would fire every single day - both have
+large pre-existing backlogs today (MISSING ~341K, STATUS_CONFLICT ~59K, the exact historical gap
+this project exists to close, not new incidents). Only wired an alert for `PAID_AFTER_CANCEL`
+(rare, 7 rows today, always actionable) and staleness (no fresh row by late morning). Real
+MISSING/STATUS_CONFLICT alerting needs a day-over-day baseline comparison (a small history table
+snapshotting counts nightly, alert on meaningful *increase* not absolute presence) - not built,
+flagging as a real gap rather than shipping a guaranteed-to-be-ignored daily alarm.
+
+Also unverified and worth your review: the exact classification logic for STATUS_CONFLICT and
+PAID_AFTER_CANCEL (see the judgment calls documented at the top of `030_interface_daily_status.sql`)
+- built from my own best-effort reading of the task spec, not yet confirmed against your intent.
+One real bug already caught and fixed during build: the first version of PAID_AFTER_CANCEL didn't
+compare payment date against cancel date, so it fired on the normal "paid some periods, cancelled
+later" pattern (1,898 false positives) - fixed to compare timing directly (now 7 genuine cases).
+
 ## Boat — email alerts go to data@rabbit.co.th, not you directly
 
 Confirmed 2026-07-27: every BQDTS `enableFailureEmail` alert (dead-man's-switch/missed-extract,

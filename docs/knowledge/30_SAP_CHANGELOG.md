@@ -4,6 +4,26 @@ Append-only — entry ใหม่บนสุด ห้ามลบ/แก้�
 
 ---
 
+## 2026-07-27 (cont'd) — 1.4 daily digest retimed to 07:00 ICT; 2.2 (A2) interface_daily_status built
+
+**1.4**: retimed the existing RemoteTrigger email routine to exactly 07:00 ICT (was 06:00),
+content rewritten to match the 5-item spec (extract ran? / SAP_LIVE freshness / validation by
+rule / recon MISSING+STATUS_CONFLICT / legacy files complete?), kept the strict NO DATA ACCESS
+gate, enabled.
+
+**2.2 (A2)**: built `interface_daily_status` (`030_interface_daily_status.sql`) - one row per
+(order_item, period), status ∈ {OK, PENDING_ACK, MISSING, STATUS_CONFLICT, PAID_AFTER_CANCEL,
+UNROUTED} exactly per spec. First deploy caught its own bug: PAID_AFTER_CANCEL initially fired on
+"is_cancelled AND currently Paid" with no timing check, matching 1,898 rows that were the normal
+"paid before cancellation, cancellation is final" pattern (established 07-25) - fixed by comparing
+SAP's PaymentDate against `careos_order_items.cancel_time` directly, dropping the count to 7
+genuine cases. Wired into the nightly chain; alert scheduled for PAID_AFTER_CANCEL (>0) and
+staleness only - MISSING/STATUS_CONFLICT can't be meaningfully alerted on without a day-over-day
+baseline (both have large pre-existing backlogs, alerting on presence alone would fire daily) -
+flagged as a real gap in `docs/INPUTS_NEEDED.md`, not silently shipped as "done."
+
+---
+
 ## 2026-07-27 (cont'd) — Away-window hardening (1.1-1.3): scheduler inventory, real timezone bug fixed, 3 email alerts wired and tested
 
 Boat away 2026-07-26 to 2026-07-30, will press SAP extract manually from mobile each night (Console
