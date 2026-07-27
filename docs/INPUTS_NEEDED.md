@@ -54,6 +54,19 @@ directly from this environment):
 
 ---
 
+## Boat — email alerts go to data@rabbit.co.th, not you directly
+
+Confirmed 2026-07-27: every BQDTS `enableFailureEmail` alert (dead-man's-switch/missed-extract,
+column-contract guard, validation-regression) is owned by `data@rabbit.co.th`
+(`ownerInfo.email` on the transfer config) - that's where the failure emails go, not
+`piyaratt@rabbit.co.th`. If you don't check that inbox (or it doesn't forward to you), these
+alerts won't reach your phone this week. The separate 6am/daily-digest routine (RemoteTrigger
+cloud agent) does email you directly, since it uses your own Gmail connector - that one's fine.
+Options if this matters: (a) check `data@rabbit.co.th` too while away, (b) set up a forward from
+that inbox to yours, (c) tell me and I can look into whether the transfer configs can be
+recreated under different ownership (would need to be done under the right identity, not
+something I can just reassign).
+
 ## Boat — URGENT, found 2026-07-27: a live view is double-counting money
 
 `sap_integration_v2.sap_integrety_2025_RCL` (301,188 rows, name suggests a Finance-facing

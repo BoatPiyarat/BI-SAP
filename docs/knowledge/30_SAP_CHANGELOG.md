@@ -4,6 +4,57 @@ Append-only — entry ใหม่บนสุด ห้ามลบ/แก้�
 
 ---
 
+## 2026-07-27 (cont'd) — Away-window hardening (1.1-1.3): scheduler inventory, real timezone bug fixed, 3 email alerts wired and tested
+
+Boat away 2026-07-26 to 2026-07-30, will press SAP extract manually from mobile each night (Console
+> Cloud Run > Jobs > EXECUTE) rather than chase the IAM fix this week. Asked for unattended
+hardening first, "this is what makes these 4 days safe."
+
+**1.1 Inventory** (`docs/SAP_SCHEDULER_INVENTORY.md`): compiled live via `gcloud`/`bq`, not memory -
+every SAP-relevant scheduler, Cloud Function, Eventarc trigger, and BQDTS config, with state,
+schedule+TZ, last run, blast radius, and whether it needs a manual press. Found and fixed a real
+bug while compiling it: `sap_state_and_recon_refresh` (the V3 nightly chain) was scheduled as
+`every day 21:00` with no timezone suffix - BQDTS defaults to UTC, so it was actually firing at
+04:00 ICT the next day, not 21:00 ICT as designed (confirmed via real run history,
+`startTime: 2026-07-26T21:00:01Z`). Not currently harmful (still finished hours before any morning
+check) but wrong. Fixed via direct API PATCH (schedule string with an explicit `Asia/Bangkok`
+suffix was rejected by the API as invalid syntax; used explicit UTC `every day 14:00` instead) -
+confirmed `nextRunTime` now lands at 21:00 ICT exactly.
+
+**Also confirmed a real gap**: BQDTS failure-emails go to the transfer config owner
+(`data@rabbit.co.th`), not `piyaratt@rabbit.co.th` directly - `ownerInfo.email` on every config
+confirms this. Logged in `docs/INPUTS_NEEDED.md` - every email-based alert below reaches that inbox,
+not Boat's own, until/unless that's changed.
+
+**1.2 Missed-extract alert**: the detection already existed (`sp_check_dead_mans_switch`, live
+since 2026-07-24, RAISEs if `SAP_LIVE` >26h stale) - upgraded the message only, to the short,
+directly-actionable format Boat wants for a phone (`extract ไม่ได้รันคืนที่ <date> — กด EXECUTE ที่
+<Console link>`), no duplicate check created.
+
+**1.3 Wired + genuinely tested every alert path** (per Boat's rule: "test each by making it really
+fail once, confirm it actually fires" - this project had only ever tested the *fresh* case before,
+never a forced failure):
+- Built a throwaway BQDTS config with a query that unconditionally `RAISE`s, `enableFailureEmail`d
+  it, triggered a manual run, confirmed `state: FAILED` with the exact error message and
+  `emailPreferences.enableFailureEmail: true` on the run - the Google-managed mechanism is
+  confirmed correctly configured. Cannot verify the email actually landed in an inbox from here;
+  that needs Boat (or whoever has `data@rabbit.co.th` access) to confirm. Deleted the test config.
+- Built `sap_column_contract` (56-column authoritative contract, seeded from
+  `sap_view.RCB_Motor_process_create` - confirmed live 2026-07-27 that all 12 `sap_view.*`
+  interface views currently share an identical column contract, 0 drift today) +
+  `sp_check_column_contract()` (`028_column_contract_guard.sql`) - compares every watched view's
+  `INFORMATION_SCHEMA.COLUMNS` against the contract, writes drift to `sap_validation_error` +
+  RAISEs. **Tested the exact acceptance criterion**: created a scratch view with 2 columns
+  deliberately swapped, confirmed the check correctly flagged both positions, cleaned up.
+  Scheduled `sap_column_contract_guard` at 18:15 UTC (01:15 ICT), 15 min before the legacy export
+  trigger.
+- Built `sp_check_validation_regression()` (`029_validation_regression_alert.sql`) - RAISEs if
+  `sap_validation_error` exceeds 60 total rows (current baseline 22-24; threshold is a starting
+  heuristic, not a permanent number). Scheduled at 14:10 UTC (21:10 ICT), shortly after the nightly
+  V3 chain completes.
+
+---
+
 ## 2026-07-27 (cont'd) — stg_sap_state collapsed into a view over sap_mirror_state; 2 real bugs found and fixed in the process
 
 Boat, after PHASE 0: collapse the two independently-computed "1 row per (OrderItem, Period)"
