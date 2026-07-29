@@ -125,25 +125,22 @@ Note on `pairs_with_cmi_sibling`: joins on `OrderID` matching any row in the vie
 `products/health-insurance` (644 rows) — no `NonMotor` value exists here, hence the BU-split caveat
 above.
 
-## Comparison against the original "263-transaction" incident
+## Relation to INCIDENT-002 / the “263-transaction” incident
 
-**Cannot check literal ID-level overlap** — no enumerated list of the original 263 transactions
-exists anywhere in this repo (searched all of `docs/` and `sql/`; the only hit besides
-`10_SAP_CONTEXT.md`'s one-line mention was an unrelated OrderItem, `L78263089-V1`, that merely
-contains "263" as a substring). Based on root cause, these are almost certainly **different,
-unrelated bugs**: the original 263-transaction incident's stated cause was using `packageType`
-instead of `motor_item_type = 'MOTOR_TYPE_COMPULSORY'` for Compulsory identification (a
-classification error); this incident's cause is a credit-shell join producing two rows for one
-(OrderItem, Period) key (a duplication/grain error), unrelated to how Compulsory is identified.
-**This should be read as a new, separate incident, not a recurrence** — but this conclusion rests on
-absence of a specific transaction list to check against, not a confirmed non-overlap.
+Boat's subsequent evidence on 2026-07-29 identifies the CMI credit-shell double-deduction as
+`INCIDENT-002` and refers to it operationally as the 263-transaction incident. That supersedes this
+finding's earlier inference that the two were unrelated. The broad duplicate-pair diagnostic in
+this file is not automatically the authoritative incident population: it came from a different
+query grain and its exact query timestamp was not retained. Claude Code is quantifying the
+transaction list, amount impact, and overlap. Until that result is recorded, do not merge or cite
+these counts as final `INCIDENT-002` scope.
 
 ## Fix method (per Boat/Aware, already recorded — NOT actioned)
 
-Aware's specified method for this shape (`ExpectedReceived` wrong + `ActualReceived` negative):
-**Cancel the existing document(s) and send a fresh Paid document (Method 2)** — not an adjustment
-line, since an adjustment line cannot correct a wrong `ExpectedReceived` baseline or reconcile a
-negative `ActualReceived`. Not attempted here; this is Boat's decision to make after review.
+Aware and Sarawut/Boyd confirmed two methods: adjustment line
+(`ExpectedReceived=0`, `ActualReceived=delta`) and Cancel + fresh Paid. The mandatory selection
+rule is: if `ExpectedReceived` is wrong or negative, use **Cancel + fresh Paid (Method 2)**.
+Not attempted here; scope, review, and approval are still required.
 
 ## What was NOT done (by design, per instruction)
 

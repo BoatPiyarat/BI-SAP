@@ -4,6 +4,14 @@ Created 2026-07-27 per `TASK_V3_GAP_CLOSURE_v2.md` (A0, A5, Housekeeping — "ke
 Nothing here blocks build work that doesn't depend on the specific answer; each item notes what
 IS being done in the meantime.
 
+## RESOLVED 2026-07-29 — Aware actual-received correction method
+
+Aware and Sarawut/Boyd confirmed two supported methods. Adjustment lines use the original Period,
+`ExpectedReceived=0`, and `ActualReceived=delta`; Cancel + new Paid is mandatory when
+`ExpectedReceived` is incorrect or negative. Test evidence: adjustment `L79899055` /
+`L79965977`; Cancel + Paid `L79899088` / `L79965966`. This closes the former validation-library
+question “cancel+re-import vs manual SAP correction — รอคำตอบ Aware”; do not ask it again.
+
 ---
 
 ## Attila (IAM) — blocking real freshness

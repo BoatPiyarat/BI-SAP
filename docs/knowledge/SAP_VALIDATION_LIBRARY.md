@@ -1,0 +1,43 @@
+# SAP VALIDATION LIBRARY
+
+Canonical validation rules for the SAP interface. Updated 2026-07-29 from the legacy Drive
+library; this version closes the former “รอคำตอบ Aware” correction-method question.
+
+---
+
+## Actual-received correction — confirmed 2026-07-29
+
+Source: Aware and Sarawut/Boyd operational confirmation.
+
+1. **Adjustment line:** retain the Period, set `ExpectedReceived=0`, and set
+   `ActualReceived` to the delta. A negative delta corrects an over-receipt; a positive delta
+   corrects a short receipt. Confirmed test cases: `L79899055`, `L79965977`.
+2. **Cancel + Paid replacement:** cancel the existing document and send a new Paid document.
+   Confirmed test cases: `L79899088`, `L79965966`.
+3. **Mandatory selection:** when `ExpectedReceived` is incorrect or negative, use method 2.
+   Aware explicitly recommended this selection rule. The former question “cancel+re-import vs
+   manual SAP correction — รอคำตอบ Aware” is therefore **RESOLVED**.
+
+### Reconciliation control
+
+An adjustment line with a positive delta is structurally indistinguishable from the existing
+additional-payment rule: same Period, `ExpectedReceived=0`, `ActualReceived>0`. A structural
+query alone cannot classify the row. Reconciliation by transaction type remains untrustworthy
+until the source/export carries a durable marker distinguishing `CORRECTION` from
+`ADDITIONAL_PAYMENT`.
+
+### Required validations
+
+- `EXTRA_ROW_EXPECTED_NONZERO`: within one `(OrderItem, Period)`, every row after the first must
+  have `ExpectedReceived=0`.
+- `ADD_ONS_DEDUCTED_MORE_THAN_ONCE`: `add_ons` may be deducted once per
+  `(OrderItem, Period)`, never once per charge row.
+- `CORRECTION_MARKER_MISSING`: do not classify an adjustment-shaped row as correction versus
+  additional payment without an explicit marker.
+- CMI identification must use
+  `careos.careos_order_items.motor_item_type = 'MOTOR_TYPE_COMPULSORY'`; `packageType` is not a
+  valid CMI identifier.
+
+Implementation and live validation belong to Claude Code's SQL lane and are queued in
+`docs/HANDOFF_QUEUE.md`; these rules do not assert that the corresponding SQL checks are deployed.
+

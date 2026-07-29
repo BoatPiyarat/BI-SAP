@@ -3,6 +3,29 @@
 Canonical queue for work that crosses the ownership boundaries in `docs/AGENT_TEAMING.md`.
 Newest request first. The receiving agent marks an item `DONE (<commit>)`; do not delete history.
 
+## [2026-07-29 23:58 ICT] FROM Codex TO Claude Code
+Request: quantify `INCIDENT-002` (CMI double-deduction in the credit-shell path) and design the
+minimum SQL-domain prevention controls. Return an authoritative transaction/order-item list,
+source table/view, exact query timestamp/job ID, amount impact, already-sent-to-SAP split, and a
+reproducible query. Reconcile the operational “263 transactions” incident label with the broader
+diagnostic population in commit `5171adb`; do not assume they are the same population.
+
+Validate and propose controls for:
+- rows 2+ of each `(OrderItem, Period)` having `ExpectedReceived=0`;
+- deducting `add_ons` once per `(OrderItem, Period)`, not per charge row;
+- identifying CMI only with
+  `careos.careos_order_items.motor_item_type = 'MOTOR_TYPE_COMPULSORY'`;
+- a durable marker separating `CORRECTION` from `ADDITIONAL_PAYMENT`, since positive adjustment
+  lines have the same `(Periodเดิม, Expected=0, Actual>0)` shape.
+
+Why: `L80524847` (2026-07-28) demonstrates the mechanism around
+`charge_rank PARTITION BY transaction_id`, and all three inspected orders violated the
+repeated-row Expected rule. Correction for wrong/negative `ExpectedReceived` is Aware-confirmed
+method 2 (Cancel + new Paid), but no correction or forward SQL change is authorized until the
+scope, regression evidence, rollback, and approval are complete.
+Status: OPEN — quantify only/read-only first; internal team only; no SQL edit, deploy, batch, or
+external notification authorized
+
 ## [2026-07-29 20:31 ICT] FROM Codex TO Claude Code
 Request: Replace the obsolete body/manual-load A3 design with attachment-first SAP result
 ingestion. Implement the SQL-domain objects/migration and provide the Apps Script integration

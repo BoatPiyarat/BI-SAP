@@ -1,5 +1,17 @@
 # 20_SAP_PROGRESS.md
-Last Updated: 2026-07-29 - **Daily-missing understanding changed materially by H4 Gmail
+Last Updated: 2026-07-29 — **INCIDENT-002 OPEN / INTERNAL ONLY:** CMI `add_ons` is being deducted
+per charge row in the credit-shell path instead of once per `(OrderItem, Period)`, while rows 2+
+also retain nonzero `ExpectedReceived`. Concrete evidence: `L80524847` (2026-07-28); live
+diagnostic source `sap_integration_v2.RCL 04_new order credit shell`, evidence commit `5171adb`
+at 23:47:45 ICT (exact query timestamp not retained). The incident is referred to operationally
+as the 263-transaction incident, but Claude Code is still producing the authoritative population
+and money impact; **do not notify outside the team or quote scope yet**. Aware + Sarawut/Boyd have
+confirmed both correction methods: adjustment (`Expected=0`, `Actual=delta`) tested on
+`L79899055`/`L79965977`, and Cancel + new Paid tested on `L79899088`/`L79965966`; when
+`ExpectedReceived` is wrong or negative, method 2 is mandatory. Positive adjustment rows are
+structurally indistinguishable from additional payments until a durable marker exists.
+
+**Daily-missing understanding changed materially by H4 Gmail
 baseline (`71c7afd`): these are persistent SAP import failures, not merely views that are “not yet
 tuned.”** Across the five-night baseline window (07/22, 25, 26, 27, 28),
 `03_CHANGE` and `NONMOTOR 02_CANCEL` were rejected as whole-file errors on every night where each

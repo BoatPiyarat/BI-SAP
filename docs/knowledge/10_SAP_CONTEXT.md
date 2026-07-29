@@ -110,12 +110,27 @@ generate ไม่ใช่ signal จากต้นทาง (Data Dictionary/
 - **Product separation:** Motor / Non-Motor / Compulsory — SQL, validation, export แยกอิสระ
 - **Compulsory ID:** `motor_item_type = 'MOTOR_TYPE_COMPULSORY'` เท่านั้น — ห้ามใช้ packageType
   (ต้นเหตุ 263-transaction mismatch)
+- **CMI add-on deduction grain:** หัก `add_ons` ได้ครั้งเดียวต่อ `(OrderItem, Period)` เท่านั้น
+  ห้ามหักซ้ำต่อ charge row. กฎนี้ป้องกัน `INCIDENT-002` ใน credit-shell path.
 - **RCL installment:** ทุก payment ต้อง export ครบทุก period (full schedule)
 - **PaymentDate:** ใช้วันจ่ายจริง; ถ้าตกงวดบัญชีที่ปิดแล้ว → เลื่อนเป็นวันแรกของงวดเปิดถัดไป
   (cutoff จาก `sap_accounting_cutoff_dates` — Finance confirm รายเดือน, ห้าม hardcode)
 - **Immutable keys:** OrderItem + InvoiceNo แก้ไม่ได้หลัง post — แก้ = Cancel+Re-import หรือ manual SAP
 - **Additional payment:** Period เดิม, ExpectedReceived=0, ActualReceived>0 → ไม่ใช่ duplicate
   PK = OrderItem + Period + ChargeID + InvoiceNo
+- **Repeated-row expected amount:** เมื่อมีหลายแถวใน `(OrderItem, Period)` เดียวกัน แถวที่ 2
+  เป็นต้นไปต้องมี `ExpectedReceived = 0` เสมอ.
+- **Actual-received correction (Aware + Sarawut/Boyd confirmed 2026-07-29):**
+  - Method 1 — adjustment line: ใช้ Period เดิม, `ExpectedReceived=0`, และ
+    `ActualReceived=ส่วนต่าง` (ค่าลบเมื่อรับเกิน / ค่าบวกเมื่อรับขาด). ทดสอบกับ
+    `L79899055`, `L79965977`.
+  - Method 2 — Cancel เอกสารเดิมแล้วส่ง Paid ใหม่. ทดสอบกับ `L79899088`, `L79965966`.
+  - **Selection rule:** ถ้า `ExpectedReceived` ผิดหรือติดลบ ต้องใช้ Method 2 ตามคำแนะนำของ
+    Aware; ห้ามแก้ด้วย adjustment line.
+  - ⚠️ **Recon ambiguity:** Method 1 มีรูปทรงเดียวกับ additional payment
+    `(Period เดิม, ExpectedReceived=0, ActualReceived>0)`. ห้ามสรุปจากโครงสร้างแถวเพียงอย่างเดียว
+    และห้ามเชื่อยอด recon แยกประเภทจนมี durable marker ระบุ `CORRECTION` หรือ
+    `ADDITIONAL_PAYMENT`.
 - **Cancel/Recreate:** partial (M-only/V-only) เป็น normal practice; matching ต้อง item-level
   ⚠️ ChassisNo มี human error + ไม่มีใน Non-Motor — ใช้เป็น key ไม่ได้ (INCIDENT-001 Hypothesis 2)
   Cancel output must be emitted per `order_item`; an order-level signal must never pull active

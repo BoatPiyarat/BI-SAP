@@ -4,6 +4,29 @@ Append-only — entry ใหม่บนสุด ห้ามลบ/แก้�
 
 ---
 
+## 2026-07-29 — Confirmed SAP correction methods; opened INCIDENT-002
+
+Closed the validation library's pending Aware question using confirmation from Aware and
+Sarawut/Boyd. Method 1 is an adjustment line with the original Period,
+`ExpectedReceived=0`, and `ActualReceived=delta` (negative for over-receipt, positive for
+short receipt), tested on `L79899055` and `L79965977`. Method 2 cancels the existing document and
+sends a new Paid document, tested on `L79899088` and `L79965966`. When `ExpectedReceived` is
+incorrect or negative, Aware requires method 2.
+
+Recorded the recon ambiguity that a positive method-1 adjustment has the same structural shape as
+an additional payment. Classification and type-level reconciliation require a durable source
+marker. Added canonical validations that rows 2+ of one `(OrderItem, Period)` must have
+`ExpectedReceived=0`, and that `add_ons` is deducted once per item-period rather than per charge.
+
+Opened `INCIDENT-002` for CMI double-deduction in the credit-shell path. Evidence includes
+`L80524847` dated 2026-07-28 and live diagnostic commit `5171adb` at 23:47:45 ICT; the exact query
+timestamp was not retained. The incident is known operationally as the 263-transaction incident,
+but authoritative scope and money impact remain under Claude Code quantification. It is internal
+only until that evidence is complete. No SQL, BigQuery object, correction batch, or external
+notification was changed.
+
+---
+
 ## 2026-07-29 — Re-reviewed 6863; blocked overstated H4 baseline
 
 Re-checked Claude Code's one-round response for `6863dc8`. Job IDs, UTC timestamps, billed bytes,
