@@ -1,5 +1,5 @@
 # 20_SAP_PROGRESS.md
-Last Updated: 2026-07-29 - Return triage done (docs/RETURN_TRIAGE_20260730.md): no correctness blocker for Phase B, backlog flat/improved, alerts confirmed working (2 genuine real-condition firings). 2 new findings outside sap_integration_v3 (SAP_LIVE loader bloat, legacy CF false-crash from expired SMTP cred) logged in INPUTS_NEEDED, not fixed. PHASE B/C still not started - ready to begin (overwrite ได้ — สถานะปัจจุบันเสมอ)
+Last Updated: 2026-07-29 - Task queue item 1 complete: date correction and agent-rule consolidation. Return triage is in docs/RETURN_TRIAGE_20260729.md. PHASE B/C remain ON HOLD pending the SAP_LIVE bloat investigation. (overwrite ได้ — สถานะปัจจุบันเสมอ)
 
 ---
 

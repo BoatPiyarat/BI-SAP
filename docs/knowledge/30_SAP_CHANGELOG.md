@@ -4,13 +4,26 @@ Append-only — entry ใหม่บนสุด ห้ามลบ/แก้�
 
 ---
 
+## 2026-07-29 — Codex handover queue item 1: date correction + canonical agent rules
+
+Verified the local date first (`2026-07-29`, ICT). Renamed the incorrectly dated
+`RETURN_TRIAGE_20260730.md` to `RETURN_TRIAGE_20260729.md` and updated its live references; dates
+that describe Boat's actual 2026-07-30 return/away window were intentionally preserved. Consolidated
+the still-current rules unique to the previous `AGENTS.md`/`CLAUDE.md` into canonical
+`docs/AGENT_RULES.md`, then retained both root files as pointers only. Canonicalized the resolved
+knowledge addendum filename to `KNOWLEDGE_ADDENDUM_20260729_v2.md`. No superseded v1 gap-closure,
+v1 addendum, or `METHOD_CLEAN_SAP_LIVE_FULL.md` file was present to delete. No SQL or deployment
+work was performed.
+
+---
+
 ## 2026-07-29 — KNOWLEDGE_ADDENDUM v2 (resolved) applied: exclusion/format rules, EXCLUDED ≠ DELETED
 
 (Date corrected: this entry and the addendum itself were first stamped 2026-07-30 by mistake -
 caught and fixed same-day per Boat's new rule below: never guess the date, verify with `date`
 before naming a file or writing a CHANGELOG entry.)
 
-Boat resolved v1's open items and gave a final spec (`docs/knowledge/KNOWLEDGE_ADDENDUM_20260729 v2.md`,
+Boat resolved v1's open items and gave a final spec (`docs/knowledge/KNOWLEDGE_ADDENDUM_20260729_v2.md`,
 superseding v1): E1 year scope (per-stage, not a blanket year cut - ≤2024 untouched, 2025 blocks new
 Paid but allows cancel for orders already in SAP, 2026+ normal), E2 test-customer exact-match (name)
 + report-only phone signal, E3 insurer-master exclusion, F1 InsuredID default, F2 PolicyNo>50 hard
@@ -23,7 +36,7 @@ report additions, recomputed backlog numbers) tracked in the entries below as ea
 
 ## 2026-07-29 — Return triage: away-window review before Phase B
 
-Boat's return-triage ask, executed live against real data (`docs/RETURN_TRIAGE_20260730.md` has
+Boat's return-triage ask, executed live against real data (`docs/RETURN_TRIAGE_20260729.md` has
 full detail): extract/freshness per night, which alerts fired and where, backlog growth 07-27 vs
 now, legacy pipeline file completeness + import errors, and a fresh `audit_010_careos_missing_in_sap_detail`
 check for the same pattern as `sap_integrety_2025_RCL`.

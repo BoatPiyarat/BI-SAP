@@ -1,6 +1,5 @@
 # ADDENDUM 2026-07-29 v2 — EXCLUSION & FORMAT RULES (RESOLVED)
 Supersedes: ADDENDUM 2026-07-29 v1 (ข้อที่ tag ⏳ ถูกตอบแล้ว 2026-07-29 โดย Boat)
-(แก้วันที่จาก 2026-07-30 → 2026-07-29 ตามที่ Boat ยืนยัน — ห้ามเดาวันที่อีกต่อไป ใช้ `date` command ตรวจก่อนเสมอ)
 ให้ append เข้า `docs/knowledge/10_SAP_CONTEXT.md`
 
 ## หลักการครอบทั้งหมด: EXCLUDED ≠ DELETED

@@ -94,13 +94,13 @@ something I can just reassign).
    each restart likely re-inserted the same rows. No downstream correctness impact confirmed
    (`SAP_LIVE_FULL`/`sap_mirror_doc` dedup correctly), but real storage/cost growth and an active
    bug. Needs: raise the Cloud Run memory limit and/or make the insert idempotent. See
-   `docs/RETURN_TRIAGE_20260730.md` §1.
+   `docs/RETURN_TRIAGE_20260729.md` §1.
 2. **Legacy Cloud Functions reporting `crash` every night** (07-26/27/28, both Motor and NonMotor):
    root-caused to an expired/revoked Gmail SMTP app-password in the post-export notification email
    step (`mailer.py`), NOT the export itself - confirmed via log ordering that every real GCS file
    write completes before the crash. Cosmetic for data delivery, but the notification email nobody
    is receiving, and Cloud Function status alone looks like nightly failure. See
-   `docs/RETURN_TRIAGE_20260730.md` §4.
+   `docs/RETURN_TRIAGE_20260729.md` §4.
 
 ## Boat — sap_integrety_2025_RCL follow-up (§14 in FINDINGS): dormant, but audit_010 isn't
 
