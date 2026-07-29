@@ -1,30 +1,41 @@
 -- 036_stg_order_dim_cancel_effective.sql
--- Boat 2026-07-29 (D1 REVISED, confirmed after S1-S6 + extra 1-3 diagnostics): a real cancel signal
--- exists in THREE fields across TWO tables, not the single stg_order_dim.is_cancelled column 033
--- carried forward (which only read the item-level flag). This file materializes the combined
--- definition ONCE, here, so every downstream layer (037/038/039 in this batch, and anything later)
--- reads two plain columns instead of re-deriving the OR-of-three-fields logic itself. NOT DEPLOYED
--- YET - source only, per this session's no-deploy instruction (deploy gate applies: replaces
--- sp_refresh_stg_order_dim, an existing consumer-read routine).
+-- Boat 2026-07-29, CONFLICT RESOLVED: canonical definition is 2-field, careos_order_items ONLY.
+-- (Supersedes this file's own first draft, which used a 3-field OR including careos_orders.is_cancelled
+-- - that draft was NEVER DEPLOYED, so no live redeploy is needed, only this source correction. Reason
+-- for dropping the order-level term: it only added ~1 item of coverage in practice, but risks pulling
+-- an order-level cancel signal across ALL of an order's items - directly conflicting with the
+-- per-order_item-only design constraint, since 98.5% of the item-level cancel population has a
+-- still-active sibling on the same order (partial cancel-recreate, normal practice). Matches legacy
+-- `02 RCB Motor cancel-new`'s own 2-field condition exactly.)
 --
--- Nested definition (grain and source table called out per Boat's explicit ask):
+-- Nested definition (grain and source table called out per Boat's explicit ask - BOTH fields are
+-- item grain, same table, no cross-table term):
 --   is_cancelled_effective =
---        oi.is_cancelled IS TRUE       -- item grain,  careos.careos_order_items.is_cancelled
---     OR oi.cancel_time IS NOT NULL    -- item grain,  careos.careos_order_items.cancel_time
---     OR o.is_cancelled  IS TRUE       -- order grain, careos.careos_orders.is_cancelled
---                                         (order cancelled = every item on it is cancelled)
+--        oi.is_cancelled IS TRUE       -- item grain, careos.careos_order_items.is_cancelled
+--     OR oi.cancel_time IS NOT NULL    -- item grain, careos.careos_order_items.cancel_time
 --   cancel_time_effective = oi.cancel_time   -- item grain, careos.careos_order_items.cancel_time
---     (verbatim, NULL if not set - never guess/derive a date; this is deliberately narrower than
---      is_cancelled_effective itself, so a row can be effective=TRUE with cancel_time_effective
---      NULL - see CANCEL_TIME_MISSING in 039)
+--     (verbatim, NULL if not set - never guess/derive a date; a row can be effective=TRUE with
+--      cancel_time_effective NULL if only is_cancelled is set - see CANCEL_TIME_MISSING, planned
+--      for the interface_daily_status update later in this batch)
 --
--- Diagnostic context (2026-07-29, read-only, see docs/sessions/2026-07-29-claude.md for the full
--- S1-S6 + extra-1-3 writeup): broadening from the old single-column definition to this 3-field one
--- adds 3,352 order_items. Of those, 98.5% (3,302) have a still-active sibling on the same order -
--- confirmed as normal partial cancel-recreate practice per 10_SAP_CONTEXT, not a data problem. This
--- is exactly why every consumer of these columns MUST stay at order_item grain (see the per-item-only
--- design constraint recorded in the session doc) - is_cancelled_effective describes ONE item, never
--- "the whole order this item belongs to."
+-- NOT DEPLOYED YET - source only. Confirmed via `bq show`/INFORMATION_SCHEMA before this rewrite:
+-- live `stg_order_dim` still has exactly 033's columns, no is_cancelled_effective/cancel_time_effective
+-- column exists yet - so there was nothing live to fix, only this source file's formula.
+--
+-- Diagnostic context (2026-07-29, read-only, see docs/sessions/2026-07-29-claude.md): this 2-field
+-- definition adds 3,352 order_items over the old single-column (`is_cancelled` only) definition -
+-- same population as before, since is_cancelled and cancel_time on careos_order_items were already
+-- confirmed near-fully redundant with each other (63,748 vs 63,748, 1 item apart each direction).
+-- 98.5% of the added 3,352 have a still-active sibling on the same order - confirmed normal partial
+-- cancel-recreate per 10_SAP_CONTEXT, not a data problem. This is exactly why every consumer of these
+-- columns MUST stay at order_item grain - is_cancelled_effective describes ONE item, never "the whole
+-- order this item belongs to."
+--
+-- Cross-check monitor (separate from is_cancelled_effective, per Boat's item 3): the REVERSE
+-- direction - order.is_cancelled = TRUE but the item itself isn't - is tracked here as its own view,
+-- for the morning digest, NOT folded into is_cancelled_effective. Verified live 2026-07-29: 0 items
+-- match today (Boat's own estimate was ~1; the real number is 0 - reported as found, not adjusted to
+-- match the estimate).
 --
 -- Same MERGE-incremental + one-time-backfill shape as 033 (BigQuery routines have no ALTER-to-add-
 -- logic; full procedure body per file, per project convention).
@@ -92,11 +103,10 @@ BEGIN
       oi.policy_number AS policy_no,
       oi.policy_start_date AS policy_start_date,
       oi.is_cancelled AS is_cancelled,
-      -- nested definition, table+grain per field (see header comment):
+      -- nested definition, table+grain per field (see header comment) - 2-field, item grain only:
       (
-        IFNULL(oi.is_cancelled, FALSE)          -- item grain,  careos_order_items.is_cancelled
-        OR oi.cancel_time IS NOT NULL           -- item grain,  careos_order_items.cancel_time
-        OR IFNULL(o.is_cancelled, FALSE)        -- order grain, careos_orders.is_cancelled
+        IFNULL(oi.is_cancelled, FALSE)   -- item grain, careos_order_items.is_cancelled
+        OR oi.cancel_time IS NOT NULL    -- item grain, careos_order_items.cancel_time
       ) AS is_cancelled_effective,
       oi.cancel_time AS cancel_time_effective,  -- item grain, careos_order_items.cancel_time verbatim
       REGEXP_REPLACE(
@@ -209,7 +219,6 @@ SELECT
   (
     IFNULL(oi.is_cancelled, FALSE)
     OR oi.cancel_time IS NOT NULL
-    OR IFNULL(o.is_cancelled, FALSE)
   ) AS is_cancelled_effective,
   oi.cancel_time AS cancel_time_effective,
   REGEXP_REPLACE(
@@ -223,3 +232,21 @@ FROM `pacific-plating-282708.careos.careos_order_items` oi
 JOIN `pacific-plating-282708.careos.careos_orders` o ON o.id = oi.order_id
 LEFT JOIN `pacific-plating-282708.hydra_customer_prod.customers` cust ON cust.id = o.customer_id
 LEFT JOIN `pacific-plating-282708.hydra_customer_prod.phones` ph ON ph.id = cust.primary_phone_id;
+
+-- Cross-check monitor (Boat item 3): the REVERSE direction, order-level flagged cancelled but the
+-- item itself carries neither signal. Separate from is_cancelled_effective on purpose - this is a
+-- data-quality digest count, not part of the cancellation rule. Verified live 2026-07-29: 0 rows
+-- (Boat's own estimate was ~1 based on an earlier item-level-only mismatch found in a different
+-- check - that 1-item mismatch was is_cancelled vs cancel_time on the SAME table, careos_order_items;
+-- this cross-order check is a different comparison and currently finds 0).
+CREATE OR REPLACE VIEW `pacific-plating-282708.sap_integration_v3.v_order_cancelled_item_not_monitor` AS
+SELECT
+  oi.human_id AS order_item,
+  o.human_id AS order_id,
+  oi.is_cancelled AS item_is_cancelled,
+  oi.cancel_time AS item_cancel_time,
+  o.is_cancelled AS order_is_cancelled
+FROM `pacific-plating-282708.careos.careos_order_items` oi
+JOIN `pacific-plating-282708.careos.careos_orders` o ON o.id = oi.order_id
+WHERE IFNULL(o.is_cancelled, FALSE) = TRUE
+  AND NOT (IFNULL(oi.is_cancelled, FALSE) OR oi.cancel_time IS NOT NULL);
