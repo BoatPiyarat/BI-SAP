@@ -254,11 +254,15 @@ This addendum overrides any earlier text that conflicts with D1–D5.
 that field and must not re-derive the OR. This matches the legacy cancel-new condition and closes
 the gap where v3 recognized fewer cancellations than legacy.
 
-**Why not `careos.careos_orders.is_cancelled`:** the order-level flag adds only approximately one
-item beyond the two item-level fields, while introducing a grain mismatch that can mark active
-siblings cancelled. That violates the confirmed per-`order_item` output constraint. Excluding it
-also keeps D1 aligned with legacy cancel-new. This design review is closed; do not reopen it without
-a new Boat decision backed by row-level evidence.
+**Why not `careos.careos_orders.is_cancelled`:** the design review initially estimated that the
+order-level flag added only approximately one item beyond the two item-level fields. The subsequent
+reverse cross-check found **0 rows** where the order flag was true while both item fields were
+false. Source object: proposed `v_order_cancelled_item_not_monitor`; queried 2026-07-29, exact query
+time not captured, evidence commit `988e901` at 18:59:27 ICT. Regardless of population, the
+order-level field introduces a grain mismatch that can mark active siblings cancelled, violating
+the confirmed per-`order_item` constraint. Excluding it also keeps D1 aligned with legacy
+cancel-new. This design review is closed; do not reopen it without a new Boat decision backed by
+row-level evidence.
 
 `expected_status` supports `Cancelled`; precedence is `Cancelled > Paid > Pending`.
 `PAID_AFTER_CANCEL` remains a separate anomaly classification and must not be hidden by ordinary

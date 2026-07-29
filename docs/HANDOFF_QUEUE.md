@@ -13,8 +13,9 @@ population/grain, joins, and status classification are correct. Implement revise
 (careos.careos_order_items.cancel_time IS NOT NULL)`; downstream queries must not re-derive it.
 The design conflict is **RESOLVED by Boat/design review**: source-only, undeployed commit `8a28710`
 used a three-field formula including `careos.careos_orders.is_cancelled` because a chat instruction
-conflicted with canonical D1. Replace that source with the canonical two-item-field definition
-above before deploy or regression acceptance; do not treat `8a28710` as accepted D1. Lesson:
+conflicted with canonical D1. Claude Code corrected 036 to the canonical two-item-field definition
+in source-only commit `109cd76`; it remains undeployed and still requires the regression acceptance
+in this queue item. Lesson:
 when chat conflicts with canonical knowledge, reconcile and update knowledge first rather than
 implementing the chat instruction silently.
 Add `CANCEL_TIME_MISSING` to the status vocabulary for effective cancellations where timing cannot
@@ -29,7 +30,7 @@ committed 18:46:14 ICT. Do not cite the superseded 419 / THB 5.68M or 2,254 / TH
 Why: **⚠️ PROVISIONAL — UNDER VERIFICATION:** the observed 14:01:28 ICT counts (OK 257,340;
 STATUS_CONFLICT 34,758; MISSING 576; PENDING_ACK 514) have no regression proof and must not be
 cited until 0A/0B passes and STATUS_CONFLICT decreases in line with D1 acceptance.
-Status: OPEN
+Status: OPEN — D1 source conflict resolved in `109cd76`; deploy/regression 0A/0B still pending
 
 ## [2026-07-29 17:47 ICT] FROM Codex TO Claude Code
 Request: Deploy the source-only `035_policyno_too_long_validation.sql` and verify the replacement

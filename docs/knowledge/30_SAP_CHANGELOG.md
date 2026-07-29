@@ -12,10 +12,13 @@ Boat/design review resolved the D1 conflict: canonical
 careos.careos_order_items.cancel_time IS NOT NULL`. Both inputs are item-level and come only from
 `careos.careos_order_items`.
 
-`careos.careos_orders.is_cancelled` is intentionally excluded: it adds only approximately one
-item beyond the item-level definition, risks cancelling an active sibling, violates the
-per-`order_item` constraint, and is not part of legacy cancel-new. Commit `8a28710` remains
-source-only/not deployed and requires correction in the SQL lane. The conflict originated from a
+`careos.careos_orders.is_cancelled` is intentionally excluded. The design review's initial
+approximately-one-item estimate was superseded by a reverse cross-check result of **0 rows** where
+the order flag was true and both item-level fields were false. Source object:
+`v_order_cancelled_item_not_monitor`; queried 2026-07-29, exact query time not captured, evidence
+commit `988e901` at 18:59:27 ICT. More importantly, the order-level signal risks cancelling an
+active sibling, violates the per-`order_item` constraint, and is not part of legacy cancel-new.
+Claude Code corrected the source in undeployed commit `109cd76`. The conflict originated from a
 chat instruction that contradicted D1; the permanent rule is now to reconcile canonical knowledge
 before implementing such an instruction.
 

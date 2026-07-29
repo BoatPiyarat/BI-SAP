@@ -22,8 +22,11 @@ Supersedes: ADDENDUM 2026-07-29 v1 (ข้อที่ tag ⏳ ถูกตอ�
 `(careos.careos_order_items.is_cancelled IS TRUE) OR
 (careos.careos_order_items.cancel_time IS NOT NULL)`. Source fields ทั้งสองมาจาก
 `careos.careos_order_items`; downstream ห้าม re-derive เงื่อนไขเอง. นิยามนี้ตรงกับ legacy
-cancel-new logic. ไม่ใช้ `careos.careos_orders.is_cancelled`: เพิ่มเพียงประมาณ 1 item แต่เสี่ยง
-ลาก active sibling เข้าสถานะ cancel และขัด per-`order_item` constraint.
+cancel-new logic. ไม่ใช้ `careos.careos_orders.is_cancelled`: design review ประเมินเดิมว่าเพิ่ม
+ประมาณ 1 item แต่ reverse cross-check ล่าสุดพบ 0 rows (source object:
+`v_order_cancelled_item_not_monitor`; query วันที่ 2026-07-29, exact time ไม่ถูกเก็บ,
+evidence `988e901` เวลา 18:59:27 ICT). ที่สำคัญคือ order-level signal เสี่ยงลาก active sibling
+เข้าสถานะ cancel และขัด per-`order_item` constraint.
 
 **Date basis (confirmed):** ใช้ **`GREATEST(OrderDate, PolicyDate)`** — ยึดวันที่ล่าสุดกว่าของสองตัว
 - ถ้าตัวใดเป็น NULL → ใช้ตัวที่มีค่า

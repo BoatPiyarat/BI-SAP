@@ -3,9 +3,9 @@ Last Updated: 2026-07-29 - Revised D1 recorded: cancellation is computed once as
 `stg_order_dim.is_cancelled_effective` from item `is_cancelled` OR item `cancel_time`; both source
 fields are from `careos.careos_order_items`, and downstream
 re-derivation is forbidden. `CANCEL_TIME_MISSING` added to the canonical vocabulary. Revised D1 is
-approved but not implemented/accepted: source-only commit `8a28710` uses a conflicting three-field
-definition that also includes `careos.careos_orders.is_cancelled`; correction to the canonical two-field
-definition is queued to Claude Code before deploy or acceptance. S1–S6 (`402904b`, corrected by
+approved but not deployed/accepted: the conflicting three-field source in `8a28710` was corrected
+to the canonical two-item-field definition in source-only commit `109cd76`. Deploy and regression
+acceptance remain pending. S1–S6 (`402904b`, corrected by
 `fa9b351`) confirms partial
 cancel-recreate is normal and cancel output must stay at order_item grain. Latest
 provenance-incomplete estimates are ⚠️ PROVISIONAL 296 actionable items / ~THB 3.89M before year
