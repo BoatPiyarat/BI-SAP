@@ -31,6 +31,14 @@ CareOS → BigQuery raw → stg_* → Business Logic (per BU×stage) → Validat
 30 ของทุกชั่วโมง (ยืนยันจาก Boat 2026-07-25 — แก้ไข "รายชั่วโมง" เดิมที่เป็นการประมาณคร่าวๆ)
 ```
 
+**Interface filename contract (confirmed from SAP email evidence 2026-07-27):**
+- ทุกไฟล์ใต้ `gs://interface-file/<BU>/` ต้องขึ้นต้นด้วย `INSURANCE_RCB_`
+  (`Type_Company_`).
+- ห้ามใส่ชื่อ BU ซ้ำใน filename; path `<BU>/` เป็นตัวกำหนด BU และ SAP import log จะเติม BU
+  prefix เองตอนรายงาน.
+- ชื่อผิด contract ถูก SAP ปฏิเสธในขั้น download ก่อนถึง import จึงเสีย pull cycle โดยไม่ได้
+  validation/import ใด ๆ.
+
 **Path B — ขากลับ (SAP DB → BigQuery เพื่อ recon): pipeline จริงมีเส้นเดียว (ไม่ใช่ 2 คู่ขนาน)**
 ```
 SAP DB (RCB_LIVE_DB, ผ่าน WireGuard) --[pyodbc]--> sap-extract-job (Cloud Run JOB)

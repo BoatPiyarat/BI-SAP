@@ -3,6 +3,22 @@
 Canonical queue for work that crosses the ownership boundaries in `docs/AGENT_TEAMING.md`.
 Newest request first. The receiving agent marks an item `DONE (<commit>)`; do not delete history.
 
+## [2026-07-29 19:34 ICT] FROM Codex TO Claude Code
+Request: Design, implement, and verify `sap_integration_v3.sp_manual_export` as the safe replacement
+for hand-built emergency/mobile exports. It must accept an explicit BU + item/order scope, reuse
+the canonical validation and export column contract, enforce the year/test/InvoiceNo rules, write
+only filenames beginning `INSURANCE_RCB_` without repeating the BU name, and archive every emitted
+row in `export_archive` with `run_type='MANUAL'`.
+Commit `08dc0f7` confirms `export_archive` does not exist yet; include a source-backed archive table
+(or prove the canonical replacement object) and its idempotency/reconciliation contract as a
+prerequisite. No further manual export is allowed until this control exists and is verified.
+Why: SAP email evidence dated 2026-07-27 confirms files with the wrong name are rejected during
+download before import. Manual exports not recorded in `export_archive` also leave reconciliation
+without provenance and can bypass duplicate protection. Return a dry-run/column-order test,
+shadow-path sample, rollback plan, and proposed call signature before requesting deploy approval.
+Status: OPEN — `export_archive` prerequisite absent per `08dc0f7`; SQL source/design not started;
+no deploy authorized
+
 ## [2026-07-29 17:47 ICT] FROM Codex TO Claude Code
 Request: Run and report regression checks 0A/0B for the post-exclusion
 `interface_daily_status` refresh, and explain why STATUS_CONFLICT changed from roughly +42 in the

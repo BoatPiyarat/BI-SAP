@@ -4,6 +4,23 @@ Append-only — entry ใหม่บนสุด ห้ามลบ/แก้�
 
 ---
 
+## 2026-07-29 — Closed `bq-results` flag; documented safe emergency export
+
+Boat confirmed that the observed `bq-results` activity was his own authorized mobile work while on
+annual leave. It is **not an incident** and requires no investigation; it has been removed from the
+active investigation set.
+
+Recorded the filename contract confirmed by SAP email evidence dated 2026-07-27: files under
+`gs://interface-file/<BU>/` must begin `INSURANCE_RCB_`, must not repeat the BU in the filename,
+and are rejected at SAP's download stage if named incorrectly. Added the emergency mobile-export
+checklist to `SAP_RUNBOOK_v3.md`, including column-order, test/year, SAP InvoiceNo, and mandatory
+`export_archive` controls. Queued `sp_manual_export` for Claude Code as the preferred controlled
+SQL-domain path. Session evidence `08dc0f7` confirms `export_archive` does not exist yet, so the
+runbook now prohibits another emergency manual export until the archive control is created and
+verified. No SQL, BigQuery object, GCS object, or deployment was changed in this docs update.
+
+---
+
 ## 2026-07-29 — Boat closed D1 on two item-level fields
 
 Boat/design review resolved the D1 conflict: canonical

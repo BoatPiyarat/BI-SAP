@@ -73,6 +73,28 @@ SLA ที่บอก FA ได้: ส่ง list → ไฟล์พร้อ
 - ห้ามใช้ bypass validation — ถ้า item ติด V-rule แปลว่าข้อมูลมีปัญหาจริง แจ้งกลับ FA พร้อม reason จาก `sap_validation_error` (มี template ใน §5)
 - Cancel ที่มีเงินจ่ายหลัง CareOS cancel (recon flag `PAID_AFTER_CANCEL`) → ต้องได้ confirm intent จาก FA ก่อนทุกครั้ง
 
+### Emergency manual export (mobile)
+
+ใช้เฉพาะเมื่อจำเป็นต้องส่งระหว่างอยู่นอกเครื่อง/ผ่านมือถือ และ automated ADHOC path ใช้งานไม่ได้:
+
+1. เลือก folder ให้ตรง BU: `gs://interface-file/<BU>/`.
+2. Filename ต้องเริ่ม `INSURANCE_RCB_` (`Type_Company_`) และห้ามใส่ชื่อ BU ซ้ำใน filename.
+   SAP import log เติม BU prefix เองตอนรายงาน; ชื่อผิดจะถูกปฏิเสธตั้งแต่ขั้น download ก่อนถึง
+   import และเสีย pull cycle.
+3. ก่อนส่งตรวจครบ:
+   - column order ตรง interface contract;
+   - ไม่มี test customer และไม่มีรายการปี 2023–2024;
+   - InvoiceNo ของรายการที่มีใน SAP แล้ว mirror จาก SAP verbatim — ห้าม generate/แก้เอง.
+4. บันทึกทุกแถวลง `sap_integration_v3.export_archive` ด้วย `run_type='MANUAL'` ในรอบเดียวกับ
+   การส่ง มิฉะนั้น reconciliation จะพบแถวที่ไม่มีต้นทางและ nightly อาจกันส่งซ้ำไม่ได้.
+5. ทางที่ปลอดภัยและต้นทุนต่ำกว่าเมื่อพร้อมใช้งาน: เรียก `sp_manual_export` ให้ทำ scope,
+   validation, naming, export และ archive แทนการประกอบ export มือ.
+
+**Current blocker (evidence `08dc0f7`, 2026-07-29): `export_archive` ยังไม่มีอยู่จริง.**
+ห้ามทำ emergency manual export รอบใหม่จน Claude Code สร้าง archive control และเส้นทางบันทึก
+`run_type='MANUAL'` ที่ทดสอบแล้ว. `sp_manual_export` เป็นงาน SQL-domain ที่มอบหมายผ่าน
+`docs/HANDOFF_QUEUE.md`; เมื่อสร้างและผ่าน deploy gate แล้ว ให้ใช้ procedure นี้แทน export มือ.
+
 ## 5. Template ตอบ FA (กรณี item ติด validation)
 
 > รายการที่ขอ นำเข้าได้ N รายการ (ไฟล์เข้า SAP รอบ HH:00)
