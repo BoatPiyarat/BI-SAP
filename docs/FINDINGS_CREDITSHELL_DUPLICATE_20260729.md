@@ -151,3 +151,106 @@ negative `ActualReceived`. Not attempted here; this is Boat's decision to make a
 - No notification outside the team.
 - No attempt to identify which specific 1,247 pairs need Cancel+Paid vs another treatment — that is
   the next step only after Boat decides on this report.
+
+---
+
+# ADDENDUM 2026-07-30 — D9 remediation design (Boat's Method 2 decision)
+
+Boat decided (D9): Method 2 requires a **new OrderItem generation** (a Paid+Cancelled item is
+immutable in SAP) and confirmed **InvoiceNo uniqueness scope = per order** (closes Q8a).
+`ADJ{n}_{OrderItem}` naming approved. Still source-only / design-only below — nothing deployed,
+nothing sent, per instruction.
+
+## 1. Precondition check (done first, as instructed): does `-M2` collide with real meaning?
+
+**Yes — cannot reuse `M2` as a revision-generation suffix.** Verified live:
+`SELECT REGEXP_EXTRACT(human_id, r'-([A-Z]*\d+)$') AS suffix, COUNT(*) FROM careos_order_items GROUP BY 1`
+→ V1: 478,955 · M1: 175,346 · `1`: 77,340 · `2`: 23,455 · **M2: 1,019** (real, live data).
+Sampled 5 `-M2` rows: every one is `motor_item_type = MOTOR_TYPE_COMPULSORY`, each on an order with
+exactly 2 items (an M2 + a V1, **no M1 present** in the sampled cases) — a genuinely different real
+item, not "M1 revision 2." `V2` and `M3` have 0 rows today, but "not observed" ≠ "reserved safe."
+
+**Proposed alternative** (matches Boat's own suggested shape): append `R{generation}` to the
+*original* suffix, never renumber the base digit — e.g. `L80524847-M1` (generation 1) →
+`L80524847-M1R2` for the Method-2 replacement. Verified unused: `SELECT COUNT(*) FROM
+careos_order_items WHERE REGEXP_CONTAINS(human_id, r'R\d+$')` → **0 rows**.
+**⚠️ Proposal only — waiting on Boat's explicit confirmation of this exact string format before
+anything downstream depends on it.**
+
+## 2. `sap_orderitem_alias` (source-only, `sql/ddl/038_orderitem_alias_and_adj_invoice_minting.sql`)
+
+Columns exactly as specified: `careos_order_item, sap_order_item, generation, reason,
+audit_case_id, created_at`. Every join between a CareOS order_item and SAP-facing tables
+(`sap_mirror_state`, `SAP_LIVE_FULL`, `stg_sap_state`) must resolve through this table once Method 2
+exists — otherwise `-M1R2` is an orphan in recon and `-M1` reads as permanent false MISSING.
+**Blast radius, not yet touched**: `sp_refresh_expected_state` (034/037), `sp_refresh_delta_export`
+(018), `sp_refresh_interface_daily_status` (030) would each need this resolution added — each its
+own separate, deploy-gated change once the table and naming are both confirmed.
+
+## 3. Path C balance-test criterion: must be alias-group, not per-order_item
+
+**Design principle** (no existing balance-test SQL was found to "fix" — recorded here as the
+requirement any future balance-test implementation must satisfy, since none exists yet in this
+repo): once a case is remediated, the OLD generation (`-M1`) will *permanently* show a Cancelled,
+imbalanced state at SAP (that's what Cancel does), while the NEW generation (`-M1R2`) holds the
+correct Paid, balanced state. **A balance check keyed on a single `sap_order_item` value would see
+`-M1`'s Cancelled-imbalance forever and report the case as still broken**, even after a correct fix.
+Correct check: `GROUP BY careos_order_item` (via `sap_orderitem_alias`, i.e. all generations of one
+logical item together), summing/reconciling across every `sap_order_item` in that alias group before
+judging balanced vs not.
+
+## 4. B2/B3 bucket review — ⚠️ inferred from this incident's own data, no prior bucket-taxonomy
+## document exists anywhere in this repo (checked `docs/design/`, `docs/tasks/`, `docs/knowledge/`,
+## all recent commits) — confirm/correct this mapping if it doesn't match your intent
+
+Read "B2 (Expected ผิด)" as the 698-pair `extra_rows_with_nonzero_expected` bucket already
+quantified above, and "B3 (SAP cancelled แล้ว)" as duplicate pairs whose current
+`sap_mirror_state.TransactionStatus` is already `Cancelled`/`Cancelled (Change order / Rejected)`.
+Quantified (same live view, one additional query, joined to `sap_mirror_state`):
+
+| Bucket | Count | Overlap with the other bucket |
+|---|---:|---:|
+| B2 — extra row still holds nonzero ExpectedReceived | 698 | 0 |
+| B3 — already `Cancelled`/`Cancelled (Change order / Rejected)` in SAP | **2** | 0 |
+
+B3 is small — only 2 of 1,247 pairs are already Cancelled in SAP today. Both are genuine
+credit-shell pairs (`L79605066` ← `L79289825`; `L79952011` ← `L79917668`, both confirmed in
+`cancelled_change_orders`). Both show `NULL` Expected/Actual on the *duplicate view rows*
+themselves (these are unpaid/placeholder periods caught in the duplication, not the money-bearing
+rows) while SAP's own mirror already shows a real historical `U_ActualReceived` (19,500.14 and
+3,604.00 respectively) under `TransactionStatus = Cancelled`.
+
+**Proposed pilot (1 case, NOT sent — proposal only)**: `L79605066-1`, Period 1 — the smaller of the
+two (ActualReceived 3,604.00 vs L79952011's 19,500.14), lower blast radius if the mechanism doesn't
+behave as expected. Purpose: prove that minting a fresh `sap_orderitem_alias` generation
+(`L79605066-1R2` under the proposed-pending-confirmation naming) and sending it as a new Paid
+document does **not** hit `PolicyStatus: In DB Status Cancelled not allow to interface` the way the
+original key would — i.e. confirm a truly fresh key is not blocked by the old key's history. Needs,
+before any send: (a) Boat's naming confirmation from item 1, (b) `sap_orderitem_alias` deployed,
+(c) `fn_mint_adj_invoice` deployed and its 3 unit-test cases re-verified live, (d) explicit deploy OK
+for this specific pilot row.
+
+## 5/6. `fn_mint_adj_invoice` + prior-ADJ-invoice check — done, source-only
+
+`sql/ddl/038_orderitem_alias_and_adj_invoice_minting.sql`: scalar SQL function, scoped per
+`U_OrderID` (matches Q8a), scans `sap_mirror_doc` for existing `ADJ\d+_` invoices under that order,
+picks `MAX(n)+1`. `fn_invoice_no` itself is unchanged (still `third_party_id` identity) — this is a
+new, separate function, since identity has no way to consult existing invoices.
+
+3 unit-test cases run (regex/aggregate logic directly, function not deployed):
+- Case A (no prior ADJ invoice) → extracts `1` correctly.
+- Case B (non-contiguous prior `ADJ1_`/`ADJ3_`, simulated via a 3-row scratch table) → **4**
+  (`MAX+1`, not gap-fill; unrelated `ADJUSTMENT_...` row correctly ignored).
+- Case C (`ADJUSTMENT_...` look-alike) → `REGEXP_EXTRACT` returns `NULL`, no false match.
+
+**Item 6 (retroactive check)**: `SELECT COUNT(*) FROM SAP_LIVE_FULL WHERE U_InvoiceNo LIKE 'ADJ%'`
+→ **0 rows**. No existing `ADJ`-prefixed invoice anywhere in SAP today — no collision risk from
+prior use.
+
+## Still open / needs Boat's decision before any further build or send
+
+1. Confirm or correct the `-M1R2`-style naming convention (item 1).
+2. Confirm or correct the B2/B3 bucket definitions used above (item 4) — inferred, not sourced from
+   an existing document.
+3. Approve or reject the 1-case pilot (`L79605066-1`) once its prerequisites are met.
+4. Deploy approval for `sap_orderitem_alias` and `fn_mint_adj_invoice` (both source-only today).
