@@ -4,6 +4,19 @@ Append-only — entry ใหม่บนสุด ห้ามลบ/แก้�
 
 ---
 
+## 2026-07-30 — KNOWLEDGE_ADDENDUM v2 (resolved) applied: exclusion/format rules, EXCLUDED ≠ DELETED
+
+Boat resolved v1's open items and gave a final spec (`docs/knowledge/KNOWLEDGE_ADDENDUM_20260730 v2.md`,
+superseding v1): E1 year scope (per-stage, not a blanket year cut - ≤2024 untouched, 2025 blocks new
+Paid but allows cancel for orders already in SAP, 2026+ normal), E2 test-customer exact-match (name)
++ report-only phone signal, E3 insurer-master exclusion, F1 InsuredID default, F2 PolicyNo>50 hard
+block, F3 date-format validation (deferred pending PHASE B's actual DDMMYYYY columns). Appended in
+full to `10_SAP_CONTEXT.md` (new ADDENDUM 2026-07-30 v2 section). Implementation (config tables,
+`sap_excluded_records`, `stg_order_dim`/`expected_state` changes, new validation rules, morning
+report additions, recomputed backlog numbers) tracked in the entries below as each piece lands.
+
+---
+
 ## 2026-07-29 — Return triage: away-window review before Phase B
 
 Boat's return-triage ask, executed live against real data (`docs/RETURN_TRIAGE_20260730.md` has

@@ -162,4 +162,59 @@ Posting Periods Unlocked→PaymentDate | invalid date→ต้อง DDMMYYYY
    เฉพาะ additional payment) ห้าม gen invoice โดยไม่ผ่านกติกากลาง
 5. **CREDIT_CARD_INSTALLMENT = ONETIME flow** (ธนาคารจ่ายเต็ม): TotalPeriods=1, status paid,
    channel RCB-EDC-<bank> (KBANK confirmed; bank อื่นรอบัญชี)
+
+## ⚠️ ADDENDUM 2026-07-30 v2 — EXCLUSION & FORMAT RULES (RESOLVED) — supersedes v1
+
+**หลักการครอบทั้งหมด: EXCLUDED ≠ DELETED.** ทุกแถวที่ถูกกรองโดยกติกาข้างล่าง → ลง
+`sap_integration_v3.sap_excluded_records` (order_item, period, rule_code, reason, detected_at) —
+นับใน morning report แยกจาก backlog จริง ห้ามหายเงียบเด็ดขาด. Implement ที่ **staging/engine**
+(`sp_refresh_expected_state`) ไม่ใช่ export layer — excluded rows ไม่เข้า `expected_state` เลย
+ดังนั้น `delta_export`/`interface_daily_status` จะไม่นับเป็น `MISSING` โดยอัตโนมัติ.
+
+**E1. Year scope — แยกตาม stage** (แก้จาก v1 ที่ตัดทั้งปีแบบเหมารวม):
+
+| ปีของรายการ (date basis) | Create/Paid/NewPayment | Cancel |
+|---|---|---|
+| ≤ 2024 | ❌ ไม่แตะเลย (`OLD_YEAR_NO_TOUCH`) | ❌ ไม่แตะเลย (`OLD_YEAR_NO_TOUCH`) |
+| 2025 | ❌ ห้ามนำเข้า paid เพิ่ม (`NO_NEW_PAID_2025`) | ✅ เฉพาะ order ที่มีอยู่ใน `sap_mirror_state` แล้ว — ถ้าไม่มี → `CANCEL_2025_NOT_IN_SAP` |
+| 2026+ | ✅ ปกติ | ✅ ปกติ |
+
+Date basis = `GREATEST(OrderDate, PolicyDate)` (NULL ตัวใดใช้ตัวที่มีค่า); **NULL ทั้งคู่ →
+exclude, rule_code `DATE_BASIS_MISSING`**, รายงานจำนวนทุกเช้า ไม่เดาปีเอง. ห้ามใช้
+`NOT LIKE '%2023%'` string matching อีกต่อไป — ใช้ `EXTRACT(YEAR FROM ...)` เท่านั้น.
+เหตุผลของ "2025 cancel ได้เฉพาะที่มีใน SAP แล้ว": cancel spec (R4/R5) บังคับงวด 1 ต้อง Paid ใน SAP
+ก่อน — order ที่ไม่เคยเข้า SAP เลยจะ cancel ไม่ได้ (SAP reject ทั้งไฟล์) และห้ามส่ง Paid ย้อนให้ตาม E1
+อยู่แล้ว จึงต้อง exclude แยกเป็น `CANCEL_2025_NOT_IN_SAP` (ไม่ใช่ MISSING, ไม่ต้องตามเก็บ).
+
+**E2. Test customer** (final, resolved 2026-07-30, exact match เท่านั้น):
+- `TEST_CUSTOMER_NAME`: `LOWER(TRIM(FirstName))='test' OR LOWER(TRIM(LastName))='test'` — **exact
+  match เท่านั้น ห้าม `LIKE '%test%'`** (จะโดนชื่อจริง เช่น Testa, Contested) และ **ตัด `'test div'`
+  ออกจากลิสต์** ตามที่ Boat ยืนยัน 07-30 (ใช้แค่ `'test'`)
+- `TEST_CUSTOMER_PHONE`: เบอร์ (normalize ตัด space/-/() แล้วแปลง `+66xxxxxxxxx`→`0xxxxxxxxx`) `=
+  '0999999999'` — **REPORT-ONLY รอบแรก**, ยังไม่ตัดออกจาก interface. ตรวจจริง 2026-07-30: 252
+  order_items ตรง, 72 รายชื่อไม่ใช่ 'test', ΣActualReceived (ที่มีใน SAP แล้ว) = ฿670,312.54 — **ไม่ใช่
+  0 และไม่ใช่ test ทั้งหมด** จึงยังไม่เปิดเป็น hard filter ตามเงื่อนไขที่ Boat วางไว้เอง (ปรับได้ที่
+  config table ไม่ต้อง deploy เมื่อ Boat สั่ง)
+
+**E3. InsurerCode ไม่มีใน SAP master**: กรองออก + ไม่อยู่ใน backlog แต่ต้องนับ/โชว์ distinct list
+ทุกเช้า (`INSURER_NOT_IN_MASTER`) — code ใหม่โผล่ = สัญญาณขอ Aware เพิ่ม master ไม่ใช่ปัญหาจบในตัว.
+Master seed จาก distinct `InsurerCode` ที่ SAP เคยรับสำเร็จจริง (`SAP_LIVE_FULL`) — รอ list จริงจาก
+Aware มาแทนภายหลัง.
+
+**F1. InsuredID ห้ามว่าง** — ไม่มีจาก CareOS → ใส่ `-`, ครอบทุก flow (fix ที่ `stg_order_dim` ต้นทาง
+ไม่ใช่แค่บาง CTE).
+
+**F2. PolicyNo >50 ตัวอักษร = BLOCK (confirmed)** — ห้าม truncate (เลขกรมธรรม์ที่ถูกตัด = ข้อมูลผิดใน
+SAP ที่แก้ยากกว่าไม่ส่ง) → validation rule `POLICYNO_TOO_LONG` + morning report ต้องมีจำนวน + ตัวอย่าง
+order_item 3 ราย.
+
+**F3. Date format = 8 ตัว (DDMMYYYY)** — ว่างได้เฉพาะ `PaymentDate` เมื่อ `status=pending` เท่านั้น
+(`OrderDate`/`PolicyDate`/`ExpectedDate`/`BatchRunDate` ห้ามว่าง). เช็คทั้งความยาว+parse ได้จริง (กัน
+`32072026`) และ leading zero (`01072026` ไม่ใช่ `1072026`). **UNVERIFIED/ไม่ยังไม่ wire จริง**: ยังไม่มี
+คอลัมน์ export ที่ format เป็น DDMMYYYY string ใน `expected_state` วันนี้ (รอ PHASE B 56-column
+rebuild) — logic พร้อมใช้เมื่อ column เหล่านั้นมีจริง.
+
+**ผลต่อ backlog**: `MISSING_NO_ROW_IN_SAP` เลขเก่า (373,044 ณ 07-27) ใช้ต่อไม่ได้ — ต้องแยกรายงาน
+**backlog จริง** (2026+ และ cancel 2025 ที่มีใน SAP) vs **excluded** (แยกตาม rule_code) ทุกครั้ง.
+ดู `sql/ddl/032-036` และ `docs/knowledge/30_SAP_CHANGELOG.md` 2026-07-30 สำหรับตัวเลขจริง.
 6. Design v3 ทั้งชุดอยู่ใน docs/design/ — อ่าน REDESIGN_V3 ก่อนแตะ pipeline ใดๆ
