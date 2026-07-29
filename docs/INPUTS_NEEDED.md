@@ -58,9 +58,9 @@ directly from this environment):
 
 `interface_daily_status` (built 2026-07-27, `030_interface_daily_status.sql`) implements the
 OK/PENDING_ACK/MISSING/STATUS_CONFLICT/PAID_AFTER_CANCEL/UNROUTED status set you asked for, but
-literally alerting on "MISSING/STATUS_CONFLICT present" would fire every single day - both have
-large pre-existing backlogs today (MISSING ~341K, STATUS_CONFLICT ~59K, the exact historical gap
-this project exists to close, not new incidents). Only wired an alert for `PAID_AFTER_CANCEL`
+literally alerting on "MISSING/STATUS_CONFLICT present" would still fire every day. After E1–E3
+filtering, the 2026-07-29 14:01:28 ICT snapshot is MISSING 576 and STATUS_CONFLICT 34,758
+(Return Triage's 340,051/59,501 snapshot was pre-filter). Only wired an alert for `PAID_AFTER_CANCEL`
 (rare, 7 rows today, always actionable) and staleness (no fresh row by late morning). Real
 MISSING/STATUS_CONFLICT alerting needs a day-over-day baseline comparison (a small history table
 snapshotting counts nightly, alert on meaningful *increase* not absolute presence) - not built,
@@ -89,12 +89,11 @@ something I can just reassign).
 ## Boat — 2 new findings from return-triage (2026-07-29), both outside sap_integration_v3
 
 1. **`SAP_LIVE` bloat**: 151,024 → 6,858,653 rows in 3 days (distinct DocEntry only 106,873→122,169).
-   Root cause: the loader (`sap-order-payment-initial-phase`) crash-looped on its 1024 MiB memory
-   limit for ~16 min around 2026-07-29 02:43-02:59 UTC, and since it does plain `INSERT` not `MERGE`,
-   each restart likely re-inserted the same rows. No downstream correctness impact confirmed
-   (`SAP_LIVE_FULL`/`sap_mirror_doc` dedup correctly), but real storage/cost growth and an active
-   bug. Needs: raise the Cloud Run memory limit and/or make the insert idempotent. See
-   `docs/RETURN_TRIAGE_20260729.md` §1.
+   Leading hypothesis: the loader (`sap-order-payment-initial-phase`) crash-looped on its 1024 MiB
+   memory limit for ~16 min around 2026-07-29 02:43-02:59 UTC and plain `INSERT` retries reinserted
+   rows. Exact duplicate shape, any real loss, and downstream baseline impact are still
+   **UNVERIFIED**; Phase B/C remain ON HOLD. Read-only investigation must precede any cleanup,
+   memory, or idempotency change. See `docs/RETURN_TRIAGE_20260729.md` §1 and HANDOVER queue item 2.
 2. **Legacy Cloud Functions reporting `crash` every night** (07-26/27/28, both Motor and NonMotor):
    root-caused to an expired/revoked Gmail SMTP app-password in the post-export notification email
    step (`mailer.py`), NOT the export itself - confirmed via log ordering that every real GCS file
@@ -107,9 +106,9 @@ something I can just reassign).
 90-day consumer check: `sap_integrety_2025_RCL` and `sap_integrety_2025_Q1` have **no real
 consumers** in 90 days (only my own investigation queries today) - the bug is real but currently
 dormant. **`audit_010_careos_missing_in_sap_detail` IS actively used by you** (3 times in 90 days)
-and has the same unguarded-SUM pattern - not yet individually checked for the same double-counting
-risk (time-boxed this pass to the one confirmed-consumer view). Check that one first when you're
-back. THB delta for `sap_integrety_2025_RCL` computed by year/BU - see FINDINGS §14; note the sign
+and has the same unguarded-SUM code pattern, but Return Triage verified its actual zero-match output
+is unaffected because the risky SUM is never used for matched rows. No fix is currently requested
+for that view. THB delta for `sap_integrety_2025_RCL` computed by year/BU - see FINDINGS §14; note the sign
 flips between years (2024/2025 positive, 2026 negative), consistent with undefined/inconsistent
 behavior rather than one-directional overstatement - don't read the raw totals as "money lost."
 `reconcile_revenue 202508_booking` (one of the 6 remaining views) wasn't relocated in this pass -
@@ -135,10 +134,8 @@ See `FINDINGS_SAP_MIRROR_20260726.md` §13 for the full query and verification.
 1. **B2B rows**: currently 0 rows in every source table at every layer — confirm this is expected
    (business line genuinely has no B2B SAP records yet) rather than a silent extract-side filter
    losing them. Low priority (no evidence it's causing any reported problem).
-2. **ProcessingFee divisor** (`SAP_DATA_PREP_DESIGN_v3.md` §6.4 open Q-A): RCL uses `/103.3`,
-   onetime uses `/107` — confirm which is correct per flow before PHASE B builds the full
-   56-column engine on top of whichever is wrong today (if either is, that's an existing money
-   drift, not a new one this rebuild would introduce).
+2. **ProcessingFee divisor**: RCL `/103.3` is confirmed. Onetime `/107` remains unconfirmed —
+   keep it as-is and flag until Finance confirms; do not re-open the RCL decision.
 3. **C2 policy** (PHASE C review item): item-level quarantine vs run-level atomic validation
    failure handling for the shadow/real export layer — needs an explicit choice before PHASE C
    builds the export-blocking logic, not a default silently picked.

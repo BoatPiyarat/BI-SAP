@@ -73,3 +73,5 @@ GCP project `pacific-plating-282708` | region `asia-southeast1` | auth: data@rab
 
 ## Reporting rule
 After each work item: append `30_SAP_CHANGELOG.md` (newest first, never edit old entries), update `20_SAP_PROGRESS.md`, and report a table of built / verified-against-real-data / still-assumed.
+
+Multi-agent: see docs/AGENT_TEAMING.md — one working tree per agent, ownership by domain, cross-domain requests via docs/HANDOFF_QUEUE.md

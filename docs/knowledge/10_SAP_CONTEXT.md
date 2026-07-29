@@ -203,11 +203,14 @@ Master seed จาก distinct `InsurerCode` ที่ SAP เคยรับส
 Aware มาแทนภายหลัง.
 
 **F1. InsuredID ห้ามว่าง** — ไม่มีจาก CareOS → ใส่ `-`, ครอบทุก flow (fix ที่ `stg_order_dim` ต้นทาง
-ไม่ใช่แค่บาง CTE).
+ไม่ใช่แค่บาง CTE). Source committed in `033_extend_stg_order_dim_exclusion_fields.sql`
+(`fa8d8cc`).
 
 **F2. PolicyNo >50 ตัวอักษร = BLOCK (confirmed)** — ห้าม truncate (เลขกรมธรรม์ที่ถูกตัด = ข้อมูลผิดใน
 SAP ที่แก้ยากกว่าไม่ส่ง) → validation rule `POLICYNO_TOO_LONG` + morning report ต้องมีจำนวน + ตัวอย่าง
-order_item 3 ราย.
+order_item 3 ราย. **NOT YET EVIDENCED AS DEPLOYED**: commit `9825e97` restores source for the live
+E1–E3 procedure but its `034` file does not implement F2; tracked for Claude Code in
+`docs/HANDOFF_QUEUE.md`.
 
 **F3. Date format = 8 ตัว (DDMMYYYY)** — ว่างได้เฉพาะ `PaymentDate` เมื่อ `status=pending` เท่านั้น
 (`OrderDate`/`PolicyDate`/`ExpectedDate`/`BatchRunDate` ห้ามว่าง). เช็คทั้งความยาว+parse ได้จริง (กัน
@@ -217,5 +220,9 @@ rebuild) — logic พร้อมใช้เมื่อ column เหล่�
 
 **ผลต่อ backlog**: `MISSING_NO_ROW_IN_SAP` เลขเก่า (373,044 ณ 07-27) ใช้ต่อไม่ได้ — ต้องแยกรายงาน
 **backlog จริง** (2026+ และ cancel 2025 ที่มีใน SAP) vs **excluded** (แยกตาม rule_code) ทุกครั้ง.
-ดู `sql/ddl/032-036` และ `docs/knowledge/30_SAP_CHANGELOG.md` 2026-07-29 สำหรับตัวเลขจริง.
+Live refresh after E1–E3 filtering completed 2026-07-29 14:01:28 ICT:
+`interface_daily_status.MISSING = 576`; Return Triage's 340,051 was measured before filtering and
+must not be reused. `DATE_BASIS_MISSING = 0` is consistent with a direct check finding zero
+candidate rows where both date inputs are NULL. See `sql/ddl/032-034`, commits `fa8d8cc` /
+`9825e97`, and `30_SAP_CHANGELOG.md`.
 6. Design v3 ทั้งชุดอยู่ใน docs/design/ — อ่าน REDESIGN_V3 ก่อนแตะ pipeline ใดๆ

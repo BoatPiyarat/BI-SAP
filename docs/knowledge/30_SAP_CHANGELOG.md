@@ -4,6 +4,24 @@ Append-only — entry ใหม่บนสุด ห้ามลบ/แก้�
 
 ---
 
+## 2026-07-29 — Folded Claude Code deployment evidence + established agent ownership
+
+Folded session evidence from Claude Code commits `9825e97` and `fa8d8cc` into canonical knowledge.
+`034_expected_state_exclusion_rules.sql` now provides reproducible source for the live E1–E3
+procedure deployed at 13:57 ICT. A read-only check retained from the reconciliation confirmed
+`interface_daily_status` refreshed at 14:01:28 ICT with 293,188 rows: OK 257,340,
+STATUS_CONFLICT 34,758, MISSING 576, PENDING_ACK 514. The Return Triage value MISSING 340,051
+predates exclusion filtering and is historical only. A second retained check found zero candidates
+with both OrderDate and PolicyDate NULL, matching the absence of `DATE_BASIS_MISSING`.
+
+Corrected scope attribution: E1–E3 are in `034`/`9825e97`; F1 is in `033`/`fa8d8cc`; F2 is not yet
+evidenced as deployed, and F3 remains deferred until Phase B has final DDMMYYYY string columns.
+Created `docs/AGENT_TEAMING.md` and `docs/HANDOFF_QUEUE.md`; SQL/BigQuery fixes are queued for
+Claude Code rather than edited by the docs owner. No SQL, BigQuery object, or deployment was
+changed in this work item.
+
+---
+
 ## 2026-07-29 — Codex handover queue item 1: date correction + canonical agent rules
 
 Verified the local date first (`2026-07-29`, ICT). Renamed the incorrectly dated
