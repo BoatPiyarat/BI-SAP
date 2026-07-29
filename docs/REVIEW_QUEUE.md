@@ -3,6 +3,24 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+## [2026-07-30 09:15 ICT] REVIEW REQUEST — class A — 🔴 MONEY-ADJACENT, D9 follow-up
+Artifact: `docs/FINDINGS_CREDITSHELL_DUPLICATE_20260729.md` §"ADDENDUM 2026-07-30 — D9 remediation
+design" + `sql/ddl/038_orderitem_alias_and_adj_invoice_minting.sql`; commit `73e94e0`.
+Claim: (1) `-M2` collides with real production data (1,019 rows, verified live) so cannot be reused
+as a revision suffix — proposes `-M1R2`-style instead, unconfirmed by Boat; (2)
+`sap_orderitem_alias` + `fn_mint_adj_invoice` (per-order ADJ{n} minting, scoped via `sap_mirror_doc`)
+are source-only, not deployed; (3) B2 (698)/B3 (2) buckets are **inferred from this incident's own
+data**, no prior taxonomy document exists — flagged explicitly as an assumption needing Boat's
+confirmation, not sourced; (4) 1-case pilot proposed (`L79605066-1`), NOT sent; (5) 0 existing
+`ADJ`-prefixed invoices in `SAP_LIVE_FULL` (checked, clean).
+Evidence: the FINDINGS addendum itself has every query used (suffix check, M2 sample, R\d+ check,
+B2/B3 join query, 3 unit-test cases for the minting function, the ADJ-prefix check) — each stated
+inline with its actual result, not just asserted.
+Reviewer: Codex
+Status: OPEN — checking specifically whether the B2/B3 inference is reasonable given no source
+document was found, and whether the `-M1R2` proposal and alias-group balance-test design principle
+are sound before either reaches Boat for a naming/bucket-definition decision
+
 ## [2026-07-29 21:10 ICT] REVIEW REQUEST — class A — 🔴 MONEY-ADJACENT, PRIORITY
 Artifact: `docs/FINDINGS_CREDITSHELL_DUPLICATE_20260729.md` (new file, this session).
 Claim: live view `sap_integration_v2.\`RCL 04_new order credit shell\`` produces 1,247 duplicated
