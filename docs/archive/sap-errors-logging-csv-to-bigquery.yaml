@@ -1,0 +1,69 @@
+buildConfig:
+  automaticUpdatePolicy: {}
+  build: projects/919786098205/locations/asia-southeast1/builds/7d3b10d9-9a05-4d78-9863-16f97ba5289a
+  dockerRegistry: ARTIFACT_REGISTRY
+  entryPoint: load_csv_from_gcs_to_bigquery
+  runtime: python39
+  source:
+    storageSource:
+      bucket: uploads-861847287329.asia-southeast1.cloudfunctions.appspot.com
+      object: aa2c4da7-1a9c-40c1-befa-9a81a2901a4c.zip
+      sourceUploadUrl: https://storage.googleapis.com/uploads-861847287329.asia-southeast1.cloudfunctions.appspot.com/aa2c4da7-1a9c-40c1-befa-9a81a2901a4c.zip
+environment: GEN_1
+eventTrigger:
+  eventFilters:
+  - attribute: resource
+    value: projects/_/buckets/rcb-bronze-zone
+  eventType: google.storage.object.finalize
+  retryPolicy: RETRY_POLICY_DO_NOT_RETRY
+  service: storage.googleapis.com
+labels:
+  deployment-tool: cli-gcloud
+name: projects/pacific-plating-282708/locations/asia-southeast1/functions/sap-errors-logging-csv-to-bigquery
+satisfiesPzi: true
+satisfiesPzs: true
+serviceConfig:
+  availableMemory: 256M
+  environmentVariables:
+    BUCKET_NAME: rcb-bronze-zone
+    DATASET_ID: sap_data_engineer
+    SOURCE_DIRECTORY: SAP/error_logs
+    TABLE_ID: sap_errors_logging
+  ingressSettings: ALLOW_ALL
+  maxInstanceCount: 3000
+  maxInstanceRequestConcurrency: 1
+  revision: '23'
+  serviceAccountEmail: pacific-plating-282708@appspot.gserviceaccount.com
+  timeoutSeconds: 60
+state: ACTIVE
+updateTime: '2024-07-10T10:10:09.793Z'
+automaticUpdatePolicy: {}
+availableMemoryMb: 256
+buildId: 7d3b10d9-9a05-4d78-9863-16f97ba5289a
+buildName: projects/919786098205/locations/asia-southeast1/builds/7d3b10d9-9a05-4d78-9863-16f97ba5289a
+dockerRegistry: ARTIFACT_REGISTRY
+entryPoint: load_csv_from_gcs_to_bigquery
+environmentVariables:
+  BUCKET_NAME: rcb-bronze-zone
+  DATASET_ID: sap_data_engineer
+  SOURCE_DIRECTORY: SAP/error_logs
+  TABLE_ID: sap_errors_logging
+eventTrigger:
+  eventType: google.storage.object.finalize
+  failurePolicy: {}
+  resource: projects/_/buckets/rcb-bronze-zone
+  service: storage.googleapis.com
+ingressSettings: ALLOW_ALL
+labels:
+  deployment-tool: cli-gcloud
+maxInstances: 3000
+name: projects/pacific-plating-282708/locations/asia-southeast1/functions/sap-errors-logging-csv-to-bigquery
+runtime: python39
+satisfiesPzi: true
+satisfiesPzs: true
+serviceAccountEmail: pacific-plating-282708@appspot.gserviceaccount.com
+sourceUploadUrl: https://storage.googleapis.com/uploads-861847287329.asia-southeast1.cloudfunctions.appspot.com/aa2c4da7-1a9c-40c1-befa-9a81a2901a4c.zip
+status: ACTIVE
+timeout: 60s
+updateTime: '2024-07-10T10:10:09.793Z'
+versionId: '23'
