@@ -17,8 +17,8 @@ Both push to the same remote; integration happens through PRs, never through a s
 ## Rule 1 — ownership by domain (not by task)
 | Domain | Owner | Notes |
 |---|---|---|
-| `sql/**`, all BigQuery objects in `sap_integration_v3`, deployments | **Claude Code** | It holds the context for 032–034 and the live deployments |
-| `docs/knowledge/**`, `docs/design/**`, `AGENT_RULES.md`, `INPUTS_NEEDED.md`, CHANGELOG, PROGRESS | **Codex** | Single writer for knowledge = no merge conflicts |
+| **EXPENSIVE:** `sql/**`, all BigQuery queries/objects, deployments, data investigations | **Claude Code** | One agent, one batched query plan; BigQuery cost + higher token cost |
+| **CHEAP:** `docs/knowledge/**`, `docs/design/**`, `AGENT_RULES.md`, `INPUTS_NEEDED.md`, CHANGELOG, PROGRESS, runbook | **Codex** | No BigQuery queries in the normal lane; single writer for knowledge |
 | `docs/findings/**`, `docs/sessions/**` | whoever produced the finding | Own file per session, never a shared file |
 | Alerts / scheduler / Cloud Run config | **Claude Code** | Same deploy-gate rules apply |
 
@@ -46,16 +46,34 @@ Any object deployed to BigQuery must have its DDL committed **in the same sessio
 Before ending a session: `git status` must show no untracked/modified files under `sql/`.
 
 ## Rule 5 — unexpected changes mid-task
-Pause, list the affected files, and ask whether they are human-provided or from another agent.
-- **Human-provided** (owner copying in docs/fixtures): legitimate — verify nothing was lost, continue.
-- **Another agent's concurrent work in the same tree**: stop and report; that means Rule 0 was broken.
-The human should not copy files into a repo while an agent is mid-task.
+- A new commit from another agent that touches only that agent's domain is normal
+  (`Claude Code = sql/**, docs/sessions/**`). Pull/fast-forward, read the session note when relevant,
+  and continue without asking.
+- An unrelated new untracked file is non-destructive: report it and continue. Do not edit, delete,
+  or stage it unless the task places it in scope.
+
+Stop only in these two cases:
+1. someone changes a file in this agent's owned domain that this agent did not change; or
+2. a file this agent is actively editing changes externally.
+
+When stopping, list the exact overlapping files and ask for reconciliation.
 
 ## Rule 6 — integration protocol
 1. Each agent commits on its own branch with the usual evidence (dry-run, validation proof).
 2. Merge via PR into the shared integration branch; whoever merges resolves conflicts.
 3. After merge, both agents run `git pull` at session start and reconcile with `20_SAP_PROGRESS`.
 4. Never rebase or force-push a branch the other agent has checked out.
+
+## Rule 7 — cost-controlled lane protocol
+1. Single-agent by default; use a second agent only for two genuinely non-overlapping lanes.
+2. Codex does not query BigQuery in normal operation. It batches required metrics and provenance
+   requests in `docs/HANDOFF_QUEUE.md`; Claude Code runs them together.
+3. Claude Code does not edit `docs/knowledge/**`; it writes
+   `docs/sessions/<YYYY-MM-DD>-claude.md` for Codex to fold.
+4. Batch data requests into one query returning multiple metrics; do not issue one query per question.
+5. One investigation has one agent. Cutover/production writes have one agent and a human watcher.
+6. At session start run `git log --oneline -10` and read today's `docs/sessions/`; do not repeat
+   existing evidence.
 
 ## When NOT to use two agents
 - Any single-threaded investigation where both would query the same tables and reason about the same

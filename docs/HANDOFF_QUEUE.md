@@ -7,7 +7,23 @@ Newest request first. The receiving agent marks an item `DONE (<commit>)`; do no
 Request: Run and report regression checks 0A/0B for the post-exclusion
 `interface_daily_status` refresh, and explain why STATUS_CONFLICT changed from roughly +42 in the
 Return Triage comparison to 34,758 after the 14:01 ICT refresh. Confirm whether the refresh order,
-population/grain, joins, and status classification are correct.
+population/grain, joins, and status classification are correct. Implement revised D1 using only
+`stg_order_dim.is_cancelled_effective`, defined once as
+`(careos.careos_orders.is_cancelled IS TRUE) OR
+(careos.careos_order_items.cancel_time IS NOT NULL)`; downstream queries must not re-derive it.
+Commit `8a28710` is source-only and not deployed, but its `036_stg_order_dim_cancel_effective.sql`
+uses a conflicting three-field formula that also includes
+`careos.careos_order_items.is_cancelled`. Replace that source with Boat's canonical two-field
+definition above before any deploy or regression acceptance; do not treat `8a28710` as accepted D1.
+Add `CANCEL_TIME_MISSING` to the status vocabulary for effective cancellations where timing cannot
+be tested because item `cancel_time` is NULL.
+Preserve `order_item` grain: never pull active sibling items into a cancel file because another
+item on the order is cancelled. Use `402904b` S1–S6 as evidence. Acceptance should reconcile the
+latest **provisional** corrected populations from `fa9b351`: 296 actionable order_items /
+approximately THB 3.89M before year scope, of which 41 items / THB 720,307.31 are in the approved
+2025/2026+ scope. Sources: `careos.careos_order_items`, `careos.careos_orders`, and
+`sap_integration_v3.sap_mirror_state`; queried 2026-07-29, exact query time not captured, evidence
+committed 18:46:14 ICT. Do not cite the superseded 419 / THB 5.68M or 2,254 / THB 30M figures.
 Why: **⚠️ PROVISIONAL — UNDER VERIFICATION:** the observed 14:01:28 ICT counts (OK 257,340;
 STATUS_CONFLICT 34,758; MISSING 576; PENDING_ACK 514) have no regression proof and must not be
 cited until 0A/0B passes and STATUS_CONFLICT decreases in line with D1 acceptance.

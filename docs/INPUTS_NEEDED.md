@@ -65,6 +65,19 @@ approval.
 Current candidate count is the same **⚠️ PROVISIONAL 9,625 order_items** described immediately
 above; source tables and evidence timestamp are inherited from that entry, not a second count.
 
+## Boat / IT — parent cancel flag not set after every child item was cancelled
+
+**Ask**: should `careos.careos_orders.is_cancelled` automatically become TRUE when every
+`careos.careos_order_items` child has a non-NULL `cancel_time`?
+
+Latest diagnostic found **⚠️ PROVISIONAL 25 orders / 50 items** with all child items individually
+cancelled but the parent order flag not TRUE. This is an IT/data-consistency question, not a reason
+to cancel active siblings or change the canonical revised-D1 formula. Sources:
+`careos.careos_orders`, `careos.careos_order_items`, `careos.cancelled_change_orders`, and
+`sap_integration_v3.sap_mirror_state`; queried 2026-07-29, exact query timestamp not retained,
+evidence committed in `fa9b351` at 2026-07-29 18:46:14 ICT. Session evidence says only a small
+subset requires SAP action; do not derive a batch from this count.
+
 **Also Aware/SAP DB** (same access gap as Q3a — cannot query `[RCB_LIVE_DB].[dbo].[@INSURANCE]`
 directly from this environment):
 - Total `@INSURANCE` row count + breakdown by row type — would convert the 373,971
@@ -82,9 +95,14 @@ directly from this environment):
 
 ## Boat — interface_daily_status (A2) alert gap: MISSING/STATUS_CONFLICT can't be alerted on yet
 
-`interface_daily_status` (built 2026-07-27, `030_interface_daily_status.sql`) implements the
-OK/PENDING_ACK/MISSING/STATUS_CONFLICT/PAID_AFTER_CANCEL/UNROUTED status set you asked for, but
-literally alerting on "MISSING/STATUS_CONFLICT present" would still fire every day. **⚠️ PROVISIONAL
+`interface_daily_status` (built 2026-07-27, `030_interface_daily_status.sql`) uses the revised
+status vocabulary OK/PENDING_ACK/MISSING/STATUS_CONFLICT/PAID_AFTER_CANCEL/
+CANCEL_TIME_MISSING/UNROUTED. `CANCEL_TIME_MISSING` keeps an effective cancellation visible when
+`careos.careos_orders.is_cancelled IS TRUE` but `careos.careos_order_items.cancel_time IS NULL`,
+so PAID_AFTER_CANCEL timing cannot be evaluated. The current deployed classification predates
+revised D1 and needs Claude Code implementation/0A–0B verification.
+
+Literally alerting on "MISSING/STATUS_CONFLICT present" would still fire every day. **⚠️ PROVISIONAL
 — UNDER VERIFICATION; DO NOT CITE until Claude Code reports passing 0A/0B and STATUS_CONFLICT
 decreases in line with D1 acceptance:** after E1–E3
 filtering, the 2026-07-29 14:01:28 ICT snapshot is MISSING 576 and STATUS_CONFLICT 34,758

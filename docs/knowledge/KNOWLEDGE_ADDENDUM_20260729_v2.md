@@ -11,11 +11,17 @@ Supersedes: ADDENDUM 2026-07-29 v1 (ข้อที่ tag ⏳ ถูกตอ�
 
 ## E1. Year scope — แยกตาม stage (แก้จาก v1 ที่เป็นการตัดทั้งปี)
 
-| ปีของรายการ | Create / Paid / NewPayment | Cancel |
+| ปีของรายการ | Create / Paid / NewPayment | Cancel — use `stg_order_dim.is_cancelled_effective` only |
 |---|---|---|
 | ≤ 2024 | ❌ ไม่แตะเลย | ❌ ไม่แตะเลย |
 | 2025 | ❌ **ห้ามนำเข้า paid เพิ่ม** | ✅ **ส่งได้ ตามสถานะ cancel จาก CareOS** |
 | 2026+ | ✅ ปกติ | ✅ ปกติ |
+
+**Revised D1 (Boat 2026-07-29):** Cancel ในตารางนี้หมายถึง
+`stg_order_dim.is_cancelled_effective` เท่านั้น โดย field นี้คำนวณครั้งเดียวจาก
+`(careos.careos_orders.is_cancelled IS TRUE) OR
+(careos.careos_order_items.cancel_time IS NOT NULL)`. Source fields อยู่คนละ table; downstream
+ห้าม re-derive เงื่อนไขเอง. นิยามนี้ตรงกับ legacy cancel-new logic.
 
 **Date basis (confirmed):** ใช้ **`GREATEST(OrderDate, PolicyDate)`** — ยึดวันที่ล่าสุดกว่าของสองตัว
 - ถ้าตัวใดเป็น NULL → ใช้ตัวที่มีค่า

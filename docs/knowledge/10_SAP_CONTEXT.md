@@ -98,6 +98,15 @@ generate ไม่ใช่ signal จากต้นทาง (Data Dictionary/
   PK = OrderItem + Period + ChargeID + InvoiceNo
 - **Cancel/Recreate:** partial (M-only/V-only) เป็น normal practice; matching ต้อง item-level
   ⚠️ ChassisNo มี human error + ไม่มีใน Non-Motor — ใช้เป็น key ไม่ได้ (INCIDENT-001 Hypothesis 2)
+  Cancel output must be emitted per `order_item`; an order-level signal must never pull active
+  sibling items into the cancel file.
+- **Canonical cancellation definition (revised D1, Boat 2026-07-29):**
+  `stg_order_dim.is_cancelled_effective =
+  (careos.careos_orders.is_cancelled IS TRUE) OR
+  (careos.careos_order_items.cancel_time IS NOT NULL)`. สอง source field อยู่คนละ table;
+  ให้คำนวณครั้งเดียวใน `stg_order_dim` และทุก downstream query ใช้ field นี้เท่านั้น
+  **ห้าม re-derive cancellation เอง**. นิยามนี้ตรงกับ legacy cancel-new logic ที่ใช้ OR condition
+  เดียวกันมาก่อน และปิดช่องว่างที่ v3 เห็น cancelled น้อยกว่า legacy.
 - **Credit Shell:** ไม่มี `transaction_snapshot_installment_details` เป็นเรื่องปกติ →
   fallback `COALESCE(period, 1) = 1` (fix รอ Head of Products confirm — INCIDENT-001)
 - **Cancel sequencing (confirmed 07-14):** Paid+Cancel วันเดียวกัน → ส่ง batch เดียวกันเป็นไฟล์
@@ -236,9 +245,22 @@ candidate rows where both date inputs are NULL. See `sql/ddl/032-034`, commits `
 
 This addendum overrides any earlier text that conflicts with D1–D5.
 
-**D1 — `expected_status` supports `Cancelled`.** Precedence is
-`Cancelled > Paid > Pending`. `PAID_AFTER_CANCEL` remains a separate anomaly classification; it
-must not be hidden by the ordinary Cancelled precedence. Acceptance requires the post-change
+**D1 revised by Boat 2026-07-29 — one cancellation definition.**
+`is_cancelled_effective = (careos.careos_orders.is_cancelled IS TRUE) OR
+(careos.careos_order_items.cancel_time IS NOT NULL)`. The fields come from different tables.
+Compute this exactly once as `stg_order_dim.is_cancelled_effective`; all downstream logic must use
+that field and must not re-derive the OR. This matches the legacy cancel-new condition and closes
+the gap where v3 recognized fewer cancellations than legacy.
+
+`expected_status` supports `Cancelled`; precedence is `Cancelled > Paid > Pending`.
+`PAID_AFTER_CANCEL` remains a separate anomaly classification and must not be hidden by ordinary
+Cancelled precedence. Add `CANCEL_TIME_MISSING` to the status vocabulary when
+`is_cancelled_effective` is true from the order-level flag but item `cancel_time` is NULL, so the
+timing comparison needed for PAID_AFTER_CANCEL cannot be made. Canonical vocabulary:
+`OK`, `PENDING_ACK`, `MISSING`, `STATUS_CONFLICT`, `PAID_AFTER_CANCEL`,
+`CANCEL_TIME_MISSING`, `UNROUTED`.
+
+Acceptance requires the post-change
 STATUS_CONFLICT population to decrease as expected and Claude Code regression checks 0A/0B to
 pass. Until then, the 14:01 ICT status-count set remains **⚠️ PROVISIONAL — UNDER VERIFICATION**.
 
@@ -246,6 +268,25 @@ Evidence context for D1: the cancel-path analysis used `sap_integration_v3.stg_o
 `sap_integration_v3.interface_daily_status`, and SAP mirror state; evidence was captured in commit
 `19d9452` at 2026-07-29 17:58:53 ICT. The exact underlying query timestamps were not captured, so
 all associated counts remain provisional under D5.
+
+**S1–S6 constraint/evidence folded from `402904b`:**
+- Partial cancel-recreate is normal practice, not a CareOS bug. In the diagnostic population,
+  **⚠️ PROVISIONAL 98.5%** had an active sibling on the same order. Sources:
+  `careos.careos_order_items` joined to `careos.careos_orders`; queried 2026-07-29, exact query
+  timestamp not retained, evidence committed at 2026-07-29 18:35:27 ICT.
+- Cancel status/files are strictly per `order_item`. Never fan an order-level cancellation signal
+  out to active sibling items.
+- A later row-level correction in `fa9b351` recognized both SAP cancelled variants
+  (`Cancelled` and `Cancelled (Change order / Rejected)`). Latest **⚠️ PROVISIONAL** result:
+  296 actionable order_items / approximately THB 3.89M before year scope; 41 items /
+  THB 720,307.31 are inside approved 2025/2026+ scope and are the first-round FA population.
+  Sources: `careos.careos_order_items`, `careos.careos_orders`, and
+  `sap_integration_v3.sap_mirror_state`; queried 2026-07-29, exact query timestamp not retained,
+  evidence committed at 2026-07-29 18:46:14 ICT. The intermediate 419 / THB 5.68M and broad
+  2,254 / THB 30M figures are superseded and must not be cited.
+
+The three-field formula written inside the diagnostic session note is superseded by Boat's later
+two-source revised-D1 definition above; it must not be copied into implementation.
 
 **D2 — change-order supersession is not Q3a.** Never send a Cancelled batch for superseded old
 orders until all three required change-order preflight checks are documented and passed, Aware

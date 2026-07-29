@@ -1,6 +1,20 @@
 # 20_SAP_PROGRESS.md
-Last Updated: 2026-07-29 - Design decisions D1–D5 recorded in 10_SAP_CONTEXT v3 addendum.
-D1 Cancelled precedence is approved but not implemented/accepted; D2 supersession is held for
+Last Updated: 2026-07-29 - Revised D1 recorded: cancellation is computed once as
+`stg_order_dim.is_cancelled_effective` from the order flag OR item cancel_time; downstream
+re-derivation is forbidden. `CANCEL_TIME_MISSING` added to the canonical vocabulary. Revised D1 is
+approved but not implemented/accepted: source-only commit `8a28710` uses a conflicting three-field
+definition that also includes item-level `is_cancelled`; correction to the canonical two-field
+definition is queued to Claude Code before deploy or acceptance. S1–S6 (`402904b`, corrected by
+`fa9b351`) confirms partial
+cancel-recreate is normal and cancel output must stay at order_item grain. Latest
+provenance-incomplete estimates are ⚠️ PROVISIONAL 296 actionable items / ~THB 3.89M before year
+scope, and 41 items / THB 720,307.31 in approved 2025/2026+ scope. The intermediate
+419 / THB 5.68M and broad 2,254 / THB 30M figures are superseded. Sources:
+`careos.careos_order_items`, `careos.careos_orders`, `sap_integration_v3.sap_mirror_state`;
+queried 2026-07-29, exact query time not retained, corrected evidence committed 18:46:14 ICT.
+Cost-control lanes are active: Claude Code owns all
+BigQuery queries/investigations/deploys; Codex owns docs and requests numbers through
+`HANDOFF_QUEUE.md`. D2 supersession is held for
 three preflight checks + Aware answer + FA approval; D3 approves Claude Code deploy of 035; D4
 phone stays report-only; D5 requires table/object + timestamp for every number. E1–E3 exclusion
 engine is live and source-backed by `9825e97`; post-filter
@@ -48,8 +62,9 @@ was firing 7h later than designed); missed-extract alert message upgraded to a p
 format; 4 email alerts built and genuinely tested end-to-end for the first time in this project
 (missed-extract, column-contract guard, validation-regression, interface-daily-status); daily
 digest retimed to 07:00 ICT with the exact 5-item content spec; A1 (column-contract guard),
-A2 (`interface_daily_status` with the full OK/PENDING_ACK/MISSING/STATUS_CONFLICT/
-PAID_AFTER_CANCEL/UNROUTED status set), A3 (`sap_import_result` + documented manual runbook step)
+A2 (`interface_daily_status`; revised vocabulary is OK/PENDING_ACK/MISSING/STATUS_CONFLICT/
+PAID_AFTER_CANCEL/CANCEL_TIME_MISSING/UNROUTED, with the revised D1 additions not yet deployed),
+A3 (`sap_import_result` + documented manual runbook step)
 all built and deployed; `resolution_confidence`/PROVISIONAL now visible all the way through
 `stg_sap_state` → `delta_export`/`interface_daily_status`; Q3a extended with the NULL-BatchRunDate
 sub-question; `sap_integrety_2025_RCL` consumer/impact investigation closed (dormant view, but

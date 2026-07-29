@@ -4,6 +4,72 @@ Append-only — entry ใหม่บนสุด ห้ามลบ/แก้�
 
 ---
 
+## 2026-07-29 — Flagged source-only D1 formula conflict from `8a28710`
+
+Reviewed the new Claude Code SQL-domain commit `8a28710`. It is not deployed, but its
+`036_stg_order_dim_cancel_effective.sql` uses a three-field definition that includes
+`careos.careos_order_items.is_cancelled`, conflicting with Boat's revised two-field D1. Added an
+explicit correction request to `HANDOFF_QUEUE.md`; Codex did not edit SQL or query BigQuery.
+
+---
+
+## 2026-07-29 — Folded revised-D1 S1–S6 evidence (`402904b`)
+
+Folded Claude Code's read-only S1–S6 session evidence without repeating BigQuery queries.
+Partial cancel-recreate is normal practice rather than a CareOS bug: **⚠️ PROVISIONAL 98.5%** of
+the diagnostic population had an active sibling on the same order. This creates a hard design
+constraint: cancel output is per `order_item`; an order-level cancel signal must never pull active
+siblings into a cancel file.
+
+A later row-level correction in `fa9b351` included both SAP cancelled variants. Latest estimates
+are **⚠️ PROVISIONAL 296 actionable order_items / approximately THB 3.89M** before year scope and
+**41 items / THB 720,307.31** in approved 2025/2026+ scope. The intermediate 419 / THB 5.68M and
+broad 2,254 / THB 30M figures are superseded. Sources are
+`careos.careos_order_items`, `careos.careos_orders`, and
+`sap_integration_v3.sap_mirror_state`; queries ran 2026-07-29 but exact query timestamps were not
+retained, so D5 requires provisional labeling. Corrected evidence was committed in `fa9b351` at
+2026-07-29 18:46:14 ICT.
+
+The session note's three-field diagnostic formula is superseded by Boat's later canonical
+two-source D1 definition. No BigQuery query, SQL change, object mutation, or deployment was
+performed while folding the evidence.
+
+---
+
+## 2026-07-29 — Cost-control policy and agent lanes activated
+
+Added human-provided `docs/COST_CONTROL.md` to the repo and moved all PART 3 guardrails into
+canonical `AGENT_RULES.md`: BigQuery dry-run/20-GiB caps, metadata row counts, selected-column and
+batched-query discipline, sampling/materialized diagnostics, summary-table dashboards, token
+limits, and scratch expiration/partition rules.
+
+Updated `AGENT_TEAMING.md` per PART 4. Claude Code owns the EXPENSIVE lane (all BigQuery
+queries/investigations, SQL, deploys); Codex owns the CHEAP docs/text lane and requests
+provenance-complete numbers through `HANDOFF_QUEUE.md` rather than querying BigQuery. Revised Rule
+5 so unrelated new untracked files are reported but do not stop work; only overlapping external
+file edits, unexpected commits, or another-agent locks require a stop.
+
+No BigQuery query, SQL change, object mutation, or deployment was performed.
+
+---
+
+## 2026-07-29 — Revised D1: canonical effective-cancellation definition
+
+Boat revised D1: cancellation is effective when
+`careos.careos_orders.is_cancelled IS TRUE` **or**
+`careos.careos_order_items.cancel_time IS NOT NULL`. These fields come from different source
+tables. The expression must be computed once as `stg_order_dim.is_cancelled_effective`; downstream
+queries must use that field and must not re-derive cancellation.
+
+This matches the legacy cancel-new OR condition and closes the gap where v3 recognized fewer
+cancellations than legacy. `expected_status` still follows Cancelled > Paid > Pending and
+PAID_AFTER_CANCEL stays separate. Added `CANCEL_TIME_MISSING` to the status vocabulary for
+effective cancellations where item `cancel_time` is missing and timing cannot be evaluated.
+Implementation and regression checks 0A/0B remain with Claude Code; the 14:01 status figures stay
+provisional until revised-D1 acceptance passes. No SQL, BigQuery object, or deployment changed.
+
+---
+
 ## 2026-07-29 — Design decisions D1–D5 recorded
 
 Boat decided: D1 adds `Cancelled` to `expected_status` with
@@ -149,8 +215,9 @@ rule / recon MISSING+STATUS_CONFLICT / legacy files complete?), kept the strict 
 gate, enabled.
 
 **2.2 (A2)**: built `interface_daily_status` (`030_interface_daily_status.sql`) - one row per
-(order_item, period), status ∈ {OK, PENDING_ACK, MISSING, STATUS_CONFLICT, PAID_AFTER_CANCEL,
-UNROUTED} exactly per spec. First deploy caught its own bug: PAID_AFTER_CANCEL initially fired on
+(order_item, period). Revised vocabulary is {OK, PENDING_ACK, MISSING, STATUS_CONFLICT,
+PAID_AFTER_CANCEL, CANCEL_TIME_MISSING, UNROUTED}; CANCEL_TIME_MISSING and revised D1 were added
+later and were not part of this historical deploy. First deploy caught its own bug: PAID_AFTER_CANCEL initially fired on
 "is_cancelled AND currently Paid" with no timing check, matching 1,898 rows that were the normal
 "paid before cancellation, cancellation is final" pattern (established 07-25) - fixed by comparing
 SAP's PaymentDate against `careos_order_items.cancel_time` directly, dropping the count to 7

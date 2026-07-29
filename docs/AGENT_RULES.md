@@ -34,7 +34,7 @@ GCP project `pacific-plating-282708` | region `asia-southeast1` | auth: data@rab
 
 ## Workflow efficiency rules
 - Before every work item, run `git log --oneline -10` and read today's files under `docs/sessions/`. Do not repeat verification that already has evidence; cite the commit hash instead.
-- **READ-ONLY self-service:** freely run read-only lookups (`bq show/ls/head`, `INFORMATION_SCHEMA`, `gcloud describe/list`, `gsutil ls`). Never ask the human for something these commands can answer. Approval is for writes only.
+- **Lane-specific read-only self-service:** Claude Code freely runs required read-only lookups (`bq show/ls/head/query`, `INFORMATION_SCHEMA`, `gcloud describe/list`, `gsutil ls`) without approval. Codex does not query BigQuery in the normal docs lane; it batches needed numbers in `docs/HANDOFF_QUEUE.md` for Claude Code. Approval remains for writes/deploys only.
 - Before flagging an open question, check `20_SAP_PROGRESS` §DECISIONS PENDING and `INPUTS_NEEDED.md`. Reference known items; don't re-derive them.
 - Maintain `docs/INPUTS_NEEDED.md` as the one living checklist of human-only inputs. Update it; don't regenerate a fresh request list each session.
 - When a decision is made mid-session, edit the affected design doc **in the same session**. Docs are truth; conversation is not.
@@ -42,6 +42,31 @@ GCP project `pacific-plating-282708` | region `asia-southeast1` | auth: data@rab
 - Every query change goes through branch → PR → validation evidence (zero-row diff or documented delta) before merge.
 - The nightly anchor is the 20:30 ICT `sap-extract-schedule`; downstream work should chain from it rather than wait on independent clocks. Operational steps and incident handling live in `docs/design/SAP_RUNBOOK_v3.md`.
 - One task at a time; report before moving on. Don't chain into a second substantial build without a checkpoint.
+
+## Cost-control guardrails (canonical; source rationale in `docs/COST_CONTROL.md`)
+
+### BigQuery/query cost
+- Every non-metadata query must be dry-run first. If estimated bytes exceed 20 GB, stop and ask before running it.
+- Default every `bq query` to `--maximum_bytes_billed=21474836480` (20 GiB).
+- Count rows from metadata (`INFORMATION_SCHEMA.TABLE_STORAGE` / `__TABLES__.row_count`) instead of `COUNT(*)`; do not `COUNT(*)` a large view.
+- Never use `SELECT *` or `SELECT DISTINCT *` on wide tables; select only required columns.
+- Combine related diagnostics into one query returning multiple metrics/STRUCTs instead of rescanning the same table repeatedly.
+- Explore with `TABLESAMPLE SYSTEM (1 PERCENT)` before a full run when sampling can answer the shape question.
+- Materialize repeatedly cited diagnostics as small `sap_integration_v3.diag_*` tables instead of rescanning CareOS; this is a BigQuery write and still follows ownership/deploy rules.
+- Cite existing commit evidence instead of re-verifying it.
+- Dashboards/Looker must read scheduled summary tables, not views that rescan large tables on every open.
+
+### Agent-token cost
+- Read only what the task needs: hot tier (00/10/20), `AS_BUILT_V3`, and the task doc. Do not load all of `docs/design/**` unless the task requires it.
+- Keep sessions short: finish a work unit, commit, write/fold the session note, then start a fresh session.
+- Put long results in files; return only the compact verification tail in chat.
+- No verbose retry loops: after two failures under the same hypothesis, change method or ask.
+- Never assign two agents to the same investigation.
+
+### Storage
+- Cleaning the 45× `SAP_LIVE` bloat is the highest-value storage/scan reduction, but cleanup still requires the approved investigation and destructive-action plan.
+- Set `expiration_timestamp` on `diag_*` and scratch tables for 7–30 days.
+- Partition and cluster large v3 tables and require partition filters in every query that touches them.
 
 ## Verification discipline (this project has been burned by all of these)
 - Row counts staying the same is **not** proof of correctness — compare distributions (e.g. `delta_type` before/after).
@@ -56,6 +81,7 @@ GCP project `pacific-plating-282708` | region `asia-southeast1` | auth: data@rab
 - ProcessingFee: RCL `/103.3` confirmed. Onetime `/107` **unconfirmed — keep as-is and flag**.
 - `CREDIT_CARD_INSTALLMENT` = ONETIME flow (bank pays in full), TotalPeriods=1, channel `RCB-EDC-<bank>` (KBANK confirmed; other banks pending Finance).
 - Year scope: ≤2024 untouched | 2025 = cancel only, and only for orders already present in SAP | 2026+ normal. Date basis = `GREATEST(OrderDate, PolicyDate)`.
+- Revised D1 (Boat 2026-07-29): `is_cancelled_effective = (careos.careos_orders.is_cancelled IS TRUE) OR (careos.careos_order_items.cancel_time IS NOT NULL)`. Compute it once in `stg_order_dim`; every downstream query must use `stg_order_dim.is_cancelled_effective` and must not re-derive cancellation.
 - Test customers: exact match `LOWER(TRIM(FirstName|LastName)) = 'test'` only. Phone `0999999999` = corroborating signal, **report-only** for now.
 - PolicyNo > 50 chars = BLOCK (never truncate) + report in the morning email.
 - Date fields: exactly 8 chars and parseable; empty allowed **only** for PaymentDate on pending rows.
@@ -70,7 +96,7 @@ GCP project `pacific-plating-282708` | region `asia-southeast1` | auth: data@rab
 ## Multi-agent discipline (Claude Code AND Codex on this repo)
 - **One agent at a time in a given working tree.** Never run both against the same checkout simultaneously.
 - Each agent works on its own branch; merge via PR with the usual evidence (dry-run + validation proof).
-- First action of every session: `git status && git log --oneline -5` and reconcile with `20_SAP_PROGRESS`. If the working tree is dirty from another agent, report and stop.
+- First action of every session: `git status && git log --oneline -10`, read today's `docs/sessions/`, and reconcile with `20_SAP_PROGRESS`.
 - Rules live here only. If you're asked to "add a rule to CLAUDE.md/AGENTS.md", add it to this file instead.
 
 ## Reporting rule
