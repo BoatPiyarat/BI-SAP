@@ -4,6 +4,38 @@ Append-only — entry ใหม่บนสุด ห้ามลบ/แก้�
 
 ---
 
+## 2026-07-29 — Return triage: away-window review before Phase B
+
+Boat's return-triage ask, executed live against real data (`docs/RETURN_TRIAGE_20260730.md` has
+full detail): extract/freshness per night, which alerts fired and where, backlog growth 07-27 vs
+now, legacy pipeline file completeness + import errors, and a fresh `audit_010_careos_missing_in_sap_detail`
+check for the same pattern as `sap_integrety_2025_RCL`.
+
+**Headline results**: no correctness blocker for Phase B. Backlog (`delta_export`/
+`interface_daily_status`) is flat or improved since 07-27, not growing. All 4 email alerts confirmed
+wired correctly; the missed-extract alert genuinely fired twice on real conditions (07-27, 07-28) -
+the first real (not synthetic) end-to-end proof this project's failure-email mechanism works.
+`audit_010_careos_missing_in_sap_detail` shares `sap_integrety_2025_RCL`'s unguarded-SUM code
+pattern but its actual output is unaffected (it only ever reports zero-match rows, where the sum
+is never computed) - no unreliability banner needed.
+
+**Two new findings, both outside `sap_integration_v3`, not fixed (need Boat's call)**:
+1. `SAP_LIVE` grew 151,024 → 6,858,653 rows in 3 days (distinct DocEntry only 106,873→122,169) -
+   root-caused to the loader (`sap-order-payment-initial-phase`) crash-looping on its 1024 MiB
+   memory limit and re-inserting (plain `INSERT`, not `MERGE`) on each restart. No downstream
+   correctness impact (`SAP_LIVE_FULL`/`sap_mirror_doc` still dedup correctly and show sane counts)
+   but real storage/cost growth and an active bug.
+2. Both legacy Cloud Functions (`rcb-motor-order-payment-sap-bucket-1`,
+   `rcb-nonmotor-order-payment-sap-bucket-1`) reported `crash` every night 07-26 through 07-28 -
+   root-caused to an expired Gmail SMTP credential in the post-export notification email step, NOT
+   the export itself. Confirmed via full log sequences that every real GCS file write (all 8 Motor
+   steps, all 4 NonMotor steps) completes before the crash. Cosmetic for delivery, but worth fixing
+   since Cloud Function status alone looks like nightly failure.
+
+Logged both in `docs/INPUTS_NEEDED.md`. Not touched - outside this project's DDL scope.
+
+---
+
 ## 2026-07-27 (cont'd) — 3.2: PROVISIONAL now visible downstream; new Q3a sub-question added
 
 Boat's item 3.2: tag the picking rule as PROVISIONAL everywhere it appears. Found a real gap:

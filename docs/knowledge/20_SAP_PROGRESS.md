@@ -1,5 +1,5 @@
 # 20_SAP_PROGRESS.md
-Last Updated: 2026-07-27 (cont'd) - Boat away-window plan: Sections 1-3 DONE (unattended hardening, PHASE A finished, carryover items); PHASE B/C NOT STARTED (genuinely out of scope for one session, needs dedicated follow-up) - see docs/AWAY_20260726_30.md for the full handover (overwrite ได้ — สถานะปัจจุบันเสมอ)
+Last Updated: 2026-07-29 - Return triage done (docs/RETURN_TRIAGE_20260730.md): no correctness blocker for Phase B, backlog flat/improved, alerts confirmed working (2 genuine real-condition firings). 2 new findings outside sap_integration_v3 (SAP_LIVE loader bloat, legacy CF false-crash from expired SMTP cred) logged in INPUTS_NEEDED, not fixed. PHASE B/C still not started - ready to begin (overwrite ได้ — สถานะปัจจุบันเสมอ)
 
 ---
 

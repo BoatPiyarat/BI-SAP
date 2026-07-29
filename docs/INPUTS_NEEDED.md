@@ -86,6 +86,22 @@ that inbox to yours, (c) tell me and I can look into whether the transfer config
 recreated under different ownership (would need to be done under the right identity, not
 something I can just reassign).
 
+## Boat — 2 new findings from return-triage (2026-07-29), both outside sap_integration_v3
+
+1. **`SAP_LIVE` bloat**: 151,024 → 6,858,653 rows in 3 days (distinct DocEntry only 106,873→122,169).
+   Root cause: the loader (`sap-order-payment-initial-phase`) crash-looped on its 1024 MiB memory
+   limit for ~16 min around 2026-07-29 02:43-02:59 UTC, and since it does plain `INSERT` not `MERGE`,
+   each restart likely re-inserted the same rows. No downstream correctness impact confirmed
+   (`SAP_LIVE_FULL`/`sap_mirror_doc` dedup correctly), but real storage/cost growth and an active
+   bug. Needs: raise the Cloud Run memory limit and/or make the insert idempotent. See
+   `docs/RETURN_TRIAGE_20260730.md` §1.
+2. **Legacy Cloud Functions reporting `crash` every night** (07-26/27/28, both Motor and NonMotor):
+   root-caused to an expired/revoked Gmail SMTP app-password in the post-export notification email
+   step (`mailer.py`), NOT the export itself - confirmed via log ordering that every real GCS file
+   write completes before the crash. Cosmetic for data delivery, but the notification email nobody
+   is receiving, and Cloud Function status alone looks like nightly failure. See
+   `docs/RETURN_TRIAGE_20260730.md` §4.
+
 ## Boat — sap_integrety_2025_RCL follow-up (§14 in FINDINGS): dormant, but audit_010 isn't
 
 90-day consumer check: `sap_integrety_2025_RCL` and `sap_integrety_2025_Q1` have **no real
