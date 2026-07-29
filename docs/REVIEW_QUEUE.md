@@ -6,8 +6,7 @@ review history; link the completed review and record its verdict.
 ## [2026-07-29 19:52 ICT] REVIEW REQUEST — class A
 Artifact: review-protocol rollout working unit — `docs/AGENT_REVIEW_PROTOCOL.md`,
 `docs/AGENT_RULES.md`, `docs/AGENT_TEAMING.md`, `docs/REVIEW_QUEUE.md`,
-`docs/reviews/_SCORECARD.md`, and first Codex review of `6863dc8`; commit hash to be attached after
-commit.
+`docs/reviews/_SCORECARD.md`, and first Codex review of `6863dc8`; commit `d69572f`.
 Claim: mutual review mechanics are now canonical and the first class-A review applies all 12
 checks without exceeding the one-query cap.
 Evidence: files above; `docs/reviews/2026-07-29-6863dc8-codex.md`.
