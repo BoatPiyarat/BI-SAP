@@ -5,7 +5,7 @@ review history; link the completed review and record its verdict.
 
 ## [2026-07-29 20:31 ICT] REVIEW REQUEST — class A
 Artifact: attachment-first SAP-result ingestion design in `10_SAP_CONTEXT`,
-`SAP_RUNBOOK_v3`, `TASK_V3_GAP_CLOSURE_v2`, and `HANDOFF_QUEUE`; commit hash pending.
+`SAP_RUNBOOK_v3`, `TASK_V3_GAP_CLOSURE_v2`, and `HANDOFF_QUEUE`; commit `eb93ef6`.
 Claim: the design separates one-row-per-LogID import headers, multi-row TXT error details, and
 no-LogID file-pickup evidence while making attachment storage and dedup explicit.
 Evidence: Boat's 2026-07-29 correction; the four files above.
