@@ -4,11 +4,28 @@ Append-only — entry ใหม่บนสุด ห้ามลบ/แก้�
 
 ---
 
+## 2026-07-29 — Boat closed D1 on two item-level fields
+
+Boat/design review resolved the D1 conflict: canonical
+`stg_order_dim.is_cancelled_effective` is
+`careos.careos_order_items.is_cancelled IS TRUE OR
+careos.careos_order_items.cancel_time IS NOT NULL`. Both inputs are item-level and come only from
+`careos.careos_order_items`.
+
+`careos.careos_orders.is_cancelled` is intentionally excluded: it adds only approximately one
+item beyond the item-level definition, risks cancelling an active sibling, violates the
+per-`order_item` constraint, and is not part of legacy cancel-new. Commit `8a28710` remains
+source-only/not deployed and requires correction in the SQL lane. The conflict originated from a
+chat instruction that contradicted D1; the permanent rule is now to reconcile canonical knowledge
+before implementing such an instruction.
+
+---
+
 ## 2026-07-29 — Flagged source-only D1 formula conflict from `8a28710`
 
 Reviewed the new Claude Code SQL-domain commit `8a28710`. It is not deployed, but its
 `036_stg_order_dim_cancel_effective.sql` uses a three-field definition that includes
-`careos.careos_order_items.is_cancelled`, conflicting with Boat's revised two-field D1. Added an
+`careos.careos_orders.is_cancelled`, conflicting with Boat's revised two-item-field D1. Added an
 explicit correction request to `HANDOFF_QUEUE.md`; Codex did not edit SQL or query BigQuery.
 
 ---
@@ -31,7 +48,7 @@ retained, so D5 requires provisional labeling. Corrected evidence was committed 
 2026-07-29 18:46:14 ICT.
 
 The session note's three-field diagnostic formula is superseded by Boat's later canonical
-two-source D1 definition. No BigQuery query, SQL change, object mutation, or deployment was
+two-item-field D1 definition. No BigQuery query, SQL change, object mutation, or deployment was
 performed while folding the evidence.
 
 ---
@@ -56,9 +73,10 @@ No BigQuery query, SQL change, object mutation, or deployment was performed.
 ## 2026-07-29 — Revised D1: canonical effective-cancellation definition
 
 Boat revised D1: cancellation is effective when
-`careos.careos_orders.is_cancelled IS TRUE` **or**
-`careos.careos_order_items.cancel_time IS NOT NULL`. These fields come from different source
-tables. The expression must be computed once as `stg_order_dim.is_cancelled_effective`; downstream
+`careos.careos_order_items.is_cancelled IS TRUE` **or**
+`careos.careos_order_items.cancel_time IS NOT NULL`. Both source fields are in
+`careos.careos_order_items`. The expression must be computed once as
+`stg_order_dim.is_cancelled_effective`; downstream
 queries must use that field and must not re-derive cancellation.
 
 This matches the legacy cancel-new OR condition and closes the gap where v3 recognized fewer

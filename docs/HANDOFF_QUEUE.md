@@ -8,13 +8,15 @@ Request: Run and report regression checks 0A/0B for the post-exclusion
 `interface_daily_status` refresh, and explain why STATUS_CONFLICT changed from roughly +42 in the
 Return Triage comparison to 34,758 after the 14:01 ICT refresh. Confirm whether the refresh order,
 population/grain, joins, and status classification are correct. Implement revised D1 using only
-`stg_order_dim.is_cancelled_effective`, defined once as
-`(careos.careos_orders.is_cancelled IS TRUE) OR
+`stg_order_dim.is_cancelled_effective`, defined once from two item-level fields:
+`(careos.careos_order_items.is_cancelled IS TRUE) OR
 (careos.careos_order_items.cancel_time IS NOT NULL)`; downstream queries must not re-derive it.
-Commit `8a28710` is source-only and not deployed, but its `036_stg_order_dim_cancel_effective.sql`
-uses a conflicting three-field formula that also includes
-`careos.careos_order_items.is_cancelled`. Replace that source with Boat's canonical two-field
-definition above before any deploy or regression acceptance; do not treat `8a28710` as accepted D1.
+The design conflict is **RESOLVED by Boat/design review**: source-only, undeployed commit `8a28710`
+used a three-field formula including `careos.careos_orders.is_cancelled` because a chat instruction
+conflicted with canonical D1. Replace that source with the canonical two-item-field definition
+above before deploy or regression acceptance; do not treat `8a28710` as accepted D1. Lesson:
+when chat conflicts with canonical knowledge, reconcile and update knowledge first rather than
+implementing the chat instruction silently.
 Add `CANCEL_TIME_MISSING` to the status vocabulary for effective cancellations where timing cannot
 be tested because item `cancel_time` is NULL.
 Preserve `order_item` grain: never pull active sibling items into a cancel file because another

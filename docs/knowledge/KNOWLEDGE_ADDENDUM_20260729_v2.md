@@ -19,9 +19,11 @@ Supersedes: ADDENDUM 2026-07-29 v1 (ข้อที่ tag ⏳ ถูกตอ�
 
 **Revised D1 (Boat 2026-07-29):** Cancel ในตารางนี้หมายถึง
 `stg_order_dim.is_cancelled_effective` เท่านั้น โดย field นี้คำนวณครั้งเดียวจาก
-`(careos.careos_orders.is_cancelled IS TRUE) OR
-(careos.careos_order_items.cancel_time IS NOT NULL)`. Source fields อยู่คนละ table; downstream
-ห้าม re-derive เงื่อนไขเอง. นิยามนี้ตรงกับ legacy cancel-new logic.
+`(careos.careos_order_items.is_cancelled IS TRUE) OR
+(careos.careos_order_items.cancel_time IS NOT NULL)`. Source fields ทั้งสองมาจาก
+`careos.careos_order_items`; downstream ห้าม re-derive เงื่อนไขเอง. นิยามนี้ตรงกับ legacy
+cancel-new logic. ไม่ใช้ `careos.careos_orders.is_cancelled`: เพิ่มเพียงประมาณ 1 item แต่เสี่ยง
+ลาก active sibling เข้าสถานะ cancel และขัด per-`order_item` constraint.
 
 **Date basis (confirmed):** ใช้ **`GREATEST(OrderDate, PolicyDate)`** — ยึดวันที่ล่าสุดกว่าของสองตัว
 - ถ้าตัวใดเป็น NULL → ใช้ตัวที่มีค่า

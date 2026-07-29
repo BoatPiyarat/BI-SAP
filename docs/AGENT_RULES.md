@@ -38,6 +38,7 @@ GCP project `pacific-plating-282708` | region `asia-southeast1` | auth: data@rab
 - Before flagging an open question, check `20_SAP_PROGRESS` §DECISIONS PENDING and `INPUTS_NEEDED.md`. Reference known items; don't re-derive them.
 - Maintain `docs/INPUTS_NEEDED.md` as the one living checklist of human-only inputs. Update it; don't regenerate a fresh request list each session.
 - When a decision is made mid-session, edit the affected design doc **in the same session**. Docs are truth; conversation is not.
+- If a chat instruction conflicts with canonical knowledge, stop implementation and reconcile/update the knowledge decision explicitly first; never follow the conflicting chat instruction silently.
 - Check `ls sql/ddl/` before naming a new file — numbers must not collide.
 - Every query change goes through branch → PR → validation evidence (zero-row diff or documented delta) before merge.
 - The nightly anchor is the 20:30 ICT `sap-extract-schedule`; downstream work should chain from it rather than wait on independent clocks. Operational steps and incident handling live in `docs/design/SAP_RUNBOOK_v3.md`.
@@ -81,7 +82,7 @@ GCP project `pacific-plating-282708` | region `asia-southeast1` | auth: data@rab
 - ProcessingFee: RCL `/103.3` confirmed. Onetime `/107` **unconfirmed — keep as-is and flag**.
 - `CREDIT_CARD_INSTALLMENT` = ONETIME flow (bank pays in full), TotalPeriods=1, channel `RCB-EDC-<bank>` (KBANK confirmed; other banks pending Finance).
 - Year scope: ≤2024 untouched | 2025 = cancel only, and only for orders already present in SAP | 2026+ normal. Date basis = `GREATEST(OrderDate, PolicyDate)`.
-- Revised D1 (Boat 2026-07-29): `is_cancelled_effective = (careos.careos_orders.is_cancelled IS TRUE) OR (careos.careos_order_items.cancel_time IS NOT NULL)`. Compute it once in `stg_order_dim`; every downstream query must use `stg_order_dim.is_cancelled_effective` and must not re-derive cancellation.
+- Revised D1 (Boat 2026-07-29): canonical cancellation uses only `careos.careos_order_items.is_cancelled IS TRUE OR careos.careos_order_items.cancel_time IS NOT NULL`; never use `careos_orders.is_cancelled`, and never fan cancellation out to active siblings.
 - Test customers: exact match `LOWER(TRIM(FirstName|LastName)) = 'test'` only. Phone `0999999999` = corroborating signal, **report-only** for now.
 - PolicyNo > 50 chars = BLOCK (never truncate) + report in the morning email.
 - Date fields: exactly 8 chars and parseable; empty allowed **only** for PaymentDate on pending rows.

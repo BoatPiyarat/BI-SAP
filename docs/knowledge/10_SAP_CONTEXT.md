@@ -102,9 +102,10 @@ generate ไม่ใช่ signal จากต้นทาง (Data Dictionary/
   sibling items into the cancel file.
 - **Canonical cancellation definition (revised D1, Boat 2026-07-29):**
   `stg_order_dim.is_cancelled_effective =
-  (careos.careos_orders.is_cancelled IS TRUE) OR
-  (careos.careos_order_items.cancel_time IS NOT NULL)`. สอง source field อยู่คนละ table;
-  ให้คำนวณครั้งเดียวใน `stg_order_dim` และทุก downstream query ใช้ field นี้เท่านั้น
+  (careos.careos_order_items.is_cancelled IS TRUE) OR
+  (careos.careos_order_items.cancel_time IS NOT NULL)`. Source field ทั้งสองมาจาก
+  `careos.careos_order_items`; ให้คำนวณครั้งเดียวใน `stg_order_dim`
+  และทุก downstream query ใช้ field นี้เท่านั้น
   **ห้าม re-derive cancellation เอง**. นิยามนี้ตรงกับ legacy cancel-new logic ที่ใช้ OR condition
   เดียวกันมาก่อน และปิดช่องว่างที่ v3 เห็น cancelled น้อยกว่า legacy.
 - **Credit Shell:** ไม่มี `transaction_snapshot_installment_details` เป็นเรื่องปกติ →
@@ -246,16 +247,23 @@ candidate rows where both date inputs are NULL. See `sql/ddl/032-034`, commits `
 This addendum overrides any earlier text that conflicts with D1–D5.
 
 **D1 revised by Boat 2026-07-29 — one cancellation definition.**
-`is_cancelled_effective = (careos.careos_orders.is_cancelled IS TRUE) OR
-(careos.careos_order_items.cancel_time IS NOT NULL)`. The fields come from different tables.
-Compute this exactly once as `stg_order_dim.is_cancelled_effective`; all downstream logic must use
+`is_cancelled_effective = (careos.careos_order_items.is_cancelled IS TRUE) OR
+(careos.careos_order_items.cancel_time IS NOT NULL)`. Both fields come only from
+`careos.careos_order_items`. Compute this exactly once as
+`stg_order_dim.is_cancelled_effective`; all downstream logic must use
 that field and must not re-derive the OR. This matches the legacy cancel-new condition and closes
 the gap where v3 recognized fewer cancellations than legacy.
+
+**Why not `careos.careos_orders.is_cancelled`:** the order-level flag adds only approximately one
+item beyond the two item-level fields, while introducing a grain mismatch that can mark active
+siblings cancelled. That violates the confirmed per-`order_item` output constraint. Excluding it
+also keeps D1 aligned with legacy cancel-new. This design review is closed; do not reopen it without
+a new Boat decision backed by row-level evidence.
 
 `expected_status` supports `Cancelled`; precedence is `Cancelled > Paid > Pending`.
 `PAID_AFTER_CANCEL` remains a separate anomaly classification and must not be hidden by ordinary
 Cancelled precedence. Add `CANCEL_TIME_MISSING` to the status vocabulary when
-`is_cancelled_effective` is true from the order-level flag but item `cancel_time` is NULL, so the
+`is_cancelled_effective` is true from item-level `is_cancelled` but item `cancel_time` is NULL, so the
 timing comparison needed for PAID_AFTER_CANCEL cannot be made. Canonical vocabulary:
 `OK`, `PENDING_ACK`, `MISSING`, `STATUS_CONFLICT`, `PAID_AFTER_CANCEL`,
 `CANCEL_TIME_MISSING`, `UNROUTED`.
@@ -285,8 +293,9 @@ all associated counts remain provisional under D5.
   evidence committed at 2026-07-29 18:46:14 ICT. The intermediate 419 / THB 5.68M and broad
   2,254 / THB 30M figures are superseded and must not be cited.
 
-The three-field formula written inside the diagnostic session note is superseded by Boat's later
-two-source revised-D1 definition above; it must not be copied into implementation.
+The three-field formula written inside the diagnostic session note and source-only commit
+`8a28710` is superseded by Boat's later two-item-field revised-D1 definition above; it must not be
+copied into implementation.
 
 **D2 — change-order supersession is not Q3a.** Never send a Cancelled batch for superseded old
 orders until all three required change-order preflight checks are documented and passed, Aware
