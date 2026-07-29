@@ -163,7 +163,8 @@ Posting Periods Unlocked→PaymentDate | invalid date→ต้อง DDMMYYYY
 5. **CREDIT_CARD_INSTALLMENT = ONETIME flow** (ธนาคารจ่ายเต็ม): TotalPeriods=1, status paid,
    channel RCB-EDC-<bank> (KBANK confirmed; bank อื่นรอบัญชี)
 
-## ⚠️ ADDENDUM 2026-07-30 v2 — EXCLUSION & FORMAT RULES (RESOLVED) — supersedes v1
+## ⚠️ ADDENDUM 2026-07-29 v2 — EXCLUSION & FORMAT RULES (RESOLVED) — supersedes v1
+(แก้วันที่ 2026-07-30 → 2026-07-29 — ยืนยันจริงด้วย `date`, ไม่เดาอีกต่อไป)
 
 **หลักการครอบทั้งหมด: EXCLUDED ≠ DELETED.** ทุกแถวที่ถูกกรองโดยกติกาข้างล่าง → ลง
 `sap_integration_v3.sap_excluded_records` (order_item, period, rule_code, reason, detected_at) —
@@ -186,12 +187,12 @@ exclude, rule_code `DATE_BASIS_MISSING`**, รายงานจำนวนท�
 ก่อน — order ที่ไม่เคยเข้า SAP เลยจะ cancel ไม่ได้ (SAP reject ทั้งไฟล์) และห้ามส่ง Paid ย้อนให้ตาม E1
 อยู่แล้ว จึงต้อง exclude แยกเป็น `CANCEL_2025_NOT_IN_SAP` (ไม่ใช่ MISSING, ไม่ต้องตามเก็บ).
 
-**E2. Test customer** (final, resolved 2026-07-30, exact match เท่านั้น):
+**E2. Test customer** (final, resolved 2026-07-29, exact match เท่านั้น):
 - `TEST_CUSTOMER_NAME`: `LOWER(TRIM(FirstName))='test' OR LOWER(TRIM(LastName))='test'` — **exact
   match เท่านั้น ห้าม `LIKE '%test%'`** (จะโดนชื่อจริง เช่น Testa, Contested) และ **ตัด `'test div'`
-  ออกจากลิสต์** ตามที่ Boat ยืนยัน 07-30 (ใช้แค่ `'test'`)
+  ออกจากลิสต์** ตามที่ Boat ยืนยัน 07-29 (ใช้แค่ `'test'`)
 - `TEST_CUSTOMER_PHONE`: เบอร์ (normalize ตัด space/-/() แล้วแปลง `+66xxxxxxxxx`→`0xxxxxxxxx`) `=
-  '0999999999'` — **REPORT-ONLY รอบแรก**, ยังไม่ตัดออกจาก interface. ตรวจจริง 2026-07-30: 252
+  '0999999999'` — **REPORT-ONLY รอบแรก**, ยังไม่ตัดออกจาก interface. ตรวจจริง 2026-07-29: 252
   order_items ตรง, 72 รายชื่อไม่ใช่ 'test', ΣActualReceived (ที่มีใน SAP แล้ว) = ฿670,312.54 — **ไม่ใช่
   0 และไม่ใช่ test ทั้งหมด** จึงยังไม่เปิดเป็น hard filter ตามเงื่อนไขที่ Boat วางไว้เอง (ปรับได้ที่
   config table ไม่ต้อง deploy เมื่อ Boat สั่ง)
@@ -216,5 +217,5 @@ rebuild) — logic พร้อมใช้เมื่อ column เหล่�
 
 **ผลต่อ backlog**: `MISSING_NO_ROW_IN_SAP` เลขเก่า (373,044 ณ 07-27) ใช้ต่อไม่ได้ — ต้องแยกรายงาน
 **backlog จริง** (2026+ และ cancel 2025 ที่มีใน SAP) vs **excluded** (แยกตาม rule_code) ทุกครั้ง.
-ดู `sql/ddl/032-036` และ `docs/knowledge/30_SAP_CHANGELOG.md` 2026-07-30 สำหรับตัวเลขจริง.
+ดู `sql/ddl/032-036` และ `docs/knowledge/30_SAP_CHANGELOG.md` 2026-07-29 สำหรับตัวเลขจริง.
 6. Design v3 ทั้งชุดอยู่ใน docs/design/ — อ่าน REDESIGN_V3 ก่อนแตะ pipeline ใดๆ

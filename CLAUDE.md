@@ -22,6 +22,7 @@ Owner: Boat (BI Manager). GCP project: `pacific-plating-282708`. Region: `asia-s
 - Dates in interface files: `DDMMYYYY` strings. Money: ROUND(...,2), amounts from CarePay are satang (÷100).
 - Every query change: branch → PR → validation evidence (0-row-diff or documented delta) before merge.
 - Destructive ops (DROP/DELETE/overwrite prod tables, `gcloud ... delete`, scheduler changes): propose first, wait for approval.
+- **Never guess today's date.** Before naming a file, writing a CHANGELOG entry, or stamping anything with "today's date," verify it with the `date` command (e.g. `date -u +%Y-%m-%d`) — do not infer it from a filename, a task description, or system-prompt date context without checking. (Incident 2026-07-29: an addendum file and its CHANGELOG entry were both stamped 2026-07-30 by mistake, inferred from the input filename instead of verified — caught and fixed same-day.)
 
 ## Environment & commands
 - BigQuery: `bq query --use_legacy_sql=false '...'`

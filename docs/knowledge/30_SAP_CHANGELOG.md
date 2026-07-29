@@ -4,14 +4,18 @@ Append-only — entry ใหม่บนสุด ห้ามลบ/แก้�
 
 ---
 
-## 2026-07-30 — KNOWLEDGE_ADDENDUM v2 (resolved) applied: exclusion/format rules, EXCLUDED ≠ DELETED
+## 2026-07-29 — KNOWLEDGE_ADDENDUM v2 (resolved) applied: exclusion/format rules, EXCLUDED ≠ DELETED
 
-Boat resolved v1's open items and gave a final spec (`docs/knowledge/KNOWLEDGE_ADDENDUM_20260730 v2.md`,
+(Date corrected: this entry and the addendum itself were first stamped 2026-07-30 by mistake -
+caught and fixed same-day per Boat's new rule below: never guess the date, verify with `date`
+before naming a file or writing a CHANGELOG entry.)
+
+Boat resolved v1's open items and gave a final spec (`docs/knowledge/KNOWLEDGE_ADDENDUM_20260729 v2.md`,
 superseding v1): E1 year scope (per-stage, not a blanket year cut - ≤2024 untouched, 2025 blocks new
 Paid but allows cancel for orders already in SAP, 2026+ normal), E2 test-customer exact-match (name)
 + report-only phone signal, E3 insurer-master exclusion, F1 InsuredID default, F2 PolicyNo>50 hard
 block, F3 date-format validation (deferred pending PHASE B's actual DDMMYYYY columns). Appended in
-full to `10_SAP_CONTEXT.md` (new ADDENDUM 2026-07-30 v2 section). Implementation (config tables,
+full to `10_SAP_CONTEXT.md` (new ADDENDUM 2026-07-29 v2 section). Implementation (config tables,
 `sap_excluded_records`, `stg_order_dim`/`expected_state` changes, new validation rules, morning
 report additions, recomputed backlog numbers) tracked in the entries below as each piece lands.
 
