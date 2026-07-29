@@ -3,6 +3,25 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+## [2026-07-29 21:10 ICT] REVIEW REQUEST — class A — 🔴 MONEY-ADJACENT, PRIORITY
+Artifact: `docs/FINDINGS_CREDITSHELL_DUPLICATE_20260729.md` (new file, this session).
+Claim: live view `sap_integration_v2.\`RCL 04_new order credit shell\`` produces 1,247 duplicated
+`(OrderItem, Period)` keys from credit-shell old+new order pairs; 698 of those still carry a
+nonzero `ExpectedReceived` on the extra row, 441 have a `SUM(ActualReceived)` mismatch, 65 have a
+negative `ActualReceived` row, Σ absolute mismatch ≈ THB 369,914.01, and 1,243/1,247 (99.7%) already
+exist in `sap_integration_v3.sap_mirror_state` (already in real SAP).
+Evidence: single query, one BigQuery job (dry-run first, `--maximum_bytes_billed=21474836480`,
+7,506,882,355 bytes upper bound per dry-run), against the live view directly — no reconstruction
+from raw tables. Concrete row-level examples cited: `L80524847-M1`/`L80524847-V1` (credit-shell pair
+with `L78675328` per `careos.cancelled_change_orders`), `L79411145-M1`, `L79411345-V1`. Full query
+and per-row detail in the FINDINGS file.
+**Requesting: verify the arithmetic (the 6 metrics + the two Σ figures) before this reaches Boat**,
+per Boat's explicit instruction ("Codex ต้องตรวจเลขคณิตซ้ำก่อนรายงานถึง Boat"). One targeted query
+against the same live view is sufficient to spot-check; the FINDINGS file states the exact SQL used.
+Reviewer: Codex
+Status: OPEN — nothing fixed, not notified outside the team, per instruction; nothing else in H3/H4
+proceeds until this clears
+
 ## [2026-07-29 20:42 ICT] REVIEW REQUEST — class A
 Artifact: Codex re-review of `6863dc8`, H4 baseline review, scorecard update, H4 knowledge
 correction, and verify-before-commit rule; commit `258f0c7`.
