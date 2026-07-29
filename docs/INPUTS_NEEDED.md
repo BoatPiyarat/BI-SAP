@@ -39,6 +39,32 @@ deterministic tiebreak — added 2026-07-27) is live and tags every affected row
 `PROVISIONAL_PENDING_AWARE_Q3A` so downstream consumers know which answers are still opinion, not
 fact. Change only that one `ORDER BY` block when Aware answers.
 
+## Aware (SAP vendor) — change-order supersession, separate from Q3a
+
+**Ask**: when an old CareOS order is superseded through `careos.cancelled_change_orders`, must the
+old order receive an explicit SAP `Cancelled` document, or does the replacement order supersede it
+without a separate cancel import?
+
+This is deliberately separate from Q3a: Q3a chooses the authoritative document when SAP already
+has multiple documents; this question decides whether a superseded old order must receive a new
+cancel document at all. Per D2, do not send this population until all three change-order preflight
+checks are documented and passed and FA approves the batch.
+
+Evidence population: **⚠️ PROVISIONAL — UNDER VERIFICATION: 9,625 order_items**, sourced from
+`careos.cancelled_change_orders`, `careos.careos_orders`, `careos.carepay_transactions`,
+`sap_integration_v3.stg_order_dim`, and the SAP mirror logic. Exact query timestamp was not captured;
+evidence was recorded in session commit `19d9452` at 2026-07-29 17:58:53 ICT. Do not cite as a
+production batch count until a provenance-complete rerun.
+
+## FA — approve change-order cancel batch only after preflight
+
+**Ask**: after Aware answers the supersession question and all three D2 preflight checks pass,
+approve or reject sending the change-order cancel batch. No batch may be sent before explicit FA
+approval.
+
+Current candidate count is the same **⚠️ PROVISIONAL 9,625 order_items** described immediately
+above; source tables and evidence timestamp are inherited from that entry, not a second count.
+
 **Also Aware/SAP DB** (same access gap as Q3a — cannot query `[RCB_LIVE_DB].[dbo].[@INSURANCE]`
 directly from this environment):
 - Total `@INSURANCE` row count + breakdown by row type — would convert the 373,971
@@ -59,7 +85,8 @@ directly from this environment):
 `interface_daily_status` (built 2026-07-27, `030_interface_daily_status.sql`) implements the
 OK/PENDING_ACK/MISSING/STATUS_CONFLICT/PAID_AFTER_CANCEL/UNROUTED status set you asked for, but
 literally alerting on "MISSING/STATUS_CONFLICT present" would still fire every day. **⚠️ PROVISIONAL
-— UNDER VERIFICATION; DO NOT CITE until Claude Code reports passing 0A/0B:** after E1–E3
+— UNDER VERIFICATION; DO NOT CITE until Claude Code reports passing 0A/0B and STATUS_CONFLICT
+decreases in line with D1 acceptance:** after E1–E3
 filtering, the 2026-07-29 14:01:28 ICT snapshot is MISSING 576 and STATUS_CONFLICT 34,758
 (Return Triage's 340,051/59,501 snapshot was pre-filter). Only wired an alert for `PAID_AFTER_CANCEL`
 (rare, 7 rows today, always actionable) and staleness (no fresh row by late morning). Real

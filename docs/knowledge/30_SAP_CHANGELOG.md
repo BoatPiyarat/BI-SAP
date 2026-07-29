@@ -4,11 +4,31 @@ Append-only — entry ใหม่บนสุด ห้ามลบ/แก้�
 
 ---
 
+## 2026-07-29 — Design decisions D1–D5 recorded
+
+Boat decided: D1 adds `Cancelled` to `expected_status` with
+Cancelled > Paid > Pending precedence while keeping PAID_AFTER_CANCEL separate; D2 holds
+change-order supersession cancels until three preflight checks pass, Aware answers the
+supersession-specific question, and FA approves; D3 explicitly approves Claude Code deployment of
+035; D4 keeps the phone rule report-only pending provenance-complete numbers; D5 requires every
+reported number to include its source table/object and timestamp.
+
+Added the permanent D5 provenance rule to `AGENT_RULES.md`, a v3 addendum to `10_SAP_CONTEXT.md`,
+and separate Aware/FA asks to `INPUTS_NEEDED.md`. Updated `HANDOFF_QUEUE.md` with the scoped 035
+deploy approval. The 14:01 ICT status counts remain **⚠️ PROVISIONAL — UNDER VERIFICATION** until
+Claude Code reports passing 0A/0B and STATUS_CONFLICT decreases in line with D1 acceptance.
+
+Evidence from session commit `19d9452` was cited rather than re-queried. It records evidence at
+2026-07-29 17:58:53 ICT but does not preserve exact query timestamps; D1/D2-associated counts
+therefore remain provisional under D5. No SQL, BigQuery object, or deployment was changed.
+
+---
+
 ## 2026-07-29 — Quarantined unverified 14:01 status counts; F3 restored to OPEN
 
 Marked every documentation occurrence of the 14:01:28 ICT `interface_daily_status` count set
 **⚠️ PROVISIONAL — UNDER VERIFICATION** and prohibited citation until Claude Code reports passing
-0A/0B. STATUS_CONFLICT's unexplained move to 34,758 has no regression evidence yet. Restored the
+0A/0B and D1 acceptance. STATUS_CONFLICT's unexplained move to 34,758 has no regression evidence yet. Restored the
 Boat-confirmed F3 `DATE_FORMAT_INVALID` rule to OPEN because no evidence showed Boat chose to
 defer it; the prior deferral was only a Codex inference about the current 12-column layer.
 Queued both items for Claude Code in `docs/HANDOFF_QUEUE.md`.
@@ -24,7 +44,7 @@ metadata. No SQL, BigQuery object, or deployment was changed.
 Folded session evidence from Claude Code commits `9825e97` and `fa8d8cc` into canonical knowledge.
 `034_expected_state_exclusion_rules.sql` now provides reproducible source for the live E1–E3
 procedure deployed at 13:57 ICT. **⚠️ PROVISIONAL — UNDER VERIFICATION; DO NOT CITE until Claude
-Code reports passing 0A/0B:** a read-only check observed `interface_daily_status` refreshed at
+Code reports passing 0A/0B and STATUS_CONFLICT decreases in line with D1 acceptance:** a read-only check observed `interface_daily_status` refreshed at
 14:01:28 ICT with 293,188 rows: OK 257,340, STATUS_CONFLICT 34,758, MISSING 576, PENDING_ACK 514.
 STATUS_CONFLICT's jump is unexplained and no regression test has passed. The Return Triage value MISSING 340,051
 predates exclusion filtering and is historical only. A second retained check found zero candidates

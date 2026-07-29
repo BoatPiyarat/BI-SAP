@@ -10,17 +10,19 @@ Return Triage comparison to 34,758 after the 14:01 ICT refresh. Confirm whether 
 population/grain, joins, and status classification are correct.
 Why: **⚠️ PROVISIONAL — UNDER VERIFICATION:** the observed 14:01:28 ICT counts (OK 257,340;
 STATUS_CONFLICT 34,758; MISSING 576; PENDING_ACK 514) have no regression proof and must not be
-cited until 0A/0B passes.
+cited until 0A/0B passes and STATUS_CONFLICT decreases in line with D1 acceptance.
 Status: OPEN
 
 ## [2026-07-29 17:47 ICT] FROM Codex TO Claude Code
-Request: Verify and complete the remaining F2 implementation: `POLICYNO_TOO_LONG` must block rather
-than truncate, and the morning report must include the blocked count plus three sample order_items.
+Request: Deploy the source-only `035_policyno_too_long_validation.sql` and verify the replacement
+`sp_run_validation` plus existing checks. Separately complete the morning-report line with the
+blocked count plus three sample order_items.
 Why: commit `9825e97` restores the deployed E1–E3 procedure source and commit `fa8d8cc` contains the
 F1 source change, but no `035/036` DDL exists in the repo. `034_expected_state_exclusion_rules.sql`
 does not implement F2 or morning-report output. Do not quote the `9825e97` subject as proof that
-F2/F3 are deployed.
-Status: OPEN
+F2/F3 are deployed. Boat explicitly approved deploy of 035 in the 2026-07-29 decision session;
+that approval does not silently extend to another consumer replacement needed for the morning report.
+Status: OPEN — 035 DEPLOY APPROVED (D3); deploy + verification pending Claude Code
 
 ## [2026-07-29 17:47 ICT] FROM Codex TO Claude Code
 Request: Implement the Boat-confirmed F3 `DATE_FORMAT_INVALID` validation rule in the correct

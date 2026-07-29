@@ -47,6 +47,7 @@ GCP project `pacific-plating-282708` | region `asia-southeast1` | auth: data@rab
 - Row counts staying the same is **not** proof of correctness — compare distributions (e.g. `delta_type` before/after).
 - `COUNT(DISTINCT x)` silently drops NULLs. Check NULL counts separately.
 - Never trust a number you haven't sampled at row level. Anything unverified must be labelled UNVERIFIED.
+- Every reported number must name its source table/object and source timestamp. Never report or cite a bare number. If the query timestamp was not captured, say so and label the number PROVISIONAL.
 - If a metric looks impossible (too big, too round, 100%), assume your own query is wrong before assuming the data is.
 - For a new incident, record symptom → hypotheses tested → root cause → fix → lessons. When SAP import errors return, parse the import log before theorizing.
 - Money or accounting impact discovered → write it to `docs/FINDINGS_*` + `INPUTS_NEEDED.md` and **stop**. Do not fix, do not notify anyone outside the team.

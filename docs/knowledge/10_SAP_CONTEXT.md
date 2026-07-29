@@ -222,7 +222,8 @@ deferred:** ยังไม่พบหลักฐานว่า validation �
 
 **ผลต่อ backlog**: `MISSING_NO_ROW_IN_SAP` เลขเก่า (373,044 ณ 07-27) ใช้ต่อไม่ได้ — ต้องแยกรายงาน
 **backlog จริง** (2026+ และ cancel 2025 ที่มีใน SAP) vs **excluded** (แยกตาม rule_code) ทุกครั้ง.
-**⚠️ PROVISIONAL — UNDER VERIFICATION; DO NOT CITE until Claude Code reports passing 0A/0B.**
+**⚠️ PROVISIONAL — UNDER VERIFICATION; DO NOT CITE until Claude Code reports passing 0A/0B and
+STATUS_CONFLICT decreases in line with D1 acceptance.**
 Live refresh after E1–E3 filtering completed 2026-07-29 14:01:28 ICT:
 `interface_daily_status`: MISSING 576, STATUS_CONFLICT 34,758, PENDING_ACK 514, OK 257,340.
 STATUS_CONFLICT's unexplained jump has not passed regression testing. Return Triage's 340,051 was
@@ -230,3 +231,45 @@ measured before filtering and must not be reused. `DATE_BASIS_MISSING = 0` is co
 candidate rows where both date inputs are NULL. See `sql/ddl/032-034`, commits `fa8d8cc` /
 `9825e97`, and `30_SAP_CHANGELOG.md`.
 6. Design v3 ทั้งชุดอยู่ใน docs/design/ — อ่าน REDESIGN_V3 ก่อนแตะ pipeline ใดๆ
+
+## ⚠️ ADDENDUM 2026-07-29 v3 — DESIGN DECISIONS D1–D5
+
+This addendum overrides any earlier text that conflicts with D1–D5.
+
+**D1 — `expected_status` supports `Cancelled`.** Precedence is
+`Cancelled > Paid > Pending`. `PAID_AFTER_CANCEL` remains a separate anomaly classification; it
+must not be hidden by the ordinary Cancelled precedence. Acceptance requires the post-change
+STATUS_CONFLICT population to decrease as expected and Claude Code regression checks 0A/0B to
+pass. Until then, the 14:01 ICT status-count set remains **⚠️ PROVISIONAL — UNDER VERIFICATION**.
+
+Evidence context for D1: the cancel-path analysis used `sap_integration_v3.stg_order_dim`,
+`sap_integration_v3.interface_daily_status`, and SAP mirror state; evidence was captured in commit
+`19d9452` at 2026-07-29 17:58:53 ICT. The exact underlying query timestamps were not captured, so
+all associated counts remain provisional under D5.
+
+**D2 — change-order supersession is not Q3a.** Never send a Cancelled batch for superseded old
+orders until all three required change-order preflight checks are documented and passed, Aware
+answers whether an explicit Cancelled document is required, and FA explicitly approves the batch.
+Q3a only resolves which existing SAP document/status is authoritative when multiple documents
+already exist; it does not answer supersession behavior.
+
+The current candidate figure, **⚠️ PROVISIONAL 9,625 order_items**, came from
+`careos.cancelled_change_orders`, `careos.careos_orders`, `careos.carepay_transactions`,
+`sap_integration_v3.stg_order_dim`, and SAP mirror logic; evidence capture is commit `19d9452`,
+2026-07-29 17:58:53 ICT, while exact query timestamps were not retained. Do not treat it as an
+approved batch size.
+
+**D3 — DDL 035 deploy approved.** Boat explicitly approved deployment of
+`035_policyno_too_long_validation.sql` in this session. Claude Code owns deploy and verification.
+Approval is scoped to 035's replacement of `sp_run_validation`; any other existing-consumer
+replacement still follows its own deploy gate.
+
+**D4 — phone filtering stays report-only.** `0999999999` must not become a hard filter yet.
+Wait for a provenance-complete result set and a separate decision before changing
+`enforce_hard_filter=false`. Earlier phone counts without table + query timestamp are not
+decision-ready under D5.
+
+**D5 — numerical provenance is mandatory.** Every reported number must state the source
+table/object and source timestamp. Bare numbers are prohibited. If an exact query timestamp was
+not captured, state that limitation and mark the number **PROVISIONAL**; a commit timestamp proves
+when evidence was recorded, not when the source snapshot was measured.
