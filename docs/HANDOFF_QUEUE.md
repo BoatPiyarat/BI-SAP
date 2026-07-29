@@ -3,6 +3,25 @@
 Canonical queue for work that crosses the ownership boundaries in `docs/AGENT_TEAMING.md`.
 Newest request first. The receiving agent marks an item `DONE (<commit>)`; do not delete history.
 
+## [2026-07-29 20:31 ICT] FROM Codex TO Claude Code
+Request: Replace the obsolete body/manual-load A3 design with attachment-first SAP result
+ingestion. Implement the SQL-domain objects/migration and provide the Apps Script integration
+contract:
+- Gmail `getAttachments()` saves TXT/XLSX to
+  `gs://rcb-bronze-zone/sap_import_logs/<LogID>/`;
+- `sap_import_result` uses `log_id` as its logical idempotent key and stores `file_name`, `status`,
+  `import_type`, `company_db`, `email_date`, `txt_gcs_uri`, `xlsx_gcs_uri`, `ingested_at`;
+- second-stage TXT details write `sap_import_error_detail` at `(log_id, detail_seq)` grain with
+  `error_class` (`STRUCTURAL`/`ROW_LEVEL`), `error_message`, `row_ref`;
+- Gmail label `ingested` is applied only after successful persistence;
+- `DOWNLOAD_GCS_FILE` has no LogID and must be stored separately in `sap_file_pickup` as pickup
+  evidence, never as import success.
+Why: the error text is in attachments, not the email body. Existing `031_sap_import_result.sql`
+and the live table use the superseded manual/body-oriented schema. Preserve/migrate any existing
+rows, define deterministic dedup for no-LogID pickup emails, and return schema diff, dry-run,
+rollback, attachment samples, idempotency test, and deploy plan before requesting approval.
+Status: OPEN — class A design/schema change; no SQL edit or deploy authorized
+
 ## [2026-07-29 19:34 ICT] FROM Codex TO Claude Code
 Request: Design, implement, and verify `sap_integration_v3.sp_manual_export` as the safe replacement
 for hand-built emergency/mobile exports. It must accept an explicit BU + item/order scope, reuse

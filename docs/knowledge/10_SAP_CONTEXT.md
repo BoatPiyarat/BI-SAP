@@ -58,12 +58,24 @@ SAP DB (RCB_LIVE_DB, ผ่าน WireGuard) --[pyodbc]--> sap-extract-job (Clou
   dedup ด้วย DocEntry (ROW_NUMBER by BatchRunDate DESC) — **แต่ยังมี duplicate ที่ระดับ
   (OrderItem, Period)** (328,071 keys ยืนยันจริง 07-24, เช่น doc Pending + doc Cancelled/Paid
   ของงวดเดียวกันอยู่พร้อมกัน) → ใช้ `sap_integration_v3.stg_sap_state` แทนถ้าต้องการ 1 แถว/(item,period)
+
 - **`sap-extract-schedule` (Cloud Scheduler, 20:30 ICT) ล่มอยู่ตอนนี้** — 401 UNAUTHENTICATED,
   IAM binding (`run.invoker` สำหรับ `sap-bucket-csv@...` บน `sap-extract-job`) น่าจะไม่เคย apply
   สำเร็จเลย (audit log ไม่เจอ SetIamPolicy ที่ granted=true บน resource นี้) ไม่ใช่ "หลุดไป" — ดู
   30_SAP_CHANGELOG.md 2026-07-24 (cont'd 6) รอ Attila แก้ (ต้อง IAM Admin เท่านั้น)
 - Dead-man's-switch (`sap_integration_v3.vw_dead_mans_switch` / scheduled query "SAP Data Freshness
   Monitor") เฝ้าดูความสดของ `SAP_LIVE` แทนที่จะรอเจอปัญหาเอง — deploy แล้ว 2026-07-24
+
+**Path C — SAP result evidence (revised 2026-07-29):**
+- Gmail body = header metadata; error text อยู่ใน TXT/XLSX attachment.
+- Apps Script ใช้ `getAttachments()` แล้วเก็บไฟล์ที่
+  `gs://rcb-bronze-zone/sap_import_logs/<LogID>/`.
+- Import-result email ที่มี LogID เข้า `sap_import_result` โดย `log_id` เป็น logical key; parse TXT
+  ชั้นที่สองเข้า `sap_import_error_detail` ที่ grain `(log_id, detail_seq)` เป็น `STRUCTURAL`
+  หรือ `ROW_LEVEL` พร้อม `error_message`/`row_ref`.
+- Gmail label `ingested` กันประมวลผลซ้ำหลัง persist สำเร็จ.
+- `DOWNLOAD_GCS_FILE` ไม่มี LogID และต้องเข้า `sap_file_pickup` แยกต่างหาก: เป็นหลักฐานว่า SAP
+  ดึงไฟล์ ไม่ใช่หลักฐานว่า import rows สำเร็จ.
 
 **6-Layer Standard (v2.1):** Extraction → Staging → Business Logic → Validation → Export →
 Reconciliation & Monitoring (Layer 6 อ่านอย่างเดียว ไม่ mutate)

@@ -103,25 +103,38 @@ SLA ที่บอก FA ได้: ส่ง list → ไฟล์พร้อ
 > - Lxxxxxxx: ยอด TotalAmount ไม่ balance (ต่าง x.xx)
 > - Lxxxxxxx: มีการชำระเงินต่อหลังยกเลิก — ยืนยัน intent (cancel+refund?)
 
-## 5b. SAP import-log ingestion (manual — no automatic delivery exists)
+## 5b. SAP result ingestion (attachment-first)
 
-**A3, confirmed 2026-07-27**: Aware/SAP does not deliver import-result logs automatically anywhere
-in this project — every past diagnosis (column-reordering incident, PolicyStatus duplicate,
-InsurerCode not found, etc.) started from Boat pasting/sharing log text by hand. `sap_import_result`
-(`sql/ddl/031_sap_import_result.sql`) exists to hold whatever gets shared — there is no pipeline
-to build here, just this manual step, done as soon as a log arrives:
+**Revised finding 2026-07-29:** Gmail message bodies contain result metadata, but row-level error
+text is in attachments. Do not parse the body as the error log.
 
-1. Get the raw log text/file from Aware/Boat (via email, chat, or a shared file).
-2. Parse it into rows (`batch_label`, `file_name`, `order_item` where identifiable, `error_type`,
-   `message`, `reported_at` if known) — for a short log, hand-write the `INSERT` statements; for a
-   large one, save as CSV/NDJSON and `bq load` it:
-   ```bash
-   bq load --source_format=CSV --skip_leading_rows=1 \
-     sap_integration_v3.sap_import_result gs://<wherever-you-saved-it>/import_log.csv \
-     batch_label:STRING,file_name:STRING,order_item:STRING,error_type:STRING,message:STRING,reported_at:TIMESTAMP,ingested_at:TIMESTAMP
-   ```
-3. Set `ingested_at = CURRENT_TIMESTAMP()` for whatever you just loaded.
-4. Then: `SELECT error_type, COUNT(*) FROM sap_integration_v3.sap_import_result WHERE batch_label = '<this batch>' GROUP BY 1 ORDER BY 2 DESC` — this is what Dashboard Page 3 ("SAP import errors by type") is meant to read from once populated.
+### Import-result email (has LogID)
+
+1. Apps Script finds an unprocessed SAP result email and reads metadata from the message:
+   `log_id`, `file_name`, `status`, `import_type`, `company_db`, `email_date`.
+2. Call `getAttachments()`. Save TXT/XLSX attachments under
+   `gs://rcb-bronze-zone/sap_import_logs/<LogID>/`, preserving the original attachment names.
+3. Upsert one header row into `sap_integration_v3.sap_import_result`, logically keyed by `log_id`:
+   `log_id`, `file_name`, `status`, `import_type`, `company_db`, `email_date`, `txt_gcs_uri`,
+   `xlsx_gcs_uri`, `ingested_at`.
+4. Parse the TXT in a second stage into child table `sap_integration_v3.sap_import_error_detail`
+   at `(log_id, detail_seq)` grain:
+   `error_class` (`STRUCTURAL` or `ROW_LEVEL`), `error_message`, and nullable `row_ref`.
+   Structural errors apply to the whole file; row-level errors identify the affected row when
+   the attachment provides a reference.
+5. Only after GCS save + BigQuery upsert succeeds, apply Gmail label `ingested`. The label is the
+   duplicate guard for future Apps Script runs; the `log_id` key remains the database idempotency
+   guard.
+
+### File-pickup email (`DOWNLOAD_GCS_FILE`, no LogID)
+
+Never insert this email into `sap_import_result`. Store it separately in
+`sap_integration_v3.sap_file_pickup`; it proves SAP attempted/passed the file-download step, not
+that row import succeeded. Deduplicate with a deterministic key from message identity plus
+`file_name`/`email_date`, and apply label `ingested` only after the row is persisted.
+
+Until the revised tables and Apps Script are deployed, attachment ingestion is pending; manual
+copying of body snippets is not an acceptable substitute for row-level error evidence.
 
 ## 6. Escalation & ownership
 

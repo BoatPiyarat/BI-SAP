@@ -4,6 +4,21 @@ Append-only — entry ใหม่บนสุด ห้ามลบ/แก้�
 
 ---
 
+## 2026-07-29 — Revised A3 to attachment-first SAP-result ingestion
+
+Corrected the prior body/manual-load assumption: SAP result metadata is in the Gmail body, but
+error text is in TXT/XLSX attachments. The canonical design now uses Apps Script
+`getAttachments()`, durable GCS storage under
+`gs://rcb-bronze-zone/sap_import_logs/<LogID>/`, one `sap_import_result` header per logical
+`log_id`, and `sap_import_error_detail` at `(log_id, detail_seq)` grain for
+`STRUCTURAL`/`ROW_LEVEL` errors. Gmail label `ingested` is applied only after persistence.
+
+`DOWNLOAD_GCS_FILE` messages have no LogID and are routed to separate `sap_file_pickup`; they prove
+file pickup, not row-import success. Updated context, runbook, task A3, and the SQL-domain handoff.
+No SQL, Apps Script, BigQuery object, Gmail label, or GCS object was changed in this docs unit.
+
+---
+
 ## 2026-07-29 — Mutual review protocol activated; first class-A review blocked
 
 Added Boat-provided `AGENT_REVIEW_PROTOCOL.md`, linked it from `AGENT_TEAMING` Rule 6, created the

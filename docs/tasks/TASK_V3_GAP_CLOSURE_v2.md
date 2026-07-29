@@ -68,9 +68,19 @@ for yesterday's business date → `recon_daily` + `interface_daily_status` with 
 Alert on MISSING/STATUS_CONFLICT, and if no status row exists by 07:30 ICT.
 Acceptance: the known RCL new-payment cases and the EDC backlog appear automatically — no pasted lists.
 
-**A3. Import-log ingestion** → `sap_import_result` (file, row ref, error_type, message, ts). If the logs
-aren't machine-delivered, write the manual `bq load` step into the runbook and say so.
-Acceptance: last night's errors queryable by type; Dashboard Page 3 can be built on it.
+**A3. Import-log ingestion — revised attachment-first spec**:
+- Apps Script reads Gmail metadata, calls `getAttachments()`, and stores TXT/XLSX under
+  `gs://rcb-bronze-zone/sap_import_logs/<LogID>/`.
+- `sap_import_result` header schema: `log_id` (logical key), `file_name`, `status`, `import_type`,
+  `company_db`, `email_date`, `txt_gcs_uri`, `xlsx_gcs_uri`, `ingested_at`.
+- Second-stage TXT parse writes `sap_import_error_detail` at `(log_id, detail_seq)` grain with
+  `error_class` (`STRUCTURAL`/`ROW_LEVEL`), `error_message`, `row_ref`.
+- Apply Gmail label `ingested` only after persistence; it is the mailbox duplicate guard.
+- `DOWNLOAD_GCS_FILE` messages have no LogID and go to separate `sap_file_pickup`; they prove file
+  pickup/download only, not successful row import.
+Acceptance: last night's attachments are durable in GCS; header/detail errors are queryable by
+LogID and class; re-running ingestion creates no duplicate; file pickup is never conflated with
+import success; Dashboard Page 3 can be built on the result tables.
 
 **A4. Multi-document resolution (the real root cause)**
 - `sap_mirror_doc` — every DocEntry, **no dedup** (evidence layer: cancel mirroring, InvoiceNo lookups, audit).

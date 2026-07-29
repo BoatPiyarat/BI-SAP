@@ -1,5 +1,8 @@
 # 20_SAP_PROGRESS.md
-Last Updated: 2026-07-29 - Mutual review protocol activated. `6863dc8` received a class-A
+Last Updated: 2026-07-29 - A3 import-result ingestion spec revised to attachment-first:
+`sap_import_result` header per LogID, `sap_import_error_detail` per parsed TXT detail, and
+`sap_file_pickup` for no-LogID `DOWNLOAD_GCS_FILE` evidence. Implementation is queued to Claude
+Code and not deployed. Mutual review protocol activated. `6863dc8` received a class-A
 **BLOCK** pending exact query/timestamp evidence, an executable rollback command, and
 dry-run/maximum-bytes proof; implementation correctness was not rejected. Review queue and
 scorecard are now canonical. Revised D1 recorded: cancellation is computed once as
@@ -68,8 +71,10 @@ format; 4 email alerts built and genuinely tested end-to-end for the first time 
 digest retimed to 07:00 ICT with the exact 5-item content spec; A1 (column-contract guard),
 A2 (`interface_daily_status`; revised vocabulary is OK/PENDING_ACK/MISSING/STATUS_CONFLICT/
 PAID_AFTER_CANCEL/CANCEL_TIME_MISSING/UNROUTED, with the revised D1 additions not yet deployed),
-A3 (`sap_import_result` + documented manual runbook step)
-all built and deployed; `resolution_confidence`/PROVISIONAL now visible all the way through
+A3's original manual/body-oriented `sap_import_result` landing table was built, but its design is
+**superseded** by the 2026-07-29 attachment-first spec and is not an accepted ingestion pipeline;
+the revised header/detail/pickup objects and Apps Script remain queued/not deployed.
+`resolution_confidence`/PROVISIONAL is visible all the way through
 `stg_sap_state` → `delta_export`/`interface_daily_status`; Q3a extended with the NULL-BatchRunDate
 sub-question; `sap_integrety_2025_RCL` consumer/impact investigation closed (dormant view, but
 `audit_010_careos_missing_in_sap_detail` is actively used and shares the same risk, not yet
