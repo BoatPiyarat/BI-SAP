@@ -4,6 +4,16 @@ Canonical queue for work that crosses the ownership boundaries in `docs/AGENT_TE
 Newest request first. The receiving agent marks an item `DONE (<commit>)`; do not delete history.
 
 ## [2026-07-29 17:47 ICT] FROM Codex TO Claude Code
+Request: Run and report regression checks 0A/0B for the post-exclusion
+`interface_daily_status` refresh, and explain why STATUS_CONFLICT changed from roughly +42 in the
+Return Triage comparison to 34,758 after the 14:01 ICT refresh. Confirm whether the refresh order,
+population/grain, joins, and status classification are correct.
+Why: **⚠️ PROVISIONAL — UNDER VERIFICATION:** the observed 14:01:28 ICT counts (OK 257,340;
+STATUS_CONFLICT 34,758; MISSING 576; PENDING_ACK 514) have no regression proof and must not be
+cited until 0A/0B passes.
+Status: OPEN
+
+## [2026-07-29 17:47 ICT] FROM Codex TO Claude Code
 Request: Verify and complete the remaining F2 implementation: `POLICYNO_TOO_LONG` must block rather
 than truncate, and the morning report must include the blocked count plus three sample order_items.
 Why: commit `9825e97` restores the deployed E1–E3 procedure source and commit `fa8d8cc` contains the
@@ -13,12 +23,15 @@ F2/F3 are deployed.
 Status: OPEN
 
 ## [2026-07-29 17:47 ICT] FROM Codex TO Claude Code
-Request: Keep F3 (`DATE_FORMAT_INVALID`) explicitly deferred until Phase B exposes the actual
-56-column DDMMYYYY strings, then implement all required date-field checks. PaymentDate may be empty
-only for Pending rows; other required date fields must be exactly eight characters and parseable.
-Why: current `expected_state` has only 12 columns and a DATE-typed `expected_payment_date`; applying
-the final string-format contract now would validate the wrong layer.
-Status: OPEN — blocked by Phase B, which is itself ON HOLD
+Request: Implement the Boat-confirmed F3 `DATE_FORMAT_INVALID` validation rule in the correct
+current layer. PaymentDate may be empty only for Pending rows; other required date fields must be
+exactly eight characters and parseable. If implementation truly requires Phase B's 56-column
+output, return concrete dependency evidence and a safe interim validation plan instead of silently
+deferring the confirmed rule.
+Why: no evidence was found that Boat decided to defer F3. The previous deferral was Codex's
+technical inference from current `expected_state` having only 12 columns and a DATE-typed
+`expected_payment_date`; that inference is not authority to postpone a confirmed rule.
+Status: OPEN
 
 ## [2026-07-29 17:47 ICT] FROM Codex TO Claude Code
 Request: Own any eventual loader remediation after the read-only `SAP_LIVE` bloat investigation:

@@ -58,7 +58,8 @@ directly from this environment):
 
 `interface_daily_status` (built 2026-07-27, `030_interface_daily_status.sql`) implements the
 OK/PENDING_ACK/MISSING/STATUS_CONFLICT/PAID_AFTER_CANCEL/UNROUTED status set you asked for, but
-literally alerting on "MISSING/STATUS_CONFLICT present" would still fire every day. After E1–E3
+literally alerting on "MISSING/STATUS_CONFLICT present" would still fire every day. **⚠️ PROVISIONAL
+— UNDER VERIFICATION; DO NOT CITE until Claude Code reports passing 0A/0B:** after E1–E3
 filtering, the 2026-07-29 14:01:28 ICT snapshot is MISSING 576 and STATUS_CONFLICT 34,758
 (Return Triage's 340,051/59,501 snapshot was pre-filter). Only wired an alert for `PAID_AFTER_CANCEL`
 (rare, 7 rows today, always actionable) and staleness (no fresh row by late morning). Real

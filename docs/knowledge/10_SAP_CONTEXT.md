@@ -214,15 +214,19 @@ E1–E3 procedure but its `034` file does not implement F2; tracked for Claude C
 
 **F3. Date format = 8 ตัว (DDMMYYYY)** — ว่างได้เฉพาะ `PaymentDate` เมื่อ `status=pending` เท่านั้น
 (`OrderDate`/`PolicyDate`/`ExpectedDate`/`BatchRunDate` ห้ามว่าง). เช็คทั้งความยาว+parse ได้จริง (กัน
-`32072026`) และ leading zero (`01072026` ไม่ใช่ `1072026`). **UNVERIFIED/ไม่ยังไม่ wire จริง**: ยังไม่มี
-คอลัมน์ export ที่ format เป็น DDMMYYYY string ใน `expected_state` วันนี้ (รอ PHASE B 56-column
-rebuild) — logic พร้อมใช้เมื่อ column เหล่านั้นมีจริง.
+`32072026`) และ leading zero (`01072026` ไม่ใช่ `1072026`). **OPEN — Boat-confirmed, not
+deferred:** ยังไม่พบหลักฐานว่า validation นี้ wire จริง และไม่มีหลักฐานว่า Boat ตัดสินใจเลื่อน.
+ข้อสังเกตว่า current `expected_state` มีเพียง 12 columns และใช้ DATE type เป็น technical constraint
+ที่ Claude Code ต้องเลือก validation layer ให้ถูกต้องหรือส่ง blocker evidence กลับมา ไม่ใช่เหตุผล
+ให้ postpone rule เอง. ติดตามใน `docs/HANDOFF_QUEUE.md`.
 
 **ผลต่อ backlog**: `MISSING_NO_ROW_IN_SAP` เลขเก่า (373,044 ณ 07-27) ใช้ต่อไม่ได้ — ต้องแยกรายงาน
 **backlog จริง** (2026+ และ cancel 2025 ที่มีใน SAP) vs **excluded** (แยกตาม rule_code) ทุกครั้ง.
+**⚠️ PROVISIONAL — UNDER VERIFICATION; DO NOT CITE until Claude Code reports passing 0A/0B.**
 Live refresh after E1–E3 filtering completed 2026-07-29 14:01:28 ICT:
-`interface_daily_status.MISSING = 576`; Return Triage's 340,051 was measured before filtering and
-must not be reused. `DATE_BASIS_MISSING = 0` is consistent with a direct check finding zero
+`interface_daily_status`: MISSING 576, STATUS_CONFLICT 34,758, PENDING_ACK 514, OK 257,340.
+STATUS_CONFLICT's unexplained jump has not passed regression testing. Return Triage's 340,051 was
+measured before filtering and must not be reused. `DATE_BASIS_MISSING = 0` is consistent with a direct check finding zero
 candidate rows where both date inputs are NULL. See `sql/ddl/032-034`, commits `fa8d8cc` /
 `9825e97`, and `30_SAP_CHANGELOG.md`.
 6. Design v3 ทั้งชุดอยู่ใน docs/design/ — อ่าน REDESIGN_V3 ก่อนแตะ pipeline ใดๆ

@@ -33,6 +33,7 @@ GCP project `pacific-plating-282708` | region `asia-southeast1` | auth: data@rab
 - **Never guess the date.** Run `date` before naming files or writing CHANGELOG entries.
 
 ## Workflow efficiency rules
+- Before every work item, run `git log --oneline -10` and read today's files under `docs/sessions/`. Do not repeat verification that already has evidence; cite the commit hash instead.
 - **READ-ONLY self-service:** freely run read-only lookups (`bq show/ls/head`, `INFORMATION_SCHEMA`, `gcloud describe/list`, `gsutil ls`). Never ask the human for something these commands can answer. Approval is for writes only.
 - Before flagging an open question, check `20_SAP_PROGRESS` §DECISIONS PENDING and `INPUTS_NEEDED.md`. Reference known items; don't re-derive them.
 - Maintain `docs/INPUTS_NEEDED.md` as the one living checklist of human-only inputs. Update it; don't regenerate a fresh request list each session.

@@ -1,8 +1,9 @@
 # 20_SAP_PROGRESS.md
 Last Updated: 2026-07-29 - Agent teaming + deployed-source reconciliation folded into knowledge.
 E1–E3 exclusion engine is live and source-backed by `9825e97`; post-filter
-`interface_daily_status.MISSING=576` at 14:01:28 ICT and both-date-NULL candidates=0. F2 remains
-unevidenced/unwired; F3 remains deferred. PHASE B/C remain ON HOLD pending the SAP_LIVE bloat
+`interface_daily_status` counts at 14:01:28 ICT are ⚠️ PROVISIONAL — UNDER VERIFICATION pending
+Claude Code 0A/0B; do not cite them. Both-date-NULL candidates=0. F2 and the Boat-confirmed F3
+validation remain OPEN/unevidenced. PHASE B/C remain ON HOLD pending the SAP_LIVE bloat
 investigation. (overwrite ได้ — สถานะปัจจุบันเสมอ)
 
 ---
@@ -11,10 +12,11 @@ investigation. (overwrite ได้ — สถานะปัจจุบัน�
 
 Claude Code commit `9825e97` committed `034_expected_state_exclusion_rules.sql`, matching the live
 `sp_refresh_expected_state` deployed at 13:57 ICT. Its live call rebuilt `expected_state` and
-`sap_excluded_records`; downstream `interface_daily_status` refreshed at 14:01:28 ICT. Verified
-post-filter counts: 293,188 total status rows, `MISSING=576`, `STATUS_CONFLICT=34,758`,
-`PENDING_ACK=514`, `OK=257,340`. Therefore Return Triage's `MISSING=340,051` is a valid historical
-pre-filter measurement but is not the current backlog.
+`sap_excluded_records`; downstream `interface_daily_status` refreshed at 14:01:28 ICT.
+**⚠️ PROVISIONAL — UNDER VERIFICATION; DO NOT CITE until Claude Code reports passing 0A/0B:**
+293,188 total status rows, `MISSING=576`, `STATUS_CONFLICT=34,758`, `PENDING_ACK=514`,
+`OK=257,340`. STATUS_CONFLICT's jump is unexplained and no regression test has passed. Return
+Triage's `MISSING=340,051` remains a valid historical pre-filter measurement.
 
 The exclusion table exists and is populated; a direct candidate check found zero rows with both
 OrderDate and PolicyDate NULL, consistent with no `DATE_BASIS_MISSING` rows. Config tables and
@@ -22,8 +24,9 @@ schema were already reconciled against live BigQuery by Claude Code in `9825e97`
 re-derived here.
 
 Scope correction: `034` implements E1–E3. F1 source is in `033`/`fa8d8cc`. F2 is not evidenced in
-the repo/live procedure reviewed, and F3 is still intentionally deferred until Phase B supplies
-the final DDMMYYYY string columns. Cross-domain follow-ups are in `docs/HANDOFF_QUEUE.md`.
+the repo/live procedure reviewed. F3 is a Boat-confirmed rule and is OPEN: no evidence says Boat
+deferred it; Claude Code must implement it in the correct layer or return concrete dependency
+evidence. Cross-domain follow-ups are in `docs/HANDOFF_QUEUE.md`.
 
 Agent ownership is now documented in `docs/AGENT_TEAMING.md`: separate worktrees, Codex owns
 knowledge docs, Claude Code owns SQL/BigQuery/deployments, and cross-domain requests use the queue.

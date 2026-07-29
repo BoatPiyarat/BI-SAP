@@ -4,18 +4,35 @@ Append-only — entry ใหม่บนสุด ห้ามลบ/แก้�
 
 ---
 
+## 2026-07-29 — Quarantined unverified 14:01 status counts; F3 restored to OPEN
+
+Marked every documentation occurrence of the 14:01:28 ICT `interface_daily_status` count set
+**⚠️ PROVISIONAL — UNDER VERIFICATION** and prohibited citation until Claude Code reports passing
+0A/0B. STATUS_CONFLICT's unexplained move to 34,758 has no regression evidence yet. Restored the
+Boat-confirmed F3 `DATE_FORMAT_INVALID` rule to OPEN because no evidence showed Boat chose to
+defer it; the prior deferral was only a Codex inference about the current 12-column layer.
+Queued both items for Claude Code in `docs/HANDOFF_QUEUE.md`.
+
+Added the mandatory startup check (`git log --oneline -10` plus today's `docs/sessions/`) to
+`AGENT_RULES.md`. Cleaned completed merge-package artifacts and ignored local archives/workspace
+metadata. No SQL, BigQuery object, or deployment was changed.
+
+---
+
 ## 2026-07-29 — Folded Claude Code deployment evidence + established agent ownership
 
 Folded session evidence from Claude Code commits `9825e97` and `fa8d8cc` into canonical knowledge.
 `034_expected_state_exclusion_rules.sql` now provides reproducible source for the live E1–E3
-procedure deployed at 13:57 ICT. A read-only check retained from the reconciliation confirmed
-`interface_daily_status` refreshed at 14:01:28 ICT with 293,188 rows: OK 257,340,
-STATUS_CONFLICT 34,758, MISSING 576, PENDING_ACK 514. The Return Triage value MISSING 340,051
+procedure deployed at 13:57 ICT. **⚠️ PROVISIONAL — UNDER VERIFICATION; DO NOT CITE until Claude
+Code reports passing 0A/0B:** a read-only check observed `interface_daily_status` refreshed at
+14:01:28 ICT with 293,188 rows: OK 257,340, STATUS_CONFLICT 34,758, MISSING 576, PENDING_ACK 514.
+STATUS_CONFLICT's jump is unexplained and no regression test has passed. The Return Triage value MISSING 340,051
 predates exclusion filtering and is historical only. A second retained check found zero candidates
 with both OrderDate and PolicyDate NULL, matching the absence of `DATE_BASIS_MISSING`.
 
 Corrected scope attribution: E1–E3 are in `034`/`9825e97`; F1 is in `033`/`fa8d8cc`; F2 is not yet
-evidenced as deployed, and F3 remains deferred until Phase B has final DDMMYYYY string columns.
+evidenced as deployed. F3 is Boat-confirmed and OPEN; the earlier deferral had no Boat decision
+behind it, only a technical inference about the current 12-column expected_state.
 Created `docs/AGENT_TEAMING.md` and `docs/HANDOFF_QUEUE.md`; SQL/BigQuery fixes are queued for
 Claude Code rather than edited by the docs owner. No SQL, BigQuery object, or deployment was
 changed in this work item.
@@ -45,7 +62,8 @@ Boat resolved v1's open items and gave a final spec (`docs/knowledge/KNOWLEDGE_A
 superseding v1): E1 year scope (per-stage, not a blanket year cut - ≤2024 untouched, 2025 blocks new
 Paid but allows cancel for orders already in SAP, 2026+ normal), E2 test-customer exact-match (name)
 + report-only phone signal, E3 insurer-master exclusion, F1 InsuredID default, F2 PolicyNo>50 hard
-block, F3 date-format validation (deferred pending PHASE B's actual DDMMYYYY columns). Appended in
+block, F3 date-format validation. **Status correction:** F3 is OPEN; the earlier “deferred pending
+Phase B” label had no Boat decision behind it and is superseded by the newer entry above. Appended in
 full to `10_SAP_CONTEXT.md` (new ADDENDUM 2026-07-29 v2 section). Implementation (config tables,
 `sap_excluded_records`, `stg_order_dim`/`expected_state` changes, new validation rules, morning
 report additions, recomputed backlog numbers) tracked in the entries below as each piece lands.
