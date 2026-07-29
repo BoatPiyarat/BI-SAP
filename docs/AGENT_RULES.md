@@ -34,7 +34,7 @@ GCP project `pacific-plating-282708` | region `asia-southeast1` | auth: data@rab
 
 ## Workflow efficiency rules
 - Before every work item, run `git log --oneline -10` and read today's files under `docs/sessions/`. Do not repeat verification that already has evidence; cite the commit hash instead.
-- **Lane-specific read-only self-service:** Claude Code freely runs required read-only lookups (`bq show/ls/head/query`, `INFORMATION_SCHEMA`, `gcloud describe/list`, `gsutil ls`) without approval. Codex does not query BigQuery in the normal docs lane; it batches needed numbers in `docs/HANDOFF_QUEUE.md` for Claude Code. Approval remains for writes/deploys only.
+- **Lane-specific read-only self-service:** Claude Code freely runs required read-only lookups (`bq show/ls/head/query`, `INFORMATION_SCHEMA`, `gcloud describe/list`, `gsutil ls`) without approval. Codex does not query BigQuery in the normal docs lane and batches needed numbers in `docs/HANDOFF_QUEUE.md`; as a reviewer, Codex may run at most one targeted read-only BigQuery query per review when an artifact claim cannot otherwise be judged. Exploratory reviewer queries are prohibited. Approval remains for writes/deploys only.
 - Before flagging an open question, check `20_SAP_PROGRESS` §DECISIONS PENDING and `INPUTS_NEEDED.md`. Reference known items; don't re-derive them.
 - Maintain `docs/INPUTS_NEEDED.md` as the one living checklist of human-only inputs. Update it; don't regenerate a fresh request list each session.
 - When a decision is made mid-session, edit the affected design doc **in the same session**. Docs are truth; conversation is not.

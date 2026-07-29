@@ -1,0 +1,92 @@
+# AGENT_REVIEW_PROTOCOL.md — mutual review, both directions, all work
+Added 2026-07-29 by Boat's instruction ("ให้ 2 ตัว review กันและกัน ทั้งหมด ไม่เฉพาะ deploy OK")
+Referenced by `docs/AGENT_TEAMING.md`. Supersedes the earlier "review only before deploy" rule.
+
+## Why (evidence from this project, not theory)
+Every expensive mistake so far was a **conclusion that looked finished but wasn't verified**:
+production broken by a moved column; a stale number (419 vs 296) driving instructions; the wrong
+field pair compared; a string-sorted date keeping 44,781 stale rows; the same NULL-unsafe predicate
+shipped three times. None of these needed a smarter agent — they needed a second reader.
+
+## Cost rule first (this protocol must not double the bill)
+- **The reviewer reads artifacts. The reviewer does not redo the work.**
+  Read: the diff, the evidence table, the session note, the commit message. That's the job.
+- The reviewer may run **at most one targeted query** — only when a specific claim cannot be judged
+  from the artifacts. Exploratory scanning by a reviewer is prohibited.
+- Review output ≤ 1 page. No restating what the author already wrote.
+- Review is **asynchronous through files** — never two agents live in the same tree (Rule 0 stands).
+
+---
+
+## Review classes (what needs how much)
+
+| Class | Applies to | Review |
+|---|---|---|
+| **A — BLOCKING** | anything deployed; any number that will reach a human/stakeholder; any conclusion that changes knowledge/design; anything money- or accounting-adjacent; anything that filters, excludes, or cancels records; anything writing to GCS | Must PASS before the author proceeds |
+| **B — NON-BLOCKING** | docs edits, folding session notes, refactors with no behaviour change, new source-only SQL not yet deployed | Author continues; reviewer comments within the same day; issues raised become fixes |
+| **C — NO REVIEW** | formatting, rename, `.gitignore`, typo, file moves | Just list it in the daily log |
+
+If unsure which class: treat as A. Misclassifying downward is the failure mode that hurt us.
+
+---
+
+## The checklist (reviewer must answer all 12 explicitly)
+Every item derived from a real failure in this project.
+
+1. **Traceability** — is every number tied to a named table + query + timestamp? (419 vs 296; MISSING 576 vs 749)
+2. **Provenance over repetition** — does it cite commit hashes instead of re-deriving proven facts?
+3. **NULL-safety** — every comparison on a nullable column NULL-safe? (bug class A2, seen 3×)
+4. **Ordering** — no string-sorted dates; `SAFE.PARSE_DATE` before `ORDER BY`; deterministic tiebreak? (44,781 keys)
+5. **Column order** — for anything feeding an interface file: `INFORMATION_SCHEMA.COLUMNS` diffed before/after; no `SELECT * EXCEPT(col), expr AS col`? (2026-07-26 incident)
+6. **Grain stated** — item vs order vs document declared explicitly, and the join respects it? (the 3,352 miscount)
+7. **Distribution, not row count** — parity of counts is never offered as proof of correctness?
+8. **No contradiction with knowledge** — does it conflict with `10_SAP_CONTEXT` / ADDENDUM / confirmed decisions? If a chat instruction conflicts, was that raised rather than silently followed? (3-field vs 2-field)
+9. **Scope** — did the author stay inside its domain and its approval? (`sql/**` vs `docs/knowledge/**`)
+10. **Rollback** — for anything deployed: previous definition kept verbatim, rollback stated, < 5 min?
+11. **Cost hygiene** — dry-run evidence, `--maximum_bytes_billed`, one query many metrics, no `SELECT *` on wide tables?
+12. **Honest labelling** — anything unverified marked `UNVERIFIED`; nothing rounded up to "done"?
+
+**Anti-rubber-stamp rule:** the reviewer must either name at least one specific risk/gap, or write
+verbatim *"Checklist 1–12 reviewed; no gap found"* — and that sentence is auditable. Vague approval
+("looks good") is not a review and must be re-done.
+
+---
+
+## Mechanics
+1. Author finishes a unit of work → commits → writes/updates `docs/sessions/<date>-<agent>.md`
+   → appends a request to `docs/REVIEW_QUEUE.md`:
+```
+## [YYYY-MM-DD HH:MM] REVIEW REQUEST — class A|B
+Artifact: <commit hash(es) / files / table(s)>
+Claim: <what the author asserts, in one or two sentences>
+Evidence: <where the reviewer can check it — query, table, session-note section>
+Reviewer: <other agent>
+Status: OPEN
+```
+2. Reviewer writes `docs/reviews/<date>-<artifact>-<reviewer>.md`:
+   verdict **PASS** / **PASS WITH NOTES** / **BLOCK**, plus the 12-item result, plus the required
+   risk statement. Marks the queue entry `REVIEWED`.
+3. **One round only.** Author answers each BLOCK item once. Still disagreeing → escalate to Boat with
+   both positions in ≤ 5 lines each. **No ping-pong** — a second disagreement round is a human decision.
+4. Class A cannot proceed while a BLOCK stands. Class B proceeds; the note becomes a follow-up task.
+5. Reviewer read-access: **read-only BigQuery is allowed for verification**, one targeted query max.
+   Reviewers never deploy, never write, never edit the author's files — findings go in the review file.
+
+## Reciprocity
+Both directions, no exceptions:
+- **Codex reviews** Claude Code's SQL, DDL, deployments, quantifications, investigations.
+- **Claude Code reviews** Codex's knowledge edits, rule changes, folded evidence, INPUTS_NEEDED updates
+  — specifically: does the doc now say something the evidence doesn't support?
+Lack of domain context is not an excuse to skip: a reviewer without context can still check
+traceability, contradiction, grain, labelling — items 1, 2, 6, 8, 12 need no domain expertise at all.
+
+## Measurement (revisit 2026-08-12)
+Track in `docs/reviews/_SCORECARD.md`, per agent:
+- reviews performed / BLOCKs raised / BLOCKs upheld after author's answer
+- issues caught by the reviewer that the author had missed
+- rework caused by a missed issue that review should have caught
+- self-caught errors (author found own mistake before review)
+- approximate cost per reviewed item
+
+**If a reviewer raises zero BLOCKs and zero notes for two weeks, the review is theatre** — either the
+protocol is being rubber-stamped or the class thresholds are wrong. Report it; don't keep paying for it.

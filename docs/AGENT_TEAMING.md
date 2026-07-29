@@ -63,6 +63,8 @@ When stopping, list the exact overlapping files and ask for reconciliation.
 2. Merge via PR into the shared integration branch; whoever merges resolves conflicts.
 3. After merge, both agents run `git pull` at session start and reconcile with `20_SAP_PROGRESS`.
 4. Never rebase or force-push a branch the other agent has checked out.
+5. Mutual review for every work unit follows `docs/AGENT_REVIEW_PROTOCOL.md`; requests and verdicts
+   are tracked in `docs/REVIEW_QUEUE.md` and `docs/reviews/`.
 
 ## Rule 7 — cost-controlled lane protocol
 1. Single-agent by default; use a second agent only for two genuinely non-overlapping lanes.

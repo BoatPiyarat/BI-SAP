@@ -4,6 +4,21 @@ Append-only — entry ใหม่บนสุด ห้ามลบ/แก้�
 
 ---
 
+## 2026-07-29 — Mutual review protocol activated; first class-A review blocked
+
+Added Boat-provided `AGENT_REVIEW_PROTOCOL.md`, linked it from `AGENT_TEAMING` Rule 6, created the
+review queue/scorecard, and allowed Codex one targeted read-only BigQuery query per review while
+prohibiting exploratory review queries.
+
+Reviewed deployed commit `6863dc8` against all 12 checks. Verdict: **BLOCK**, not because the
+NULL-safe predicate appears wrong, but because class-A evidence lacks exact verification
+SQL/job timestamps, an executable rollback command, and retained dry-run/maximum-bytes proof. One
+targeted live-verification attempt failed at shell quoting and was not retried because the protocol
+caps reviews at one query. Full result:
+`docs/reviews/2026-07-29-6863dc8-codex.md`.
+
+---
+
 ## 2026-07-29 — Closed `bq-results` flag; documented safe emergency export
 
 Boat confirmed that the observed `bq-results` activity was his own authorized mobile work while on

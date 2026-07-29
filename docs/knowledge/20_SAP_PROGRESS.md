@@ -1,5 +1,8 @@
 # 20_SAP_PROGRESS.md
-Last Updated: 2026-07-29 - Revised D1 recorded: cancellation is computed once as
+Last Updated: 2026-07-29 - Mutual review protocol activated. `6863dc8` received a class-A
+**BLOCK** pending exact query/timestamp evidence, an executable rollback command, and
+dry-run/maximum-bytes proof; implementation correctness was not rejected. Review queue and
+scorecard are now canonical. Revised D1 recorded: cancellation is computed once as
 `stg_order_dim.is_cancelled_effective` from item `is_cancelled` OR item `cancel_time`; both source
 fields are from `careos.careos_order_items`, and downstream
 re-derivation is forbidden. `CANCEL_TIME_MISSING` added to the canonical vocabulary. Revised D1 is
