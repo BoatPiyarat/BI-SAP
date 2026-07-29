@@ -39,6 +39,7 @@ GCP project `pacific-plating-282708` | region `asia-southeast1` | auth: data@rab
 - Maintain `docs/INPUTS_NEEDED.md` as the one living checklist of human-only inputs. Update it; don't regenerate a fresh request list each session.
 - When a decision is made mid-session, edit the affected design doc **in the same session**. Docs are truth; conversation is not.
 - If a chat instruction conflicts with canonical knowledge, stop implementation and reconcile/update the knowledge decision explicitly first; never follow the conflicting chat instruction silently.
+- Verify the current evidence and upstream commit state before committing. A fast follow-up correction is not a substitute: stale commit `0c74639` required `7e98d39` ten minutes later, doubling reviewer reading and commit history.
 - Check `ls sql/ddl/` before naming a new file — numbers must not collide.
 - Every query change goes through branch → PR → validation evidence (zero-row diff or documented delta) before merge.
 - The nightly anchor is the 20:30 ICT `sap-extract-schedule`; downstream work should chain from it rather than wait on independent clocks. Operational steps and incident handling live in `docs/design/SAP_RUNBOOK_v3.md`.

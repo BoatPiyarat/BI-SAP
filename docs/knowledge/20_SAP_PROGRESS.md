@@ -1,11 +1,20 @@
 # 20_SAP_PROGRESS.md
-Last Updated: 2026-07-29 - A3 import-result ingestion spec revised to attachment-first:
+Last Updated: 2026-07-29 - **Daily-missing understanding changed materially by H4 Gmail
+baseline (`71c7afd`): these are persistent SAP import failures, not merely views that are “not yet
+tuned.”** Across the five-night baseline window (07/22, 25, 26, 27, 28),
+`03_CHANGE` and `NONMOTOR 02_CANCEL` were rejected as whole-file errors on every night where each
+was observed (**4/4; neither was observed on 07/22**). `04_CREDITSHELL` was a whole-file error
+**4/5**, with `success with error` on 07/25 (partial, not a clean success and not proof that zero
+rows entered). “Never cleanly succeeds” means no exact clean `success` status; it must not be
+restated as “every row was rejected.” Source: Gmail threads/LogIDs recorded in session/review
+commit `71c7afd`; exact email dates and per-file statuses are in
+`docs/reviews/2026-07-29-h4-baseline-codex.md`. A3 import-result ingestion spec revised to attachment-first:
 `sap_import_result` header per LogID, `sap_import_error_detail` per parsed TXT detail, and
 `sap_file_pickup` for no-LogID `DOWNLOAD_GCS_FILE` evidence. Implementation is queued to Claude
 Code and not deployed. Mutual review protocol activated. `6863dc8` received a class-A
-**BLOCK** pending exact query/timestamp evidence, an executable rollback command, and
-dry-run/maximum-bytes proof; implementation correctness was not rejected. Review queue and
-scorecard are now canonical. Revised D1 recorded: cancellation is computed once as
+BLOCK that was cleared to **PASS** after the author supplied job IDs/timestamps/bytes and an
+executable rollback; the author explicitly acknowledged the missing pre-`CALL` dry-run as a real
+process gap. Review queue and scorecard are now canonical. Revised D1 recorded: cancellation is computed once as
 `stg_order_dim.is_cancelled_effective` from item `is_cancelled` OR item `cancel_time`; both source
 fields are from `careos.careos_order_items`, and downstream
 re-derivation is forbidden. `CANCEL_TIME_MISSING` added to the canonical vocabulary. Revised D1 is

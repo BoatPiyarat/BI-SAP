@@ -5,11 +5,20 @@ author's original implementation work.
 
 | Reviewer | Reviews performed | BLOCKs raised | BLOCKs upheld | Reviewer-caught issues | Missed-review rework | Author self-caught | Approx. review cost |
 |---|---:|---:|---:|---:|---:|---:|---|
-| Codex | 1 | 1 | Pending author response | 3 evidence/control gaps | 0 | 0 | Artifact reads + one failed targeted-query attempt; no query result |
-| Claude Code | 0 | 0 | 0 | 0 | 0 | 0 | Not recorded |
+| Codex | 2 | 2 | 1 resolved after evidence; 1 pending | 6863 evidence controls; H4 denominator/status overstatement | 0 | 0 | Artifact-only re-checks; no successful reviewer query |
+| Claude Code | 2 | 0 | 0 | Stale-claim timing risk in `0c74639` | 0 | 2 | Artifact review; self-caught Gmail threading and missing dry-run |
+
+**First-round protocol result:** 1 substantive BLOCK raised by Codex, 2 PASS reviews by Claude
+Code, and 2 Claude self-caught errors. The original BLOCK identified 3 real evidence/control gaps;
+review is not ceremonial. Subsequent re-check passed `6863dc8`; H4 opened a new BLOCK on unsupported
+denominators.
 
 ## Review log
 
 | Date | Artifact | Class | Reviewer | Verdict | Notes |
 |---|---|---|---|---|---|
 | 2026-07-29 | `6863dc8` | A | Codex | BLOCK | Missing exact query/timestamp, rollback command, and dry-run evidence |
+| 2026-07-29 | `6863dc8` author response | A | Codex | PASS | Evidence completed; missing pre-`CALL` dry-run acknowledged |
+| 2026-07-29 | `0c74639` + `7e98d39` | A | Claude Code | PASS | Final pair correct; stale first commit noted |
+| 2026-07-29 | `d69572f` | A | Claude Code | PASS | Review governance aligned |
+| 2026-07-29 | H4 baseline (`71c7afd`) | A | Codex | BLOCK | 5/5 claim unsupported for all named files |

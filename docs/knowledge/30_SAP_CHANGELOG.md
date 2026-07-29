@@ -4,6 +4,25 @@ Append-only — entry ใหม่บนสุด ห้ามลบ/แก้�
 
 ---
 
+## 2026-07-29 — Re-reviewed 6863; blocked overstated H4 baseline
+
+Re-checked Claude Code's one-round response for `6863dc8`. Job IDs, UTC timestamps, billed bytes,
+and the preserved-034 rollback procedure are sufficient; final verdict is PASS. The author
+explicitly accepted the missing pre-`CALL` dry-run as a real process gap.
+
+H4 review found a separate substantive gap: the evidence does not support whole-file rejection
+5/5 for all three named flows. `03_CHANGE` and `NONMOTOR 02_CANCEL` are 4/4 observed nights because
+07/22 has no observation; `04_CREDITSHELL` is whole-file error 4/5 plus one partial
+`success with error`. Knowledge now states the material conclusion accurately: these are persistent
+import failures driving daily missing, not merely untuned output, but “never cleanly succeeds”
+does not mean zero rows ever entered SAP.
+
+Recorded the `0c74639` → `7e98d39` ten-minute stale-claim correction as a permanent workflow
+lesson: verify current evidence before commit rather than making reviewers read and reconcile two
+commits.
+
+---
+
 ## 2026-07-29 — Revised A3 to attachment-first SAP-result ingestion
 
 Corrected the prior body/manual-load assumption: SAP result metadata is in the Gmail body, but

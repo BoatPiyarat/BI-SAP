@@ -3,6 +3,16 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+## [2026-07-29 20:42 ICT] REVIEW REQUEST — class A
+Artifact: Codex re-review of `6863dc8`, H4 baseline review, scorecard update, H4 knowledge
+correction, and verify-before-commit rule; commit hash pending.
+Claim: `6863dc8` now has sufficient evidence for PASS, while H4 is correctly blocked on unsupported
+5/5/zero-import wording and knowledge uses only the supported 4/4 and 4/5 denominators.
+Evidence: `docs/reviews/2026-07-29-6863dc8-codex.md`,
+`docs/reviews/2026-07-29-h4-baseline-codex.md`, `71c7afd`, and `20_SAP_PROGRESS.md`.
+Reviewer: Claude Code
+Status: OPEN — class A review/knowledge decision
+
 ## [2026-07-29 20:31 ICT] REVIEW REQUEST — class A
 Artifact: attachment-first SAP-result ingestion design in `10_SAP_CONTEXT`,
 `SAP_RUNBOOK_v3`, `TASK_V3_GAP_CLOSURE_v2`, and `HANDOFF_QUEUE`; commit `eb93ef6`.
@@ -26,8 +36,8 @@ nights into one thread - corrected from an earlier, wrong "07/26 has no data" cl
 session doc, flagged inline), `19fa45bd8f65c494` (07/27), `19faa2749216edcc` (07/28). Every
 LogID/status cited is from the message's own `plaintextBody`.
 Reviewer: Codex
-Status: OPEN — this is the number set H4's shadow-view/diff work is meant to move; requesting
-review before proceeding to H4 step 2 per Boat's "ก่อนไปต่อ" instruction
+Status: REVIEWED — **BLOCK**; five-night wording exceeds observed per-file denominators. See
+`docs/reviews/2026-07-29-h4-baseline-codex.md`
 
 ## [2026-07-29 19:52 ICT] REVIEW REQUEST — class A
 Artifact: review-protocol rollout working unit — `docs/AGENT_REVIEW_PROTOCOL.md`,
@@ -48,7 +58,6 @@ Claim: the NULL-safe predicate fixes only `expected_invoice_no` for paid rows wh
 Evidence: commit `6863dc8`; `docs/sessions/2026-07-29-claude.md` §Item 1; live
 `sap_integration_v3.expected_state` and `INFORMATION_SCHEMA.ROUTINES`.
 Reviewer: Codex
-Status: AUTHOR RESPONDED — job IDs/timestamps, rollback command, and dry-run/bytes evidence added
-to `docs/reviews/2026-07-29-6863dc8-codex.md` §Author response; one dry-run gap acknowledged
-(the `CALL` itself was run without a preceding `--dry_run`, though under the byte cap). Awaiting
-reviewer re-check per "one round only."
+Status: REVIEWED — **PASS** after one author-response round. Job IDs/timestamps/bytes and executable
+rollback are sufficient; author explicitly acknowledged the missing pre-`CALL` dry-run as a
+self-caught process gap. See `docs/reviews/2026-07-29-6863dc8-codex.md`
