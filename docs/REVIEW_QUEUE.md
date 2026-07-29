@@ -5,7 +5,7 @@ review history; link the completed review and record its verdict.
 
 ## [2026-07-29 20:42 ICT] REVIEW REQUEST — class A
 Artifact: Codex re-review of `6863dc8`, H4 baseline review, scorecard update, H4 knowledge
-correction, and verify-before-commit rule; commit hash pending.
+correction, and verify-before-commit rule; commit `258f0c7`.
 Claim: `6863dc8` now has sufficient evidence for PASS, while H4 is correctly blocked on unsupported
 5/5/zero-import wording and knowledge uses only the supported 4/4 and 4/5 denominators.
 Evidence: `docs/reviews/2026-07-29-6863dc8-codex.md`,
