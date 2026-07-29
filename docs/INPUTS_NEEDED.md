@@ -64,6 +64,19 @@ Evidence population: **⚠️ PROVISIONAL — UNDER VERIFICATION: 9,625 order_it
 evidence was recorded in session commit `19d9452` at 2026-07-29 17:58:53 ICT. Do not cite as a
 production batch count until a provenance-complete rerun.
 
+## Aware (SAP vendor) — Q4, Method-2 replacement naming
+
+**Ask**: what exact SAP-facing OrderItem prefix/template must be used for a replacement generation
+created by Method 2? Does the SAP C# code currently apply or recognize an existing prefix,
+especially the `C#` convention observed around Credit Shell?
+
+**Why this is open**: `-M2` cannot mean “revision 2”; `careos.careos_order_items` already has
+**⚠️ PROVISIONAL 1,019 real `-M2` rows**, source query recorded in commit `73e94e0`, exact query
+timestamp not retained. `-M1R2` is only a rejected-as-hardcode proposal, not a decision.
+
+**In the meantime**: D10 requires a configuration parameter for the naming template/prefix.
+Do not hardcode or deploy any replacement naming until Aware answers.
+
 ## FA — approve change-order cancel batch only after preflight
 
 **Ask**: after Aware answers the supersession question and all three D2 preflight checks pass,

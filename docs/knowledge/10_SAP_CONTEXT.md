@@ -187,6 +187,22 @@ Posting Periods Unlocked→PaymentDate | invalid date→ต้อง DDMMYYYY
 - Security: credential เคยหลุดในแชท ≥2 ครั้ง — rotate เป็นระยะ, ห้าม paste plaintext,
   ห้าม echo password ใน shell (ตัว `&` ใน password ทำ bash แตก background job)
 
+---
+
+## ADDENDUM 2026-07-30 — D10/D11 CMI correction execution
+
+- Canonical B1/B2/B3 definitions live in `docs/AUDIT_CMI_ADDONS.md`; these are
+  `INCIDENT-002` buckets, not historical pipeline labels.
+- **D10:** Method-2 replacement naming is not decided. `M2` is already used by real CareOS items,
+  so the naming template/prefix must be a configuration parameter, never a hardcoded suffix.
+  The `C#` prefix seen around Credit Shell is only an SAP-side clue pending Aware Q4.
+- **D11:** the pilot must be a B1 case using Method 1, not B3, because this path has the fewest
+  dependencies and does not require a new OrderItem generation or naming infrastructure.
+  The two B3 cases already Cancelled in SAP go to Aware for manual correction; do not build
+  infrastructure for them.
+- Process rule: definitions supplied in chat must be written into canonical knowledge in the same
+  session. Agents must not infer an undocumented taxonomy.
+
 
 ---
 

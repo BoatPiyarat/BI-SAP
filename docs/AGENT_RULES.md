@@ -1,6 +1,6 @@
 # AGENT_RULES.md — single source of rules for ALL coding agents
 Canonical. `CLAUDE.md` and `AGENTS.md` are pointers to this file. Never duplicate rules into them.
-Last updated: 2026-07-29
+Last updated: 2026-07-30
 
 Project: CareOS ⟷ SAP Business One integration | Owner: Boat (BI Manager, RabbitCare)
 GCP project `pacific-plating-282708` | region `asia-southeast1` | auth: data@rabbit.co.th
@@ -38,6 +38,8 @@ GCP project `pacific-plating-282708` | region `asia-southeast1` | auth: data@rab
 - Before flagging an open question, check `20_SAP_PROGRESS` §DECISIONS PENDING and `INPUTS_NEEDED.md`. Reference known items; don't re-derive them.
 - Maintain `docs/INPUTS_NEEDED.md` as the one living checklist of human-only inputs. Update it; don't regenerate a fresh request list each session.
 - When a decision is made mid-session, edit the affected design doc **in the same session**. Docs are truth; conversation is not.
+- When chat supplies a definition, taxonomy, or business rule, write it into the canonical document
+  immediately. Never leave it only in chat and force the next agent to infer it.
 - If a chat instruction conflicts with canonical knowledge, stop implementation and reconcile/update the knowledge decision explicitly first; never follow the conflicting chat instruction silently.
 - Verify the current evidence and upstream commit state before committing. A fast follow-up correction is not a substitute: stale commit `0c74639` required `7e98d39` ten minutes later, doubling reviewer reading and commit history.
 - Check `ls sql/ddl/` before naming a new file — numbers must not collide.
@@ -66,6 +68,10 @@ GCP project `pacific-plating-282708` | region `asia-southeast1` | auth: data@rab
 - Never assign two agents to the same investigation.
 
 ### Storage
+- **Google Drive is backup only; never use it as a knowledge source.** Read from the repository.
+  A Drive folder may be incomplete or stale and has previously caused incorrect analysis.
+- Every working repository must have a configured Git remote. A local/OneDrive-only repository is
+  a single point of failure; treat a missing remote as a same-day operational risk.
 - Cleaning the 45× `SAP_LIVE` bloat is the highest-value storage/scan reduction, but cleanup still requires the approved investigation and destructive-action plan.
 - Set `expiration_timestamp` on `diag_*` and scratch tables for 7–30 days.
 - Partition and cluster large v3 tables and require partition filters in every query that touches them.
@@ -84,6 +90,10 @@ GCP project `pacific-plating-282708` | region `asia-southeast1` | auth: data@rab
 - `CREDIT_CARD_INSTALLMENT` = ONETIME flow (bank pays in full), TotalPeriods=1, channel `RCB-EDC-<bank>` (KBANK confirmed; other banks pending Finance).
 - Year scope: ≤2024 untouched | 2025 = cancel only, and only for orders already present in SAP | 2026+ normal. Date basis = `GREATEST(OrderDate, PolicyDate)`.
 - Revised D1 (Boat 2026-07-29): canonical cancellation uses only `careos.careos_order_items.is_cancelled IS TRUE OR careos.careos_order_items.cancel_time IS NOT NULL`; never use `careos_orders.is_cancelled`, and never fan cancellation out to active siblings.
+- D10 (Boat 2026-07-30): Method-2 replacement naming is not decided; real `-M2` rows exist, so
+  naming must be configuration-driven and must wait for Aware Q4.
+- D11 (Boat 2026-07-30): pilot B1 with Method 1 because it has the fewest dependencies; the two
+  already-Cancelled B3 cases go to Aware for manual correction, with no new infrastructure.
 - Test customers: exact match `LOWER(TRIM(FirstName|LastName)) = 'test'` only. Phone `0999999999` = corroborating signal, **report-only** for now.
 - PolicyNo > 50 chars = BLOCK (never truncate) + report in the morning email.
 - Date fields: exactly 8 chars and parseable; empty allowed **only** for PaymentDate on pending rows.

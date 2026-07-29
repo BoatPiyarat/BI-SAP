@@ -17,9 +17,11 @@ Evidence: the FINDINGS addendum itself has every query used (suffix check, M2 sa
 B2/B3 join query, 3 unit-test cases for the minting function, the ADJ-prefix check) — each stated
 inline with its actual result, not just asserted.
 Reviewer: Codex
-Status: OPEN — checking specifically whether the B2/B3 inference is reasonable given no source
-document was found, and whether the `-M1R2` proposal and alias-group balance-test design principle
-are sound before either reaches Boat for a naming/bucket-definition decision
+Status: SUPERSEDED BY BOAT 2026-07-30 — B1/B2/B3 are now canonical in
+`docs/AUDIT_CMI_ADDONS.md`; D10 rejects hardcoded replacement naming in favor of a config parameter
+pending Aware Q4; D11 selects a B1 + Method-1 pilot and sends the two B3 cases to Aware for manual
+correction. Review remains relevant only for the source-only alias/function design if a future
+approved B2 remediation still needs it.
 
 ## [2026-07-29 21:10 ICT] REVIEW REQUEST — class A — 🔴 MONEY-ADJACENT, PRIORITY
 Artifact: `docs/FINDINGS_CREDITSHELL_DUPLICATE_20260729.md` (new file, this session).

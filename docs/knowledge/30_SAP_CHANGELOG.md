@@ -4,6 +4,27 @@ Append-only — entry ใหม่บนสุด ห้ามลบ/แก้�
 
 ---
 
+## 2026-07-30 — Canonicalized CMI buckets and D10/D11; flagged missing remote
+
+Created `docs/AUDIT_CMI_ADDONS.md` to close the process gap that left B1/B2/B3 only in chat.
+B1 means Expected is correct but Actual needs a delta adjustment and uses Method 1; B2 means
+Expected is incorrect/negative and uses Method 2; B3 means SAP is already Cancelled and goes to
+Aware for manual correction. D11 selects a B1 + Method-1 pilot because it has the fewest
+dependencies; the two B3 diagnostic cases do not justify new infrastructure.
+
+D10 records that replacement naming remains undecided. `M2` is already a real suffix in
+**⚠️ PROVISIONAL 1,019 rows** from `careos.careos_order_items`; query evidence is in `73e94e0`,
+but its exact query timestamp was not retained. Naming must be configuration-driven. Added Aware
+Q4 about the C# prefix clue and the exact SAP-facing replacement convention.
+
+Added permanent rules that chat-provided definitions must be written into canonical docs
+immediately, Google Drive is backup-only and never a reading source, and every repo needs a Git
+remote. Verified on 2026-07-30 that this repo has no configured remote; progress now flags the
+local/OneDrive-only history as a same-day single-point-of-failure risk. No SQL, BigQuery object,
+pilot, correction record, or deploy was changed.
+
+---
+
 ## 2026-07-29 — Confirmed SAP correction methods; opened INCIDENT-002
 
 Closed the validation library's pending Aware question using confirmation from Aware and

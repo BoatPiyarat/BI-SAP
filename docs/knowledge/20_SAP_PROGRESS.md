@@ -1,5 +1,10 @@
 # 20_SAP_PROGRESS.md
-Last Updated: 2026-07-29 — **INCIDENT-002 OPEN / INTERNAL ONLY:** CMI `add_ons` is being deducted
+Last Updated: 2026-07-30 — **REPOSITORY BACKUP RISK — MUST FIX TODAY:** `git remote -v` returned
+no configured remote on 2026-07-30. The OneDrive working copy and local commit history are a
+single point of failure; Google Drive is backup-only and must not be used as a knowledge source.
+Configure and push to the BoatPiyarat GitHub remote today.
+
+**INCIDENT-002 OPEN / INTERNAL ONLY:** CMI `add_ons` is being deducted
 per charge row in the credit-shell path instead of once per `(OrderItem, Period)`, while rows 2+
 also retain nonzero `ExpectedReceived`. Concrete evidence: `L80524847` (2026-07-28); live
 diagnostic source `sap_integration_v2.RCL 04_new order credit shell`, evidence commit `5171adb`

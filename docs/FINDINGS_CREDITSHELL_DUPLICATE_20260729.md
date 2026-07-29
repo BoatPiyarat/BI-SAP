@@ -196,9 +196,14 @@ Correct check: `GROUP BY careos_order_item` (via `sap_orderitem_alias`, i.e. all
 logical item together), summing/reconciling across every `sap_order_item` in that alias group before
 judging balanced vs not.
 
-## 4. B2/B3 bucket review — ⚠️ inferred from this incident's own data, no prior bucket-taxonomy
-## document exists anywhere in this repo (checked `docs/design/`, `docs/tasks/`, `docs/knowledge/`,
-## all recent commits) — confirm/correct this mapping if it doesn't match your intent
+## 4. B1/B2/B3 bucket definitions — corrected by Boat 2026-07-30
+
+The inference below was necessary only because the original taxonomy remained in chat. It is now
+superseded by the canonical definitions in `docs/AUDIT_CMI_ADDONS.md`:
+
+- B1: Expected correct, Actual needs delta adjustment, SAP not already Cancelled → Method 1.
+- B2: Expected incorrect or negative → Method 2.
+- B3: SAP already Cancelled → Aware manual correction; no new infrastructure.
 
 Read "B2 (Expected ผิด)" as the 698-pair `extra_rows_with_nonzero_expected` bucket already
 quantified above, and "B3 (SAP cancelled แล้ว)" as duplicate pairs whose current
@@ -217,15 +222,10 @@ themselves (these are unpaid/placeholder periods caught in the duplication, not 
 rows) while SAP's own mirror already shows a real historical `U_ActualReceived` (19,500.14 and
 3,604.00 respectively) under `TransactionStatus = Cancelled`.
 
-**Proposed pilot (1 case, NOT sent — proposal only)**: `L79605066-1`, Period 1 — the smaller of the
-two (ActualReceived 3,604.00 vs L79952011's 19,500.14), lower blast radius if the mechanism doesn't
-behave as expected. Purpose: prove that minting a fresh `sap_orderitem_alias` generation
-(`L79605066-1R2` under the proposed-pending-confirmation naming) and sending it as a new Paid
-document does **not** hit `PolicyStatus: In DB Status Cancelled not allow to interface` the way the
-original key would — i.e. confirm a truly fresh key is not blocked by the old key's history. Needs,
-before any send: (a) Boat's naming confirmation from item 1, (b) `sap_orderitem_alias` deployed,
-(c) `fn_mint_adj_invoice` deployed and its 3 unit-test cases re-verified live, (d) explicit deploy OK
-for this specific pilot row.
+**Pilot correction (D11):** do not use either B3 case as a pilot. The pilot must be one B1 case
+using Method 1 because it has the fewest dependencies and does not require a new OrderItem,
+`sap_orderitem_alias`, or unresolved replacement naming. Ask Aware to correct the two B3 cases
+manually.
 
 ## 5/6. `fn_mint_adj_invoice` + prior-ADJ-invoice check — done, source-only
 
@@ -246,8 +246,9 @@ prior use.
 
 ## Still open / needs Boat's decision before any further build or send
 
-1. Confirm or correct the `-M1R2`-style naming convention (item 1).
-2. Confirm or correct the B2/B3 bucket definitions used above (item 4) — inferred, not sourced from
-   an existing document.
-3. Approve or reject the 1-case pilot (`L79605066-1`) once its prerequisites are met.
-4. Deploy approval for `sap_orderitem_alias` and `fn_mint_adj_invoice` (both source-only today).
+1. Aware Q4: confirm the SAP-facing replacement naming/prefix. D10 requires configuration and
+   forbids hardcoding the proposed `-M1R2` form.
+2. Select and approve one B1 + Method-1 pilot case.
+3. Ask Aware to correct the two B3 cases manually.
+4. Do not deploy `sap_orderitem_alias` or `fn_mint_adj_invoice` unless a future approved B2
+   remediation requires them; both remain source-only today.
