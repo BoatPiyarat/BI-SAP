@@ -11,6 +11,25 @@
 -- and this new pilot's full detail. `sap_correction_log`'s schema below is unaffected by this
 -- correction and remains the intended design.
 --
+-- ⚠️ SUPERSEDED AGAIN 2026-07-29 (same session, D14): Boat rejected L79871659 too - too close to
+-- the noise floor. D14 also splits treatment: Class 2 (MISPOSTING) is fixable directly via Method 1
+-- (no naming/alias blocker at all), so it gets its own pilot rather than waiting behind Class 1.
+-- TWO pilots now, both still source-only / not sent:
+--   - Class 1 (AMOUNT_VARIANCE): L80046687 (net_delta +50.00, single key L80046687-V1 Period 1,
+--     Expected 1150.00 -> Actual 1200.00, correction Expected=0/Actual=-50.00).
+--   - Class 2 (MISPOSTING): L79900064 (net_delta 0.00, gross 1290.42, two keys: L79900064-M1 P1
+--     key_delta +645.21 -> correction Actual=-645.21; L79900064-V1 P1 key_delta -645.21 ->
+--     correction Actual=+645.21). This one must go to Aware/FA for a post-import GL review - it is
+--     also the evidence case for the open "does an adjustment line fix GL misposting" question.
+-- See docs/FINDINGS_CREDITSHELL_DUPLICATE_20260729.md "ADDENDUM 2026-07-29 (session, D14)" for full
+-- detail, the Method 1 proof for Class 2, and everything still outstanding before either is sent.
+--
+-- ⚠️ CONFLICT, UNRESOLVED (2026-07-30): commit 0a69143 (already on origin/p0/stg-sap-state) names a
+-- DIFFERENT pilot pair - L79871659 + L80524847 - which conflicts with Boat's own D14 chat rejection
+-- of L79871659 as too close to the noise floor. Neither pilot pair (this file's L80046687/L79900064,
+-- or 0a69143's L79871659/L80524847) should be sent until Boat/Aware confirms which is authoritative.
+-- See "ADDENDUM 2026-07-30 (session, D14 supplementary)" in the FINDINGS doc for the full note.
+--
 -- ============================================================================
 -- B1 quantification - CORRECTED SCOPE (important methodology note)
 -- ============================================================================

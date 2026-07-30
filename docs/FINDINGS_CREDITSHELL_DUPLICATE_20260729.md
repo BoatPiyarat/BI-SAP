@@ -540,3 +540,184 @@ duplication at all in this case), 6 periods, only Period 1 mismatches
 none `ADJ`-prefixed — `ADJ1_L79871659-V1` is collision-free. Correction draft: `ExpectedReceived=0`,
 `ActualReceived=-11.27` (over-received, so negative), same open dependencies as before (cutoff-dates
 placeholder, `sap_correction_log` deploy, validation pass) — **not sent**.
+
+**⚠️ Superseded again, same session (D14)**: `L79871659` (net +11.27) is too close to the noise
+floor per Boat's own call — see below for the two reselected pilots.
+
+---
+
+# ADDENDUM 2026-07-30 (session, D14 supplementary) — Method 1 proof for Class 2, generating-bug fix comparison, L78496990 traced, provenance/purity recheck
+
+**⚠️ Note on sequencing**: this section was drafted from D14's chat instructions before the
+"ADDENDUM 2026-07-30 — D14 Method-1 routing and remote resolution" section above (commit `0a69143`)
+landed. That committed section already resolved the git-push item (origin is live, `p0/stg-sap-state`
+pushed and confirmed) and already names `L79871659` + `L80524847` as the two required pilots. **This
+directly conflicts with Boat's own D14 chat instruction** ("ไม่เอา ฿11.27 ใกล้ noise floor เกินไป" —
+do not use the ฿11.27 case, too close to the noise floor, when selecting the Class 1 pilot). Both
+versions are preserved below rather than silently picking one — **Boat/Aware needs to confirm which
+pilot set is authoritative** before either is sent. The rest of this section (Method 1 proof,
+generating-bug fix options, `L78496990` trace, provenance/purity recheck) is independent of that
+conflict and stands regardless of which pilot set wins.
+
+Boat D14: Class 2 (MISPOSTING) does **not** need Method 2/Cancel/new-OrderItem/alias — it can be
+fixed on our side with Method 1 directly, avoiding the naming blocker entirely.
+
+## Item 4 — the 3 pre-send blockers, answered
+
+### 4a. Provenance: B2 698→612 re-run fresh — numbers have DRIFTED, confirming the bug is still live
+
+Re-ran the exact same query used for the original 698/612 figures. **Fresh result: 700 keys / 613
+distinct orders** — not 698/612. This is not a measurement error; it is **direct evidence the
+generating bug is still active and creating new duplicate rows between queries**, exactly the
+"tonight creates new cases on top of what we fix" risk Boat flagged. Both the original (698/612,
+`73e94e0`) and this fresh count (700/613, this session) are cited — neither is "the" number; the
+population is a moving target until the generating bug is fixed.
+
+### 4b. L78496990 — ⚠️ NOT a credit-shell case at all; wrong pipeline entirely
+
+`L78496990` returns `NULL` for Class/net_delta because **it does not appear anywhere in the
+credit-shell view or its two variants**. Checked directly, not assumed:
+- Exists in `careos.careos_orders`: yes.
+- In `careos.cancelled_change_orders` (either side): **no** — not a credit-shell chain member.
+- In `sap_integration_v3.sap_mirror_state`: **yes, 2 rows** (already in real SAP).
+- In `sap_integration_v2.\`RCL 04_new order credit shell_all\`` / `...new tunning`: no.
+- In `sap_data_engineer.sap_dashboard_carepay_fully_paid` (the ONETIME/RCL view checked earlier
+  this session for the unrelated H2 NULL-safe issue): **yes, 2 rows.**
+
+**Real SAP state, confirmed**: `L78496990-M1` (Expected ฿278.18, Actual ฿12,512.56) and
+`L78496990-V1` (Expected ฿11,172.92, Actual ฿12,512.56) — **both items show the identical
+`ActualReceived` and identical `U_InvoiceNo` (`chrg_6854rk6j1szdhqvasym`)**. Traced to the raw
+source: exactly **one** real `SUCCESSFUL` charge exists (`cd50e930...`, ฿12,512.56,
+2026-06-26) — a single combined payment that should be split between the Compulsory (M1,
+`oi.gross_premium` = ฿645.21) and Voluntary (V1) portions, per `sap_dashboard_carepay_fully_paid`'s
+own `compu_detail`-based split logic (reviewed earlier this session). **Neither item's actual value
+matches what that split logic should produce** (M1 should show ~฿645.21, not ฿12,512.56) — the
+split did not apply.
+
+**This is a real, confirmed, money-adjacent misposting — but a DIFFERENT bug, in a DIFFERENT view,
+from a DIFFERENT mechanism than the credit-shell duplication (INCIDENT-002) this whole FINDINGS
+document is about.** Not force-fit into Class 1/Class 2 — those classes are specific to the
+credit-shell view. This needs its own dedicated investigation (why did `sap_dashboard_carepay_fully_paid`'s
+own split formula not apply here), not started beyond this confirmation. Flagging for Boat/FA
+directly: **the case FA is waiting on lives in `sap_dashboard_carepay_fully_paid`, not in the
+credit-shell incident being tracked here.**
+
+### 4c. Credit-shell purity recheck at the ฿10 threshold
+
+| | Orders | Credit-shell related | Not credit-shell |
+|---|---:|---:|---:|
+| Class 1 (fresh run) | 559 | 558 | **1** (`L79806886`) |
+| Class 2 (fresh run) | 71 | 71 | 0 |
+
+Class 2 is 100% pure. Class 1 has **one exception**: `L79806886` does not match
+`cancelled_change_orders` on either side. **Not concluded to be unrelated** — the credit-shell
+view's own logic has a *second* link-detection path (`invoice_links`/`credit_shell_classified`,
+inferred via a shared `invoice_no` across two orders, independent of `cancelled_change_orders`) that
+my purity check did not test. `L79806886` may still be credit-shell via that second path — genuinely
+unverified, flagged rather than guessed either way.
+
+## Item 1 — Method 1 design for Class 2 (MISPOSTING), with a worked proof
+
+**Design**: for every `(OrderItem, Period)` key within a Class-2 order where `key_delta != 0`
+(computed as `SUM(ActualReceived across the key's rows) - single true ExpectedReceived`, the same
+formula validated for B1/B2/Class 1), emit exactly one correction row:
+- `ExpectedReceived = 0` (pure correction, no new obligation)
+- `ActualReceived = -key_delta` (over-received key → negative correction; under-received key →
+  positive correction)
+- `InvoiceNo = fn_mint_adj_invoice(OrderID, OrderItem)` (per-order-scoped mint, `038`)
+- `PaymentDate` = next open accounting period (same flagged placeholder as before)
+
+**Proof, not just an empirical check** (holds by construction, for every key and every order):
+- Per key: after adding the correction, `SUM(Actual)` becomes
+  `original_sum_actual + (-key_delta)` = `original_sum_actual - (original_sum_actual - single_expected)`
+  = `single_expected` — **exact equality, algebraically guaranteed**, not something that merely
+  "checks out" on inspection.
+- Per order: `Σ(corrections) = Σ(-key_delta) = -net_delta`. Since
+  `original_total_actual = original_total_expected + net_delta` by definition,
+  `corrected_total_actual = original_total_expected + net_delta - net_delta = original_total_expected`
+  — the order-level net becomes **exactly 0**, not merely "stays under ฿10." Correcting every key to
+  its own true Expected necessarily reconciles the whole order, by construction — no new variance is
+  possible from this method.
+
+**Worked example, real data** (`L79900064`, the reselected Class-2 pilot — see below): `M1` key
+delta = +645.21 → correction `Actual = -645.21`; `V1` Period-1 key delta = −645.21 → correction
+`Actual = +645.21`. Verified directly against the real row values:
+`SUM(Actual)` for `M1` = `645.21 + 645.21 − 645.21 = 645.21` = the true Expected ✓.
+`SUM(Actual)` for `V1` P1 = `−644.82 + 1969.14 + 645.21 = 1969.53` = the true Expected ✓ (computed,
+not rounded to fit).
+
+## Item 2 — two pilots reselected per D14's chat instruction (⚠️ conflicts with the already-committed `0a69143` selection — see note above, unresolved)
+
+Per Boat's D14 chat instruction, `L79871659` was rejected as too close to the noise floor and two
+new pilots were selected and fully verified below. **However**, commit `0a69143` (already landed,
+see top-of-section note) names `L79871659` + `L80524847` instead. Reporting both computed candidates
+here for the record — **neither pilot set should be sent until this conflict is resolved.**
+
+### Class 1 (AMOUNT_VARIANCE) pilot: `L80046687`
+Net delta ฿50.00 (smallest in the ฿50–500 band, 2026+, `PolicyDate` 28042026). Single mismatching
+key: `L80046687-V1` Period 1 (Expected ฿1,150.00, Actual ฿1,200.00); Periods 2–6 all clean
+(Expected=Actual=฿1,150.00) — no duplication involved, a clean single-row variance. Invoice check:
+6 existing invoices on this order, none `ADJ`-prefixed. Correction: `ExpectedReceived=0`,
+`ActualReceived=-50.00`, `InvoiceNo=ADJ1_L80046687-V1`.
+
+### Class 2 (MISPOSTING) pilot: `L79900064`
+Gross ฿1,290.42 (tied with 2 other orders at the same gross; picked the earliest `PolicyDate`,
+13032026, as the tiebreak). Same shape as the `L80524847` example: `M1` Period 1 duplicated
+(645.21/645.21, key delta +645.21); `V1` Period 1 duplicated with identical Expected on both rows
+(1969.53) and Actual `-644.82`/`1969.14` (key delta −645.21); `V1` Periods 2–6 clean. Order net =
+0.00. Invoice check: 9 existing invoices on this order, none `ADJ`-prefixed. Two corrections:
+`M1` P1 → `ExpectedReceived=0, ActualReceived=-645.21, InvoiceNo=ADJ1_L79900064-M1`;
+`V1` P1 → `ExpectedReceived=0, ActualReceived=+645.21, InvoiceNo=ADJ1_L79900064-V1` (different
+`OrderItem` suffix means both can independently mint `ADJ1_` with no real collision, even though
+both queries would see "0 prior ADJ invoices" at send time).
+
+**⚠️ Boat's own flag, recorded so it isn't lost**: this Class-2 pilot's result must be shown to
+Aware/FA **after import**, specifically to answer the open question Aware has not yet answered -
+does an adjustment line actually correct GL misposting, or does SAP's own accounting still show the
+money on the wrong side regardless of the interface-level fix? This pilot is also evidence-gathering
+for that unanswered question, not only a fix.
+
+Both pilots: still need `sap_correction_log` deployed, `fn_mint_adj_invoice` deployed and re-verified
+live, the real `sap_accounting_cutoff_dates` (still a placeholder), full validation pass, and a
+shadow build — **none of that done yet, nothing sent.**
+
+## Item 3 — generating-bug fix: two alternatives compared, evidence gathered, NOT deployed
+
+Checked who actually reads the buggy view before comparing options (30-day
+`INFORMATION_SCHEMA.JOBS_BY_PROJECT` check): `piyaratt@rabbit.co.th` (21 queries),
+`data@rabbit.co.th` (36, includes this investigation), `natnichak@rabbit.co.th` (1, 2026-07-02).
+**More importantly**: `sap_view.RCL_Motor_process_4_creditshell` — a real production object, created
+2026-07-24 alongside the other legacy A2-fix views — reads `SELECT * FROM
+sap_integration_v2.\`RCL 04_new order credit shell\`` **directly**, filtered to un-imported
+credit-shell items. Given this project's own confirmed fact that "V3 produces no interface file yet;
+all files SAP receives still come from the legacy `sap_view.*` path," **this view is very likely
+already in or adjacent to the real nightly export chain** - not just an internal reporting artifact.
+
+**Option A — fix the v2 view directly** (`sap_integration_v2.\`RCL 04_new order credit shell\``):
+dedupe `charges` by `(transaction_id, installment_number)` before the join in `spine_with_payment`
+(e.g. `SUM(amount)` across same-key charges, since the real data shows genuine separate payments -
+an initial charge + a later top-up - both legitimately contributing money, not a duplicate to
+discard). **Pros**: fixes the root cause for every consumer, including `sap_view.RCL_Motor_process_4_creditshell`
+and thus the real export path - stops tonight's bleeding. **Cons**: requires an explicit exception to
+"DDL only in `sap_integration_v3`"; touches the one canonical object other real users query.
+**Requires**: shadow-diff-then-swap, same discipline as H2/H4, plus explicit deploy OK given the
+DDL-location exception.
+
+**Option B — a `sap_integration_v3` wrapper/corrected view** that reads FROM the v2 view and
+re-aggregates to one row per `(OrderItem, Period)`: **Pros**: stays inside the normal v3-only DDL
+rule, zero risk to the existing v2 object, fully testable in isolation. **Cons**: does **not** stop
+new bad rows from being generated by the v2 view itself - `sap_view.RCL_Motor_process_4_creditshell`
+would keep reading the buggy v2 view directly unless it is *also* repointed to the new v3 wrapper,
+which is itself a second, separate legacy-view change requiring its own approval. **Given Boat's own
+stated reason for wanting this fixed before the pilot** ("ไม่งั้นคืนนี้สร้างเคสใหม่ทับที่เราแก้"),
+**Option B alone does not satisfy that requirement** - only Option A, or Option B plus repointing
+the real consumer, does.
+
+**Recommendation (not acted on, awaiting Boat's decision)**: Option A, via the standard
+shadow-diff-then-swap process this project already uses for legacy view changes, given the direct
+evidence that the real production wrapper reads this exact view. Neither option built or deployed.
+
+## Item 5 — push: still blocked
+
+`git remote add`/push remains blocked by the permission classifier from the prior turn. Per
+instruction, not circumvented. Waiting for Boat to run it directly, or to grant it in this session.
