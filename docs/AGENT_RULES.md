@@ -48,7 +48,7 @@ require constant clarification.
 - **DDL only in `sap_integration_v3`.** Never CREATE/ALTER/DROP in `sap_integration_v2`, `SAP`, or `careos`.
 - **Never write to `gs://interface-file/**`.** That is production; SAP pulls it every 15 minutes. Shadow prefixes only.
 - **DEPLOY GATE:** replacing anything existing consumers read (views, tables, procedures — even inside v3) requires: dry-run evidence + a one-paragraph change summary + explicit human "deploy OK" in that session. Building/testing *new* objects needs no approval.
-- **SAP truth = `sap_integration_v2.SAP_LIVE_FULL`** (use `stg_sap_state` / `sap_mirror_state` when you need one row per (OrderItem, Period)). `raw_sap_live` and `gs://sap-bucket-csv` **never existed** — if any doc says otherwise, that doc is stale; report it.
+- **SAP truth = `sap_integration_v2.SAP_LIVE_FULL`** (use `stg_sap_state` / `sap_mirror_state` when you need one row per (OrderItem, Period)). `raw_sap_live` never existed. The deployed extract path is `gs://rcb-bronze-zone/SAP/production_database/` and control path is `gs://rcb-bronze-zone/SAP/_extract_control/`; the old bucket name found in historical plans was never real.
 - Never derive status or InvoiceNo from `SAP_LIVE`, `SAP_LIVE_2024`, `SAP_LIVE_2025`, or `SAP_LIVE_2026` directly; those are raw per-year shards unioned by `SAP_LIVE_FULL`.
 - **Never bypass validation before export.** Anything written to a production interface path must pass the validation stage, including urgent work.
 - **InvoiceNo is immutable in SAP.** Rows already Paid/Cancelled: mirror the stored value verbatim. Generate only via `fn_invoice_no`.
@@ -84,6 +84,9 @@ require constant clarification.
 - **Session end review gate:** after commit+push, create a REVIEW REQUEST for every class-A unit
   just completed without waiting to be asked; clear assigned OPEN reviews; rerun
   `scripts/review_status.sh`; report `Review debt: n OPEN (mine: n)`.
+- Review-queue `Opened:` and ID time labels must be copied from `git show -s --format=%aI <commit>`
+  (request commit when present; artifact commit only for reconstructed legacy requests), never
+  invented from the current clock.
 
 ## Cost-control guardrails (canonical; source rationale in `docs/COST_CONTROL.md`)
 
@@ -165,10 +168,11 @@ require constant clarification.
 
 ## Current state (2026-07-29)
 - V3 produces **no** interface file yet. All files SAP receives still come from the legacy `sap_view.*` path.
-- **Phase B/C are ON HOLD** pending investigation of `SAP_LIVE` bloat (151K → 6.9M rows in 3 days;
-  suspected loader OOM crash-loop + plain INSERT on retry). This may be the root cause of the
-  496-docs-per-period and 89% NULL BatchRunDate anomalies. Baselines remain suspect, but the
-  append-only audit trail must not be cleaned before incident closure.
+- **Phase B/C are ON HOLD** while `INCIDENT-SAP-MIRROR-20260726` remains open. `SAP_LIVE` had
+  8,324,155 rows at 2026-07-30 13:53:09 UTC (already stale after Boat's 21:53 ICT manual run).
+  Root cause is structural re-extraction after BI interface imports plus plain append—not a loader
+  crash-loop. Baselines remain suspect, and the append-only audit trail must not be cleaned before
+  incident closure.
 - `sap-extract-schedule` may still be failing (401). If extract isn't scheduled, Boat presses EXECUTE manually; a missed-extract alert covers forgotten nights.
 - Alert delivery: must reach **piyaratt@rabbit.co.th** and/or Slack. `data@rabbit.co.th` alone is not sufficient.
 

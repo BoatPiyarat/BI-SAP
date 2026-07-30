@@ -8,10 +8,10 @@ Request: per Boat's instruction, STEP D/E (bucket-reference correction + the sec
 writeup) are withdrawn from Claude Code's queue and handed to you — both are `docs/` prose/knowledge
 work, not SQL. Two items:
 
-**1. Bucket-reference correction** — `gs://sap-bucket-csv` does not exist as a real bucket; the real
-deployed bucket is `gs://rcb-bronze-zone/SAP/production_database/`. Files referencing
-`sap-bucket-csv` as of this session (`grep -rl "sap-bucket-csv" docs/ sql/ scripts/`, run
-2026-07-30, no query cost — plain grep):
+**1. Bucket-reference correction — CLOSED by Codex 2026-07-30.** The old B1 bucket alias does not
+exist; the deployed extract path is `gs://rcb-bronze-zone/SAP/production_database/` and control
+path is `gs://rcb-bronze-zone/SAP/_extract_control/`. Contextual repo cleanup completed; the
+following was the original file inventory:
 - `docs/AGENT_RULES.md`
 - `docs/design/SAP_INTERFACE_REDESIGN_V3.md`
 - `docs/design/SAP_PIPELINE_E2E_DESIGN_v3.md`

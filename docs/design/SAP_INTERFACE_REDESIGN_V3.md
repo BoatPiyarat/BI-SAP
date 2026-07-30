@@ -3,8 +3,9 @@ Date: 2026-07-23 | Owner: Boat (BI) | Status: PROPOSAL
 Objectives: **(1) CareOS → SAP integration ถูกต้อง** | **(2) ใช้ resource ต่ำ**
 
 > ⚠️ **STATUS UPDATE 2026-07-24 — อ่านก่อนเชื่อ `raw_sap_live` ในเอกสารนี้:** ตรวจสอบจริงผ่าน bq/gcloud
-> แล้วพบว่า `raw_sap_live` (B2/Phase 6 target ตลอดเอกสารนี้) **ไม่เคยถูกสร้างขึ้นจริง** และ `gs://sap-bucket-csv`
-> (B1 source) **ไม่มีอยู่จริงใน project** — pipeline จริงคือ `sap-extract-job` → GCS ชั่วคราว →
+> แล้วพบว่า `raw_sap_live` (B2/Phase 6 target ตลอดเอกสารนี้) **ไม่เคยถูกสร้างขึ้นจริง** และ bucket
+> B1 ที่เอกสารเก่าอ้าง **ไม่มีอยู่จริงใน project** — path จริงคือ
+> `gs://rcb-bronze-zone/SAP/production_database/`; pipeline คือ `sap-extract-job` → GCS ชั่วคราว →
 > `sap-order-payment-initial-phase` → **`sap_integration_v2.SAP_LIVE`** (รายละเอียดเต็มดู
 > `docs/knowledge/10_SAP_CONTEXT.md` §ARCHITECTURE + `docs/knowledge/30_SAP_CHANGELOG.md` 2026-07-24).
 > P0 ได้ทำจริงแล้วโดยสร้าง `sap_integration_v3.stg_sap_state` จาก **`SAP_LIVE_FULL`** (ไม่ใช่

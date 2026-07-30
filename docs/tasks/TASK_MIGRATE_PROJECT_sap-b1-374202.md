@@ -22,7 +22,7 @@ a parameter/configuration seam rather than a global project-ID replacement.
   `gs://rcb-bronze-zone/SAP/production_database/`.
 - Real extract control:
   `gs://rcb-bronze-zone/SAP/_extract_control/`.
-- `gs://sap-bucket-csv` does not exist. The similarly named service account
+- The old B1 bucket name does not exist. The similarly named service account
   `sap-bucket-csv@pacific-plating-282708.iam.gserviceaccount.com` does exist and must not be
   confused with a bucket.
 - Preferred but **not yet approved** approach: retain vendor-facing buckets in the original

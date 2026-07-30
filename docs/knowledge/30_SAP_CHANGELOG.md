@@ -4,6 +4,31 @@ Append-only — entry ใหม่บนสุด ห้ามลบ/แก้�
 
 ---
 
+## 2026-07-30 — Folded mirror addendum v3; corrected root-cause record and review hygiene
+
+Tracked `KNOWLEDGE_ADDENDUM_20260730_v3.md`, folded its facts/retractions into
+`10_SAP_CONTEXT`, and created `TASK_MIGRATE_PROJECT_sap-b1-374202.md`. All six §C8 decisions
+remain `CONFIRM`; no answer was inferred.
+
+Corrected bucket narratives to the real extract path
+`gs://rcb-bronze-zone/SAP/production_database/` while preserving the valid
+`sap-bucket-csv@...` service-account identity. Added `SECURITY_FINDING_20260730.md` as a P0,
+Boat-owned credential-rotation/Secret-Manager item without recording any secret value.
+
+Recorded corrected STEP A from `sap_integration_v2.SAP_LIVE` at
+2026-07-30 14:27:28 UTC: 54,055 baseline-comparable records, 9,702 `NO_BASELINE`, and zero
+population/mutation changes across every monitored monetary field. The accounting-overwrite gate
+is CLEARED, while the mirror incident remains OPEN. Retracted crash-loop, watermark-reset, and
+unidentified-writer explanations; recorded the scheduler → function → external importer pathway
+and the separate ~2.19× normal-day baseline-duplication finding.
+
+Kept the `a56f6d1` and `84df583` reviews BLOCKED on substantive evidence gaps. Corrected three
+review labels to their git timestamps (`42b7c0a` 11:49:23, `3b5826e` 12:32:39, `c844a85`
+15:37:00 ICT), confirmed RQ-1614/RQ-1230 reviewer assignments from authorship, and made git commit
+time the mandatory source for future `Opened:` labels.
+
+---
+
 ## 2026-07-30 — SAP_LIVE daily amplification measured; count-level loss not observed
 
 Recorded Boat's daily `SAP_LIVE` and SAP SQL Server `[@INSURANCE]` counts in
@@ -1203,7 +1228,8 @@ NDJSON to `gs://rcb-bronze-zone/SAP/production_database/`, which triggers (Event
 service `sap-order-payment-initial-phase`, which loads into `sap_integration_v2.SAP_LIVE` and deletes
 the source file. This is a real, working, error-free pipeline (14/14 runs SUCCESS since 07-09, watermark
 current). It does not match the design docs' B1 (legacy, sunset) vs B2 (Phase 6, target `raw_sap_live`)
-story at all - `raw_sap_live` was never built, and `gs://sap-bucket-csv` doesn't exist in this project.
+story at all - `raw_sap_live` was never built, and the old planned bucket does not exist in this
+project. The deployed extract path is `gs://rcb-bronze-zone/SAP/production_database/`.
 `SAP_LIVE` is genuinely fresh, not a stale legacy mirror as the 07-23 changelog entry concluded.
 Practical consequence: the scheduler incident (see above) is more serious than first framed - it's the
 only path into fresh SAP_LIVE data, currently being manually compensated for.

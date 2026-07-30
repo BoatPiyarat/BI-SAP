@@ -20,7 +20,8 @@ minimize interface errors / manual adjustments, มี traceability ครบ, m
 ## ARCHITECTURE — ⚠️ CORRECTED 2026-07-24 (การค้นพบใหญ่ — traced จริงใน BigQuery/gcloud ไม่ใช่เดา)
 
 **กติกาเก่า (07-16) "มี 2 pipeline คู่ขนาน B1(เก่า)/B2(ใหม่, Phase 6→raw_sap_live)" — ผิด**
-`raw_sap_live` **ไม่เคยถูกสร้างจริง** และ `gs://sap-bucket-csv` **ไม่มีอยู่จริงใน project นี้เลย**
+`raw_sap_live` **ไม่เคยถูกสร้างจริง** และ bucket B1 ที่แผนเก่าอ้าง **ไม่มีอยู่จริงใน project นี้เลย**;
+extract ที่ deploy จริงใช้ `gs://rcb-bronze-zone/SAP/production_database/`
 — ทั้งคู่เป็นแผนใน design docs ที่ไม่เคย deploy จริง ตรวจสอบแล้ว 2026-07-24
 
 **Path A — Interface ขาออก (CareOS → SAP):**
@@ -471,7 +472,7 @@ Full evidence and migration inventory:
    why Paid is used when Actual is 645.21 below Expected.
 10. Real GCS paths are `gs://rcb-bronze-zone/SAP/production_database/` and
     `gs://rcb-bronze-zone/SAP/_extract_control/`. The nonexistent bucket
-    `gs://sap-bucket-csv` must never be confused with the real service account named
+    old nonexistent bucket alias must never be confused with the real service account named
     `sap-bucket-csv@...`.
 11. Plaintext SAP credentials were exposed again through deployed source/deployment helpers and
     Cloud Run execution metadata. This is the third known exposure (at least two earlier incidents
@@ -496,6 +497,7 @@ observed by BigQuery are unrecoverable.
   and UpdateDate/UpdateTime are SAP-owned.
 - Retract “45×”, “151K→6.9M” and any aggregate multiplier used in place of daily figures.
 - Retract ฿645.21 as evidence of mass monetary overwrite or a unique order fingerprint.
-- Retract `gs://sap-bucket-csv` as a bucket/root-cause location.
+- Retract the old nonexistent bucket alias as a bucket/root-cause location; use
+  `gs://rcb-bronze-zone/SAP/production_database/`.
 - Superseded CMI figures 559/71 and blocked 401/฿267,775.28/pilot claims remain non-citable until
   their review blocks close.

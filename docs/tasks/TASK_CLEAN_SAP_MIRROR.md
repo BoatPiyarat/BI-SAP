@@ -43,7 +43,6 @@ gcloud run jobs describe sap-extract-job --region=asia-southeast1 --format=yaml
 gcloud logging read 'resource.labels.job_name="sap-extract-job"' --limit=80 --freshness=3d
 gsutil ls -l "gs://rcb-bronze-zone/SAP/production_database/**" | tail -20
 gsutil ls -l "gs://rcb-bronze-zone/SAP/_extract_control/**" | tail -5
-gsutil ls -l "gs://sap-bucket-csv/**" | tail -20
 ```
 Answer explicitly: does the extract write **GCS files**, a **BigQuery table**, or both? What is the
 newest object/row it produced, and is that consistent with a nightly 20:30 ICT run?

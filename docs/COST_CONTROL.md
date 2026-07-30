@@ -164,7 +164,7 @@ GROUP BY 1,2 ORDER BY gib_logical DESC LIMIT 30;
 | เลิก manual import ตาม list ของ FA | ชั่วโมงคนของ BI + FA ต่อรอบ (นับจาก 3 รอบล่าสุด) |
 | Import error รายคืน (~100 orders) → ~0 | ชั่วโมงแก้มือ + ความเสี่ยงบัญชี |
 | `SAP_LIVE` daily amplification (สูงสุด 2,036.103× ในวันที่ตรวจ) → stop future reinsert growth | ค่า storage + ค่า scanของทุก query; append-only history retained until incident closure |
-| Loader crash-loop → หยุด | ค่า compute ที่จ่ายทิ้งทุกคืน |
+| Stop future SAP_LIVE re-extract + plain-append amplification | ค่า compute/storage ที่จ่ายซ้ำ; loader crash-loop hypothesis was retracted |
 | `sap_integrety_2025_RCL` | Dormant/obsolete; no real consumer in 90 days, no notification needed; housekeeping/archive candidate only |
 
 **วิธีนำเสนอ:** ค่า infra ของ V3 อยู่ระดับ**เศษเงินเทียบกับชั่วโมงคน** ที่มันประหยัด — ประเด็นขายไม่ใช่

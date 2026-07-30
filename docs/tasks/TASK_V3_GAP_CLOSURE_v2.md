@@ -27,8 +27,9 @@ Stale design docs actively mislead future sessions. Correct, don't delete — ke
 - ❌ "MERGE → raw_sap_live (SAP truth — B2)" → ✅ extract writes **temporary NDJSON** to
   `gs://rcb-bronze-zone/SAP/production_database/`, then **`sap-order-payment-initial-phase`
   (Cloud Run service, Eventarc-triggered)** loads it into `sap_integration_v2.SAP_LIVE` and deletes the file.
-- ❌ "SUNSET B1 / gs://sap-bucket-csv / auto_load_sap_data_in_bucket_to_bigquery" → ✅ **there is no B1.**
-  `gs://sap-bucket-csv` and `raw_sap_live` never existed. Remove the sunset plan entirely.
+- ❌ "SUNSET B1 / old planned bucket / auto_load_sap_data_in_bucket_to_bigquery" → ✅ **there is no B1.**
+  The old planned bucket and `raw_sap_live` never existed. Real extract path:
+  `gs://rcb-bronze-zone/SAP/production_database/`. Remove the sunset plan entirely.
 - ❌ "event chain must be built" → ✅ Path B **is already event-driven** (extract → Eventarc → loader).
   What's missing is chaining the **V3 SQL steps** (sap_state → recon → expected_state → validate → export).
 - ❌ "SAP pull hourly, file ready for the 21:00 pull" → ✅ pull every 15 min (:00/:15/:30/:45), **processed

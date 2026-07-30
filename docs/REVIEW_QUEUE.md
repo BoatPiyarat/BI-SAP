@@ -75,7 +75,8 @@ multiplier references were replaced with daily values.
 
 Evidence: `git diff e02bd39^ e02bd39`; `docs/FINDINGS_SAP_MIRROR_20260726.md` latest addendum;
 `docs/RETURN_TRIAGE_20260729.md` §1; wrapper dry-run estimate 133,186,480 bytes and returned rows
-recorded in those artifacts.
+recorded in those artifacts. Authorship hygiene checked 2026-07-30: `e02bd39` is a Codex/docs
+artifact, so Claude Code is the correct reciprocal reviewer.
 
 ## RQ-20260730-1555-dormant-view-cost-guardrail
 Status: REVIEWED
@@ -95,13 +96,13 @@ Evidence: `git diff 5774494^ 5774494`; prior 90-day evidence in
 `docs/FINDINGS_SAP_MIRROR_20260726.md` §14; and
 `docs/reviews/2026-07-30-a56f6d1-codex.md`.
 
-## RQ-20260730-1800-bq-safe-query-wrapper
+## RQ-20260730-1537-bq-safe-query-wrapper
 Status: REVIEWED
 Reviewer: Codex
 Class: A
 Artifact: `scripts/bq_safe_query.sh`, `sql/ddl/_TEMPLATE_new_table.sql`,
 `sql/ddl/README.md`; commit `a56f6d1`.
-Opened: 2026-07-30T18:00:00+07:00
+Opened: 2026-07-30T15:37:00+07:00
 Verdict: BLOCK — `docs/reviews/2026-07-30-a56f6d1-codex.md`
 
 Claim: (1) `scripts/bq_safe_query.sh` implements `docs/COST_CONTROL.md` §3.1 as an enforced gate
@@ -125,13 +126,13 @@ Status: OPEN — requesting Codex check the `jq`-path/fallback parsing logic and
 arithmetic (bash integer comparison on `totalBytesProcessed` up to and past 20 GiB), and confirm
 the 7-table exclusion list is complete and correctly named.
 
-## RQ-20260730-1615-cmi-cause-population
+## RQ-20260730-1232-cmi-cause-population
 Status: REVIEWED
 Reviewer: Codex
 Class: A
 Artifact: `docs/FINDINGS_CREDITSHELL_DUPLICATE_20260729.md` §"ADDENDUM 2026-07-30 (session, D16
 Boat)" + `sql/ddl/042_sap_fa_verification.sql`; commit `84df583`.
-Opened: 2026-07-30T16:15:00+07:00
+Opened: 2026-07-30T12:32:39+07:00
 Verdict: BLOCK — `docs/reviews/2026-07-30-84df583-codex.md`
 
 Claim: per Boat's scope call, the CMI incident is only the cause-defined population (CMI exists,
@@ -183,7 +184,9 @@ Codex's five assigned reviews are closed with explicit 12-point results.
 
 Evidence: `git diff d1310f9^ d1310f9`; `docs/knowledge/SAP_INCIDENT_LOG.md`;
 `docs/AUDIT_CMI_ADDONS.md`; `docs/knowledge/20_SAP_PROGRESS.md`; and
-`docs/reviews/2026-07-30-*-codex.md`.
+`docs/reviews/2026-07-30-*-codex.md`. Authorship hygiene checked 2026-07-30: `d1310f9` records the
+Codex docs/taxonomy unit and Codex's review verdicts; Claude Code is the correct reciprocal
+reviewer, not the author of that unit.
 
 ## RQ-20260730-1211-posted-state-review-loop
 Status: REVIEWED
@@ -205,12 +208,12 @@ Evidence: `git diff b56683c^ b56683c`; `docs/AUDIT_CMI_ADDONS.md`;
 run of `scripts/review_status.sh`, which reported 7 pre-request OPEN reviews (Codex 5, Claude Code
 2) and listed unreferenced class-A-path commits.
 
-## RQ-202607301530-01
+## RQ-20260730-1149-posted-state-methodology
 Status: REVIEWED
 Reviewer: Codex
 Class: A
 Artifact: `docs/FINDINGS_CREDITSHELL_DUPLICATE_20260729.md` §"ADDENDUM 2026-07-30 (session, D16)" + `sql/ddl/041_pilot_shadow_corrections_L80046687_L79900064.sql` supersession note; commit `42b7c0a`.
-Opened: 2026-07-30T15:30:00+07:00
+Opened: 2026-07-30T11:49:23+07:00
 Verdict: PASS WITH NOTES — `docs/reviews/2026-07-30-42b7c0a-codex.md`
 
 Claim: Mo (FA) caught a real methodology error, and this entry documents the fix-in-progress: (1)

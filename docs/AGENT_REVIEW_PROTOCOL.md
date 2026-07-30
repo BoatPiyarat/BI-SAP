@@ -98,6 +98,12 @@ Evidence: <where the reviewer can check it — query, table, session-note sectio
 The request fields below are mandatory, one per line, in this exact spelling. Additional
 `Claim:`/`Evidence:` text may follow.
 
+`Opened:` and the `HHMM` portion of the request ID must come from a real git commit timestamp,
+never from a wall-clock estimate or a manually chosen label. Prefer the commit that first adds the
+review request; for a reconstructed legacy request with no separate request commit, use the
+artifact commit. Obtain it with `git show -s --format=%aI <commit>`, retain the seconds and offset
+in `Opened:`, and derive `HHMM` from that same timestamp.
+
 ```text
 ## RQ-YYYYMMDD-HHMM-<slug>
 Status: OPEN

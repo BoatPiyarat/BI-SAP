@@ -14,17 +14,17 @@ what was supposed to happen.
 | 07-29 (as of this check, 13:17 ICT) | Not yet due | — | — | Not yet due | — |
 
 **Note on the two staleness alerts**: the extract itself DID run both nights, but the real loader
-(`sap-order-payment-initial-phase`) crash-looped on an out-of-memory error (1024 MiB limit) for
+(`sap-order-payment-initial-phase`) encountered out-of-memory errors (1024 MiB limit) for
 ~16 minutes around 2026-07-29 02:43-02:59 UTC before finally succeeding — see the bigger finding
 below. The dead-man's-switch firing was **correct**, not a false alarm: `MAX(U_BatchRunDate)` really
 was stale at each 22:00 ICT check because the loader hadn't finished yet.
 
 **🚨 New finding, not in the handover doc — needs attention before Phase B**: `SAP_LIVE` has grown
-from **151,024 rows (07-26 baseline) to 6,858,653 rows now**, while distinct `DocEntry` only grew
-106,873→122,169 (ratio ~1.4 → ~56 rows/DocEntry). Root cause: the loader's memory-limit crash-loop
-(confirmed in Cloud Logging: repeated "Memory limit of 1024 MiB exceeded" + container restarts)
-combined with the loader doing a plain `INSERT` (not `MERGE`) — each restart very likely re-inserted
-the same file's rows. **Downstream impact: none confirmed** — `SAP_LIVE_FULL`/`sap_mirror_doc` both
+from **151,024 rows (07-26 baseline) to 6,858,653 rows at the original snapshot**, while distinct
+`DocEntry` only grew 106,873→122,169. **RETRACTED root-cause attribution:** later scheduler,
+watermark and row-shape evidence refutes a loader crash-loop as the primary cause. The supported
+mechanism is BI interface import → SAP `UpdateDate`/`UpdateTime` change → watermark re-extract →
+plain append. **Downstream impact: none confirmed** — `SAP_LIVE_FULL`/`sap_mirror_doc` both
 dedup per-DocEntry correctly and show sane, non-exploded row counts (1,658,647 as of 07-28, in line
 with expected growth). This is a real storage/cost concern and an active loader bug, not (currently)
 a correctness problem for anything V3 produces. **Not fixed — outside `sap_integration_v3`, needs
@@ -52,7 +52,7 @@ anti-join. **Set-level real-loss verification remains OPEN.** No loader fix or c
 
 | Alert | Fired during 26-29? | Real condition or false alarm? | Destination |
 |---|---|---|---|
-| Missed-extract (dead-man's-switch) | **Yes**, 07-27 and 07-28 (15:00 UTC checks) | Real — `SAP_LIVE` genuinely stale both times, tied to the loader crash-loop above | `data@rabbit.co.th` (failure email) |
+| Missed-extract (dead-man's-switch) | **Yes**, 07-27 and 07-28 (15:00 UTC checks) | Real freshness signal; earlier linkage to a loader crash-loop is retracted | `data@rabbit.co.th` (failure email) |
 | Column-contract guard | No (ran clean both nights) | N/A — no drift occurred | `data@rabbit.co.th` |
 | Validation-regression | No (ran clean both nights) | N/A — no regression | `data@rabbit.co.th` |
 | Interface-daily-status alert | **Yes**, every check since 07-27 (3 runs) | Same 7 `PAID_AFTER_CANCEL` rows every time (not new ones) — a design gap: this alert re-fires daily on an unresolved condition rather than only on new occurrences | `data@rabbit.co.th` |

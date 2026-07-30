@@ -9,7 +9,7 @@ per the task's "Stop here and report. Do not build anything yet."**
 ### `sap_integration_v2` (relevant subset — full list is 50+ objects, mostly ad-hoc analysis views)
 | Object | Type | Rows | Distinct DocEntry | Batch date range | Verdict |
 |---|---|---|---|---|---|
-| `SAP_LIVE` | TABLE | 151,024 | 106,873 | 2026-04-30 → 2026-08-15* | **TRUSTED but append-only (duplicates)** |
+| `SAP_LIVE` | TABLE | **8,324,155**¹ | not recomputed in this pass | 2026-04-30 → 2026-08-15* | **Append-only incident evidence; heavily amplified** |
 | `SAP_LIVE_2024` | TABLE | 538,548 | 538,548 | 2024-01-31 → 2024-12-30 | TRUSTED (historical shard, 1:1) |
 | `SAP_LIVE_2025` | TABLE | 681,067 | 681,067 | 2024-12-30 → 2025-12-31 | TRUSTED (historical shard, 1:1) |
 | `SAP_LIVE_2026` | TABLE | 573,706 | 386,485 | 2025-12-30 → 2026-06-30 | **Has duplicates too** (1.49 rows/doc) |
@@ -17,6 +17,10 @@ per the task's "Stop here and report. Do not build anything yet."**
 | `sap_extract_control` | TABLE | 0 | — | — | **DEAD / unused** — real watermark lives in GCS, not here |
 
 *2026-08-15 max is 5 rows only (see §5, minor anomaly, not systemic staleness).
+
+¹ Recomputed from `pacific-plating-282708.sap_integration_v2.SAP_LIVE` at
+2026-07-30 13:53:09 UTC. This is a snapshot, not a live invariant, and was already stale after
+Boat's later manual run at 21:53 ICT.
 
 `sap_integration_v3` already has the P0–P3 objects built earlier this project (`stg_sap_state`,
 `delta_export`, `expected_state`, `sap_validation_error`, `pipeline_run_log`, etc.) — unaffected by
@@ -479,3 +483,91 @@ not the source DocEntry set or source distinct-DocEntry count; equal/greater cou
 set inclusion. Closing real loss requires an anti-join of the extracted/source DocEntry list
 against `SAP_LIVE`, or equivalent source-side distinct IDs. Until then: **REAL LOSS NOT OBSERVED
 BY COUNT, SET-LEVEL VERIFICATION OPEN**.
+
+---
+
+## ADDENDUM 2026-07-30 — corrected overwrite gate and root-cause retractions
+
+Incident `INCIDENT-SAP-MIRROR-20260726` remains **OPEN** for storage/cost, prevention and
+set-level loss verification. The accounting-overwrite gate is **CLEARED**.
+
+### Corrected STEP A methodology
+
+Source: `pacific-plating-282708.sap_integration_v2.SAP_LIVE`. Query timestamp:
+**2026-07-30 14:27:28 UTC**.
+
+The earlier comparison used earliest-versus-latest state across the whole lifecycle. That method
+mixed legitimate issuance/payment progression into the overwrite test and is retracted.
+
+- 63,757 DocEntries were in the target population.
+- **54,055 WITH_BEFORE** had a last observation before 26/07 and were compared with the first
+  observation in 26–28/07.
+- **9,702 NO_BASELINE** had no pre-26/07 observation and were excluded; absence of evidence was
+  not treated as a default value or POPULATION.
+
+| Field | POPULATION | MUTATION A→B | A→default |
+|---|---:|---:|---:|
+| `U_ActualReceived` | 0 | 0 | 0 |
+| `U_ExpectedReceived` | 0 | 0 | 0 |
+| `U_TotalPremiumAmt` | 0 | 0 | 0 |
+| `U_GrossPremiumAmt` | 0 | 0 | 0 |
+| `U_VATAmt` | 0 | 0 | 0 |
+| `U_StampDutyAmt` | 0 | 0 | 0 |
+| `U_RefundAmt` | 0 | 0 | 0 |
+| `U_RefundAmountAfterFee` | 0 | 0 | 0 |
+| `U_InvoiceNo` | 822 | 0 | 0 |
+| `U_PaymentDate` | 657 | 165 | 7,152 |
+| `U_PaymentStatus` | 0 | 190 | 0 |
+| `U_PolicyNo` | 9,911 | **39** | 0 |
+| `U_PolicyStatus` | 0 | 822 | 0 |
+| `U_ApprovalStatus` | 0 | 9,963 | 0 |
+| `U_SubmissionStatus` | 0 | 2,124 | 0 |
+| `U_Period` / `U_TotalPeriods` | 0 | 0 | 0 |
+
+All monetary fields are zero in both change classes. `U_PolicyNo` non-empty→non-empty mutations
+are 39/54,055 (0.072%) and collapse into a small number of repeated policy corrections, including
+punctuation fixes and policy issuance alongside `PENDING → POLICY UPLOADED`; they are negligible
+relative to 9,911 default→real policy populations.
+
+**Verdict: CLEARED.** No evidence of a mass monetary overwrite. This is still a **LOWER BOUND**:
+states written between extract runs but never observed by BigQuery cannot be recovered.
+
+### `DocEntry 2345730` — WAITING HUMAN
+
+This DocEntry has no observation before 26/07 and is outside WITH_BEFORE.
+
+| Batch | UpdateDate/Time | PolicyStatus | Actual | Expected | Payment evidence |
+|---|---|---|---:|---:|---|
+| 07-26 | 07-27 03:41 | Pending | 2,200.00 | 2,200.00 | no invoice/date/method |
+| 07-27 | 07-28 04:13 | Pending | 2,200.00 | 2,200.00 | no invoice/date/method |
+| 07-28 | 07-29 03:54 | Paid | 1,554.79 | 2,200.00 | invoice + PaymentDate 07-28 + method/channel |
+
+Invoice, PaymentDate and payment method appearing together is consistent with a partial-payment
+event. `U_Discount=0`, so the evidence does not support a discount. The previous ฿645.21
+accounting stop was caused by the wrong lifecycle boundary and is not evidence of mass overwrite.
+
+Status: **WAITING HUMAN — Boat will verify with FA in the SAP UI.** Remaining question: why is
+PolicyStatus `Paid` when Actual 1,554.79 is below Expected 2,200.00 by 645.21?
+
+### Root-cause record
+
+The following hypotheses are retracted:
+
+1. **Loader crash-loop/full-bucket reread as primary cause.** The supported structural mechanism is
+   BI interface import updating SAP-owned `UpdateDate`/`UpdateTime`, followed by correct watermark
+   re-extraction and a plain-append loader.
+2. **Watermark reset/deletion/failure-to-advance.** Fourteen generations advance continuously with
+   no reset, gap or failed advance. Declining 60,404→60,385→58,619 counts do not fit replay from
+   the default watermark.
+3. **Unidentified SAP writer.** Boat confirmed BI interface import. The narrowed pathway observed
+   in the writer window is schedulers `sap-order-payment` / `sap-order-payment-non-motor` at
+   2026-07-26 18:30 ICT → `rcb-motor-order-payment-sap-bucket-1` /
+   `rcb-nonmotor-order-payment-sap-bucket-1` → external SAP importer.
+4. **Old aggregate amplification shorthand.** Use daily BQ/source ratios: 289.623× on 07-26,
+   **2,036.103× peak on 07-27**, and 25.000× on 07-28.
+
+### Separate open finding — normal-day baseline duplication
+
+Days 21–25/07 are not 1:1: BQ/source ratios are 1.681×, 1.498×, 1.854×, 2.659× and 1.939×
+(approximately 2.19× average). This baseline behavior had not previously been isolated. It is
+separate from the acute 26–28/07 amplification and remains **OPEN**.

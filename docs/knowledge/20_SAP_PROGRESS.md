@@ -1,4 +1,17 @@
 # 20_SAP_PROGRESS.md
+**2026-07-30 MIRROR ASSESSMENT:** corrected STEP A cleared the accounting-overwrite gate over
+63,757 affected DocEntries: 54,055 had a real pre-07-26 baseline, 9,702 were `NO_BASELINE`, and
+all monitored monetary fields had `POPULATION=0` / `MUTATION=0`. Source:
+`sap_integration_v2.SAP_LIVE`, query timestamp 2026-07-30 14:27:28 UTC. The result remains a lower
+bound because states between extracts are unrecoverable. The root-cause incident remains OPEN as a
+storage/control issue; crash-loop, watermark-reset, and unidentified-writer hypotheses are
+retracted. Current row snapshot is 8,324,155 at 2026-07-30 13:53:09 UTC and is stale after Boat's
+21:53 manual run. `DocEntry=2345730` is `WAITING HUMAN` for Boat/FA UI verification.
+
+**P0 SECURITY:** deployed `sap-extract-job` artifacts expose plaintext SAP credentials. This is
+the third known credential exposure. Boat owns rotation and Secret Manager migration; agents must
+not reproduce or modify credentials. See `docs/SECURITY_FINDING_20260730.md`.
+
 Last Updated: 2026-07-30 — **REPOSITORY BACKUP RISK CLOSED:** configured
 `origin=https://github.com/BoatPiyarat/BI-SAP.git` and successfully pushed
 `p0/stg-sap-state` on 2026-07-30. Fetch/contains verification confirmed `4bbc16f`, `18e4342`,
@@ -1247,7 +1260,8 @@ target `raw_sap_live`) story:
   running since 2026-07-09, 14/14 runs SUCCESS, zero errors, watermark current to within ~15 min as of
   this session. `raw_sap_live` (the name in every design doc) was never built - the docs describe a plan,
   not what got deployed.
-- `gs://sap-bucket-csv` (the vendor CSV-drop bucket the docs describe) **does not exist in this project.**
+- The vendor CSV-drop bucket named in the old design **does not exist in this project**. The
+  deployed extract path is `gs://rcb-bronze-zone/SAP/production_database/`.
 - Practical implication: the scheduler incident above is more serious than "a redundant legacy path
   stalled" - it's the only ingestion path into fresh `SAP_LIVE` data. Data is fine because people have
   been running it manually; it would go stale if that stopped.

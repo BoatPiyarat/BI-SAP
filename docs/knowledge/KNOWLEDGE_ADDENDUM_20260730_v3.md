@@ -147,7 +147,7 @@ by BigQuery are unrecoverable.
 
 ## A10. Bucket correction — root-cause statement เดิมชี้ผิด bucket `[CONFIRMED]`
 Bucket ที่ deploy จริง: **`gs://rcb-bronze-zone/SAP/production_database/`**
-`gs://sap-bucket-csv` — **ไม่พบ bucket ชื่อนี้** → ทุกที่ที่อ้าง bucket นี้เป็น root cause ต้องแก้
+ชื่อ bucket ใน root-cause statement เดิม **ไม่มีอยู่จริง** → ทุกจุดต้องใช้ path จริงข้างต้น
 (หมายเหตุ: service account ชื่อ `sap-bucket-csv@...` ยังมีอยู่จริง อย่าสับสนระหว่างชื่อ SA กับชื่อ bucket)
 
 ## A11. 🔴 Credential exposure ครั้งที่ 3 `[OPEN — P0]`
@@ -182,7 +182,7 @@ missing field, malformed value, threshold equality, threshold+1)
 | B3 | "ต้องหยุด nightly manual triggering / hold Attila IAM ticket" (คำแนะนำของ Claude ในเซสชันนี้) | Premise หายไปพร้อม B2 — extract ทำถูกทุกอย่าง | ปิด Attila IAM ticket ได้ตามปกติ ไม่ต้อง hold |
 | B4 | "฿645.21 ตรงเป๊ะกับ pilot `L77828566` → อาจเป็น order เดียวกัน" (คำกล่าวของ Claude ในเซสชันนี้) | 645.21 = เบี้ย พ.ร.บ. มาตรฐาน ไม่ใช่เลขเฉพาะ order | A9 |
 | B5 | "SAP_LIVE bloat = 45×" | Aggregate กลบ peak จริง | A4: peak ~2,036× ต่อวัน |
-| B6 | "`gs://sap-bucket-csv` เป็นจุดเกิดปัญหา" | ไม่พบ bucket ชื่อนี้ | A10: `gs://rcb-bronze-zone/SAP/production_database/` |
+| B6 | bucket B1 ในแผนเก่าเป็นจุดเกิดปัญหา | ไม่พบ bucket ชื่อนั้น | A10: `gs://rcb-bronze-zone/SAP/production_database/` |
 | B7 | ตัวเลข **559 / 71** | SUPERSEDED (posted-vs-rejected methodology error + คำนวณจากอาการแทนสาเหตุ) | รอ population ที่ผ่าน review |
 | B8 | 401 orders / ฿267,775.28 / pilot `L77828566` เป็นข้อสรุป | BLOCK `5abaed3` ยังไม่ปิด (population ผสม 2 sub-mechanism, `042` schema ไม่ครบ, pilot ไม่มีหลักฐาน FA/SAP) | ห้ามอ้างเป็นตัวเลขจริงจนกว่า block ปิด |
 | B9 | "watermark ถูก reset/ลบ/ไม่ advance" | 14 generations เดินหน้าต่อเนื่อง ไม่มี reset/gap/failure-to-advance; 60,404→60,385→58,619 ลดลง ไม่เข้ากับ replay จาก default | A1/A3 และ watermark evidence 2026-07-30 |
@@ -227,7 +227,7 @@ INFORMATION_SCHEMA query 6 จุด) — ⚠️ default query location ขอ�
 |---|---:|---|---|
 | `gs://interface-file` | 46 | **SAP pull ทุก 15 นาที (:00/:15/:30/:45), Aware เป็นเจ้าของ cadence** | 🔴 **ย้ายไม่ได้ตามใจ** |
 | `gs://rcb-bronze-zone` | 17 | extract output + watermark | 🟠 ต้องตัดสินใจ |
-| `gs://sap-bucket-csv` | 10 | ไม่พบ bucket จริง (A10) | ⚪ อาจไม่ต้องทำอะไร |
+| bucket B1 ในแผนเก่า | 10 historical references | ไม่พบ bucket จริง (A10) | ⚪ ไม่ต้อง migrate |
 
 **ข้อเท็จจริงทางเทคนิค: GCS bucket ย้ายข้าม project โดยตรงไม่ได้** (ชื่อ bucket เป็น global namespace,
 ผูกกับ project ที่สร้าง) มี 2 ทาง:
@@ -348,7 +348,7 @@ GROUP BY batch_date ORDER BY batch_date;
 | P2 | `sap_mirror_doc` MERGE by DocEntry (แก้ amplification ถาวร + cost ~100×) | Claude Code | A3, C6.4 |
 | P2 | Set-level anti-join ปิดคำถาม real loss | Claude Code | A6 |
 | P2 | เปิด finding แยกสำหรับ baseline duplication ~2.19× | Codex | A5 |
-| P2 | แก้ทุกจุดที่อ้าง "45×" และ `gs://sap-bucket-csv` | Codex | A4, A10 |
+| P2 | แก้ทุกจุดที่อ้าง "45×" และ bucket B1 ที่ไม่มีจริง | Codex | A4, A10 |
 | P2 | Retract B1/B2 ใน `FINDINGS_SAP_MIRROR_20260726.md` | Codex | B1, B2 |
 | P3 | ปิด `sap-extract-schedule` 401 (Attila IAM) — ไม่ต้อง hold แล้ว | Boat/Attila | B3 |
 | P3 | Verify `rcb-motor-order-payment-sap-bucket-1` timeout fix deploy จริงหรือยัง | Claude Code | C3 |

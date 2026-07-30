@@ -47,7 +47,9 @@ everything in `docs/design/`, `sql/**`, `docs/FINDINGS_*`, `docs/AS_BUILT_V3.md`
 ## 2. Self-test before doing real work
 Answer these from the repo. If you get any wrong, your context load failed — say so instead of guessing.
 1. What is the SAP truth table, and what is `raw_sap_live`?
-   → `sap_integration_v2.SAP_LIVE_FULL`; `raw_sap_live` **never existed** (nor did `gs://sap-bucket-csv`).
+   → `sap_integration_v2.SAP_LIVE_FULL`; `raw_sap_live` **never existed**. Extracts use
+   `gs://rcb-bronze-zone/SAP/production_database/`, with control under
+   `gs://rcb-bronze-zone/SAP/_extract_control/`.
 2. Can Phase B start now, and why?
    → **No — ON HOLD** pending the `SAP_LIVE` bloat investigation.
 3. What must happen before changing a view that feeds an interface file?
@@ -63,10 +65,12 @@ Answer these from the repo. If you get any wrong, your context load failed — s
   `sap_import_result`, 4 alerts (missed-extract fired for real twice — mechanism proven),
   07:00 digest, dead-man's switch.
 - **Phase B (56-column rebuild) and Phase C (shadow export): not started, ON HOLD.**
-- **Open bug, highest priority:** `SAP_LIVE` grew 151K → 6.9M rows in 3 days (suspected loader
-  OOM crash-loop + plain INSERT on retry). Hypothesis to test: this is the root cause of
-  (a) 496 documents on one (OrderItem, Period), (b) 89% NULL `BatchRunDate`,
-  (c) the original "many records missing" complaint — both loss and duplication from one cause.
+- **Open bug, highest priority:** `SAP_LIVE` reached 8,324,155 rows at
+  2026-07-30 13:53:09 UTC (stale after the later 21:53 ICT manual run). The corrected mechanism is
+  BI interface imports changing SAP-owned `UpdateDate`/`UpdateTime`, followed by watermark-based
+  re-extraction and plain append. Loader crash-loop/full-bucket reread is retracted as the primary
+  cause. Open questions include (a) 496 documents on one (OrderItem, Period), (b) 89% NULL
+  `BatchRunDate`, and (c) the original "many records missing" complaint.
   **Every baseline number (373k/340k MISSING, 9.55% multi-doc, delta distribution) is suspect until this
   is settled.** The loader (`sap-order-payment-initial-phase`) is not owned by BI — confirm ownership
   before proposing changes.

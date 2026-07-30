@@ -112,7 +112,7 @@ on_error ทุก step → alert พร้อมชื่อ step   # dead man'
 | `recon_careos_interface` + `interface_daily_status` | 🆕 สร้าง (P4→เลื่อนขึ้น P0-lite ได้) | recon แบบง่ายทำได้ทันทีที่มี sap_state |
 | **Cloud Workflow `wf-sap-pipeline`** | 🆕 สร้าง (P3) | แทน schedule แยกทั้งหมด |
 | Scheduler `sap-order-payment`, `-non-motor` (01:30) | ♻️ ย้ายเข้า workflow แล้วปิด | ระหว่าง migration รันคู่ได้ |
-| ~~B1 ทั้งเส้น~~ | ไม่มีอยู่จริง (`gs://sap-bucket-csv`/`auto_load_sap_data_in_bucket_to_bigquery` ไม่มี B1 คู่ขนาน — ลบแผน sunset นี้ทิ้ง) | `SAP_LIVE`/`SAP_LIVE_FULL`/`SAP_LIVE_2025/2026` ใช้ต่อถาวร ไม่ sunset |
+| ~~B1 ทั้งเส้น~~ | ไม่มีอยู่จริง (bucket B1 ในแผนเก่าไม่ใช่ `gs://rcb-bronze-zone/SAP/production_database/` ที่ deploy จริง; `auto_load_sap_data_in_bucket_to_bigquery` ไม่มี B1 คู่ขนาน — ลบแผน sunset นี้ทิ้ง) | `SAP_LIVE`/`SAP_LIVE_FULL`/`SAP_LIVE_2025/2026` ใช้ต่อถาวร ไม่ sunset |
 | RCL manual queries (05_paid, 05_newpayment, 04 credit shell, 02 cancel-new) | ♻️ ยุบเข้า Engine | หมด hardcoded list |
 
 ---
