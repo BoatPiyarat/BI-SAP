@@ -998,3 +998,125 @@ Item 2's open gap) AND mechanistically explained (Item 3's 244-order CMI+duplica
 most) — almost certainly well under the 559+71 originally reported, exactly as Boat anticipated.
 Nothing across sql/ddl/039/040/041 has been deployed; both pilot files need a further update to
 reflect `L80046687`'s rejection once a replacement is found.
+
+---
+
+# ADDENDUM 2026-07-30 (session, D16 Boat) — scope redefined by CAUSE (CMI-not-deducted), not symptom; 559/71 both formally dropped; new population quantified, disjoint from credit-shell's 244; new pilot found
+
+Boat's scope call: the "CMI issue" is **only** the population where a CMI item exists and the
+compulsory (พรบ.) premium was never deducted from what the customer paid (the 263-transaction
+mechanism). The 559/71 figures were computed from the *symptom* (Expected≠Actual in
+`sap_integration_v2`) not the *cause* — **both drop, formally, for this incident's purposes.** The
+244-order credit-shell double-deduction and the 224-order unknown-cause bucket are each their own
+separate finding — not folded in here.
+
+## Item 1 — new population defined and quantified by cause, using `sap_mirror_doc` directly (not the symptom view)
+
+Checked all three of Boat's diagnostic angles:
+
+- **`packageType` vs `motor_item_type` disagreement** at the source (`careos_order_items`): **zero
+  rows** currently disagree (`packagetype='mandatoryPackages'` pairs with `motor_item_type =
+  'MOTOR_TYPE_COMPULSORY'` in all 199,577 rows checked). The disagreement is not a live data-quality
+  problem in the source table today — consistent with the identifier having been standardized.
+- **CMI identifier change date**: confirmed directly from the `sap_dashboard_carepay_fully_paid`
+  view's own header comment — `29/Jun/2026 Piyarat changes CMI identifier to motor_item_type =
+  'MOTOR_TYPE_COMPULSORY'` (close to Boat's recalled ~26/06/2026).
+- **V1's `ActualReceived` = the full amount still including the CMI premium**: built directly and
+  checked against `sap_mirror_doc` (ground truth, not the symptom view).
+
+**Query, built and self-corrected**: for every order with a CMI sibling, compared its non-CMI
+item's `sap_mirror_doc` Period-1 row (`(Actual − Expected)`) against the CMI sibling's own
+`gross_premium`, `TransactionStatus = 'Paid'` only. First pass (no `Expected > 0` filter): **648
+orders, Σ ฿441,447.49** — but sampling the top matches showed most were `Expected = 0` rows
+(`ExpectedReceived=0`, `Actual=exactly the CMI premium`) — these are a **different, unrelated
+pattern** (additional-payment/correction-shaped rows per `SAP_VALIDATION_LIBRARY.md`'s own
+`CORRECTION_MARKER_MISSING` warning — structurally indistinguishable from a real topup without a
+marker), not CMI-non-deduction. **Filtered to `Expected > 0` only** (the item's own real premium
+must be present for "premium + undeducted CMI" to mean anything): **401 orders, Σ ฿267,775.28**.
+Sampled 3 of the remaining matches directly — clean, exact matches: e.g. `L80378696-V1` Expected
+12,320.00 → Actual 12,965.21 (delta **exactly** +645.21, the CMI premium, not just within
+tolerance).
+
+**Results**:
+- **401 orders**, Σ over-expected **฿267,775.28**, all confirmed `TransactionStatus = 'Paid'` with a
+  real `DocEntry` (POSTED_WRONG by construction — this population was built directly from
+  `sap_mirror_doc`, not the symptom view, so the key-level POSTED check from Item 2 is already
+  satisfied for this specific population).
+- **Overlap with credit-shell's 630-order population: 0.** Confirmed disjoint, as instructed.
+- **BatchRunDate vs. the 29-Jun-2026 identifier-change window**: 279 orders (70%) posted *before*
+  the change, 122 (30%) *on or after* — **not a clean before/after split**. Flagging honestly rather
+  than forcing the narrative: either the 29-Jun-2026 fix didn't fully close the gap, or a
+  meaningful share of these orders had their wrong V1 base value carried forward from an
+  earlier-created order into later-dated batches (not diagnosed further this session).
+- Year split, per `PolicyDate`: not yet broken out by calendar year in this pass (only the
+  before/after-cutover split above) — flagged as a small remaining gap, cheap to add on the next
+  query if needed.
+
+**⚠️ Heterogeneity found while validating the pilot (see Item 5) — not fully characterized**: at
+least one match (`L80400094`) turned out to be a *different* sub-mechanism than intended — both
+`M1` and `V1` share the exact same `ActualReceived` and the same `U_InvoiceNo` (the full combined
+payment applied to both items independently, structurally identical to `L78496990`'s
+`sap_dashboard_carepay_fully_paid` mechanism from D14/D15), not "V1 alone carries an undeducted
+CMI addition." My `(Actual−Expected) ≈ cmi_premium` filter catches both shapes, since the arithmetic
+happens to coincide. **The 401-order figure likely still mixes two distinct sub-patterns** — flagged
+rather than silently resolved; a future pass should also check whether `M1`'s own `Actual` matches
+its own `Expected` (645.21) before counting an order as pure V1-side CMI non-deduction.
+
+## Item 2 — key-level POSTED_WRONG principle applied here; broader 630-order re-audit still outstanding
+
+This session's Item 1 query (above) already applies the key-level principle correctly: it checks
+`TransactionStatus = 'Paid'` on the *specific flagged row* in `sap_mirror_doc`, not "does the order
+have any row anywhere" (the weaker order-level test from the prior D16 entry that missed
+`L80046687`'s hidden Period-2 variance). **This is the pattern to reuse.** Retroactively re-auditing
+the full 630-order credit-shell population at this same key-level granularity (using `BatchRunDate`
+history, not today's view) is still outstanding — not done this session, given time — and is the
+concrete next step before that population's correction count can be trusted.
+
+## Item 3 — `sap_fa_verification` control table designed, seeded with Mo's 2 cases (source-only, not deployed)
+
+`sql/ddl/042_sap_fa_verification.sql` (new, source-only): a small control table —
+`order_id, order_item, verified_by, verification_date, has_cmi_sibling, posted_state, notes,
+created_at` — seeded with exactly the 2 cases Mo supplied:
+- `L79871659`: no CMI sibling, correctly posted since March 2026 — `posted_state =
+  'POSTED_CORRECT'`. A negative control: any CMI-cause query must **never** include this order.
+- `L80524847`: no JE, entire file (LogID 21090) rejected — `posted_state =
+  'REJECTED_NEVER_POSTED'`. A negative control for correction eligibility: any query proposing this
+  order for a correction line is wrong.
+
+Every future query against either the CMI-cause population or the credit-shell population should
+join against this table and assert both seeded rows land in their expected bucket — same
+discipline as the existing known-answer tests (`L80524847` for MISPOSTING shape,
+now also here for posted-state), just centralized instead of re-derived by hand each time.
+
+## Item 4 — SAP_LIVE bloat cleanup: an existing team rule already covers this, cited and reinforced
+
+Checked first rather than assuming: **a governance rule already exists** — `docs/knowledge/20_SAP_PROGRESS.md`
+and `docs/knowledge/30_SAP_CHANGELOG.md` both record an open "SAP_LIVE bloat" incident (151,024 →
+6,858,653 rows in 3 days) with an explicit standing rule: **no truncate/rebuild/delete of historical
+rows before the bloat incident closes and a reviewed preservation/retention decision exists**;
+read-only investigation may continue. This is exactly the rule Boat is asking for — it already
+exists, owned by the team's knowledge base, not something I need to draft. **Adding the connection
+explicitly for this incident's record**: this session's entire POSTED_WRONG-vs-REJECTED analysis
+(D16 both entries) depends on `sap_mirror_doc`'s append-only history surviving intact — any cleanup
+before *this* incident (CMI-non-deduction + credit-shell + the unknown-224 bucket) also closes would
+destroy the only evidence able to answer "was this ever actually posted, and with what number, at
+the time." No cleanup action taken or proposed here; citing the existing rule as sufficient.
+
+## Item 5 — new pilot found: `L77828566`, clean single-row case, Method 1 eligible
+
+Sampled 3 of the 401-order population directly against `sap_mirror_doc`; 2 turned out unsuitable —
+`L80400094` is the M1/V1-shared-payment shape flagged above (needs a 2-item fix, not a clean V1-only
+correction); `L80378696` has a **negative** `ExpectedReceived` on `M1` (−1,034.79) — per
+`SAP_VALIDATION_LIBRARY.md`'s explicit rule, a negative Expected mandates **Method 2** (Cancel +
+fresh Paid), not Method 1, so it's out for this pilot's purposes regardless.
+
+**`L77828566` is clean**: exactly **one** `sap_mirror_doc` row total for the whole order —
+`L77828566-V1`, Period 1, `Expected = 17,155.79`, `Actual = 17,801.00` (delta **+645.21**, exactly
+the CMI premium), `TransactionStatus = 'Paid'`, real `DocEntry` `1972667`, `BatchRunDate` `05122025`
+(before the 29-Jun-2026 identifier change — consistent with the hypothesis for this specific case).
+Invoice check: only 1 invoice on record for this order (`1_L77828566-V1`), not `ADJ`-prefixed —
+`ADJ1_L77828566-V1` is collision-free. Correction draft (Method 1, since `Expected` here is positive
+and correct-looking): `ExpectedReceived=0`, `ActualReceived=-645.21`,
+`InvoiceNo=ADJ1_L77828566-V1`. **Not sent** — same outstanding dependencies as every other pilot
+this session (cutoff dates, `sap_correction_log`/`fn_mint_adj_invoice` deploy, generating-bug fix
+first, full validation pass, shadow run, REVIEW_QUEUE sign-off).
