@@ -4,6 +4,23 @@ Append-only — entry ใหม่บนสุด ห้ามลบ/แก้�
 
 ---
 
+## 2026-07-30 — Closed dormant integrity view; code-level cost guardrail begins
+
+Boat confirmed `sap_integration_v2.sap_integrety_2025_RCL` has no real consumer, consistent with
+the prior 90-day job-history check. Closed the INPUTS_NEEDED item as dormant/obsolete:
+no notification, owner escalation, or remediation is required. Retained it only as a
+housekeeping/archive candidate; the separately used `audit_010_careos_missing_in_sap_detail`
+note remains independent.
+
+Started enforcing cost controls in code using Claude Code commit `a56f6d1`:
+all non-metadata BigQuery queries must go through `scripts/bq_safe_query.sh`, direct `bq query` is
+prohibited, and every new `diag_*`/scratch table must declare `expiration_timestamp`. Class-A
+review caught two wrapper gaps (missing byte field fails open as zero; `--force` conflicts with
+the 20-GiB hard cap), so the wrapper remains mandatory but `--force` is prohibited until the
+BLOCK in `docs/reviews/2026-07-30-a56f6d1-codex.md` is resolved.
+
+---
+
 ## 2026-07-30 — D16 separates incidents and requires FA verification control
 
 Cancelled the earlier merged-incident framing. INCIDENT-002a is the CMI identifier change

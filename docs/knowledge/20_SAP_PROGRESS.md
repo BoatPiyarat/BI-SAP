@@ -147,10 +147,10 @@ A3's original manual/body-oriented `sap_import_result` landing table was built, 
 the revised header/detail/pickup objects and Apps Script remain queued/not deployed.
 `resolution_confidence`/PROVISIONAL is visible all the way through
 `stg_sap_state` → `delta_export`/`interface_daily_status`; Q3a extended with the NULL-BatchRunDate
-sub-question; `sap_integrety_2025_RCL` consumer/impact investigation closed (dormant view, but
-`audit_010_careos_missing_in_sap_detail` is actively used and shares the same risk, not yet
-individually checked - flagged, not fixed, not told to anyone outside the team per Boat's
-instruction).
+sub-question; `sap_integrety_2025_RCL` consumer/impact investigation is CLOSED:
+dormant/obsolete, no real consumer in 90 days, no notification required, housekeeping/archive
+candidate only. `audit_010_careos_missing_in_sap_detail` is separate: actively used, but Return
+Triage found its actual zero-match output unaffected and no fix is requested.
 
 **Explicitly NOT started, not compressed into a stub**: PHASE B (`expected_state` full 56-column
 rebuild across all 5 flows including Credit Shell, + the legacy-file diff harness) and PHASE C

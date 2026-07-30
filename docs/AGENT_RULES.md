@@ -58,6 +58,12 @@ GCP project `pacific-plating-282708` | region `asia-southeast1` | auth: data@rab
 ## Cost-control guardrails (canonical; source rationale in `docs/COST_CONTROL.md`)
 
 ### BigQuery/query cost
+- **Mandatory query path:** every non-metadata BigQuery query must run through
+  `scripts/bq_safe_query.sh`; direct `bq query` is prohibited. Metadata-only operations include
+  `bq show/ls/head` and queries limited to `INFORMATION_SCHEMA`/`__TABLES__`. Enforcement source
+  was introduced by Claude Code in `a56f6d1`; its class-A review is currently BLOCKED in
+  `docs/reviews/2026-07-30-a56f6d1-codex.md`, so do not use `--force` or bypass the wrapper while
+  the fail-open parser gap is being fixed.
 - Every non-metadata query must be dry-run first. If estimated bytes exceed 20 GB, stop and ask before running it.
 - Default every `bq query` to `--maximum_bytes_billed=21474836480` (20 GiB).
 - Count rows from metadata (`INFORMATION_SCHEMA.TABLE_STORAGE` / `__TABLES__.row_count`) instead of `COUNT(*)`; do not `COUNT(*)` a large view.
@@ -83,7 +89,8 @@ GCP project `pacific-plating-282708` | region `asia-southeast1` | auth: data@rab
 - `SAP_LIVE` is append-only audit history. Investigate the 45× bloat and fix future ingestion, but
   do not clean, deduplicate, truncate, rebuild, or delete historical rows before the incident is
   closed and a reviewed preservation/retention decision exists.
-- Set `expiration_timestamp` on `diag_*` and scratch tables for 7–30 days.
+- Every new `diag_*` or scratch table must declare `expiration_timestamp` at creation (7–30 days);
+  use `sql/ddl/_TEMPLATE_new_table.sql`. No undocumented exception.
 - Partition and cluster large v3 tables and require partition filters in every query that touches them.
 
 ## Verification discipline (this project has been burned by all of these)

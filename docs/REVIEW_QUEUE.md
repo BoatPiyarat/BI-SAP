@@ -4,12 +4,13 @@ Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request firs
 review history; link the completed review and record its verdict.
 
 ## RQ-20260730-1800-bq-safe-query-wrapper
-Status: OPEN
+Status: REVIEWED
 Reviewer: Codex
 Class: A
 Artifact: `scripts/bq_safe_query.sh`, `sql/ddl/_TEMPLATE_new_table.sql`,
 `sql/ddl/README.md`; commit `a56f6d1`.
 Opened: 2026-07-30T18:00:00+07:00
+Verdict: BLOCK — `docs/reviews/2026-07-30-a56f6d1-codex.md`
 
 Claim: (1) `scripts/bq_safe_query.sh` implements `docs/COST_CONTROL.md` §3.1 as an enforced gate
 rather than a documented-only convention — always dry-runs first, parses

@@ -104,7 +104,7 @@ Answer these from the repo. If you get any wrong, your context load failed — s
 | EDC channel matrix for non-KBANK banks | Finance |
 | Q3a — which document's InvoiceNo when a period has many, incl. all-NULL `BatchRunDate` | Aware — **hold sending; may be asking about our own garbage until the bloat is understood** |
 | `run.invoker` IAM binding on `sap-extract-job` | Attila (or Boat if he has `run.admin`) |
-| `sap_integrety_2025_RCL` duplicate-SUM issue (dormant, no consumer in 90 days) | Boat decides when/whom to tell |
+| `sap_integrety_2025_RCL` duplicate-SUM issue | **CLOSED:** dormant/obsolete, no real consumer in 90 days; no notification; housekeeping/archive candidate |
 | 7 genuine `PAID_AFTER_CANCEL` cases | FA — confirm intent before any cancel is sent |
 
 ## 6. Hard "do not" list

@@ -65,6 +65,11 @@ GROUP BY 1,2 ORDER BY gib_logical DESC LIMIT 30;
 # PART 3 — กติกาลดต้นทุน (เพิ่มเข้า AGENT_RULES ทั้งหมด)
 
 ## 3.1 Hard cost guardrails
+- **บังคับผ่านโค้ด:** query BigQuery ที่ไม่ใช่ metadata ทุกครั้งต้องเรียก
+  `scripts/bq_safe_query.sh` เท่านั้น — ห้ามยิง `bq query` ตรง. Metadata-only คือ `bq show/ls/head`
+  หรือ query ที่จำกัดอยู่ใน `INFORMATION_SCHEMA`/`__TABLES__`. Claude Code เพิ่ม wrapper ใน
+  commit `a56f6d1`; class-A review ปัจจุบัน BLOCK เพราะ missing-byte parser fail-open และ
+  `--force` ยังติด hard cap 20 GiB. ระหว่างรอแก้ ห้ามใช้ `--force` และห้าม bypass wrapper.
 - **ทุก query ที่ไม่ใช่ metadata ต้อง `--dry_run` ก่อน** ถ้า dry-run บอก > **20 GB** ให้หยุดถามก่อนรัน
 - ใส่ `--maximum_bytes_billed=21474836480` (20 GiB) กับทุก `bq query` เป็น default —
   query หลุดจะ fail ทันทีแทนที่จะกินเงิน (นี่คือกันชนที่สำคัญที่สุดข้อเดียว)
@@ -92,8 +97,10 @@ GROUP BY 1,2 ORDER BY gib_logical DESC LIMIT 30;
 - ห้ามรัน agent 2 ตัวบนงานสืบสวนเดียวกัน (จ่าย token 2 เท่า ได้ข้อสรุปครึ่งใบ 2 อัน)
 
 ## 3.3 Storage
-- Clean `SAP_LIVE` (45× bloat) = ลดทั้ง storage และค่า scan ของทุก query ที่แตะมัน — **คุ้มสุดข้อเดียว**
-- ตาราง `diag_*` / scratch: ตั้ง `expiration_timestamp` ให้ลบตัวเองใน 7–30 วัน
+- `SAP_LIVE` เป็น append-only audit history: หยุด future reinsert growth แต่ห้าม clean historical
+  rows ก่อน incident ปิด
+- ตาราง `diag_*` / scratch ใหม่ทุกตาราง: ต้องกำหนด `expiration_timestamp` ตอนสร้างให้ลบตัวเองใน
+  7–30 วัน ใช้ `sql/ddl/_TEMPLATE_new_table.sql`; ห้ามยกเว้นโดยไม่บันทึก
 - Partition + cluster ตารางใหญ่ใน v3 และ **บังคับ partition filter** ในทุก query ที่แตะ
 
 ---
@@ -158,7 +165,7 @@ GROUP BY 1,2 ORDER BY gib_logical DESC LIMIT 30;
 | Import error รายคืน (~100 orders) → ~0 | ชั่วโมงแก้มือ + ความเสี่ยงบัญชี |
 | `SAP_LIVE` 45× bloat → stop future reinsert growth | ค่า storage + ค่า scanของทุก query; append-only history retained until incident closure |
 | Loader crash-loop → หยุด | ค่า compute ที่จ่ายทิ้งทุกคืน |
-| ตัวเลขผิดใน `sap_integrety_2025_RCL` (142,381 groups) | ความเสี่ยงตัดสินใจผิด (ตีเป็นเงินไม่ได้ แต่ต้องพูดถึง) |
+| `sap_integrety_2025_RCL` | Dormant/obsolete; no real consumer in 90 days, no notification needed; housekeeping/archive candidate only |
 
 **วิธีนำเสนอ:** ค่า infra ของ V3 อยู่ระดับ**เศษเงินเทียบกับชั่วโมงคน** ที่มันประหยัด — ประเด็นขายไม่ใช่
 "ลดค่า cloud" แต่คือ **เลิกจ่ายด้วยเวลาคนและความเสี่ยงบัญชี**

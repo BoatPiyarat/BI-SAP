@@ -205,11 +205,15 @@ something I can just reassign).
    is receiving, and Cloud Function status alone looks like nightly failure. See
    `docs/RETURN_TRIAGE_20260729.md` §4.
 
-## Boat — sap_integrety_2025_RCL follow-up (§14 in FINDINGS): dormant, but audit_010 isn't
+## CLOSED — `sap_integrety_2025_RCL`: dormant/obsolete housekeeping candidate
 
 90-day consumer check: `sap_integrety_2025_RCL` and `sap_integrety_2025_Q1` have **no real
 consumers** in 90 days (only my own investigation queries today) - the bug is real but currently
-dormant. **`audit_010_careos_missing_in_sap_detail` IS actively used by you** (3 times in 90 days)
+dormant. Boat confirmed on 2026-07-30 that `sap_integrety_2025_RCL` has no real consumer:
+**no notification is required and no owner follow-up remains**. Classify it as dormant/obsolete
+and retain only as a housekeeping/archive candidate.
+
+**Separate note:** `audit_010_careos_missing_in_sap_detail` IS actively used by Boat (3 times in 90 days)
 and has the same unguarded-SUM code pattern, but Return Triage verified its actual zero-match output
 is unaffected because the risky SUM is never used for matched rows. No fix is currently requested
 for that view. THB delta for `sap_integrety_2025_RCL` computed by year/BU - see FINDINGS §14; note the sign
@@ -217,21 +221,6 @@ flips between years (2024/2025 positive, 2026 negative), consistent with undefin
 behavior rather than one-directional overstatement - don't read the raw totals as "money lost."
 `reconcile_revenue 202508_booking` (one of the 6 remaining views) wasn't relocated in this pass -
 genuinely unverified, not confirmed dormant or active.
-
-## Boat — URGENT, found 2026-07-27: a live view is double-counting money
-
-`sap_integration_v2.sap_integrety_2025_RCL` (301,188 rows, name suggests a Finance-facing
-integrity/reconciliation report) `SUM`s `U_TotalAmount` from `SAP_LIVE_FULL` grouped by
-(OrderID, OrderItem, Period) with **no dedup** for periods that have multiple documents. Quantified
-live: **144,013 of 1,508,026 groups (9.55%) have >1 document, and 142,381 of those produce a wrong
-summed total** vs picking a single authoritative document. This is real and current, independent
-of anything built in `sap_integration_v3` today. Same search also matched `sap_integrety_2025`,
-`sap_integrety_2025_Q1`, `audit_010_careos_missing_in_sap_detail`,
-`int_01_careos_missing_in_sap_summary`, `int_020_careos_cancelled_missing_summary`,
-`reconcile_revenue 202508_booking` — not yet individually re-verified for the same pattern.
-**Recommend looping in whoever owns/consumes this view before trusting any total it has produced.**
-Not touched — outside this task's scope, needs your call on both the fix and who else to tell.
-See `FINDINGS_SAP_MIRROR_20260726.md` §13 for the full query and verification.
 
 ## Boat / accounting — standard decisions
 
