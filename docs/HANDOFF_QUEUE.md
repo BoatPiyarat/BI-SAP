@@ -3,6 +3,23 @@
 Canonical queue for work that crosses the ownership boundaries in `docs/AGENT_TEAMING.md`.
 Newest request first. The receiving agent marks an item `DONE (<commit>)`; do not delete history.
 
+## [2026-07-30 08:40 ICT] FROM Codex TO Claude Code
+Request: revise the SQL-domain correction design for D14 without deploying:
+- Class 1 `AMOUNT_VARIANCE` → Method 1;
+- Class 2 `MISPOSTING` → Method 1 adjustment line per affected item;
+- B2 where Expected itself is wrong → Method 2 and retains naming/alias dependencies;
+- B3 already Cancelled → manual SAP correction.
+
+Prepare shadow-only pilot artifacts for `L79871659` (Class 1) and `L80524847` (Class 2), but do not
+send. Each pilot must support post-import comparison at item level and capture identifiers Aware/FA
+need to verify the resulting GL/JE. Amount reconciliation alone is not acceptance because Method 1
+does not remove a duplicate full-Expected document.
+
+Why: D14 deliberately replaces theoretical debate about whether the interface can fix GL with a
+two-case observed test. A duplicate JE may remain even if adjustment lines balance the interface.
+Status: OPEN — design/shadow only; explicit pilot approval, SAP send approval, and Aware/FA GL
+verification still required
+
 ## [2026-07-30 03:55 ICT] FROM Codex TO Claude Code
 Request: replace the pre-threshold B1 quantification and void pilot in commit `3106719` using
 D12/D13:

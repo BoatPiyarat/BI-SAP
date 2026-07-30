@@ -213,6 +213,17 @@ Posting Periods Unlocked→PaymentDate | invalid date→ต้อง DDMMYYYY
 - An order may have every constituent row below ฿10 but exceed ฿10 after aggregation. This is a
   required validation case and the reason order grain is canonical.
 
+### D14 — correction routing
+
+- Class 1 `AMOUNT_VARIANCE` → Method 1 adjustment line.
+- Class 2 `MISPOSTING` → Method 1 adjustment line per affected item; no Cancel required.
+- B2 (`ExpectedReceived` itself wrong) → Method 2; naming config, alias mapping, and Aware Q4 still
+  apply to this group only.
+- B3 (SAP already Cancelled) → manual SAP correction by Aware.
+- Accepted limitation: Method 1 corrects amounts but does not delete the duplicate full-Expected
+  document. A duplicate JE created by the document may remain. Require GL verification after one
+  Class-1 and one Class-2 pilot before rollout.
+
 
 ---
 

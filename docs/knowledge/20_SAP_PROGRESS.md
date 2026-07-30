@@ -1,7 +1,9 @@
 # 20_SAP_PROGRESS.md
 Last Updated: 2026-07-30 — **REPOSITORY BACKUP RISK CLOSED:** configured
 `origin=https://github.com/BoatPiyarat/BI-SAP.git` and successfully pushed
-`p0/stg-sap-state` on 2026-07-30. Google Drive remains backup-only, never a knowledge source.
+`p0/stg-sap-state` on 2026-07-30. Fetch/contains verification confirmed `4bbc16f`, `18e4342`,
+`3106719`, `73e94e0`, and `6863dc8` are all reachable from
+`origin/p0/stg-sap-state`. Google Drive remains backup-only, never a knowledge source.
 
 **D12/D13 MATERIALITY:** amount variance tolerance is ±฿10 per order after aggregation;
 `MISPOSTING` has no buffer. The prior B1 `289 / ฿85,106.84` and five smallest-value pilot cases
@@ -11,6 +13,11 @@ threshold. Do not cite them. Replacement result `4bbc16f` is **⚠️ UNDER CLAS
 (gross ฿115,553.58), sourced from `sap_integration_v2.RCL 04_new order credit shell` and the
 query in `sql/ddl/039_sap_correction_log_and_b1_pilot.sql`, commit timestamp
 2026-07-30 08:26:27 ICT. Do not act on the replacement pilot or figures until review passes.
+
+**D14 ROUTING:** Class 1 uses Method 1; Class 2 uses Method 1 per item. Naming/alias/Aware Q4 no
+longer block Class 2 and remain relevant only to B2 where Expected itself is wrong. Accepted risk:
+Method 1 does not remove a duplicate full-Expected document, so GL/JE duplication may remain.
+Await explicit pilot approval and Aware/FA GL verification for `L79871659` and `L80524847`.
 
 **INCIDENT-002 OPEN / INTERNAL ONLY:** CMI `add_ons` is being deducted
 per charge row in the credit-shell path instead of once per `(OrderItem, Period)`, while rows 2+

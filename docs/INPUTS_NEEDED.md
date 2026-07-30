@@ -91,7 +91,22 @@ especially the `C#` convention observed around Credit Shell?
 timestamp not retained. `-M1R2` is only a rejected-as-hardcode proposal, not a decision.
 
 **In the meantime**: D10 requires a configuration parameter for the naming template/prefix.
-Do not hardcode or deploy any replacement naming until Aware answers.
+Do not hardcode or deploy any replacement naming until Aware answers. Per D14, this question is a
+blocker only for B2 (`ExpectedReceived` wrong); it is **not** a blocker for Class 1 or Class 2,
+which use Method 1.
+
+## Aware + FA — GL verification for two Method-1 pilots
+
+**Ask after explicit pilot approval and execution**: verify both the SAP interface amounts and the
+underlying GL/journal entries for:
+
+1. Class 1 `AMOUNT_VARIANCE`: `L79871659` (replacement pilot proposed in `4bbc16f`, net +฿11.27).
+2. Class 2 `MISPOSTING`: `L80524847` (M1 +฿645.21 / V1 −฿645.21).
+
+Purpose: replace the theoretical question “can the interface fix GL?” with observed evidence.
+Method 1 can correct item amounts but does not remove a duplicate document holding full Expected.
+If that document generated a duplicate JE, the JE may remain. Do not expand either correction
+population based only on balanced interface amounts; require explicit Aware/FA GL confirmation.
 
 ## FA — approve change-order cancel batch only after preflight
 

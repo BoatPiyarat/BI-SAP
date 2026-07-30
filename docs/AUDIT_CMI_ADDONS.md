@@ -96,6 +96,7 @@ implemented.
   `>= ฿10` is material.
 - Important blind spot avoided: an order can have every row/Period individually below ฿10 while
   the order total exceeds ฿10. A per-period test would miss it.
+- Correction method: **Method 1 adjustment line**.
 
 ### MISPOSTING
 
@@ -103,6 +104,36 @@ implemented.
 - Tolerance: **none**. The ฿10 buffer applies only to shortage/overage, never to wrong-side posting.
 - Evidence: `L80524847` has M1 `+฿645.21` and V1 `−฿645.21`; order net is zero, but the posting is
   still wrong and must be detected.
+- Correction method: **Method 1 adjustment line per affected item**. Offset each item's delta;
+  do not Cancel solely because the order nets to zero.
+
+## D14 — correction-method mapping
+
+| Defect/bucket | Treatment | Naming/alias dependency |
+|---|---|---|
+| Class 1 `AMOUNT_VARIANCE` | Method 1 adjustment line | None |
+| Class 2 `MISPOSTING` | Method 1 adjustment line **per item** | None |
+| B2 — `ExpectedReceived` itself is wrong | Method 2 Cancel + new Paid | Yes: naming config + alias/recon |
+| B3 — SAP already Cancelled | Manual SAP correction by Aware | None in BI pipeline |
+
+D14 removes Method-2 naming, `sap_orderitem_alias`, and Aware Q4 as blockers for Class 2 only.
+Those dependencies remain open for B2 because an adjustment line cannot replace an incorrect
+Expected baseline.
+
+### Accepted limitation of Method 1
+
+Adjustment lines correct received amounts but do not remove the duplicate SAP document that still
+holds a full `ExpectedReceived`. If the duplicate document itself generated a duplicate journal
+entry, the JE may remain after the amounts reconcile. This is an accepted, unproven limitation—not
+an assumption that GL is fixed.
+
+Prove behavior through two pilots and GL verification:
+
+1. Class 1: `L79871659` (replacement pilot from `4bbc16f`, net +฿11.27).
+2. Class 2: `L80524847` (known misposting, M1 +฿645.21 / V1 −฿645.21).
+
+After Method 1 is applied, Aware/FA must verify both the interface/SAP amounts and the underlying
+GL/JE. No population rollout is allowed from an amount-only success.
 
 ## Process lesson
 

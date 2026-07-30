@@ -492,6 +492,29 @@ has been built or diffed yet. Given the `sap_integration_v2` DDL-exception this 
 DDL only in `sap_integration_v3`), a fix needs explicit approval before any shadow/deploy step,
 per this project's own deploy gate.
 
+---
+
+# ADDENDUM 2026-07-30 — D14 Method-1 routing and remote resolution
+
+D14 supersedes any inference that Class 2 needs Cancel/new-generation infrastructure:
+
+| Group | Correction |
+|---|---|
+| Class 1 `AMOUNT_VARIANCE` | Method 1 |
+| Class 2 `MISPOSTING` | Method 1 per affected item |
+| B2 Expected itself wrong | Method 2; naming/alias/Aware Q4 still apply |
+| B3 already Cancelled | Manual SAP correction |
+
+Method 1 fixes amounts but leaves the duplicate full-Expected document in SAP. If that document
+created a duplicate JE, the JE may remain. Required evidence is therefore two explicitly approved
+pilots—`L79871659` and `L80524847`—followed by Aware/FA GL verification. Balanced interface
+amounts alone do not pass the pilot.
+
+The earlier “remote empty/push blocked” sections are historical and **RESOLVED**. `origin` is
+`https://github.com/BoatPiyarat/BI-SAP.git`; `p0/stg-sap-state` was pushed, and fetch/contains
+verification confirmed `4bbc16f`, `18e4342`, `3106719`, `73e94e0`, and `6863dc8` are on
+`origin/p0/stg-sap-state`.
+
 ## Item E — re-checked the original 698 B2 keys against the ฿10/order buffer
 
 612 distinct orders behind the 698 keys. Reclassified each at the order level:

@@ -98,6 +98,9 @@ GCP project `pacific-plating-282708` | region `asia-southeast1` | auth: data@rab
   already-Cancelled B3 cases go to Aware for manual correction, with no new infrastructure.
 - D12/D13 (Boat 2026-07-29/30): amount-variance tolerance is ±฿10 **per order**, aggregated before
   comparison. `MISPOSTING` has no buffer and remains a defect even when the order nets to zero.
+- D14 (Boat 2026-07-30): Class 1 and Class 2 both use Method 1; Class 2 adjustments are per item.
+  Method 2 naming/alias/Aware-Q4 dependencies apply only to B2 where Expected itself is wrong.
+  Amount reconciliation does not prove GL correctness; require pilot GL/JE verification.
 - Test customers: exact match `LOWER(TRIM(FirstName|LastName)) = 'test'` only. Phone `0999999999` = corroborating signal, **report-only** for now.
 - PolicyNo > 50 chars = BLOCK (never truncate) + report in the morning email.
 - Date fields: exactly 8 chars and parseable; empty allowed **only** for PaymentDate on pending rows.

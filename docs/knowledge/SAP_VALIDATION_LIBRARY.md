@@ -51,5 +51,16 @@ until the source/export carries a durable marker distinguishing `CORRECTION` fro
 - An order whose individual rows are each within ฿10 but whose aggregated variance exceeds ฿10
   must fail `AMOUNT_VARIANCE`; this is why the comparison grain is the order.
 
+### D14 correction routing and GL acceptance
+
+- `AMOUNT_VARIANCE` → Method 1 adjustment line.
+- `MISPOSTING` → Method 1 adjustment line per affected item.
+- B2 where `ExpectedReceived` itself is wrong → Method 2; naming/alias dependencies remain.
+- B3 already Cancelled in SAP → manual SAP correction by Aware.
+
+Method 1 amount reconciliation is not sufficient acceptance evidence. It does not delete a
+duplicate full-Expected document, so a journal entry created by that document may remain. Pilot
+acceptance requires Aware/FA to verify GL/JE for both one Class-1 and one Class-2 case.
+
 Implementation and live validation belong to Claude Code's SQL lane and are queued in
 `docs/HANDOFF_QUEUE.md`; these rules do not assert that the corresponding SQL checks are deployed.

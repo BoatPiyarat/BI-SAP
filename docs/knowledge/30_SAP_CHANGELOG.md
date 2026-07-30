@@ -4,6 +4,26 @@ Append-only — entry ใหม่บนสุด ห้ามลบ/แก้�
 
 ---
 
+## 2026-07-30 — D14 routes Class 2 to Method 1; GL pilot verification required
+
+Recorded D14: Class 1 `AMOUNT_VARIANCE` uses Method 1; Class 2 `MISPOSTING` also uses Method 1,
+applied per affected item. Method-2 naming, alias-table, and Aware-Q4 dependencies are therefore
+not Class-2 blockers; they remain required for B2 where `ExpectedReceived` itself is wrong. B3
+remains manual SAP correction.
+
+Accepted and documented the limitation that an adjustment line corrects amounts but does not
+remove a duplicate SAP document holding full Expected. If that document generated a duplicate
+journal entry, the JE can remain even when interface amounts reconcile. Replaced the theoretical
+GL question with an evidence request: after explicit pilot approval, Aware/FA must verify GL/JE for
+Class-1 `L79871659` and Class-2 `L80524847` before population rollout.
+
+Updated remote risk using actual push evidence: the working branch tracks
+`origin/p0/stg-sap-state`, and fetch/contains checks confirmed `4bbc16f`, `18e4342`, `3106719`,
+`73e94e0`, and `6863dc8` are on that remote branch. No SQL, BigQuery object, SAP document,
+adjustment, pilot, or GL entry was changed.
+
+---
+
 ## 2026-07-30 — D12/D13 order-level tolerance; remote risk closed
 
 Recorded Boat's materiality decision: amount variance uses a ±฿10 buffer per order after
