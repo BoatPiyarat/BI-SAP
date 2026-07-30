@@ -13,6 +13,36 @@ GCP project `pacific-plating-282708` | region `asia-southeast1` | auth: data@rab
 5. `docs/INPUTS_NEEDED.md` — open questions owned by humans; do not re-derive these
 6. Task-specific docs in `docs/design/` and `docs/tasks/`
 
+## Behavioral guidelines (LLM coding, source: andrej-karpathy-skills)
+Bias toward caution over speed; use judgment on trivial tasks.
+
+### 1. Think Before Coding
+Don't assume. Don't hide confusion. Surface tradeoffs. State assumptions explicitly; if uncertain,
+ask. If multiple interpretations exist, present them — don't pick silently. If a simpler approach
+exists, say so and push back when warranted. If something is unclear, stop, name what's confusing,
+and ask.
+
+### 2. Simplicity First
+Minimum code that solves the problem. Nothing speculative. No features beyond what was asked, no
+abstractions for single-use code, no unrequested "flexibility," no error handling for impossible
+scenarios. If you write 200 lines and it could be 50, rewrite it. Ask: "Would a senior engineer say
+this is overcomplicated?" If yes, simplify.
+
+### 3. Surgical Changes
+Touch only what you must. Clean up only your own mess. Don't "improve" adjacent code, comments, or
+formatting; don't refactor things that aren't broken; match existing style even if you'd do it
+differently. If you notice unrelated dead code, mention it — don't delete it. When your changes
+create orphans, remove imports/variables/functions that YOUR changes made unused; don't remove
+pre-existing dead code unless asked. Test: every changed line should trace directly to the user's
+request.
+
+### 4. Goal-Driven Execution
+Define success criteria; loop until verified. Transform tasks into verifiable goals ("Add
+validation" → "write tests for invalid inputs, then make them pass"; "Fix the bug" → "write a test
+that reproduces it, then make it pass"). For multi-step tasks, state a brief plan with a verify
+step per line. Strong success criteria let you loop independently; weak criteria ("make it work")
+require constant clarification.
+
 ## Hard rules (non-negotiable)
 - **BigQuery Standard SQL only.** Deliver full runnable files; repo diffs are fine, "here's a snippet" is not.
 - **DDL only in `sap_integration_v3`.** Never CREATE/ALTER/DROP in `sap_integration_v2`, `SAP`, or `careos`.
@@ -61,9 +91,14 @@ GCP project `pacific-plating-282708` | region `asia-southeast1` | auth: data@rab
 - **Mandatory query path:** every non-metadata BigQuery query must run through
   `scripts/bq_safe_query.sh`; direct `bq query` is prohibited. Metadata-only operations include
   `bq show/ls/head` and queries limited to `INFORMATION_SCHEMA`/`__TABLES__`. Enforcement source
-  was introduced by Claude Code in `a56f6d1`; its class-A review is currently BLOCKED in
-  `docs/reviews/2026-07-30-a56f6d1-codex.md`, so do not use `--force` or bypass the wrapper while
-  the fail-open parser gap is being fixed.
+  was introduced by Claude Code in `a56f6d1`; that version's class-A review was BLOCKED in
+  `docs/reviews/2026-07-30-a56f6d1-codex.md` for a fail-open parser gap and a `--force` flag that
+  didn't do what it claimed. **Fixed** (2026-07-30, pending its own class-A review in
+  `REVIEW_QUEUE.md`): absent/unparseable `totalBytesProcessed` is now always a hard error (never
+  falls back to 0); `--force` is removed entirely — 20 GiB is a hard ceiling with no override; a
+  `--self-test` mode runs 7 offline parser cases with no BigQuery calls. Re-run
+  `bash scripts/bq_safe_query.sh --self-test` before trusting the wrapper again if this file is
+  touched further.
 - Every non-metadata query must be dry-run first. If estimated bytes exceed 20 GB, stop and ask before running it.
 - Default every `bq query` to `--maximum_bytes_billed=21474836480` (20 GiB).
 - Count rows from metadata (`INFORMATION_SCHEMA.TABLE_STORAGE` / `__TABLES__.row_count`) instead of `COUNT(*)`; do not `COUNT(*)` a large view.
