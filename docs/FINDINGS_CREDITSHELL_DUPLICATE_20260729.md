@@ -852,3 +852,138 @@ night it's corrected.
 Retried `git push origin p0/stg-sap-state` with D15's explicit approval — still denied by the
 permission classifier, same as every prior attempt. Not circumvented. 2 local commits
 (`9e6b44d`, `deea417`) remain unpushed; Boat needs to run this directly or grant the permission.
+
+---
+
+# ADDENDUM 2026-07-30 (session, D16) — 🔴 methodology error FA (Mo) caught: POSTED_WRONG vs REJECTED_NEVER_POSTED were conflated; Class 1 is over-inclusive; both pilots pulled
+
+Mo (FA) caught a real methodology error: `L80524847` has no JE not because it needs correction, but
+because its entire import file (LogID 21090, 26/26 rows) was **rejected outright** — "Sequence of
+Period invalid." It never posted at all. Every quantification so far (D13/D14/D15's 559+70/71) was
+computed straight from `sap_integration_v2`'s own output — **our generated view, not what SAP
+actually holds** — so it silently conflates two populations that need completely different
+treatment: orders SAP actually posted wrong (need a correction line) vs. orders that never posted at
+all (need the generating bug fixed, then a normal resend — no correction, since there's nothing
+posted to correct).
+
+## Item 1 — provenance confirmed: our own output, not `sap_mirror_doc`
+
+Re-checked the D13 quantification query directly: `FROM
+\`pacific-plating-282708.sap_integration_v2.RCL 04_new order credit shell\`` — confirmed, this is
+our own generated view's live output, never `sap_mirror_doc` (the table that actually mirrors what
+SAP holds — `DocEntry`, `TransactionStatus`, real `U_InvoiceNo`). Mo's concern is valid: the
+559+71 figures need re-verification against what's actually posted before being treated as a
+correction population.
+
+## Item 2 — POSTED_WRONG vs REJECTED_NEVER_POSTED, split at order level using `sap_mirror_doc`
+
+`sap_import_result` (the table meant to log import successes/failures, `batch_label`, `file_name`,
+`order_item`, `error_type`, `message`) is currently **empty (0 rows)** — it isn't populated, so it
+couldn't be used to independently verify LogID 21090's rejection reason; `sap_mirror_doc` (what SAP
+actually holds — `DocEntry`, `TransactionStatus`, etc.) was used instead as the ground truth.
+
+**Confirmed directly**: `L80524847` has **zero rows** in `sap_mirror_doc` — not one `DocEntry`,
+matching Mo's "26/26 rejected" finding exactly (this order never posted at all). Splitting the full
+559+71 population by whether the order has *any* row in `sap_mirror_doc`:
+
+| Class | Posted (≥1 row) | Rejected/never posted (0 rows) |
+|---|---:|---:|
+| Class 1 (559) | 559 | **0** |
+| Class 2 (71) | 69 | **2** (`L80524847`, `L80524883`) |
+
+Only 2 of 630 orders are fully never-posted at the order level — both Class 2, both almost
+certainly from the same rejected file (adjacent OrderIDs, `L80524847`/`L80524883`, both created
+2026-07-27). Class 1 has zero order-level rejections.
+
+**⚠️ But "posted-any" is a weaker test than it looks — a real gap found, not yet resolved**: pulled
+`L80046687`'s (the then-current Class 1 pilot) full `sap_mirror_doc` history and compared it
+against the *current* `sap_integration_v2` snapshot. Period 1 matches exactly (Expected 1150.00 →
+Actual 1200.00 in both) — but **Period 2 shows Expected 1150.00 → Actual 1100.00 in `sap_mirror_doc`
+(a real, already-posted −50 variance)**, while the *current* view now shows Period 2 as clean
+(1150.00 = 1150.00). The underlying source data changed sometime after Period 2 posted, so today's
+view no longer shows the anomaly — but SAP still has the wrong number sitting in it. **This means an
+order can be "posted-any" = true at the order level while (a) still having an actually-posted-wrong
+period my current-snapshot quantification cannot see at all, and (b) the period my quantification
+*does* flag might not be the only wrong one, or might no longer be wrong in the way the snapshot
+implies.** A trustworthy POSTED_WRONG population needs a **key-level** reconciliation against
+`sap_mirror_doc`'s actual historical per-period values, not an order-level presence check and not
+today's view snapshot. **Not done this session — flagging as the necessary next step before any
+correction number is finalized**, since the order-level split above almost certainly still
+undercounts real posted-wrong periods that have since "self-healed" in our own view.
+
+## Item 3 — Class 1 CMI-sibling × duplication breakdown: only 44% is clearly explained by the confirmed mechanism
+
+Confirmed `L79871659` (the very first D13 pilot candidate) has **no CMI sibling** — single item
+`L79871659-V1`, `motor_item_type = MOTOR_TYPE_1`, created 2026-03-05 — matching Mo's own finding
+exactly (booked correctly since March; whatever its delta is, it isn't this incident's mechanism).
+
+Broke the full 559 Class 1 orders down by whether they have a CMI (`MOTOR_TYPE_COMPULSORY`) sibling
+item *and* whether their flagged key actually shows row-duplication (`max_n_rows > 1` — the confirmed
+mechanism requires both: a CMI sibling to trigger the Period-1 `add_ons` deduction, and duplicate
+rows to apply it more than once):
+
+| CMI sibling | Duplication present | Orders | |
+|---|---|---:|---|
+| Yes | Yes | **244** (44%) | clearly explained by the confirmed mechanism |
+| Yes | No | 48 (9%) | CMI present but the flagged key itself isn't duplicated — mechanism doesn't directly explain it |
+| No | Yes | 43 (8%) | duplication present without a CMI sibling — a real delta, but not via the add_ons pathway specifically |
+| No | No | **224 (40%)** | **neither** — cause unknown from any mechanism confirmed so far |
+| (indeterminate) | | 16 (3%) | `motor_item_type`/`is_cancelled` NULL on all sibling items, join couldn't resolve |
+
+**Only 244 of 559 (44%) are unambiguously explained.** The other 56% range from "plausible but not
+directly mechanistic" (CMI-only or duplication-only, 91 orders) to **224 orders (40% of the reported
+Class 1 population) where neither factor is present at all** — these may not be defects from this
+incident's mechanism, matching Mo's suspicion directly. `L80046687` (no CMI, single un-duplicated
+row per period) sits in this unexplained 224 — worked example below.
+
+## Item 4 — both pilots re-examined against `sap_mirror_doc`; neither original Class-1 candidate survives; no clean replacement found yet
+
+**`L80524847` (Class 2)** — demoted. Confirmed **zero `sap_mirror_doc` rows** — this is a
+REJECTED_NEVER_POSTED case, not POSTED_WRONG. Cannot be a pilot (nothing posted to correct) and
+cannot be the correction-formula known-answer test (there's no posted state to reconcile against).
+**Repurposed**: kept as a known-answer test for the *generating-bug / rejection-detection* logic
+instead — a query meant to separate POSTED_WRONG from REJECTED_NEVER_POSTED must put `L80524847` in
+the rejected bucket, or that query is wrong.
+
+**`L80046687` (Class 1)** — rejected as pilot, for two independent reasons found this session: (1) no
+CMI sibling, no row-duplication on its own flagged key (Period 1, single row 1150.00→1200.00) — falls
+squarely in the 224-order unexplained bucket, cause unknown, may not be this incident's defect at
+all; (2) `sap_mirror_doc` reveals a **second, already-posted variance at Period 2** (1150.00→1100.00)
+that the current view snapshot no longer shows — meaning even setting the CMI question aside, a
+correction designed only against Period 1 (the current view's flag) would leave Period 2's real
+posted-wrong ฿50 sitting uncorrected. Do not use.
+
+**Search for a replacement Class 1 pilot**: filtered the 244-order "CMI present + duplication
+present" bucket for a small (10–200), 2026+, single clean candidate. Only one came up in range:
+`L79614142` (net_delta +20.00). Pulled its full detail — **it's a compound case, not a clean
+single-cause pilot**: `M1` Period 1 is genuinely duplicated (2 rows, 645.21/645.21 each →
+`sum_actual` 1290.42 → key_delta **+645.21**, the confirmed credit-shell mechanism, real); `V1`
+Period 1 has 2 rows too (2130.01 and **−630.20**, the latter almost certainly a real refund/reversal)
+→ key_delta **−625.21**, unrelated to the credit-shell mechanism. The two nearly cancel
+(+645.21 − 625.21 = +20.00 net), but they are two *independent* real events tangled into one
+order-level number — correcting only the credit-shell-attributable `M1` portion would **unmask** the
+separate −625.21 `V1` shortfall as a new-looking ฿625 variance. Rejected as a pilot for the same
+reason `L80046687` was: not a clean, single-cause case. **No replacement Class 1 pilot has been found
+yet** — recommend narrowing the search further (single mismatching key per order, not just "any
+duplication present") before selecting one.
+
+**`L79900064` (Class 2) — provisionally retained**, not fully re-verified: confirmed CMI sibling
+present (`M1`+`V1`), confirmed row-duplication present (from D14), confirmed POSTED with real
+`DocEntry`s and `TransactionStatus = 'Paid'` at `V1` Periods 2–5 (values match cleanly between the
+current view and `sap_mirror_doc` — no `L80046687`-style hidden divergence found in the periods
+checked). **Not yet checked**: `M1` Period 1's and `V1` Period 1's own `sap_mirror_doc` rows
+specifically (the actual mismatching keys) — the query that would confirm this pilot is genuinely
+POSTED_WRONG at its flagged key, not just "the order has posted rows somewhere," has not been run.
+Flagging explicitly rather than asserting this pilot is clean — do not treat it as fully cleared
+until that check runs.
+
+## Item 5 — sequencing confirmed, no change needed
+
+Boat's reordering stands: fix the generating bug (Option A, `sql/ddl/040`) first — the 2 confirmed
+REJECTED_NEVER_POSTED orders (and any others the deeper key-level check in Item 2 surfaces) will
+flow through on a normal resend once the bug is fixed, with no correction needed. What's left
+needing an actual correction is only the subset that is BOTH confirmed POSTED_WRONG (key-level, per
+Item 2's open gap) AND mechanistically explained (Item 3's 244-order CMI+duplication bucket at
+most) — almost certainly well under the 559+71 originally reported, exactly as Boat anticipated.
+Nothing across sql/ddl/039/040/041 has been deployed; both pilot files need a further update to
+reflect `L80046687`'s rejection once a replacement is found.

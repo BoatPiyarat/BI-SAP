@@ -2,6 +2,24 @@
 -- Boat D15 (2026-07-30): pilot authority resolved to L80046687 (Class 1) + L79900064 (Class 2),
 -- superseding 0a69143's L79871659 + L80524847 pair (L79871659 too close to noise floor,
 -- L80524847 kept as a permanent known-answer test instead of a pilot, per its blast radius).
+--
+-- ⚠️ SUPERSEDED, SAME DAY (D16, methodology error caught by Mo/FA): L80524847 turned out to have
+-- ZERO rows in sap_mirror_doc - its whole import file was rejected outright, so it was never
+-- REJECTED_NEVER_POSTED, not POSTED_WRONG (matches the D15 supersession note above independently -
+-- it's out either way, now for a stronger, confirmed reason). L80046687 is ALSO rejected as of D16:
+-- no CMI sibling, no row-duplication on its own flagged key (falls in a 224-order bucket with no
+-- confirmed mechanism explaining it), AND sap_mirror_doc reveals a second, already-posted Period-2
+-- variance (1150.00->1100.00) invisible in the current view - a correction designed only against
+-- Period 1 would leave real posted-wrong money uncorrected. L79900064 (Class 2) is PROVISIONALLY
+-- retained - CMI sibling confirmed, duplication confirmed, POSTED confirmed at V1 Periods 2-5, but
+-- M1/V1 Period 1's own sap_mirror_doc rows (the actual flagged keys) have NOT been checked yet - do
+-- not treat as fully cleared. NO replacement Class 1 pilot has been found (one candidate,
+-- L79614142, was examined and rejected too - a compound case tangling a real credit-shell M1
+-- duplication with an unrelated V1 refund/shortfall that happens to net to +20). See
+-- docs/FINDINGS_CREDITSHELL_DUPLICATE_20260729.md "ADDENDUM 2026-07-30 (session, D16)" for full
+-- detail. The L80046687 INSERT block below is KEPT for the record but must NOT be run even once a
+-- deploy is otherwise approved - it needs a different Class 1 case entirely.
+--
 -- SOURCE ONLY. Nothing in this file has been run against BigQuery. `sap_correction_log` does not
 -- exist yet (see 039). Do not run until ALL of the following are true:
 --   1. `sap_correction_log` deployed (039).
