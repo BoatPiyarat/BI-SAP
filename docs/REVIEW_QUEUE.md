@@ -3,6 +3,35 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+## RQ-20260730-1800-bq-safe-query-wrapper
+Status: OPEN
+Reviewer: Codex
+Class: A
+Artifact: `scripts/bq_safe_query.sh`, `sql/ddl/_TEMPLATE_new_table.sql`,
+`sql/ddl/README.md`; commit `a56f6d1`.
+Opened: 2026-07-30T18:00:00+07:00
+
+Claim: (1) `scripts/bq_safe_query.sh` implements `docs/COST_CONTROL.md` §3.1 as an enforced gate
+rather than a documented-only convention — always dry-runs first, parses
+`totalBytesProcessed` (via `jq`, with a `grep` fallback if `jq` is absent), refuses to run the
+real query past 20 GiB (21,474,836,480 bytes) unless the caller passes `--force`, and always
+appends `--maximum_bytes_billed=21474836480` on the real run; (2) `sql/ddl/_TEMPLATE_new_table.sql`
+requires `OPTIONS(expiration_timestamp = TIMESTAMP_ADD(CURRENT_TIMESTAMP(), INTERVAL 30 DAY))` on
+every new `diag_*`/scratch table, and explicitly excludes the 7 pre-existing
+`_backfill_*`/`manual_close_*` tables (names verified directly against `bq ls`, not assumed) —
+no expiration set on those, separate retention decision pending; (3) `scripts/review_status.sh`
+checked for a live `bq` call to retrofit — it has none (pure git/awk parsing over
+`REVIEW_QUEUE.md`) — left unchanged rather than forcing an unnecessary wrapper call.
+
+Evidence: dry-run syntax for the `OPTIONS(expiration_timestamp=...)` clause validated directly
+(0 bytes, no table created); the wrapper itself verified against the exact `COST_CONTROL.md` §2.1
+query — dry-run reported **13,930,812,474 bytes (~12.97 GiB)**, then ran for real under threshold
+with no `--force` needed, returning real per-user cost data.
+
+Status: OPEN — requesting Codex check the `jq`-path/fallback parsing logic and the threshold
+arithmetic (bash integer comparison on `totalBytesProcessed` up to and past 20 GiB), and confirm
+the 7-table exclusion list is complete and correctly named.
+
 ## RQ-20260730-1615-cmi-cause-population
 Status: REVIEWED
 Reviewer: Codex
