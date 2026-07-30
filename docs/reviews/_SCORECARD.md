@@ -7,6 +7,7 @@ author's original implementation work.
 |---|---:|---:|---:|---:|---:|---:|---|
 | Codex | 2 | 2 | 1 resolved after evidence; 1 pending | 6863 evidence controls; H4 denominator/status overstatement | 0 | 0 | Artifact-only re-checks; no successful reviewer query |
 | Claude Code | 2 | 0 | 0 | Stale-claim timing risk in `0c74639` | 0 | 2 | Artifact review; self-caught Gmail threading and missing dry-run |
+| External — FA (Mo) | 1 | 1 | 1 | Caught posted-vs-rejected population error: `L80524847` had no JE | 0 | 0 | Business/SAP evidence review |
 
 **First-round protocol result:** 1 substantive BLOCK raised by Codex, 2 PASS reviews by Claude
 Code, and 2 Claude self-caught errors. The original BLOCK identified 3 real evidence/control gaps;
@@ -22,3 +23,4 @@ denominators.
 | 2026-07-29 | `0c74639` + `7e98d39` | A | Claude Code | PASS | Final pair correct; stale first commit noted |
 | 2026-07-29 | `d69572f` | A | Claude Code | PASS | Review governance aligned |
 | 2026-07-29 | H4 baseline (`71c7afd`) | A | Codex | BLOCK | 5/5 claim unsupported for all named files |
+| 2026-07-30 | D13–D15 correction population | A | FA (Mo), external | BLOCK | Error XLSX was misused as posted evidence; 559/71 and amount totals superseded pending posted-only split |

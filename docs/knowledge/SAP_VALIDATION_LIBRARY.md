@@ -44,9 +44,10 @@ until the source/export carries a durable marker distinguishing `CORRECTION` fro
   `ABS(order_net_delta) < 10.00 THB` as within tolerance; values `>= ฿10` are material.
   Never apply this threshold independently per row, Period, OrderItem, or SAP
   document.
-- `MISPOSTING`: no tolerance. A zero-net order can still be wrong when equal amounts are posted to
-  opposite items/accounting sides. `L80524847` proves this shape: M1 `+฿645.21`, V1 `−฿645.21`,
-  net zero but materially wrong.
+- `MISPOSTING`: no tolerance. A zero-net order can still be wrong when equal amounts are assigned
+  to opposite items/accounting sides. `L80524847` demonstrates this BI-output shape (M1
+  `+฿645.21`, V1 `−฿645.21`, net zero) but does not prove a posted misposting: SAP rejected the
+  file and no JE exists.
 - Validation must run both checks. Passing `AMOUNT_VARIANCE` must never suppress `MISPOSTING`.
 - An order whose individual rows are each within ฿10 but whose aggregated variance exceeds ฿10
   must fail `AMOUNT_VARIANCE`; this is why the comparison grain is the order.
@@ -61,6 +62,14 @@ until the source/export carries a durable marker distinguishing `CORRECTION` fro
 Method 1 amount reconciliation is not sufficient acceptance evidence. It does not delete a
 duplicate full-Expected document, so a journal entry created by that document may remain. Pilot
 acceptance requires Aware/FA to verify GL/JE for both one Class-1 and one Class-2 case.
+
+### Posted-state eligibility before correction
+
+- `POSTED_WRONG`: eligible only when mirror presence, successful SAP status, and JE reference from
+  a successful import log all agree.
+- `REJECTED_NEVER_POSTED`: fix the generator and send the normal correct record; no adjustment.
+- Error XLSX is rejection evidence, never posted-state evidence.
+- Segment Class 1 by `has_CMI_sibling` before treating it as part of the CMI incident.
 
 Implementation and live validation belong to Claude Code's SQL lane and are queued in
 `docs/HANDOFF_QUEUE.md`; these rules do not assert that the corresponding SQL checks are deployed.

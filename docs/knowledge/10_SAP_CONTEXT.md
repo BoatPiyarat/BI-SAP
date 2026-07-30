@@ -209,7 +209,8 @@ Posting Periods Unlocked→PaymentDate | invalid date→ต้อง DDMMYYYY
   comparison; do not apply the buffer per row, Period, OrderItem, or SAP document.
 - `AMOUNT_VARIANCE` and `MISPOSTING` are permanent separate defect classes.
 - `MISPOSTING` has no buffer: net zero can still be wrong when amounts land on opposite accounting
-  sides. Evidence: `L80524847`, M1 `+฿645.21`, V1 `−฿645.21`.
+  sides. `L80524847` is only an output-shape example; FA confirmed its file was rejected and no JE
+  exists, so it is not evidence of a posted misposting.
 - An order may have every constituent row below ฿10 but exceed ฿10 after aggregation. This is a
   required validation case and the reason order grain is canonical.
 
@@ -223,6 +224,26 @@ Posting Periods Unlocked→PaymentDate | invalid date→ต้อง DDMMYYYY
 - Accepted limitation: Method 1 corrects amounts but does not delete the duplicate full-Expected
   document. A duplicate JE created by the document may remain. Require GL verification after one
   Class-1 and one Class-2 pilot before rollout.
+
+### D15 — authoritative pilots and two defect generators
+
+- Authoritative pilots: Class 1 `L80046687` + Class 2 `L79900064`.
+  `0a69143` is superseded: `L79871659` is too close to the noise floor and has no confirmed CMI
+  sibling; `L80524847` was rejected and has no JE. It is a rejection-detection test only.
+- Defect classes have two known generators: credit-shell
+  (`sap_integration_v2.RCL 04_new order credit shell`) and onetime
+  (`sap_data_engineer.sap_dashboard_carepay_fully_paid`, known-answer `L78496990`).
+- FA totals must include both streams with order-level overlap removed; no combined point estimate
+  is approved while `3c10215` remains under review/range ambiguity.
+- Credit-shell drift `698→700 keys`, `612→613 orders` proves the generator remains active. Fix the
+  generator before correction.
+- Option A selected: fix the v2 credit-shell view because the real
+  `sap_view.RCL_Motor_process_4_creditshell` consumer reads it directly. Deploy still requires
+  verbatim backup, shadow diff, and column-order verification.
+- Permanent population split: `POSTED_WRONG` requires mirror + successful status + JE reference
+  from a successful import log and is correction-eligible. `REJECTED_NEVER_POSTED` requires a bug
+  fix and normal resend, not correction. Error XLSX proves rejection, never posting.
+- Class 1 must be segmented by `has_CMI_sibling`; FA confirmed `L79871659` has no CMI sibling.
 
 
 ---

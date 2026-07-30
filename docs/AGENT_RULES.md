@@ -33,6 +33,9 @@ GCP project `pacific-plating-282708` | region `asia-southeast1` | auth: data@rab
 - **Never guess the date.** Run `date` before naming files or writing CHANGELOG entries.
 
 ## Workflow efficiency rules
+- **Session start review gate:** run `git pull --ff-only`, read `docs/REVIEW_QUEUE.md`, and run
+  `bash scripts/review_status.sh`. Any `Status: OPEN` assigned to the current agent is done before
+  other work. If a human instruction conflicts, report the conflict and ask; never skip silently.
 - Before every work item, run `git log --oneline -10` and read today's files under `docs/sessions/`. Do not repeat verification that already has evidence; cite the commit hash instead.
 - **Lane-specific read-only self-service:** Claude Code freely runs required read-only lookups (`bq show/ls/head/query`, `INFORMATION_SCHEMA`, `gcloud describe/list`, `gsutil ls`) without approval. Codex does not query BigQuery in the normal docs lane and batches needed numbers in `docs/HANDOFF_QUEUE.md`; as a reviewer, Codex may run at most one targeted read-only BigQuery query per review when an artifact claim cannot otherwise be judged. Exploratory reviewer queries are prohibited. Approval remains for writes/deploys only.
 - Before flagging an open question, check `20_SAP_PROGRESS` §DECISIONS PENDING and `INPUTS_NEEDED.md`. Reference known items; don't re-derive them.
@@ -48,6 +51,9 @@ GCP project `pacific-plating-282708` | region `asia-southeast1` | auth: data@rab
 - One task at a time; report before moving on. Don't chain into a second substantial build without a checkpoint.
 - End every session by pushing the completed commits to the configured Git remote. A local commit
   is not a completed handoff; report explicitly if push fails.
+- **Session end review gate:** after commit+push, create a REVIEW REQUEST for every class-A unit
+  just completed without waiting to be asked; clear assigned OPEN reviews; rerun
+  `scripts/review_status.sh`; report `Review debt: n OPEN (mine: n)`.
 
 ## Cost-control guardrails (canonical; source rationale in `docs/COST_CONTROL.md`)
 
@@ -83,6 +89,9 @@ GCP project `pacific-plating-282708` | region `asia-southeast1` | auth: data@rab
 - `COUNT(DISTINCT x)` silently drops NULLs. Check NULL counts separately.
 - Never trust a number you haven't sampled at row level. Anything unverified must be labelled UNVERIFIED.
 - Every reported number must name its source table/object and source timestamp. Never report or cite a bare number. If the query timestamp was not captured, say so and label the number PROVISIONAL.
+- Before reporting a number to any stakeholder, prove the population from SAP-side evidence—not
+  BI output, an export candidate, or an error XLSX. Error XLSX contains rejected rows. Posted-state
+  claims require mirror + successful status + JE/import-success evidence.
 - If a metric looks impossible (too big, too round, 100%), assume your own query is wrong before assuming the data is.
 - For a new incident, record symptom → hypotheses tested → root cause → fix → lessons. When SAP import errors return, parse the import log before theorizing.
 - Money or accounting impact discovered → write it to `docs/FINDINGS_*` + `INPUTS_NEEDED.md` and **stop**. Do not fix, do not notify anyone outside the team.

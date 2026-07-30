@@ -56,12 +56,14 @@ verbatim *"Checklist 1–12 reviewed; no gap found"* — and that sentence is au
 1. Author finishes a unit of work → commits → writes/updates `docs/sessions/<date>-<agent>.md`
    → appends a request to `docs/REVIEW_QUEUE.md`:
 ```
-## [YYYY-MM-DD HH:MM] REVIEW REQUEST — class A|B
+## RQ-YYYYMMDD-HHMM-<slug>
+Status: OPEN
+Reviewer: Codex | Claude Code
+Class: A | B
 Artifact: <commit hash(es) / files / table(s)>
+Opened: YYYY-MM-DDTHH:MM:SS+07:00
 Claim: <what the author asserts, in one or two sentences>
 Evidence: <where the reviewer can check it — query, table, session-note section>
-Reviewer: <other agent>
-Status: OPEN
 ```
 2. Reviewer writes `docs/reviews/<date>-<artifact>-<reviewer>.md`:
    verdict **PASS** / **PASS WITH NOTES** / **BLOCK**, plus the 12-item result, plus the required
@@ -71,6 +73,52 @@ Status: OPEN
 4. Class A cannot proceed while a BLOCK stands. Class B proceeds; the note becomes a follow-up task.
 5. Reviewer read-access: **read-only BigQuery is allowed for verification**, one targeted query max.
    Reviewers never deploy, never write, never edit the author's files — findings go in the review file.
+
+## Self-triggering session checklist
+
+### Session start — before other work
+
+1. `git pull --ff-only`.
+2. Read `docs/REVIEW_QUEUE.md` and run `bash scripts/review_status.sh`.
+3. If any entry has `Status: OPEN` and `Reviewer:` equal to the current agent, review those entries
+   before starting other work.
+4. If a new human instruction conflicts with clearing the review debt first, state the conflict and
+   ask the human which takes priority. Never skip an assigned OPEN review silently.
+
+### Session end — review loop closure
+
+1. Commit and push the completed work.
+2. For every class-A unit just completed, append a machine-parseable `REVIEW REQUEST` immediately;
+   do not wait for Boat or the reviewer to ask.
+3. Clear the current agent's remaining assigned OPEN reviews, subject to the one-round/escalation
+   rule above.
+4. Run `bash scripts/review_status.sh` and report exactly:
+   `Review debt: <total OPEN> OPEN (mine: <current-agent OPEN>)`.
+
+The request fields below are mandatory, one per line, in this exact spelling. Additional
+`Claim:`/`Evidence:` text may follow.
+
+```text
+## RQ-YYYYMMDD-HHMM-<slug>
+Status: OPEN
+Reviewer: Codex | Claude Code
+Class: A | B
+Artifact: <commit(s), files, objects>
+Opened: YYYY-MM-DDTHH:MM:SS+07:00
+```
+
+## Optional pre-push hook — proposal only
+
+After levels 1–2 above have run for one week, Boat may choose whether to install an optional
+pre-push hook that runs `scripts/review_status.sh` and warns when:
+
+- a class-A commit has no review request;
+- the current agent has OPEN review debt.
+
+The hook is **not installed by this change**. It must allow `git push --no-verify` for genuine
+emergencies, but every bypass must be recorded immediately in the session note and CHANGELOG with
+the reason, commit, operator, and follow-up review owner. Revisit after one week of normal use
+before deciding whether warning-only should become blocking.
 
 ## Reciprocity
 Both directions, no exceptions:

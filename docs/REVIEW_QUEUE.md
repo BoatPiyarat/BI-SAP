@@ -38,8 +38,7 @@ Evidence: every query (provenance re-check, order-level mirror-presence split, t
 Period-2 divergence, the CMI×duplication 2×2, `L79614142`'s per-key breakdown) is in the FINDINGS
 addendum with its actual result stated inline.
 
-Reviewer: Codex
-Status: OPEN — this significantly *shrinks* the confirmed correction population versus everything
+Review-note: this significantly *shrinks* the confirmed correction population versus everything
 reported in the prior 3 queue entries (RQ-202607301340-01, RQ-202607301120-02,
 RQ-202607301005-03) — requesting Codex verify (a) the order-level mirror-presence split query
 itself, (b) whether the `L80046687` Period-2 divergence generalizes (i.e. whether a proper
@@ -56,6 +55,7 @@ Reviewer: Codex
 Class: A
 Artifact: `docs/FINDINGS_CREDITSHELL_DUPLICATE_20260729.md` §"ADDENDUM 2026-07-30 (session, D15)" + `sql/ddl/040_generating_bug_option_a_dedup_charges.sql` + `sql/ddl/039`/`041` pilot-authority updates; commit `3c10215`.
 Opened: 2026-07-30T13:40:00+07:00
+Warning: ⚠️ numeric population is SUPERSEDED pending POSTED_WRONG vs REJECTED_NEVER_POSTED split.
 
 Legacy-Title: [2026-07-30 13:40 ICT] REVIEW REQUEST — class A — 🔴 MONEY-ADJACENT, second stream quantified (new, larger incident) + Option A drafted
 
@@ -108,6 +108,7 @@ Reviewer: Codex
 Class: A
 Artifact: `docs/FINDINGS_CREDITSHELL_DUPLICATE_20260729.md` §"ADDENDUM 2026-07-30 (session, D14 supplementary)" + `sql/ddl/039_sap_correction_log_and_b1_pilot.sql` supersession note; commit `9e6b44d`.
 Opened: 2026-07-30T11:20:00+07:00
+Warning: ⚠️ 559/71 and amount totals are SUPERSEDED; `L80524847` was rejected and has no JE.
 
 Legacy-Title: [2026-07-30 11:20 ICT] REVIEW REQUEST — class A — 🔴 MONEY-ADJACENT, D14 supplementary + unresolved pilot conflict
 
@@ -150,6 +151,7 @@ Reviewer: Codex
 Class: A
 Artifact: `docs/FINDINGS_CREDITSHELL_DUPLICATE_20260729.md` §"ADDENDUM 2026-07-29 (session, D13)" + `sql/ddl/039_sap_correction_log_and_b1_pilot.sql` supersession note; commit `4bbc16f`.
 Opened: 2026-07-30T10:05:00+07:00
+Warning: ⚠️ 559/70 and amount totals are SUPERSEDED pending posted-state filtering.
 
 Legacy-Title: [2026-07-30 10:05 ICT] REVIEW REQUEST — class A — 🔴 MONEY-ADJACENT, D13 order-level buffer
 + `sql/ddl/039_sap_correction_log_and_b1_pilot.sql` supersession note; commit `4bbc16f`.

@@ -100,8 +100,12 @@ which use Method 1.
 **Ask after explicit pilot approval and execution**: verify both the SAP interface amounts and the
 underlying GL/journal entries for:
 
-1. Class 1 `AMOUNT_VARIANCE`: `L79871659` (replacement pilot proposed in `4bbc16f`, net +฿11.27).
-2. Class 2 `MISPOSTING`: `L80524847` (M1 +฿645.21 / V1 −฿645.21).
+1. Class 1 `AMOUNT_VARIANCE`: `L80046687`.
+2. Class 2 `MISPOSTING`: `L79900064`.
+
+D15 makes this pair authoritative. `0a69143`'s `L79871659`/`L80524847` pair is superseded:
+the former is too close to the noise floor and has no confirmed CMI sibling; the latter was
+rejected and has no JE, so it is only a rejection-detection test case.
 
 Purpose: replace the theoretical question “can the interface fix GL?” with observed evidence.
 Method 1 can correct item amounts but does not remove a duplicate document holding full Expected.

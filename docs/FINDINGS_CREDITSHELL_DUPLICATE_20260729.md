@@ -1,5 +1,11 @@
 # FINDINGS — Credit-shell (OrderItem, Period) duplication, money-adjacent, 2026-07-29
 
+> ⚠️ **POSTED-STATE CORRECTION 2026-07-30:** all historical 559 / 71 / ฿331,671.78 /
+> ฿115,553.58 figures in this file are **SUPERSEDED — DO NOT CITE**. They may include rejected rows
+> that never posted. FA confirmed `L80524847` has no JE. Re-quantify `POSTED_WRONG` using mirror +
+> successful status + JE/import-success evidence; separate `REJECTED_NEVER_POSTED`, and segment
+> Class 1 by `has_CMI_sibling`.
+
 **Status: READ-ONLY INVESTIGATION ONLY. Nothing fixed. Not notified outside the team.**
 Per Boat's explicit instruction and this project's own hard rule (money/accounting impact →
 document + stop). Awaiting Boat's decision after Codex arithmetic-verifies this report

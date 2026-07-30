@@ -4,6 +4,53 @@ Append-only — entry ใหม่บนสุด ห้ามลบ/แก้�
 
 ---
 
+## 2026-07-30 — Review loop made self-triggering
+
+Added session start/end review gates to `AGENT_RULES` and `AGENT_REVIEW_PROTOCOL`, normalized
+`REVIEW_QUEUE` to fixed `Status/Reviewer/Class/Artifact/Opened` fields, and added the Bash-only
+`scripts/review_status.sh` report for OPEN debt, age, and class-A-path commits with no review
+request. Sent Claude Code a handoff to include the debt line in the morning digest.
+
+Documented an optional pre-push warning hook with a recorded-reason `--no-verify` escape hatch.
+The hook was not installed; Boat will decide after one week of level 1–2 use.
+
+---
+
+## 2026-07-30 — FA caught rejected-vs-posted methodology error
+
+FA (Mo) confirmed `L80524847` has no JE because the file was rejected. Marked
+559 / 71 / ฿331,671.78 / ฿115,553.58 **⚠️ SUPERSEDED — DO NOT CITE** because prior populations may
+include `REJECTED_NEVER_POSTED`. Added permanent split: `POSTED_WRONG` requires SAP mirror,
+successful status, and JE reference from a successful import log; `REJECTED_NEVER_POSTED` gets the
+generator fixed and a normal send, not an adjustment.
+
+Recorded that error XLSX contains rejected rows and cannot prove what is in SAP. Removed
+`L80524847` as a correction known-answer. Added `has_CMI_sibling` segmentation because FA confirmed
+`L79871659` has no CMI. Logged the external catch in the scorecard and added a stakeholder-number
+gate requiring SAP-side evidence.
+
+---
+
+## 2026-07-30 — D15 resolves pilots; records two active generators and Option A
+
+D15 makes `L80046687` + `L79900064` authoritative and supersedes `0a69143`'s pilot pair:
+`L79871659` is too close to the noise floor; D16 later established that `L80524847` was rejected
+and has no JE, so it remains only a rejection-detection test. Updated GL-verification inputs and
+closed the pilot conflict in HANDOFF_QUEUE.
+
+Opened a separate onetime finding for `L78496990`:
+`sap_data_engineer.sap_dashboard_carepay_fully_paid` is a second generator of the same permanent
+defect classes, distinct from credit-shell. FA totals must include both streams with overlap
+removed. `3c10215` is under class-A review and retains a range ambiguity, so no combined point
+estimate is approved.
+
+Recorded live drift from 698→700 keys and 612→613 orders as evidence the generator remains active,
+supporting “fix generation before correction.” Boat selected Option A because the real
+`sap_view.RCL_Motor_process_4_creditshell` consumer reads the v2 view directly. No deploy is
+authorized until verbatim backup, shadow diff, and column-order verification pass.
+
+---
+
 ## 2026-07-30 — D14 routes Class 2 to Method 1; GL pilot verification required
 
 Recorded D14: Class 1 `AMOUNT_VARIANCE` uses Method 1; Class 2 `MISPOSTING` also uses Method 1,

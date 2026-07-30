@@ -5,19 +5,38 @@ Last Updated: 2026-07-30 — **REPOSITORY BACKUP RISK CLOSED:** configured
 `3106719`, `73e94e0`, and `6863dc8` are all reachable from
 `origin/p0/stg-sap-state`. Google Drive remains backup-only, never a knowledge source.
 
+**REVIEW LOOP:** `REVIEW_QUEUE.md` now uses fixed fields; `scripts/review_status.sh` reports OPEN
+debt by reviewer and flags class-A-path commits lacking a review request. Session start/end gates
+are documented in `AGENT_RULES` and `AGENT_REVIEW_PROTOCOL`. The optional pre-push hook is only a
+proposal; it is not installed and must be reconsidered after one week at levels 1–2.
+
+**⚠️ SUPERSEDED — DO NOT CITE:** 559 / 71 / ฿331,671.78 / ฿115,553.58 may include
+`REJECTED_NEVER_POSTED`. FA confirmed `L80524847` has no JE because its file was rejected.
+Re-quantification must isolate `POSTED_WRONG` using mirror + successful status + JE/import-success
+evidence and segment Class 1 by `has_CMI_sibling`; `L79871659` has no CMI. Until then, no incident
+population or value goes to FA.
+
 **D12/D13 MATERIALITY:** amount variance tolerance is ±฿10 per order after aggregation;
 `MISPOSTING` has no buffer. The prior B1 `289 / ฿85,106.84` and five smallest-value pilot cases
 from `3106719` are **⚠️ SUPERSEDED / VOID** because they were selected before the order-level
-threshold. Do not cite them. Replacement result `4bbc16f` is **⚠️ UNDER CLASS-A REVIEW**:
+threshold. Do not cite them. Replacement result `4bbc16f` is **⚠️ SUPERSEDED**:
 559 `AMOUNT_VARIANCE` orders (gross ฿350,491.24; net ฿331,671.78) and 70 `MISPOSTING` orders
 (gross ฿115,553.58), sourced from `sap_integration_v2.RCL 04_new order credit shell` and the
 query in `sql/ddl/039_sap_correction_log_and_b1_pilot.sql`, commit timestamp
-2026-07-30 08:26:27 ICT. Do not act on the replacement pilot or figures until review passes.
+2026-07-30 08:26:27 ICT. Do not cite or act on it.
+
+**D15:** authoritative pilots are `L80046687` + `L79900064`; `0a69143` is superseded.
+`L79871659` is too close to the noise floor and `L80524847` is rejected-output evidence, not a
+posted-correction known-answer. Two generators are now confirmed: credit-shell and onetime
+`sap_dashboard_carepay_fully_paid` (`L78496990`). Combined FA quantification is not ready:
+`3c10215` is under class-A review and reports an unresolved range. Credit-shell drift
+`698→700 keys / 612→613 orders` proves the bug remains active. Option A is the selected direction,
+with verbatim-backup, shadow-diff, and column-order gates before any deploy.
 
 **D14 ROUTING:** Class 1 uses Method 1; Class 2 uses Method 1 per item. Naming/alias/Aware Q4 no
 longer block Class 2 and remain relevant only to B2 where Expected itself is wrong. Accepted risk:
 Method 1 does not remove a duplicate full-Expected document, so GL/JE duplication may remain.
-Await explicit pilot approval and Aware/FA GL verification for `L79871659` and `L80524847`.
+Await explicit pilot approval and Aware/FA GL verification for `L80046687` and `L79900064`.
 
 **INCIDENT-002 OPEN / INTERNAL ONLY:** CMI `add_ons` is being deducted
 per charge row in the credit-shell path instead of once per `(OrderItem, Period)`, while rows 2+
