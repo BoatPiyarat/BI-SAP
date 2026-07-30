@@ -252,3 +252,118 @@ prior use.
 3. Ask Aware to correct the two B3 cases manually.
 4. Do not deploy `sap_orderitem_alias` or `fn_mint_adj_invoice` unless a future approved B2
    remediation requires them; both remain source-only today.
+
+---
+
+# ADDENDUM 2026-07-30 (cont'd) — B1 quantified, pilot drafted, generating-bug fix INCOMPLETE (auth blocker)
+
+## Item 1 — B1 quantified: ⚠️ important methodology correction, not just a number
+
+First attempt scoped B1 as "not-B2, not-B3" **within the 1,247 duplicated-pairs population**
+(the same set the 698/2 counts came from) — that gives 547 candidate pairs, but sampling 5 of them
+showed **all 10 rows were NULL/NULL** (both duplicate rows are unpaid-future-period placeholders
+with zero real money). Verified this holds for the full 547, not just the sample: restricting to
+pairs with at least one non-NULL `ExpectedReceived` inside that population returns **0 rows**. So
+**B1 has zero real cases inside the duplicated-pairs set** — every money-bearing duplicate falls
+into B2 or B3, none into "duplicated but Expected still correct."
+
+**B1's real population is a different, previously unexamined slice**: single-row
+(`n_rows = 1`, i.e. NOT part of a duplicate pair at all) records in the same live view where
+`ExpectedReceived`/`ActualReceived` are both real and differ. First pass here caught trivial ±0.01
+THB satang-rounding noise (sampled the smallest deltas directly, confirmed) — added an
+`ABS(delta) > 1.00 THB` floor. Cross-checked every remaining row against
+`careos.cancelled_change_orders` (either side) to rule out an unrelated mismatch source:
+**100% (289 of 289) are genuinely credit-shell related.**
+
+**B1 (verified, live, single query, dry-run 7,470,424,864 bytes upper bound)**:
+
+| Metric | Value |
+|---|---:|
+| Real B1 cases (single-row, credit-shell related, |delta| > ฿1.00, not already Cancelled) | **289** |
+| ≤2024 | 0 |
+| 2025 | 5 |
+| 2026+ | 284 |
+| Overlap with B3 | 0 of 289 |
+| Σ net delta (Actual − Expected) | **+฿85,106.84** |
+| min / max \|delta\| | ฿1.07 / ฿4,316.42 |
+
+Exact queries (blast-radius sample, rounding-noise sample, credit-shell cross-check, year/B3-overlap
+aggregate) are in `sql/ddl/039_sap_correction_log_and_b1_pilot.sql`.
+
+## Item 2 — B1 pilot drafted (5 smallest 2026+ cases), NOT sent
+
+`sql/ddl/039_sap_correction_log_and_b1_pilot.sql`: `sap_correction_log` table designed (source-only)
+plus the 5-row draft (table in that file). All 5 are over-received (`ActualReceived > Expected`),
+so all 5 corrections are negative. Invoice-collision check done directly against `sap_mirror_doc`
+for all 5 real orders: none have any prior `ADJ`-prefixed invoice, so `ADJ1_<OrderItem>` is
+collision-free for all 5 (matches unit-test Case A from `038`).
+
+**Gap found, flagged, not silently filled**: `sap_accounting_cutoff_dates` does not exist anywhere
+in this project (checked `sap_integration_v3`, `sap_integration_v2`, `sap_data_engineer`, `SAP`) —
+`10_SAP_CONTEXT.md` references it as if built, but it isn't. Used the existing rollover pattern
+already live in `sap_dashboard_carepay_fully_paid.sql`'s `PaymentDate` logic as a stand-in for the
+draft, explicitly marked as a placeholder pending Finance/Boat confirmation — same open question
+already on record, not a new one.
+
+Pilot is **drafted only** — validation, shadow, and `REVIEW_QUEUE` submission still pending per
+Boat's own sequencing, and per D9/D11 nothing sends without explicit deploy OK.
+
+## Item 3 — generating-bug fix: INCOMPLETE, blocked mid-investigation by a BigQuery auth failure
+
+Pulled the live view's actual deployed SQL (`sap_integration_v2.\`RCL 04_new order credit shell\``,
+via `bq show`) rather than reasoning from the legacy captured copies in `sql/production/`, since
+those are explicitly different objects. Began a bisection to isolate exactly which join fans one
+(new_order, Period) row into two: checked `careos_order_items` for a genuine duplicate row on
+`L80524847-V1` (**none — exactly 1 row**), checked `cancelled_change_orders`/`all_links` for
+multiple link candidates on `L80524847` (**none — exactly 1**). **BigQuery access failed
+mid-bisection** (`gcloud`/`bq` token reauthentication required, cannot be completed non-interactively
+from here) before reaching the `ancestors`/`new_order_old_invoice_pool`/`spine_with_payment` stages,
+which is where the fan-out most likely lives (the recursive ancestor walk and its `LEFT JOIN` into
+`channel_resolved` on `(new_order_id, invoice_no)` are the remaining unverified candidates).
+
+**Ruled out** (verified, not assumed): the duplication is NOT a source-table data-quality issue
+(`careos_order_items`, `cancelled_change_orders` are both clean for this case) — it is a
+join/CTE-logic defect somewhere in the view itself, most likely in the `ancestors`/invoice-pool/
+`channel_resolved` chain. **Not yet pinpointed to a specific line**, so no fix is proposed yet —
+proposing one without finishing the bisection would risk fixing the wrong join or picking the wrong
+row to keep in a money-critical view.
+
+**Needed to continue**: `data@rabbit.co.th`'s GCP credentials need interactive re-authentication
+(`gcloud auth login`) on this machine — something only a human can complete. Once restored, the
+bisection resumes from `ancestors`/`new_order_old_invoice_pool` for the same `L80524847` case.
+
+**Consequence Boat flagged is still live**: until this fix lands, the nightly credit-shell run keeps
+generating new duplicate rows on top of whatever gets corrected via the B1 pilot — the pilot corrects
+past rows, it does not stop new ones.
+
+## Item 4 — no new action
+
+`sap_orderitem_alias` / `fn_mint_adj_invoice` remain source-only, undeployed, per D10/D11 (naming
+undecided, B2 remediation not yet approved).
+
+## Item 5 — 🔴 git remote: proposal only, not created on Boat's behalf
+
+Confirmed: `git remote -v` is empty, 108 commits since 2026-07-24 (6 days), only `master` and
+`p0/stg-sap-state` branches, everything local to this one machine. `gh` CLI is not installed here,
+so there's no path for me to create a remote even if it were appropriate to — and per instruction,
+it isn't: repo creation/ownership is Boat's call, not something to do on Boat's behalf.
+
+**Proposed steps for Boat to run** (or hand back to me once the empty repo exists and its URL is
+known — I can run the `git remote add`/`push` half, not the repo-creation half):
+
+1. Create a **private** repository (GitHub web UI, since `gh` isn't available locally):
+   `https://github.com/new` → name it (e.g. `rabbitcare-sap-integration`) → Visibility: **Private**
+   → do NOT initialize with a README/license/gitignore (this repo already has its own history).
+2. Once created, note the remote URL (SSH or HTTPS) and either run these two commands directly, or
+   send me the URL to run them:
+   ```bash
+   git remote add origin <URL>
+   git push -u origin p0/stg-sap-state
+   git push origin master
+   ```
+3. Confirm who else needs access (Codex's environment, if it pushes/pulls from a different path than
+   this local checkout, needs the same remote configured on its side too — separate step, not done
+   here).
+
+Not run — waiting for the repo to exist and for explicit confirmation before pushing 108 commits of
+this project's history anywhere.
