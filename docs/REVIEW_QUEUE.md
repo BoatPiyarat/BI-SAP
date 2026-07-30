@@ -60,12 +60,13 @@ confirm the two substantive findings are resolved before lifting the "do not use
 in `docs/AGENT_RULES.md`.
 
 ## RQ-20260730-1614-sap-live-daily-loss-check
-Status: OPEN
+Status: REVIEWED
 Reviewer: Claude Code
 Class: A
 Artifact: commit `e02bd39`; daily SAP_LIVE/source comparison, real-loss conclusion, and multiplier
 corrections.
 Opened: 2026-07-30T16:14:03+07:00
+Verdict: PASS — `docs/reviews/2026-07-30-e02bd39-claude.md` (independently reproduced, not just read)
 
 Claim: Boat's supplied BigQuery/SQL daily counts are recorded with source limitations; the
 read-only query at 2026-07-30 09:10:41 UTC shows BigQuery distinct DocEntry never below supplied
@@ -77,12 +78,13 @@ Evidence: `git diff e02bd39^ e02bd39`; `docs/FINDINGS_SAP_MIRROR_20260726.md` la
 recorded in those artifacts.
 
 ## RQ-20260730-1555-dormant-view-cost-guardrail
-Status: OPEN
+Status: REVIEWED
 Reviewer: Claude Code
 Class: A
 Artifact: commit `5774494`; closed `sap_integrety_2025_RCL` input, mandatory safe-query policy,
 expiration policy, and Codex review of `a56f6d1`.
 Opened: 2026-07-30T15:55:32+07:00
+Verdict: PASS — `docs/reviews/2026-07-30-5774494-claude.md`
 
 Claim: Boat's no-consumer decision is reflected consistently as dormant/obsolete, no-notify, and
 housekeeping/archive-only. Non-metadata BigQuery queries are required to use
@@ -166,12 +168,13 @@ independently on the same conclusion (559/71 drop) from different angles — wor
 they agree on *why*, not just *that*.
 
 ## RQ-20260730-1230-d16-incident-split
-Status: OPEN
+Status: REVIEWED
 Reviewer: Claude Code
 Class: A
 Artifact: commit `d1310f9`; D16 incident split, FA-verification control requirement, SAP_LIVE
 append-only hold, and five Codex review verdicts.
 Opened: 2026-07-30T12:30:29+07:00
+Verdict: PASS — `docs/reviews/2026-07-30-d1310f9-claude.md`
 
 Claim: canonical knowledge now separates INCIDENT-002a, INCIDENT-002b, the 224 unexplained orders,
 and the onetime M1/V1 finding; 559/71 are superseded as symptom-derived. `sap_fa_verification` is a
@@ -183,12 +186,13 @@ Evidence: `git diff d1310f9^ d1310f9`; `docs/knowledge/SAP_INCIDENT_LOG.md`;
 `docs/reviews/2026-07-30-*-codex.md`.
 
 ## RQ-20260730-1211-posted-state-review-loop
-Status: OPEN
+Status: REVIEWED
 Reviewer: Claude Code
 Class: A
 Artifact: commit `b56683c`; posted-state methodology correction, permanent validation rules,
 machine-parseable review queue, and `scripts/review_status.sh`.
 Opened: 2026-07-30T12:11:22+07:00
+Verdict: PASS — `docs/reviews/2026-07-30-b56683c-claude.md`
 
 Claim: all 559 / 71 / ฿331,671.78 / ฿115,553.58 claims are marked superseded; correction
 eligibility now requires `POSTED_WRONG` proof from SAP mirror + successful status + JE reference
@@ -425,11 +429,12 @@ against the same live view is sufficient to spot-check; the FINDINGS file states
 proceeds until this clears
 
 ## RQ-202607292042-06
-Status: OPEN
+Status: REVIEWED
 Reviewer: Claude Code
 Class: A
 Artifact: Codex re-review of `6863dc8`, H4 baseline review, scorecard update, H4 knowledge correction, and verify-before-commit rule; commit `258f0c7`.
 Opened: 2026-07-29T20:42:00+07:00
+Verdict: PASS — `docs/reviews/2026-07-30-258f0c7-claude.md`
 
 Legacy-Title: [2026-07-29 20:42 ICT] REVIEW REQUEST — class A
 correction, and verify-before-commit rule; commit `258f0c7`.
@@ -439,11 +444,12 @@ Evidence: `docs/reviews/2026-07-29-6863dc8-codex.md`,
 `docs/reviews/2026-07-29-h4-baseline-codex.md`, `71c7afd`, and `20_SAP_PROGRESS.md`.
 
 ## RQ-202607292031-07
-Status: OPEN
+Status: REVIEWED
 Reviewer: Claude Code
 Class: A
 Artifact: attachment-first SAP-result ingestion design in `10_SAP_CONTEXT`, `SAP_RUNBOOK_v3`, `TASK_V3_GAP_CLOSURE_v2`, and `HANDOFF_QUEUE`; commit `eb93ef6`.
 Opened: 2026-07-29T20:31:00+07:00
+Verdict: PASS WITH NOTES — `docs/reviews/2026-07-30-eb93ef6-claude.md`
 
 Legacy-Title: [2026-07-29 20:31 ICT] REVIEW REQUEST — class A
 `SAP_RUNBOOK_v3`, `TASK_V3_GAP_CLOSURE_v2`, and `HANDOFF_QUEUE`; commit `eb93ef6`.
