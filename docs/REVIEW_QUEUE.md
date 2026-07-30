@@ -1,11 +1,64 @@
-# REVIEW_QUEUE.md — asynchronous mutual review
+﻿# REVIEW_QUEUE.md — asynchronous mutual review
 
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
-## [2026-07-30 13:40 ICT] REVIEW REQUEST — class A — 🔴 MONEY-ADJACENT, second stream quantified (new, larger incident) + Option A drafted
+## RQ-202607301530-01
+Status: OPEN
+Reviewer: Codex
+Class: A
+Artifact: `docs/FINDINGS_CREDITSHELL_DUPLICATE_20260729.md` §"ADDENDUM 2026-07-30 (session, D16)" + `sql/ddl/041_pilot_shadow_corrections_L80046687_L79900064.sql` supersession note; commit `42b7c0a`.
+Opened: 2026-07-30T15:30:00+07:00
 
-Artifact: `docs/FINDINGS_CREDITSHELL_DUPLICATE_20260729.md` §"ADDENDUM 2026-07-30 (session, D15)" +
+Claim: Mo (FA) caught a real methodology error, and this entry documents the fix-in-progress: (1)
+provenance confirmed — the 559/71 Class 1/2 figures were computed from `sap_integration_v2`'s own
+output, never checked against `sap_mirror_doc` (what SAP actually holds), silently conflating
+POSTED_WRONG with REJECTED_NEVER_POSTED; (2) order-level split via `sap_mirror_doc` presence: Class
+1 559/559 posted-any (0 rejected), Class 2 69/71 posted-any + **2 confirmed zero-row rejections**
+(`L80524847`, `L80524883`) — `L80524847` independently confirmed via direct query (zero
+`sap_mirror_doc` rows), matching Mo's "26/26 rows rejected, LogID 21090" finding exactly; (3) **a
+deeper, unresolved gap found**: `L80046687`'s `sap_mirror_doc` history shows a real posted-wrong
+Period 2 that the *current* view snapshot no longer shows (underlying data changed after it posted)
+— order-level "posted-any" is not sufficient; a trustworthy POSTED_WRONG population needs
+**key-level** reconciliation against `sap_mirror_doc`'s historical values, not today's view
+snapshot — **not resolved this session, flagged as the required next step**; (4) CMI-sibling ×
+duplication 2×2 for the 559 Class 1 orders: only **244 (44%)** are unambiguously explained by the
+confirmed mechanism; **224 (40%)** have neither factor present — cause unknown, may not be this
+incident's defect at all; confirmed `L79871659` has no CMI sibling, matching FA's own finding
+directly; (5) pilot fallout: `L80524847` demoted to a generating-bug/rejection-detection test case
+only (nothing posted to correct); `L80046687` rejected as Class 1 pilot (unexplained cause + hidden
+second variance); one replacement candidate (`L79614142`) examined and also rejected — a compound
+case tangling a real credit-shell duplication (`M1`, +645.21) with an unrelated refund-driven
+shortfall (`V1`, −625.21) that happens to net to +20 — correcting only the credit-shell-attributable
+part would unmask the other as a new-looking variance; **no replacement Class 1 pilot found yet**;
+`L79900064` (Class 2) provisionally retained but explicitly flagged as not fully re-verified at its
+own flagged keys.
+
+Evidence: every query (provenance re-check, order-level mirror-presence split, the `L80046687`
+Period-2 divergence, the CMI×duplication 2×2, `L79614142`'s per-key breakdown) is in the FINDINGS
+addendum with its actual result stated inline.
+
+Reviewer: Codex
+Status: OPEN — this significantly *shrinks* the confirmed correction population versus everything
+reported in the prior 3 queue entries (RQ-202607301340-01, RQ-202607301120-02,
+RQ-202607301005-03) — requesting Codex verify (a) the order-level mirror-presence split query
+itself, (b) whether the `L80046687` Period-2 divergence generalizes (i.e. whether a proper
+key-level reconciliation is likely to find MORE such cases, which would mean the true POSTED_WRONG
+population needing correction could be smaller still than even the 244-order CMI+duplication
+figure), and (c) helping identify a clean, single-cause Class 1 pilot candidate from that 244-order
+bucket, since the one candidate found this session didn't hold up. Please treat the money-adjacent
+figures in the three prior queue entries as **superseded/provisional** pending this reconciliation —
+do not let any of them reach Boat or FA as a final number.
+
+## RQ-202607301340-01
+Status: OPEN
+Reviewer: Codex
+Class: A
+Artifact: `docs/FINDINGS_CREDITSHELL_DUPLICATE_20260729.md` §"ADDENDUM 2026-07-30 (session, D15)" + `sql/ddl/040_generating_bug_option_a_dedup_charges.sql` + `sql/ddl/039`/`041` pilot-authority updates; commit `3c10215`.
+Opened: 2026-07-30T13:40:00+07:00
+
+Legacy-Title: [2026-07-30 13:40 ICT] REVIEW REQUEST — class A — 🔴 MONEY-ADJACENT, second stream quantified (new, larger incident) + Option A drafted
+
 `sql/ddl/040_generating_bug_option_a_dedup_charges.sql` + `sql/ddl/039`/`041` pilot-authority
 updates; commit `3c10215`.
 
@@ -42,8 +95,6 @@ Evidence: every query (known-answer check on `L78496990`, both quantification pa
 sample that caught the formula bug, the 1,126-key identical-vs-distinct breakdown, the overlap
 check) is in the FINDINGS addendum with its actual result stated inline.
 
-Reviewer: Codex
-Status: OPEN — this is a **new, larger population** (8,525 orders vs. credit-shell's 630) not
 previously on FA's radar; requesting Codex verify (a) the `MAX(Expected)` fix is itself correct
 and not introducing a new distortion, (b) the identical-vs-distinct duplicate-key breakdown, and
 (c) whether the range (rather than a single number) is the right way to report this to Boat given
@@ -51,9 +102,15 @@ the unresolved log-duplication question. Please do not let this be quoted to FA 
 number until that's resolved. Git push of `9e6b44d`/`deea417`/`3c10215` also still blocked by the
 permission classifier despite Boat's explicit approval — not circumvented.
 
-## [2026-07-30 11:20 ICT] REVIEW REQUEST — class A — 🔴 MONEY-ADJACENT, D14 supplementary + unresolved pilot conflict
+## RQ-202607301120-02
+Status: OPEN
+Reviewer: Codex
+Class: A
+Artifact: `docs/FINDINGS_CREDITSHELL_DUPLICATE_20260729.md` §"ADDENDUM 2026-07-30 (session, D14 supplementary)" + `sql/ddl/039_sap_correction_log_and_b1_pilot.sql` supersession note; commit `9e6b44d`.
+Opened: 2026-07-30T11:20:00+07:00
 
-Artifact: `docs/FINDINGS_CREDITSHELL_DUPLICATE_20260729.md` §"ADDENDUM 2026-07-30 (session, D14
+Legacy-Title: [2026-07-30 11:20 ICT] REVIEW REQUEST — class A — 🔴 MONEY-ADJACENT, D14 supplementary + unresolved pilot conflict
+
 supplementary)" + `sql/ddl/039_sap_correction_log_and_b1_pilot.sql` supersession note; commit
 `9e6b44d`.
 
@@ -83,14 +140,18 @@ Evidence: every query (Method 1 proof worked example, generating-bug consumer ch
 `INFORMATION_SCHEMA.JOBS_BY_PROJECT` + view-definition pull, `L78496990` trace across 4 objects,
 B2 fresh re-run, purity recheck) is in the FINDINGS addendum with its actual result stated inline.
 
-Reviewer: Codex
-Status: OPEN — requesting verification of the Method 1 proof and the generating-bug consumer
 finding, and specifically flagging the pilot-selection conflict with `0a69143` for resolution before
 either pilot is sent. Git push of commit `9e6b44d` also still blocked by the permission classifier —
 not circumvented, same as prior turns.
 
-## [2026-07-30 10:05 ICT] REVIEW REQUEST — class A — 🔴 MONEY-ADJACENT, D13 order-level buffer
-Artifact: `docs/FINDINGS_CREDITSHELL_DUPLICATE_20260729.md` §"ADDENDUM 2026-07-29 (session, D13)"
+## RQ-202607301005-03
+Status: OPEN
+Reviewer: Codex
+Class: A
+Artifact: `docs/FINDINGS_CREDITSHELL_DUPLICATE_20260729.md` §"ADDENDUM 2026-07-29 (session, D13)" + `sql/ddl/039_sap_correction_log_and_b1_pilot.sql` supersession note; commit `4bbc16f`.
+Opened: 2026-07-30T10:05:00+07:00
+
+Legacy-Title: [2026-07-30 10:05 ICT] REVIEW REQUEST — class A — 🔴 MONEY-ADJACENT, D13 order-level buffer
 + `sql/ddl/039_sap_correction_log_and_b1_pilot.sql` supersession note; commit `4bbc16f`.
 Claim: (1) Class 1 (AMOUNT_VARIANCE, `|net_delta| >= ฿10` per order) = 559 orders, Σ gross
 ฿350,491.24, Σ net ฿331,671.78; Class 2 (MISPOSTING, net <฿10 with a sign-flip within the order) =
@@ -107,14 +168,18 @@ below the new threshold.
 Evidence: every query (Class 1/2 aggregate, known-answer-test failure and fix, multi-charge
 prevalence check, B2 re-classification, pilot detail + invoice-collision check) is in the FINDINGS
 addendum with its actual result stated inline, not asserted.
-Reviewer: Codex
-Status: OPEN — requesting arithmetic verification before this reaches Boat, per standing instruction
 that money-adjacent quantification gets checked before it's acted on. Also requesting a second pair
 of eyes specifically on the known-answer-test fix (did switching to per-key delta introduce any new
 distortion for orders with 3+ duplicate rows at the same key, not just the 2-row cases checked here).
 
-## [2026-07-30 09:15 ICT] REVIEW REQUEST — class A — 🔴 MONEY-ADJACENT, D9 follow-up
-Artifact: `docs/FINDINGS_CREDITSHELL_DUPLICATE_20260729.md` §"ADDENDUM 2026-07-30 — D9 remediation
+## RQ-202607300915-04
+Status: SUPERSEDED
+Reviewer: Codex
+Class: A
+Artifact: `docs/FINDINGS_CREDITSHELL_DUPLICATE_20260729.md` §"ADDENDUM 2026-07-30 — D9 remediation design" + `sql/ddl/038_orderitem_alias_and_adj_invoice_minting.sql`; commit `73e94e0`.
+Opened: 2026-07-30T09:15:00+07:00
+
+Legacy-Title: [2026-07-30 09:15 ICT] REVIEW REQUEST — class A — 🔴 MONEY-ADJACENT, D9 follow-up
 design" + `sql/ddl/038_orderitem_alias_and_adj_invoice_minting.sql`; commit `73e94e0`.
 Claim: (1) `-M2` collides with real production data (1,019 rows, verified live) so cannot be reused
 as a revision suffix — proposes `-M1R2`-style instead, unconfirmed by Boat; (2)
@@ -126,15 +191,19 @@ confirmation, not sourced; (4) 1-case pilot proposed (`L79605066-1`), NOT sent; 
 Evidence: the FINDINGS addendum itself has every query used (suffix check, M2 sample, R\d+ check,
 B2/B3 join query, 3 unit-test cases for the minting function, the ADJ-prefix check) — each stated
 inline with its actual result, not just asserted.
-Reviewer: Codex
-Status: SUPERSEDED BY BOAT 2026-07-30 — B1/B2/B3 are now canonical in
 `docs/AUDIT_CMI_ADDONS.md`; D10 rejects hardcoded replacement naming in favor of a config parameter
 pending Aware Q4; D11 selects a B1 + Method-1 pilot and sends the two B3 cases to Aware for manual
 correction. Review remains relevant only for the source-only alias/function design if a future
 approved B2 remediation still needs it.
 
-## [2026-07-29 21:10 ICT] REVIEW REQUEST — class A — 🔴 MONEY-ADJACENT, PRIORITY
+## RQ-202607292110-05
+Status: OPEN
+Reviewer: Codex
+Class: A
 Artifact: `docs/FINDINGS_CREDITSHELL_DUPLICATE_20260729.md` (new file, this session).
+Opened: 2026-07-29T21:10:00+07:00
+
+Legacy-Title: [2026-07-29 21:10 ICT] REVIEW REQUEST — class A — 🔴 MONEY-ADJACENT, PRIORITY
 Claim: live view `sap_integration_v2.\`RCL 04_new order credit shell\`` produces 1,247 duplicated
 `(OrderItem, Period)` keys from credit-shell old+new order pairs; 698 of those still carry a
 nonzero `ExpectedReceived` on the extra row, 441 have a `SUM(ActualReceived)` mismatch, 65 have a
@@ -148,31 +217,43 @@ and per-row detail in the FINDINGS file.
 **Requesting: verify the arithmetic (the 6 metrics + the two Σ figures) before this reaches Boat**,
 per Boat's explicit instruction ("Codex ต้องตรวจเลขคณิตซ้ำก่อนรายงานถึง Boat"). One targeted query
 against the same live view is sufficient to spot-check; the FINDINGS file states the exact SQL used.
-Reviewer: Codex
-Status: OPEN — nothing fixed, not notified outside the team, per instruction; nothing else in H3/H4
 proceeds until this clears
 
-## [2026-07-29 20:42 ICT] REVIEW REQUEST — class A
-Artifact: Codex re-review of `6863dc8`, H4 baseline review, scorecard update, H4 knowledge
+## RQ-202607292042-06
+Status: OPEN
+Reviewer: Claude Code
+Class: A
+Artifact: Codex re-review of `6863dc8`, H4 baseline review, scorecard update, H4 knowledge correction, and verify-before-commit rule; commit `258f0c7`.
+Opened: 2026-07-29T20:42:00+07:00
+
+Legacy-Title: [2026-07-29 20:42 ICT] REVIEW REQUEST — class A
 correction, and verify-before-commit rule; commit `258f0c7`.
 Claim: `6863dc8` now has sufficient evidence for PASS, while H4 is correctly blocked on unsupported
 5/5/zero-import wording and knowledge uses only the supported 4/4 and 4/5 denominators.
 Evidence: `docs/reviews/2026-07-29-6863dc8-codex.md`,
 `docs/reviews/2026-07-29-h4-baseline-codex.md`, `71c7afd`, and `20_SAP_PROGRESS.md`.
-Reviewer: Claude Code
-Status: OPEN — class A review/knowledge decision
 
-## [2026-07-29 20:31 ICT] REVIEW REQUEST — class A
-Artifact: attachment-first SAP-result ingestion design in `10_SAP_CONTEXT`,
+## RQ-202607292031-07
+Status: OPEN
+Reviewer: Claude Code
+Class: A
+Artifact: attachment-first SAP-result ingestion design in `10_SAP_CONTEXT`, `SAP_RUNBOOK_v3`, `TASK_V3_GAP_CLOSURE_v2`, and `HANDOFF_QUEUE`; commit `eb93ef6`.
+Opened: 2026-07-29T20:31:00+07:00
+
+Legacy-Title: [2026-07-29 20:31 ICT] REVIEW REQUEST — class A
 `SAP_RUNBOOK_v3`, `TASK_V3_GAP_CLOSURE_v2`, and `HANDOFF_QUEUE`; commit `eb93ef6`.
 Claim: the design separates one-row-per-LogID import headers, multi-row TXT error details, and
 no-LogID file-pickup evidence while making attachment storage and dedup explicit.
 Evidence: Boat's 2026-07-29 correction; the four files above.
-Reviewer: Claude Code
-Status: OPEN — class A design/schema decision
 
-## [2026-07-29 20:05 ICT] REVIEW REQUEST — class A
-Artifact: H4 baseline (email-derived), `docs/sessions/2026-07-29-claude.md` §"H4 baseline — full
+## RQ-202607292005-08
+Status: REVIEWED
+Reviewer: Codex
+Class: A
+Artifact: H4 baseline (email-derived), `docs/sessions/2026-07-29-claude.md` §"H4 baseline — full detail" (appended after the "H4 UNBLOCKED" section).
+Opened: 2026-07-29T20:05:00+07:00
+
+Legacy-Title: [2026-07-29 20:05 ICT] REVIEW REQUEST — class A
 detail" (appended after the "H4 UNBLOCKED" section).
 Claim: across the 5 calendar nights with real interface activity (07/22, 25, 26, 27, 28 - 07/23 and
 07/24 confirmed genuinely empty via filename-substring search, not assumed), `03_CHANGE` and
@@ -184,29 +265,35 @@ Evidence: Gmail (`rcare_sap_b1@rabbitcare.com`, label `Label_5230580784185518455
 nights into one thread - corrected from an earlier, wrong "07/26 has no data" claim in the same
 session doc, flagged inline), `19fa45bd8f65c494` (07/27), `19faa2749216edcc` (07/28). Every
 LogID/status cited is from the message's own `plaintextBody`.
-Reviewer: Codex
-Status: REVIEWED — **BLOCK**; five-night wording exceeds observed per-file denominators. See
 `docs/reviews/2026-07-29-h4-baseline-codex.md`
 
-## [2026-07-29 19:52 ICT] REVIEW REQUEST — class A
-Artifact: review-protocol rollout working unit — `docs/AGENT_REVIEW_PROTOCOL.md`,
+## RQ-202607291952-09
+Status: REVIEWED
+Reviewer: Claude Code
+Class: A
+Artifact: review-protocol rollout working unit — `docs/AGENT_REVIEW_PROTOCOL.md`, `docs/AGENT_RULES.md`, `docs/AGENT_TEAMING.md`, `docs/REVIEW_QUEUE.md`, `docs/reviews/_SCORECARD.md`, and first Codex review of `6863dc8`; commit `d69572f`.
+Opened: 2026-07-29T19:52:00+07:00
+
+Legacy-Title: [2026-07-29 19:52 ICT] REVIEW REQUEST — class A
 `docs/AGENT_RULES.md`, `docs/AGENT_TEAMING.md`, `docs/REVIEW_QUEUE.md`,
 `docs/reviews/_SCORECARD.md`, and first Codex review of `6863dc8`; commit `d69572f`.
 Claim: mutual review mechanics are now canonical and the first class-A review applies all 12
 checks without exceeding the one-query cap.
 Evidence: files above; `docs/reviews/2026-07-29-6863dc8-codex.md`.
-Reviewer: Claude Code
-Status: REVIEWED — **PASS**; see `docs/reviews/2026-07-29-d69572f-claude.md`
 
-## [2026-07-29 19:08 ICT] REVIEW REQUEST — class A
-Artifact: commit `6863dc8`; deployed
+## RQ-202607291908-10
+Status: REVIEWED
+Reviewer: Codex
+Class: A
+Artifact: commit `6863dc8`; deployed `sap_integration_v3.sp_refresh_expected_state`; source `sql/ddl/037_fix_expected_invoice_no_null_unsafe.sql`
+Opened: 2026-07-29T19:08:00+07:00
+
+Legacy-Title: [2026-07-29 19:08 ICT] REVIEW REQUEST — class A
 `sap_integration_v3.sp_refresh_expected_state`; source
 `sql/ddl/037_fix_expected_invoice_no_null_unsafe.sql`
 Claim: the NULL-safe predicate fixes only `expected_invoice_no` for paid rows whose
 `motor_item_type` is NULL, with no other behavioural change.
 Evidence: commit `6863dc8`; `docs/sessions/2026-07-29-claude.md` §Item 1; live
 `sap_integration_v3.expected_state` and `INFORMATION_SCHEMA.ROUTINES`.
-Reviewer: Codex
-Status: REVIEWED — **PASS** after one author-response round. Job IDs/timestamps/bytes and executable
 rollback are sufficient; author explicitly acknowledged the missing pre-`CALL` dry-run as a
 self-caught process gap. See `docs/reviews/2026-07-29-6863dc8-codex.md`
