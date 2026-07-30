@@ -2,6 +2,15 @@
 -- Boat D11 follow-up (2026-07-30), INCIDENT-002 B1 pilot prep. SOURCE ONLY. NOT DEPLOYED.
 -- Nothing in this file has been run against BigQuery; no correction file has been sent to SAP.
 --
+-- ⚠️ SUPERSEDED 2026-07-29 (same-day, later): D13 set the materiality buffer at ฿10 PER ORDER (not
+-- per row/period). The 5-case pilot draft below (deltas ฿1.07-7.68) is now BELOW that threshold and
+-- is NOT a valid pilot anymore. New pilot selection, order-level Class 1 (AMOUNT_VARIANCE), smallest
+-- qualifying 2026+ order: L79871659 (net_delta +11.27, single OrderItem, no duplication, only
+-- Period 1 mismatches). See docs/FINDINGS_CREDITSHELL_DUPLICATE_20260729.md
+-- "ADDENDUM 2026-07-29 (session, D13)" for the corrected Class 1/2 quantification, the query used,
+-- and this new pilot's full detail. `sap_correction_log`'s schema below is unaffected by this
+-- correction and remains the intended design.
+--
 -- ============================================================================
 -- B1 quantification - CORRECTED SCOPE (important methodology note)
 -- ============================================================================

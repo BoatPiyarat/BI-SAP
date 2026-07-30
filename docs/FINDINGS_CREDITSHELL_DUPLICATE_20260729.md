@@ -367,3 +367,141 @@ known — I can run the `git remote add`/`push` half, not the repo-creation half
 
 Not run — waiting for the repo to exist and for explicit confirmation before pushing 108 commits of
 this project's history anywhere.
+
+---
+
+# ADDENDUM 2026-07-29 (session, D13) — buffer ฿10/order, Class 1/2 split, root cause found, pilot re-selected
+
+Boat confirmed 4 items same session: (1) `gcloud auth login` done, item 3 unblocked; (2) repo
+`https://github.com/BoatPiyarat/BI-SAP`; (3) materiality buffer ฿10, **per order, not per
+row/period** (D13); (4) `sap_accounting_cutoff_dates` still pending Finance, placeholder stays
+flagged.
+
+## Item A — push to remote: BLOCKED by the permission classifier, not by me choosing to withhold it
+
+`git remote add origin https://github.com/BoatPiyarat/BI-SAP.git` was **blocked by the Claude Code
+auto-mode permission classifier** — adding a remote and pushing 108 commits to a brand-new external
+repo is exactly the class of hard-to-reverse, externally-visible action the classifier gates,
+regardless of the explicit written instruction. This is not something I can route around with a
+different tool - per the classifier's own guidance, stopping and explaining is the correct response,
+not finding a workaround. **Needs an explicit interactive approval from Boat in the session, or Boat
+running the two commands directly.** Nothing pushed. Branch check before attempting: only `master`
+and `p0/stg-sap-state` exist in this local checkout - the fuller branch list Boat mentioned
+(`feat/v3-sql`, `chore/docs-governance`) is not present here, likely in Codex's separate checkout -
+flagging so the push doesn't get reported as "complete" when only 2 of the expected branches exist
+locally to push in the first place.
+
+## Item B — Class 1 / Class 2 re-quantified at ORDER level: ⚠️ caught and fixed a real formula bug via the known-answer test
+
+First attempt computed delta **per raw output row** (`ActualReceived - ExpectedReceived`), summed
+across an order. For a duplicated `(OrderItem, Period)` key this is wrong: `ExpectedReceived` is
+itself duplicated identically on both rows (the underlying bug), so comparing each duplicate row
+against its own (already-wrong) Expected masks the real over/under pattern entirely. Result:
+**`L80524847` landed in Class 1, not Class 2 - failing Boat's own known-answer test outright**,
+exactly the check it was designed to catch.
+
+**Fixed**: compute delta at the `(OrderItem, Period)` **key** grain first — `SUM(ActualReceived)`
+across every row sharing that key, minus the **single** true `ExpectedReceived` (not summed) — the
+same formula already validated for B1/B2. Then sum that per-key delta up to the order level.
+Re-ran the known-answer test: `L80524847` → **Class 2, net_delta = 0.00** (M1 key delta = +645.21,
+V1 key delta = −645.21, netting to zero) — **passes**, matches Boat's own worked example exactly.
+
+**Corrected order-level quantification** (single query, dry-run 7,470,446,905 bytes upper bound):
+
+| Class 1 — AMOUNT_VARIANCE (`|net_delta| ≥ ฿10`) | |
+|---|---:|
+| Orders | **559** |
+| Σ gross (Σ\|key_delta\| per order, summed) | ฿350,491.24 |
+| Σ net (Σ key_delta per order, summed) | ฿331,671.78 |
+| ≤2024 / 2025 / 2026+ | 0 / 9 / 550 |
+| Histogram ฿10–100 / ฿100–1,000 / >฿1,000 | 102 / 393 / 64 |
+| Orders where every individual key was <฿10 but the order sum wasn't (order-level catches something key-level would miss) | **0** — verified, not assumed: in every Class-1 order at least one individual key already had \|delta\| ≥ ฿10, so key-level checking would have caught these too |
+
+| Class 2 — MISPOSTING (`|net_delta| < ฿10` AND sign-flip within the order) | |
+|---|---:|
+| Orders | **70** |
+| Σ gross (Σ\|key_delta\| per order — the real money moved, even though net ≈ 0) | ฿115,553.58 |
+| ≤2024 / 2025 / 2026+ | 0 / 0 / 70 |
+
+Sanity: 3,457 total orders in the view; 664 have any nonzero key_delta at all; 559 + 70 = 629,
+leaving 35 orders with a small net delta (<฿10) and no sign-flip — genuinely immaterial, no action.
+
+## Item C — Global Standard v2.1 §6.1.1: text drafted, NOT applied to the source document
+
+`Global Standard v2.1` lives on Google Drive as a `.drawio` file (`90_TEAM_CONTEXT.md`'s asset-
+location list), not in this repo, and not in a format I can safely precision-edit. Matching this
+project's own established precedent (the 2026-07-11 changelog entry: *"Drafted: Global Standard v2.1
+Layer 6 addendum"* — drafted in text, applied to the Drive doc separately) — drafting the exact
+replacement text here for Boat/whoever maintains the Drive doc to apply:
+
+> **§6.1.1 Money reconciliation tolerance (revised 2026-07-30 per D13, supersedes "proposed ±0.01
+> per document"):**
+> Tolerance is evaluated at the **order level** (aggregate every `order_item`/period row under one
+> `order_id` first) — never per document, row, or period in isolation.
+> - **AMOUNT_VARIANCE**: tolerance = **±฿10 per order**. Compute net delta =
+>   Σ(`ActualReceived − ExpectedReceived`) across every row belonging to the order (using the single
+>   true Expected per key, not a duplicated one); flag only if `|net delta| ≥ ฿10`.
+> - **MISPOSTING**: **no tolerance**. Flag if the order's keys contain both a positive delta and a
+>   negative delta, regardless of how small the net — money is on the wrong item/side even when the
+>   order-level total looks balanced (net can be exactly 0 and still be a real misposting).
+> - Any other recon money check (`PERIOD_NOT_BALANCED` etc.) must use the same order-level
+>   aggregate, not per-row comparison — per-row checking produces both false negatives (a real net
+>   issue hidden by noise) and false positives (offsetting duplicate rows inside one order looking
+>   individually wrong when the order is fine).
+
+## Item D — generating-bug root cause FOUND: multiple SUCCESSFUL charges per (transaction, installment_number)
+
+Resumed the bisection where it stopped (auth blocker resolved). Ruled out `ancestors` and
+`new_order_old_invoice_pool` for `L80524847` — both return exactly 1 row, not the fan-out source.
+
+**Found it**: `careos.carepay_charges` for `L80524847`'s own (new-order) transaction
+(`9aab5e0b-f6b2-4ac6-ae43-70088fef7482`) has **two SUCCESSFUL charges both with
+`installment_number = 1`** — `4e4ca07f...` (฿2,168.33, 2026-07-24) and `7ad5b550...` (฿80.15,
+2026-07-27, a later top-up). The view's `spine_with_payment` CTE joins
+`charges c ON c.transaction_id = s.transaction_id AND c.installment_number = s.Period` — with two
+matching charges for the same period, this join fans one period-spine row into two, and the
+`add_ons` deduction (applied per resulting row) fires twice instead of once.
+
+**This is broader than credit-shell specifically**: checked `careos.carepay_charges` project-wide —
+**11,935 distinct transactions** have at least one `installment_number` with more than one
+`SUCCESSFUL` charge (12,156 transaction+installment pairs total). Most of these likely feed other
+views that aggregate correctly; the credit-shell view specifically does not. Not claiming every one
+of the 11,935 is a credit-shell case — only that this is the general data shape the view's join
+fails to handle, and credit-shell orders happen to hit it often (initial charge + later top-up
+charge, both tagged to period 1).
+
+**≥฿10 threshold check (Boat's ⚠️ ask)**: has not yet been separately re-verified that Class
+1/Class 2 orders are still 100% credit-shell related at this new threshold (the B1-stage check
+verified this at the >฿1 threshold, before D13's buffer existed) - **not done this pass, flagged as
+outstanding** rather than assumed carried over.
+
+**Fix still not deployed** — root cause is now understood and evidence-backed, but no shadow view
+has been built or diffed yet. Given the `sap_integration_v2` DDL-exception this requires (hard rule:
+DDL only in `sap_integration_v3`), a fix needs explicit approval before any shadow/deploy step,
+per this project's own deploy gate.
+
+## Item E — re-checked the original 698 B2 keys against the ฿10/order buffer
+
+612 distinct orders behind the 698 keys. Reclassified each at the order level:
+
+| Reclassification | Orders |
+|---|---:|
+| Still Class 1 (AMOUNT_VARIANCE, material) | 303 |
+| Now Class 2 (MISPOSTING - was hidden inside "B2," net was actually ≈0) | 140 |
+| Now under buffer, no sign-flip (genuinely immaterial) | **255** |
+
+Confirms Boat's own suspicion — a meaningful share (255 of 612, ~42%) of the original B2 scope
+shrinks to immaterial once aggregated correctly at order level with the ฿10 buffer. The other 443
+(303+140) remain real, split across the two classes with different required treatment.
+
+## Pilot — RESELECTED (the earlier 5-case draft is now below the ฿10 threshold and invalid)
+
+The previous pilot draft (`039`, deltas ฿1.07–7.68) predates D13's ฿10/order buffer and no longer
+qualifies. New pilot, smallest Class-1 (AMOUNT_VARIANCE) 2026+ order: **`L79871659`**
+(`PolicyDate` 14032026), net_delta = **+฿11.27**. Detail: single OrderItem (`L79871659-V1`, no
+duplication at all in this case), 6 periods, only Period 1 mismatches
+(Expected ฿1,488.71, Actual ฿1,499.98, delta +11.27); Periods 2–6 all clean (Expected=Actual=
+฿1,488.73). Invoice-collision check against `sap_mirror_doc` for this order: 5 existing invoices,
+none `ADJ`-prefixed — `ADJ1_L79871659-V1` is collision-free. Correction draft: `ExpectedReceived=0`,
+`ActualReceived=-11.27` (over-received, so negative), same open dependencies as before (cutoff-dates
+placeholder, `sap_correction_log` deploy, validation pass) — **not sent**.
