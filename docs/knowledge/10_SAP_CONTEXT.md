@@ -435,3 +435,67 @@ decision-ready under D5.
 table/object and source timestamp. Bare numbers are prohibited. If an exact query timestamp was
 not captured, state that limitation and mark the number **PROVISIONAL**; a commit timestamp proves
 when evidence was recorded, not when the source snapshot was measured.
+
+## ADDENDUM 2026-07-30 v3 — mirror facts and retractions
+
+Full evidence and migration inventory:
+`KNOWLEDGE_ADDENDUM_20260730_v3.md`. The following facts and retractions are canonical.
+
+### §A — confirmed facts
+
+1. Deployed `sap-extract-job` is read-only against SAP. Its only SAP statement is a `SELECT *`
+   bounded by `UpdateDate + UpdateTime` watermark and `U_InsuranceGroup <> 'B2B'`. It writes only
+   extract JSON, watermark state and run logs.
+2. Boat resolved the writer attribution: BI's own interface import updated the SAP rows. The
+   narrowed pathway is the 2026-07-26 18:30 ICT `sap-order-payment` /
+   `sap-order-payment-non-motor` schedulers → motor/non-motor bucket functions → external SAP
+   importer. Scheduled automation is distinct from Boat manually running a job.
+3. Amplification is structural: interface import changes SAP-owned `UpdateDate`/`UpdateTime`;
+   the watermark correctly re-extracts those changed rows; the loader plain-appends them.
+4. Daily BQ/source ratios, sourced from `SAP_LIVE` query 2026-07-30 09:10:41 UTC and Boat's
+   source counts with uncaptured source-query time, peak at **2,036.103× on 2026-07-27**
+   (289.623× on 07-26; 25.000× on 07-28). Do not revive aggregate “45×”.
+5. Normal-day 21–25/07 ratios are 1.498×–2.659× (approximately 2.19× average). This is a separate
+   open baseline-duplication finding, not the acute incident.
+6. Real loss is not observed by count but remains unproved at set level; closure needs a source
+   DocEntry anti-join or equivalent distinct-ID evidence.
+7. The 27-row 07-29 and future-dated five-row 08-15 batches are anomalous volumes, not recovery
+   proof.
+8. Corrected overwrite assessment against `sap_integration_v2.SAP_LIVE` at
+   2026-07-30 14:27:28 UTC: 54,055 records had a true BEFORE; 9,702 were NO_BASELINE and excluded.
+   Every monetary field tested had POPULATION=0 and MUTATION=0. Accounting-overwrite gate is
+   **CLEARED**, while the incident remains open for storage/cost/prevention.
+9. `DocEntry 2345730` has no pre-26/07 baseline. Its three observations show invoice,
+   PaymentDate and payment method appearing with Pending→Paid and Actual 2,200.00→1,554.79 while
+   `U_Discount=0`, consistent with a partial-payment event. **WAITING HUMAN:** Boat/FA must verify
+   why Paid is used when Actual is 645.21 below Expected.
+10. Real GCS paths are `gs://rcb-bronze-zone/SAP/production_database/` and
+    `gs://rcb-bronze-zone/SAP/_extract_control/`. The nonexistent bucket
+    `gs://sap-bucket-csv` must never be confused with the real service account named
+    `sap-bucket-csv@...`.
+11. Plaintext SAP credentials were exposed again through deployed source/deployment helpers and
+    Cloud Run execution metadata. This is the third known exposure (at least two earlier incidents
+    are recorded under GOVERNANCE). P0 owner is Boat; rotate and migrate to Secret Manager.
+12. `UpdateTime` reaches all four SAP_LIVE tables; `_internal_update_datetime` does not.
+    `SAP_LIVE` finer key `(DocEntry,U_BatchRunDate,UpdateDate,UpdateTime)` yields 297,604 states
+    versus 297,413 without time, source query 2026-07-30 13:53:09 UTC. View resolution must select
+    `UpdateTime` and order by `UpdateDate DESC, UpdateTime DESC`.
+
+All overwrite comparisons are a **LOWER BOUND** because states written between extracts but never
+observed by BigQuery are unrecoverable.
+
+### §B — retractions
+
+- Retract loader crash-loop/full-bucket reread as the primary cause. Use the structural mechanism
+  in A3.
+- Retract “unidentified writer”; Boat attributes it to BI interface import through the narrowed
+  scheduled pathway in A2.
+- Retract watermark reset/loss: 14 generations advance continuously with no reset, gap or
+  failure-to-advance; declining 60,404→60,385→58,619 counts do not fit replay from the default.
+- Retract any claim that SAP itself authored `U_*` values. `U_*` is our-side data; only DocEntry
+  and UpdateDate/UpdateTime are SAP-owned.
+- Retract “45×”, “151K→6.9M” and any aggregate multiplier used in place of daily figures.
+- Retract ฿645.21 as evidence of mass monetary overwrite or a unique order fingerprint.
+- Retract `gs://sap-bucket-csv` as a bucket/root-cause location.
+- Superseded CMI figures 559/71 and blocked 401/฿267,775.28/pilot claims remain non-citable until
+  their review blocks close.
