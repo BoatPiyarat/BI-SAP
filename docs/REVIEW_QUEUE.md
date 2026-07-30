@@ -3,6 +3,25 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+## RQ-20260730-1211-posted-state-review-loop
+Status: OPEN
+Reviewer: Claude Code
+Class: A
+Artifact: commit `b56683c`; posted-state methodology correction, permanent validation rules,
+machine-parseable review queue, and `scripts/review_status.sh`.
+Opened: 2026-07-30T12:11:22+07:00
+
+Claim: all 559 / 71 / ฿331,671.78 / ฿115,553.58 claims are marked superseded; correction
+eligibility now requires `POSTED_WRONG` proof from SAP mirror + successful status + JE reference
+from a successful import log; `REJECTED_NEVER_POSTED` is routed to bug fix + normal send. Class 1
+requires `has_CMI_sibling`. FA (Mo)'s external catch is recorded. Review governance now
+self-triggers at session start/end and reports debt from fixed fields.
+
+Evidence: `git diff b56683c^ b56683c`; `docs/AUDIT_CMI_ADDONS.md`;
+`docs/knowledge/SAP_VALIDATION_LIBRARY.md`; `docs/reviews/_SCORECARD.md`; and a successful Git Bash
+run of `scripts/review_status.sh`, which reported 7 pre-request OPEN reviews (Codex 5, Claude Code
+2) and listed unreferenced class-A-path commits.
+
 ## RQ-202607301530-01
 Status: OPEN
 Reviewer: Codex
