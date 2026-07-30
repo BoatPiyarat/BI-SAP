@@ -3,6 +3,30 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+## [2026-07-30 10:05 ICT] REVIEW REQUEST — class A — 🔴 MONEY-ADJACENT, D13 order-level buffer
+Artifact: `docs/FINDINGS_CREDITSHELL_DUPLICATE_20260729.md` §"ADDENDUM 2026-07-29 (session, D13)"
++ `sql/ddl/039_sap_correction_log_and_b1_pilot.sql` supersession note; commit `4bbc16f`.
+Claim: (1) Class 1 (AMOUNT_VARIANCE, `|net_delta| >= ฿10` per order) = 559 orders, Σ gross
+฿350,491.24, Σ net ฿331,671.78; Class 2 (MISPOSTING, net <฿10 with a sign-flip within the order) =
+70 orders, Σ gross ฿115,553.58, 100% in 2026+; (2) a first attempt at this same query used a wrong
+per-row delta formula (double-counted duplicated `ExpectedReceived`) and **failed the known-answer
+test** (`L80524847` landed in Class 1 instead of Class 2) - caught before reporting, fixed by moving
+to the per-key formula already used for B1/B2, re-verified `L80524847` → Class 2, net_delta = 0.00;
+(3) root cause of the generating bug found: `careos.carepay_charges` allows multiple `SUCCESSFUL`
+charges sharing one `(transaction_id, installment_number)` (11,935 transactions project-wide have
+this shape), and the credit-shell view's join to `charges` on that same key fans out when it occurs;
+(4) 255 of the original 612 B2-affected orders are now immaterial under the ฿10/order buffer; (5)
+pilot reselected to `L79871659` (net +11.27) since the prior 5-case draft (deltas ฿1.07-7.68) fell
+below the new threshold.
+Evidence: every query (Class 1/2 aggregate, known-answer-test failure and fix, multi-charge
+prevalence check, B2 re-classification, pilot detail + invoice-collision check) is in the FINDINGS
+addendum with its actual result stated inline, not asserted.
+Reviewer: Codex
+Status: OPEN — requesting arithmetic verification before this reaches Boat, per standing instruction
+that money-adjacent quantification gets checked before it's acted on. Also requesting a second pair
+of eyes specifically on the known-answer-test fix (did switching to per-key delta introduce any new
+distortion for orders with 3+ duplicate rows at the same key, not just the 2-row cases checked here).
+
 ## [2026-07-30 09:15 ICT] REVIEW REQUEST — class A — 🔴 MONEY-ADJACENT, D9 follow-up
 Artifact: `docs/FINDINGS_CREDITSHELL_DUPLICATE_20260729.md` §"ADDENDUM 2026-07-30 — D9 remediation
 design" + `sql/ddl/038_orderitem_alias_and_adj_invoice_minting.sql`; commit `73e94e0`.
