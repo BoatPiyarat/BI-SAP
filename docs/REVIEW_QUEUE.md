@@ -3,6 +3,62 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+## RQ-20260730-2230-mirror-doc-merge-incremental
+Status: OPEN
+Reviewer: Codex
+Class: A
+Artifact: `sql/ddl/043_sap_mirror_doc_merge_incremental.sql`; commit `9a3e462`.
+Opened: 2026-07-30T22:30:00+07:00
+
+Claim: replaces `sap_mirror_doc`'s full-CTAS refresh (`024`) with a watermark-filtered `MERGE`,
+per Boat's approved direction. `UpdateDate`/`UpdateTime` are now selected and inserted into the
+per-DocEntry tiebreak (`BatchRunDate DESC, UpdateDate DESC, UpdateTime DESC, DocEntry DESC`),
+fixing the missing-columns gap identified in this session's Priority 1 (`docs/sessions/2026-07-30-claude.md`).
+New `sap_mirror_doc_watermark` singleton control table tracks the high-water mark actually merged.
+`SAP_LIVE` itself is untouched — no clean/dedupe/truncate/rebuild/delete anywhere in this file,
+append-only hold reaffirmed in its header. **Flagged honestly rather than oversold**: checked
+`SAP_LIVE`'s metadata directly and confirmed it has no partitioning/clustering at all, so this
+design's cost win is the `UpdateTime` correctness fix plus reduced downstream dedup/write cost, not
+a ~100x reduction in bytes scanned from `SAP_LIVE` itself — that would require `CLUSTER BY` on
+`SAP_LIVE`, a separate decision not assumed here.
+
+Evidence: dry-ran the full script (`bq query --dry_run` over the whole file) — validated clean, 0
+bytes (syntax-only, as expected for DDL/procedures). Not executed. Cutover plan (bootstrap full run,
+row-for-row diff against `024`'s current output, only then repoint the nightly chain) is written
+into the file's trailing comment, not run.
+
+Status: OPEN — requesting Codex verify the MERGE's `WHEN MATCHED`/`WHEN NOT MATCHED` column lists
+against `024`'s full column list for completeness, and confirm the watermark-advance logic
+(`MAX(UpdateDate)`/`MAX(UpdateTime WHERE UpdateDate = MAX)`) is correct before this is deployed. No
+deploy authorized by this entry.
+
+## RQ-20260730-2200-bq-safe-query-fix
+Status: OPEN
+Reviewer: Codex
+Class: A
+Artifact: `scripts/bq_safe_query.sh`, `docs/AGENT_RULES.md`; commit `93e87ea`.
+Opened: 2026-07-30T22:00:00+07:00
+
+Claim: fixes both substantive findings in the `a56f6d1` BLOCK
+(`docs/reviews/2026-07-30-a56f6d1-codex.md`): (1) the byte parser now treats absent/unparseable
+`totalBytesProcessed` as a hard error (exit 3) in all cases — only a JSON-explicit `"0"` is treated
+as a real zero-byte estimate — fixed in both the `jq` path and the no-`jq` grep fallback; (2)
+`--force` removed entirely rather than fixed, since it never actually raised the real
+`--maximum_bytes_billed` cap despite claiming to — 20 GiB is now a hard ceiling with no override.
+Added `--self-test`: 7 offline parser cases (current JSON shape, nested JSON shape, explicit zero,
+missing field, malformed value, threshold equality, threshold+1), run with and without `jq` on
+`PATH` to exercise both code paths.
+
+Evidence: `bash scripts/bq_safe_query.sh --self-test` → 7/7 passed, both with `jq` present and with
+`PATH` restricted to hide it. Smoke-tested the live path end-to-end with a real trivial query
+(`SELECT 1 AS x`) — dry-run correctly reported 0 bytes, real run executed. Confirmed `--force` is no
+longer silently accepted — passing it now errors loudly (`unexpected extra argument`) instead of
+being swallowed.
+
+Status: OPEN — requesting Codex re-review against the original BLOCK's 12-point checklist and
+confirm the two substantive findings are resolved before lifting the "do not use the wrapper" note
+in `docs/AGENT_RULES.md`.
+
 ## RQ-20260730-1614-sap-live-daily-loss-check
 Status: OPEN
 Reviewer: Claude Code
