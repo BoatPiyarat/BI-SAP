@@ -3,6 +3,47 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+## RQ-20260730-1615-cmi-cause-population
+Status: OPEN
+Reviewer: Codex
+Class: A
+Artifact: `docs/FINDINGS_CREDITSHELL_DUPLICATE_20260729.md` §"ADDENDUM 2026-07-30 (session, D16
+Boat)" + `sql/ddl/042_sap_fa_verification.sql`; commit `84df583`.
+Opened: 2026-07-30T16:15:00+07:00
+
+Claim: per Boat's scope call, the CMI incident is only the cause-defined population (CMI exists,
+its premium was never deducted from what the customer paid) — 559/71 both drop for this
+incident's purposes since they were computed from symptom, not cause. Quantified directly against
+`sap_mirror_doc` (not the symptom view): first pass 648 orders (Σ ฿441,447.49) included a
+different, unrelated `Expected=0` additional-payment-shaped pattern (per
+`SAP_VALIDATION_LIBRARY.md`'s own `CORRECTION_MARKER_MISSING` warning) that had to be filtered
+out; refined population **401 orders, Σ ฿267,775.28**, all confirmed `Paid` with a real
+`DocEntry`, **zero overlap** with credit-shell's 630-order population. Flagging honestly rather
+than forcing a clean story: (a) the `BatchRunDate` split relative to the 29-Jun-2026
+identifier-change date is 279 before / 122 after — not a clean before/after cutover; (b) sampling
+while validating the new pilot surfaced evidence the 401-order figure likely still mixes two
+sub-mechanisms (pure V1-side CMI non-deduction vs. `L80400094`'s M1/V1-shared-full-payment shape,
+the same shape as `L78496990`) — not yet separated. Also delivered: `sap_fa_verification`
+control table (source-only) seeded with Mo's 2 known-answer cases; confirmed the SAP_LIVE
+no-cleanup-before-incident-closes rule already exists in the team's own knowledge docs (cited, not
+redrafted); new pilot `L77828566` found and validated (single clean `sap_mirror_doc` row, delta
+exactly +645.21, real `DocEntry`, invoice-collision-checked) after 2 other candidates were rejected
+for concrete, stated reasons.
+
+Evidence: every query (packageType/motor_item_type disagreement check at source, the two
+quantification passes with the `Expected=0` correction, the before/after-cutover split, the
+overlap check, the 3-sample pilot validation) is in the FINDINGS addendum with its actual result
+stated inline.
+
+Status: OPEN — requesting Codex verify (a) the `Expected > 0` filter is the right way to exclude
+the additional-payment noise rather than genuinely losing real CMI-non-deduction cases, (b)
+whether the M1/V1-shared-payment sub-mechanism should be split out of this population entirely
+(it may belong with `L78496990`'s onetime-generator finding instead, not here), and (c) the
+`L77828566` pilot holds up under a second look. Also noting: this entry and
+`RQ-20260730-1230-d16-incident-split` / `RQ-20260730-1211-posted-state-review-loop` above converge
+independently on the same conclusion (559/71 drop) from different angles — worth cross-checking
+they agree on *why*, not just *that*.
+
 ## RQ-20260730-1230-d16-incident-split
 Status: OPEN
 Reviewer: Claude Code
