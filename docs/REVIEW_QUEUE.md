@@ -3,6 +3,54 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+## [2026-07-30 13:40 ICT] REVIEW REQUEST — class A — 🔴 MONEY-ADJACENT, second stream quantified (new, larger incident) + Option A drafted
+
+Artifact: `docs/FINDINGS_CREDITSHELL_DUPLICATE_20260729.md` §"ADDENDUM 2026-07-30 (session, D15)" +
+`sql/ddl/040_generating_bug_option_a_dedup_charges.sql` + `sql/ddl/039`/`041` pilot-authority
+updates; commit `3c10215`.
+
+Claim: (1) `sap_dashboard_carepay_fully_paid` ("onetime" stream, distinct from the credit-shell
+view) has its own Class-1-shaped population: **8,525 orders**, Σ gross **฿6.20M–6.87M**, Σ net
+**฿2.37M–3.03M** (range, not a single number — see below), 0 Class 2 orders; year split 2025=5,313 /
+2026+=3,212. Only **1 order** overlaps with credit-shell's 630 — near-total disjoint populations,
+confirming a separate generator; (2) **a real formula bug was caught before reporting**: a first
+mechanical reuse of credit-shell's `single_expected` pick (`ARRAY_AGG ORDER BY (Actual IS NULL)`)
+gave 8,915 orders / Σ gross ฿15.49M / Σ net ฿11.70M — wrong, because this view's duplicate rows do
+**not** carry an identical Expected value (unlike credit-shell) — confirmed by sampling raw rows
+(`L78864267-V1`: rows `(0/36900)`, `(0/36900)`, `(36900/36900)` — Expected genuinely differs per
+row). Root cause traced to the view's own definition: `charge_rank` (`ROW_NUMBER` by `create_time`,
+partitioned by `transaction_id`) fans `order_items` against `charges` with **no per-item join key**,
+deliberately zeroing Expected for non-first charges by design — structurally different from
+credit-shell's installment-number join, confirming Boat's "different generator" hypothesis
+directly rather than by assumption; (3) fixed to `MAX(Expected)`, re-quantified, then found a
+**further open sub-issue**: 179 of 1,126 duplicate keys have every row's `ActualReceived` bit-
+identical (e.g. 3 literally identical `SUCCESSFUL` charges — same amount, same timestamp — in raw
+`careos.carepay_charges`, looking like log-duplication rather than 3 real payments), vs. 929 with
+genuinely distinct values (legitimate multi-charge cases, e.g. `L78881232`'s bundled-payment +
+real top-up). This is why the number is reported as a **range**, not a point estimate — not yet
+resolved which end is correct; (4) Option A (dedupe `charges` by `(transaction_id,
+installment_number)` before the join in the live `sap_integration_v2` view) drafted directly from
+the view's actual pulled definition, with a full 3-stage shadow-diff validation plan and one
+explicitly flagged open decision (which charge's `InvoiceNo` wins on a tie) — nothing built or
+deployed; (5) confirmed Option A does **not** transfer to the second stream — its join shape is
+different — stream 2 needs its own, separate fix, not yet designed; (6) pilot conflict from the
+prior entry resolved by Boat: `L80046687` + `L79900064` are authoritative (not `0a69143`'s
+`L79871659` + `L80524847`) — shadow-only correction rows drafted in `sql/ddl/041`, not sent, gated
+on the generating-bug fix landing first.
+
+Evidence: every query (known-answer check on `L78496990`, both quantification passes, the raw-row
+sample that caught the formula bug, the 1,126-key identical-vs-distinct breakdown, the overlap
+check) is in the FINDINGS addendum with its actual result stated inline.
+
+Reviewer: Codex
+Status: OPEN — this is a **new, larger population** (8,525 orders vs. credit-shell's 630) not
+previously on FA's radar; requesting Codex verify (a) the `MAX(Expected)` fix is itself correct
+and not introducing a new distortion, (b) the identical-vs-distinct duplicate-key breakdown, and
+(c) whether the range (rather than a single number) is the right way to report this to Boat given
+the unresolved log-duplication question. Please do not let this be quoted to FA as a single hard
+number until that's resolved. Git push of `9e6b44d`/`deea417`/`3c10215` also still blocked by the
+permission classifier despite Boat's explicit approval — not circumvented.
+
 ## [2026-07-30 11:20 ICT] REVIEW REQUEST — class A — 🔴 MONEY-ADJACENT, D14 supplementary + unresolved pilot conflict
 
 Artifact: `docs/FINDINGS_CREDITSHELL_DUPLICATE_20260729.md` §"ADDENDUM 2026-07-30 (session, D14
