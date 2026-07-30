@@ -46,6 +46,8 @@ GCP project `pacific-plating-282708` | region `asia-southeast1` | auth: data@rab
 - Every query change goes through branch → PR → validation evidence (zero-row diff or documented delta) before merge.
 - The nightly anchor is the 20:30 ICT `sap-extract-schedule`; downstream work should chain from it rather than wait on independent clocks. Operational steps and incident handling live in `docs/design/SAP_RUNBOOK_v3.md`.
 - One task at a time; report before moving on. Don't chain into a second substantial build without a checkpoint.
+- End every session by pushing the completed commits to the configured Git remote. A local commit
+  is not a completed handoff; report explicitly if push fails.
 
 ## Cost-control guardrails (canonical; source rationale in `docs/COST_CONTROL.md`)
 
@@ -94,6 +96,8 @@ GCP project `pacific-plating-282708` | region `asia-southeast1` | auth: data@rab
   naming must be configuration-driven and must wait for Aware Q4.
 - D11 (Boat 2026-07-30): pilot B1 with Method 1 because it has the fewest dependencies; the two
   already-Cancelled B3 cases go to Aware for manual correction, with no new infrastructure.
+- D12/D13 (Boat 2026-07-29/30): amount-variance tolerance is ±฿10 **per order**, aggregated before
+  comparison. `MISPOSTING` has no buffer and remains a defect even when the order nets to zero.
 - Test customers: exact match `LOWER(TRIM(FirstName|LastName)) = 'test'` only. Phone `0999999999` = corroborating signal, **report-only** for now.
 - PolicyNo > 50 chars = BLOCK (never truncate) + report in the morning email.
 - Date fields: exactly 8 chars and parseable; empty allowed **only** for PaymentDate on pending rows.

@@ -203,6 +203,16 @@ Posting Periods Unlocked→PaymentDate | invalid date→ต้อง DDMMYYYY
 - Process rule: definitions supplied in chat must be written into canonical knowledge in the same
   session. Agents must not infer an undocumented taxonomy.
 
+### D12/D13 — materiality and posting correctness
+
+- Amount shortage/overage uses a ±฿10 tolerance **per order**. Aggregate all relevant rows before
+  comparison; do not apply the buffer per row, Period, OrderItem, or SAP document.
+- `AMOUNT_VARIANCE` and `MISPOSTING` are permanent separate defect classes.
+- `MISPOSTING` has no buffer: net zero can still be wrong when amounts land on opposite accounting
+  sides. Evidence: `L80524847`, M1 `+฿645.21`, V1 `−฿645.21`.
+- An order may have every constituent row below ฿10 but exceed ฿10 after aggregation. This is a
+  required validation case and the reason order grain is canonical.
+
 
 ---
 

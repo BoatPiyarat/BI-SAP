@@ -38,7 +38,7 @@ Source ทั้งหมด = ตารางระบบที่ pipeline เ
 | SAP import errors by type (bar, 14 วัน) | จาก sap_import_result: duplicated / InvoiceNo / sequence / not balance / status — **เป้าหลัง v3 = เส้นดิ่งลงเหลือ ~0** (ตัวพิสูจน์ redesign ต่อ K.Paul) |
 | Error rate ต่อไฟล์ | error rows / total rows ต่อ export file |
 | Invoice conflict watch | item ที่ invoice ในไฟล์ ≠ stg_sap_state (ควรเป็น 0 หลัง UDF) |
-| Money spot-check | Σ TotalAmount exported ต่อวัน เทียบ Σ expected — diff ≠ 0 = สูตรเงินเพี้ยน |
+| Money spot-check | แยก `AMOUNT_VARIANCE` กับ `MISPOSTING`: variance ต้อง aggregate ต่อ order แล้ว flag เมื่อ \|net diff\| ≥ ฿10; misposting ไม่มี buffer และต้อง flag แม้ order net = 0 (เช่น M1 +645.21 / V1 −645.21) |
 
 ## Page 4 — Freshness (คำถาม: ข้อมูลที่ใช้ตัดสินใจ สดแค่ไหน)
 

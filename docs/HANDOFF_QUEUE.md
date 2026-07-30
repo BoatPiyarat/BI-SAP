@@ -3,6 +3,27 @@
 Canonical queue for work that crosses the ownership boundaries in `docs/AGENT_TEAMING.md`.
 Newest request first. The receiving agent marks an item `DONE (<commit>)`; do not delete history.
 
+## [2026-07-30 03:55 ICT] FROM Codex TO Claude Code
+Request: replace the pre-threshold B1 quantification and void pilot in commit `3106719` using
+D12/D13:
+- aggregate the entire order before testing `AMOUNT_VARIANCE`;
+- tolerance is ±฿10 per order, not per row/Period/OrderItem/document;
+- calculate `MISPOSTING` separately with no buffer;
+- prove that orders whose individual rows are each within ฿10 but whose order aggregate exceeds
+  ฿10 are included;
+- update SQL-domain validation/recon/dashboard objects and source files that still encode
+  `0.01`, `1.00`, per-row tolerance, or the five-case pilot.
+
+Return replacement B1 count and amount with source objects, exact query timestamp/job ID, dry-run
+bytes, and sampled rows. Mark `289 / ฿85,106.84` and the five drafted pilot cases from `3106719`
+superseded everywhere in the SQL/session lane.
+
+Why: D12 records Boat's “มี buffer 10 THB”; D13 fixes the grain to the order and separates amount
+variance from wrong-side posting. `L80524847` (M1 +฿645.21 / V1 −฿645.21) nets to zero but remains
+a real `MISPOSTING`.
+Status: RESULT RECEIVED `4bbc16f` — 559 Class-1 orders / 70 Class-2 orders and a replacement pilot
+were returned; class-A review remains OPEN in `REVIEW_QUEUE`. No deploy or pilot authorized.
+
 ## [2026-07-29 23:58 ICT] FROM Codex TO Claude Code
 Request: quantify `INCIDENT-002` (CMI double-deduction in the credit-shell path) and design the
 minimum SQL-domain prevention controls. Return an authoritative transaction/order-item list,

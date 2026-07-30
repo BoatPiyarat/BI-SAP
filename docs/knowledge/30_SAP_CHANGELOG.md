@@ -4,6 +4,33 @@ Append-only — entry ใหม่บนสุด ห้ามลบ/แก้�
 
 ---
 
+## 2026-07-30 — D12/D13 order-level tolerance; remote risk closed
+
+Recorded Boat's materiality decision: amount variance uses a ±฿10 buffer per order after
+aggregation. Split permanent defect classes into `AMOUNT_VARIANCE` (buffer applies) and
+`MISPOSTING` (no buffer). `L80524847` demonstrates why: M1 `+฿645.21` and V1 `−฿645.21` net to
+zero but remain wrong-side postings. Added the order-level blind-spot case where every row is under
+฿10 but the order aggregate exceeds ฿10.
+
+Marked the `3106719` B1 result `289 / ฿85,106.84` **SUPERSEDED — PRE-THRESHOLD** and voided its
+five smallest-value pilot cases because all fall below the materiality buffer. Queued Claude Code
+to re-aggregate. Result `4bbc16f` subsequently returned 559 `AMOUNT_VARIANCE` orders and 70
+`MISPOSTING` orders from `sap_integration_v2.RCL 04_new order credit shell` using
+`sql/ddl/039_sap_correction_log_and_b1_pilot.sql`, committed 2026-07-30 08:26:27 ICT. These
+replacement figures and the newly selected pilot remain under class-A review and are not approved
+for action. No SQL or BigQuery object was changed by this docs unit.
+
+The full `SAP_Global_Standard_v2.1` file is absent from the repository, so created a repository
+addendum replacing §6.1.1's proposed ±฿0.01 per document with ±฿10 per order. Updated validation,
+recon design, dashboard money spot-check, audit, context, and rules.
+
+Closed the GitHub URL input: configured
+`origin=https://github.com/BoatPiyarat/BI-SAP.git` and successfully pushed
+`p0/stg-sap-state`. Added the permanent rule that each session ends with a push, not only a local
+commit. Monthly cutoff-calendar input remains open.
+
+---
+
 ## 2026-07-30 — Canonicalized CMI buckets and D10/D11; flagged missing remote
 
 Created `docs/AUDIT_CMI_ADDONS.md` to close the process gap that left B1/B2/B3 only in chat.

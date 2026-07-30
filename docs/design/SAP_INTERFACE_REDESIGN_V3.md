@@ -193,6 +193,10 @@ WHERE s.order_item IS NULL AND e.target_status = 'paid'
 
 `recon_careos_interface` รายวัน (หลัง extract): expected_state ⟷ stg_sap_state ต่อ (item, period) → `OK / MISSING(>D+2) / PENDING_ACK(≤D+2) / STATUS_CONFLICT / UNROUTED` + `interface_daily_status` สรุปให้ Finance ดูเอง — **จบยุครับ list จากบัญชีเป็นงวดๆ**
 
+**D12/D13 money recon:** คำนวณ `AMOUNT_VARIANCE` โดย aggregate ทั้ง order ก่อน แล้วใช้ tolerance
+±฿10 ต่อ order; ห้ามเทียบ threshold ต่อ row/period/item/document. แยก `MISPOSTING` เป็นคนละ defect
+class และไม่มี tolerance เพราะยอด order อาจ net 0 ทั้งที่ลงผิดฝั่ง.
+
 ---
 
 ## 3. Resource Budget เทียบก่อน/หลัง

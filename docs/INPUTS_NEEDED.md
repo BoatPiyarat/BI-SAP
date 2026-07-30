@@ -4,6 +4,22 @@ Created 2026-07-27 per `TASK_V3_GAP_CLOSURE_v2.md` (A0, A5, Housekeeping — "ke
 Nothing here blocks build work that doesn't depend on the specific answer; each item notes what
 IS being done in the meantime.
 
+## RESOLVED 2026-07-30 — GitHub remote URL
+
+Repository remote is `https://github.com/BoatPiyarat/BI-SAP.git`. `origin` was configured and
+`p0/stg-sap-state` pushed successfully on 2026-07-30. Do not request the URL again.
+
+## RESOLVED 2026-07-30 — materiality buffer and grain
+
+D12/D13 resolves the former tolerance input: ±฿10 **per order**, after order aggregation.
+`MISPOSTING` has no buffer. Do not ask whether the threshold is per row/period/document again.
+
+## Finance — monthly accounting cutoff calendar remains open
+
+**Ask**: provide/confirm the monthly closed-period cutoff calendar and the allowed rollover date
+for PaymentDate. `sap_accounting_cutoff_dates` is referenced by design but was not found in the
+project during commit `3106719`; do not replace it with an inferred calendar.
+
 ## RESOLVED 2026-07-29 — Aware actual-received correction method
 
 Aware and Sarawut/Boyd confirmed two supported methods. Adjustment lines use the original Period,

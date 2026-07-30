@@ -38,6 +38,18 @@ until the source/export carries a durable marker distinguishing `CORRECTION` fro
   `careos.careos_order_items.motor_item_type = 'MOTOR_TYPE_COMPULSORY'`; `packageType` is not a
   valid CMI identifier.
 
+### D12/D13 — money materiality and defect classification
+
+- `AMOUNT_VARIANCE`: aggregate by order first. Treat
+  `ABS(order_net_delta) < 10.00 THB` as within tolerance; values `>= ฿10` are material.
+  Never apply this threshold independently per row, Period, OrderItem, or SAP
+  document.
+- `MISPOSTING`: no tolerance. A zero-net order can still be wrong when equal amounts are posted to
+  opposite items/accounting sides. `L80524847` proves this shape: M1 `+฿645.21`, V1 `−฿645.21`,
+  net zero but materially wrong.
+- Validation must run both checks. Passing `AMOUNT_VARIANCE` must never suppress `MISPOSTING`.
+- An order whose individual rows are each within ฿10 but whose aggregated variance exceeds ฿10
+  must fail `AMOUNT_VARIANCE`; this is why the comparison grain is the order.
+
 Implementation and live validation belong to Claude Code's SQL lane and are queued in
 `docs/HANDOFF_QUEUE.md`; these rules do not assert that the corresponding SQL checks are deployed.
-

@@ -257,7 +257,14 @@ prior use.
 
 # ADDENDUM 2026-07-30 (cont'd) — B1 quantified, pilot drafted, generating-bug fix INCOMPLETE (auth blocker)
 
-## Item 1 — B1 quantified: ⚠️ important methodology correction, not just a number
+## Item 1 — ⚠️ SUPERSEDED: B1 pre-threshold result, do not cite
+
+**D12/D13 supersedes this entire B1 population and amount.** The `289 / ฿85,106.84` result below
+used a per-row `ABS(delta) > ฿1` floor before Boat's ±฿10 per-order buffer was documented. It is
+pre-threshold and must not be cited. Replacement figures are in `4bbc16f` and remain under
+class-A review; do not act on them yet.
+
+The methodology history remains below only to explain why the result changed.
 
 First attempt scoped B1 as "not-B2, not-B3" **within the 1,247 duplicated-pairs population**
 (the same set the 698/2 counts came from) — that gives 547 candidate pairs, but sampling 5 of them
@@ -290,7 +297,7 @@ THB satang-rounding noise (sampled the smallest deltas directly, confirmed) — 
 Exact queries (blast-radius sample, rounding-noise sample, credit-shell cross-check, year/B3-overlap
 aggregate) are in `sql/ddl/039_sap_correction_log_and_b1_pilot.sql`.
 
-## Item 2 — B1 pilot drafted (5 smallest 2026+ cases), NOT sent
+## Item 2 — VOID: five-case B1 pilot was below the materiality buffer
 
 `sql/ddl/039_sap_correction_log_and_b1_pilot.sql`: `sap_correction_log` table designed (source-only)
 plus the 5-row draft (table in that file). All 5 are over-received (`ActualReceived > Expected`),
@@ -307,6 +314,11 @@ already on record, not a new one.
 
 Pilot is **drafted only** — validation, shadow, and `REVIEW_QUEUE` submission still pending per
 Boat's own sequencing, and per D9/D11 nothing sends without explicit deploy OK.
+
+**D13 disposition:** all five drafted cases are below the ฿10 per-order buffer, so the pilot is
+void and must not be validated, submitted, or sent. Selecting “the smallest amounts” before
+applying materiality chose records that require no correction. Future pilot selection must first
+apply the order-level threshold and preserve the separate no-buffer `MISPOSTING` test.
 
 ## Item 3 — generating-bug fix: INCOMPLETE, blocked mid-investigation by a BigQuery auth failure
 
