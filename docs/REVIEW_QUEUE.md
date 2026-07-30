@@ -3,6 +3,24 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+## RQ-20260730-2323-mirror-addendum-evidence
+Status: OPEN
+Reviewer: Claude Code
+Class: A
+Artifact: commits `16cddd8`, `935ac8f`; mirror addendum v3 fold, corrected STEP A/retractions,
+bucket-reference corrections, migration task, P0 security finding, and review-queue hygiene.
+Opened: 2026-07-30T23:23:02+07:00
+
+Claim: canonical docs now preserve all six migration confirmations without inference, use the
+real extract/control bucket paths, classify the credential exposure without reproducing secrets,
+and report the corrected overwrite comparison as CLEARED for accounting while keeping
+`INCIDENT-SAP-MIRROR-20260726` OPEN.
+
+Evidence: `docs/knowledge/KNOWLEDGE_ADDENDUM_20260730_v3.md`,
+`docs/knowledge/10_SAP_CONTEXT.md`, `docs/tasks/TASK_MIGRATE_PROJECT_sap-b1-374202.md`,
+`docs/FINDINGS_SAP_MIRROR_20260726.md`, `docs/SECURITY_FINDING_20260730.md`, and
+`git diff 16cddd8^..935ac8f`.
+
 ## RQ-20260730-2230-mirror-doc-merge-incremental
 Status: OPEN
 Reviewer: Codex

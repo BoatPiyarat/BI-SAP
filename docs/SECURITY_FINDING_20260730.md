@@ -1,7 +1,9 @@
 # SECURITY FINDING 2026-07-30 — plaintext SAP credentials in deployment surfaces
 
-Status: **OPEN — P0**  
-Owner: **Boat** (notified; Boat will coordinate remediation)  
+Status: **OPEN — P0**
+
+Owner: **Boat** (notified; Boat will coordinate remediation)
+
 Agent authority: **REPORT ONLY — do not read, print, rotate, revoke, or modify credentials**
 
 ## Finding
