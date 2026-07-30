@@ -4,12 +4,13 @@ Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request firs
 review history; link the completed review and record its verdict.
 
 ## RQ-20260730-1615-cmi-cause-population
-Status: OPEN
+Status: REVIEWED
 Reviewer: Codex
 Class: A
 Artifact: `docs/FINDINGS_CREDITSHELL_DUPLICATE_20260729.md` §"ADDENDUM 2026-07-30 (session, D16
 Boat)" + `sql/ddl/042_sap_fa_verification.sql`; commit `84df583`.
 Opened: 2026-07-30T16:15:00+07:00
+Verdict: BLOCK — `docs/reviews/2026-07-30-84df583-codex.md`
 
 Claim: per Boat's scope call, the CMI incident is only the cause-defined population (CMI exists,
 its premium was never deducted from what the customer paid) — 559/71 both drop for this
