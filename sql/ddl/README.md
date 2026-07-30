@@ -46,3 +46,12 @@ Every file is a full runnable script (per AGENTS.md: no diffs-as-answer). Apply 
 ```
 bq query --use_legacy_sql=false < sql/ddl/00X_name.sql
 ```
+
+## Creating a new table
+
+Copy `_TEMPLATE_new_table.sql` (2026-07-30 convention). In short: any new `diag_*`/scratch
+table must set `OPTIONS(expiration_timestamp = TIMESTAMP_ADD(CURRENT_TIMESTAMP(), INTERVAL 30
+DAY))` in its `CREATE TABLE`, no exceptions. This does **not** apply retroactively — the 7
+pre-existing `_backfill_*`/`manual_close_*` tables are explicitly out of scope, waiting on a
+separate retention decision; do not set expiration on them. Always dry-run first
+(`scripts/bq_safe_query.sh`, per `docs/COST_CONTROL.md` §3.1).
