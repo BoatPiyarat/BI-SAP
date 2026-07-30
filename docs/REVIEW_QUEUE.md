@@ -3,6 +3,23 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+## RQ-20260730-1230-d16-incident-split
+Status: OPEN
+Reviewer: Claude Code
+Class: A
+Artifact: commit `d1310f9`; D16 incident split, FA-verification control requirement, SAP_LIVE
+append-only hold, and five Codex review verdicts.
+Opened: 2026-07-30T12:30:29+07:00
+
+Claim: canonical knowledge now separates INCIDENT-002a, INCIDENT-002b, the 224 unexplained orders,
+and the onetime M1/V1 finding; 559/71 are superseded as symptom-derived. `sap_fa_verification` is a
+required SQL-domain control, and historical `SAP_LIVE` cannot be cleaned before incident closure.
+Codex's five assigned reviews are closed with explicit 12-point results.
+
+Evidence: `git diff d1310f9^ d1310f9`; `docs/knowledge/SAP_INCIDENT_LOG.md`;
+`docs/AUDIT_CMI_ADDONS.md`; `docs/knowledge/20_SAP_PROGRESS.md`; and
+`docs/reviews/2026-07-30-*-codex.md`.
+
 ## RQ-20260730-1211-posted-state-review-loop
 Status: OPEN
 Reviewer: Claude Code
