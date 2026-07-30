@@ -1,8 +1,15 @@
-# AUDIT_CMI_ADDONS — INCIDENT-002 correction buckets
+# AUDIT_CMI_ADDONS — D16 incident split and correction controls
 
-Canonical bucket taxonomy for the CMI `add_ons` double-deduction audit. Effective 2026-07-30.
-These labels are local to `INCIDENT-002`; they are not the historical B1/B2 pipeline labels used
-in older architecture documents.
+Canonical bucket taxonomy for correction assessment. Effective 2026-07-30. D16 cancels the prior
+merged-incident framing:
+
+- `INCIDENT-002a` = CMI identifier change, 263-class;
+- `INCIDENT-002b` = credit-shell double-deduction, 244 cause-aligned orders;
+- 224 unexplained orders = separate out-of-scope finding;
+- onetime M1/V1 split (`L78496990`) = separate finding and generator.
+
+These labels must never be added into one incident total. B1/B2/B3 are correction buckets, not
+incident identities and not the historical pipeline labels.
 
 ## B1 — Expected correct; Actual needs adjustment
 
@@ -29,7 +36,9 @@ re-aggregate per order and publish provenance-complete replacement figures.
 
 Replacement result from `4bbc16f`/`9e6b44d` is **⚠️ SUPERSEDED — DO NOT CITE**: 559
 `AMOUNT_VARIANCE` orders (net ฿331,671.78) and 70/71 `MISPOSTING` orders
-(gross ฿115,553.58). The population may include rows rejected by SAP and never posted. Source:
+(gross ฿115,553.58). D16 established a second, independent failure: these figures were calculated
+from an output symptom rather than a confirmed cause. The population may also include rows
+rejected by SAP and never posted. Source:
 `sap_integration_v2.RCL 04_new order credit shell` plus the joins/queries preserved in
 `sql/ddl/039_sap_correction_log_and_b1_pilot.sql`; commit timestamp 2026-07-30 08:26:27 ICT.
 Do not act on or quote these figures. They require a new posted-only population.
@@ -140,18 +149,17 @@ correction or posted-state known-answer.
 After Method 1 is applied, Aware/FA must verify both the interface/SAP amounts and the underlying
 GL/JE. No population rollout is allowed from an amount-only success.
 
-## D15 — two generators, authoritative pilots, prevention first
+## D15 superseded framing — findings stay separate
 
-The same permanent defect classes can be produced by at least two distinct generators:
+The following are separate tracks, not generators to combine into one incident:
 
 1. **Credit-shell generator:** `sap_integration_v2.RCL 04_new order credit shell` fans out when
    multiple successful charges share `(transaction_id, installment_number)`.
 2. **Onetime generator:** `sap_data_engineer.sap_dashboard_carepay_fully_paid` allocates a combined
    payment across M1/V1 incorrectly. Known-answer case: `L78496990`.
 
-FA-facing totals must cover both streams and must not add overlapping orders twice. The second
-stream quantification in `3c10215` is under class-A review and includes an unresolved range, so no
-single combined number may be reported yet.
+Do not produce a combined FA-facing incident total. Each track needs its own SAP-posted population,
+cause, control owner, and verification status.
 
 Credit-shell B2 drifted from `698 keys / 612 orders` (`73e94e0`) to
 `700 keys / 613 orders` (`9e6b44d`). Both queries target the same live view; commit timestamps are
@@ -184,6 +192,15 @@ correction known-answer.
 
 Class 1 also requires `has_CMI_sibling` segmentation. FA confirmed `L79871659` has no CMI sibling,
 so the earlier Class-1 population can be over-inclusive for the CMI incident.
+
+## Required FA/Aware evidence control — `sap_fa_verification`
+
+FA/Aware evidence must be written to the durable `sap_fa_verification` control table, not retained
+only in chat or docs. Until the SQL-domain owner creates it, the control is **REQUIRED / NOT YET
+IMPLEMENTED**. Minimum record: verification ID, order/order-item/period grain, incident or finding
+ID, SAP DocEntry/status, JE reference, import LogID and success evidence, verifier, decision,
+evidence timestamp, captured timestamp, and source link/note. A correction candidate cannot move
+to approved solely from a document statement.
 
 ## Process lesson
 

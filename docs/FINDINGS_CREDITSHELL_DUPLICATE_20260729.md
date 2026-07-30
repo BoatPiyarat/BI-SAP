@@ -5,6 +5,11 @@
 > that never posted. FA confirmed `L80524847` has no JE. Re-quantify `POSTED_WRONG` using mirror +
 > successful status + JE/import-success evidence; separate `REJECTED_NEVER_POSTED`, and segment
 > Class 1 by `has_CMI_sibling`.
+>
+> ⚠️ **D16 INCIDENT SPLIT:** 559/71 are also superseded because they quantify symptoms, not
+> confirmed causes. Keep separate: INCIDENT-002a CMI identifier (263-class), INCIDENT-002b
+> credit-shell double-deduction (244 diagnostic orders), 224 unexplained orders, and onetime
+> M1/V1 split (`L78496990`).
 
 **Status: READ-ONLY INVESTIGATION ONLY. Nothing fixed. Not notified outside the team.**
 Per Boat's explicit instruction and this project's own hard rule (money/accounting impact →

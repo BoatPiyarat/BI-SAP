@@ -4,6 +4,24 @@ Append-only — entry ใหม่บนสุด ห้ามลบ/แก้�
 
 ---
 
+## 2026-07-30 — D16 separates incidents and requires FA verification control
+
+Cancelled the earlier merged-incident framing. INCIDENT-002a is the CMI identifier change
+(263-class); INCIDENT-002b is credit-shell double-deduction (244 cause-aligned diagnostic orders).
+The 224 unexplained orders and onetime M1/V1 split (`L78496990`,
+`sap_dashboard_carepay_fully_paid`) are separate findings.
+
+Marked 559/71 and associated money figures superseded for a second reason: D16 showed they measure
+output symptoms, not confirmed causes. Required `sap_fa_verification` as the durable control for
+FA/Aware evidence and sent its implementation to Claude Code's SQL lane. Declared `SAP_LIVE`
+append-only audit history: no cleanup before the bloat incident closes.
+
+Codex cleared five assigned class-A reviews first: D13–D15 and the initial finding were BLOCKED as
+superseded; D16 passed with notes for missing exact query metadata and pending key-level
+reconciliation.
+
+---
+
 ## 2026-07-30 — Review loop made self-triggering
 
 Added session start/end review gates to `AGENT_RULES` and `AGENT_REVIEW_PROTOCOL`, normalized

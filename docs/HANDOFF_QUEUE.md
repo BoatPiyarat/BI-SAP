@@ -3,6 +3,21 @@
 Canonical queue for work that crosses the ownership boundaries in `docs/AGENT_TEAMING.md`.
 Newest request first. The receiving agent marks an item `DONE (<commit>)`; do not delete history.
 
+## [2026-07-30 12:28 ICT] FROM Codex TO Claude Code
+Request: design and create the durable `sap_fa_verification` control in the SQL domain. It must
+capture incident/finding ID, order/order-item/period grain, SAP DocEntry/status, JE reference,
+successful import LogID/evidence, verifier, decision, evidence timestamp, captured timestamp, and
+source note/link. Backfill relied-on FA/Aware evidence where provenance is sufficient.
+Why: D16 requires stakeholder evidence in a control table, not only chat/docs.
+Status: OPEN — source design + class-A review first; no deploy authorization implied
+
+## [2026-07-30 12:28 ICT] FROM Codex TO Claude Code
+Request: update SQL/session work to the D16 split. Do not combine INCIDENT-002a (CMI identifier,
+263-class), INCIDENT-002b (credit-shell double-deduction, 244 diagnostic orders), 224 unexplained
+orders, or the onetime M1/V1 split (`L78496990`). Re-quantify only at cause-aligned, SAP-posted
+grain with `sap_fa_verification`.
+Status: OPEN — replaces prior combined-population requests
+
 ## [2026-07-30 15:45 ICT] FROM Codex TO Claude Code
 Request: add one machine-derived line to the morning digest:
 `Review debt: <total OPEN> OPEN (mine: <Claude Code OPEN>)`. Source it from the fixed fields in
@@ -42,11 +57,10 @@ fix, explicit pilot approval, SAP send approval, and Aware/FA GL verification re
 ## [2026-07-30 09:45 ICT] FROM Codex TO Claude Code
 Request: quantify and remediate the second/onetime generator independently:
 `sap_data_engineer.sap_dashboard_carepay_fully_paid` M1/V1 allocation, known-answer
-`L78496990`. Produce an overlap-safe combined FA population across credit-shell and onetime streams
-at order grain, resolving the identical-charge ambiguity before returning a point estimate.
-Why: D15 confirms two generators of the same defect classes. Option A fixes only credit-shell;
-FA totals that omit onetime are incomplete.
-Status: PARTIAL RESULT `3c10215`, CLASS-A REVIEW OPEN — range only; separate onetime fix not designed
+`L78496990`. Resolve the identical-charge ambiguity within this finding only.
+Why: D16 supersedes the combined-total request. Onetime is a separate finding.
+Status: PARTIAL RESULT `3c10215`, REVIEWED/BLOCKED — no combined population; separate onetime fix
+not designed
 
 ## [2026-07-30 03:55 ICT] FROM Codex TO Claude Code
 Request: replace the pre-threshold B1 quantification and void pilot in commit `3106719` using
@@ -70,11 +84,11 @@ Status: RESULT RECEIVED `4bbc16f` — 559 Class-1 orders / 70 Class-2 orders and
 were returned; class-A review remains OPEN in `REVIEW_QUEUE`. No deploy or pilot authorized.
 
 ## [2026-07-29 23:58 ICT] FROM Codex TO Claude Code
-Request: quantify `INCIDENT-002` (CMI double-deduction in the credit-shell path) and design the
+Request: **SUPERSEDED BY D16 SPLIT.** Quantify `INCIDENT-002a` and `INCIDENT-002b` separately and design the
 minimum SQL-domain prevention controls. Return an authoritative transaction/order-item list,
 source table/view, exact query timestamp/job ID, amount impact, already-sent-to-SAP split, and a
-reproducible query. Reconcile the operational “263 transactions” incident label with the broader
-diagnostic population in commit `5171adb`; do not assume they are the same population.
+reproducible query. Do not reconcile into one population: 263-class belongs to 002a; 244
+cause-aligned credit-shell orders belong to 002b; 224 unexplained and onetime are separate.
 
 Validate and propose controls for:
 - rows 2+ of each `(OrderItem, Period)` having `ExpectedReceived=0`;
@@ -182,7 +196,8 @@ Status: OPEN
 Request: Own any eventual loader remediation after the read-only `SAP_LIVE` bloat investigation:
 make ingestion idempotent (MERGE/dedup key) and review the 1024 MiB crash-loop memory limit. Do not
 change the loader until the investigation identifies exact duplicate shape, loss coverage, owner,
-and a reviewed snapshot/cleanup plan.
+and a reviewed preservation plan. `SAP_LIVE` is append-only audit history: no cleanup, dedup,
+truncate, rebuild, or delete before the incident is closed.
 Why: `docs/RETURN_TRIAGE_20260729.md` found 151,024 → 6,858,653 rows while distinct DocEntry grew
 only 106,873 → 122,169. Phase B/C and all baseline numbers remain ON HOLD pending investigation.
 Status: OPEN — investigation first; no deploy authorized

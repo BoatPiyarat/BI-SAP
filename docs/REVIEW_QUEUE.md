@@ -23,11 +23,12 @@ run of `scripts/review_status.sh`, which reported 7 pre-request OPEN reviews (Co
 2) and listed unreferenced class-A-path commits.
 
 ## RQ-202607301530-01
-Status: OPEN
+Status: REVIEWED
 Reviewer: Codex
 Class: A
 Artifact: `docs/FINDINGS_CREDITSHELL_DUPLICATE_20260729.md` §"ADDENDUM 2026-07-30 (session, D16)" + `sql/ddl/041_pilot_shadow_corrections_L80046687_L79900064.sql` supersession note; commit `42b7c0a`.
 Opened: 2026-07-30T15:30:00+07:00
+Verdict: PASS WITH NOTES — `docs/reviews/2026-07-30-42b7c0a-codex.md`
 
 Claim: Mo (FA) caught a real methodology error, and this entry documents the fix-in-progress: (1)
 provenance confirmed — the 559/71 Class 1/2 figures were computed from `sap_integration_v2`'s own
@@ -69,11 +70,12 @@ figures in the three prior queue entries as **superseded/provisional** pending t
 do not let any of them reach Boat or FA as a final number.
 
 ## RQ-202607301340-01
-Status: OPEN
+Status: REVIEWED
 Reviewer: Codex
 Class: A
 Artifact: `docs/FINDINGS_CREDITSHELL_DUPLICATE_20260729.md` §"ADDENDUM 2026-07-30 (session, D15)" + `sql/ddl/040_generating_bug_option_a_dedup_charges.sql` + `sql/ddl/039`/`041` pilot-authority updates; commit `3c10215`.
 Opened: 2026-07-30T13:40:00+07:00
+Verdict: BLOCK — superseded by D16; `docs/reviews/2026-07-30-3c10215-codex.md`
 Warning: ⚠️ numeric population is SUPERSEDED pending POSTED_WRONG vs REJECTED_NEVER_POSTED split.
 
 Legacy-Title: [2026-07-30 13:40 ICT] REVIEW REQUEST — class A — 🔴 MONEY-ADJACENT, second stream quantified (new, larger incident) + Option A drafted
@@ -122,11 +124,12 @@ number until that's resolved. Git push of `9e6b44d`/`deea417`/`3c10215` also sti
 permission classifier despite Boat's explicit approval — not circumvented.
 
 ## RQ-202607301120-02
-Status: OPEN
+Status: REVIEWED
 Reviewer: Codex
 Class: A
 Artifact: `docs/FINDINGS_CREDITSHELL_DUPLICATE_20260729.md` §"ADDENDUM 2026-07-30 (session, D14 supplementary)" + `sql/ddl/039_sap_correction_log_and_b1_pilot.sql` supersession note; commit `9e6b44d`.
 Opened: 2026-07-30T11:20:00+07:00
+Verdict: BLOCK — population and pilots superseded; `docs/reviews/2026-07-30-9e6b44d-codex.md`
 Warning: ⚠️ 559/71 and amount totals are SUPERSEDED; `L80524847` was rejected and has no JE.
 
 Legacy-Title: [2026-07-30 11:20 ICT] REVIEW REQUEST — class A — 🔴 MONEY-ADJACENT, D14 supplementary + unresolved pilot conflict
@@ -165,11 +168,12 @@ either pilot is sent. Git push of commit `9e6b44d` also still blocked by the per
 not circumvented, same as prior turns.
 
 ## RQ-202607301005-03
-Status: OPEN
+Status: REVIEWED
 Reviewer: Codex
 Class: A
 Artifact: `docs/FINDINGS_CREDITSHELL_DUPLICATE_20260729.md` §"ADDENDUM 2026-07-29 (session, D13)" + `sql/ddl/039_sap_correction_log_and_b1_pilot.sql` supersession note; commit `4bbc16f`.
 Opened: 2026-07-30T10:05:00+07:00
+Verdict: BLOCK — superseded by D16; `docs/reviews/2026-07-30-4bbc16f-codex.md`
 Warning: ⚠️ 559/70 and amount totals are SUPERSEDED pending posted-state filtering.
 
 Legacy-Title: [2026-07-30 10:05 ICT] REVIEW REQUEST — class A — 🔴 MONEY-ADJACENT, D13 order-level buffer
@@ -218,11 +222,12 @@ correction. Review remains relevant only for the source-only alias/function desi
 approved B2 remediation still needs it.
 
 ## RQ-202607292110-05
-Status: OPEN
+Status: REVIEWED
 Reviewer: Codex
 Class: A
 Artifact: `docs/FINDINGS_CREDITSHELL_DUPLICATE_20260729.md` (new file, this session).
 Opened: 2026-07-29T21:10:00+07:00
+Verdict: BLOCK — superseded by D16; `docs/reviews/2026-07-30-5171adb-codex.md`
 
 Legacy-Title: [2026-07-29 21:10 ICT] REVIEW REQUEST — class A — 🔴 MONEY-ADJACENT, PRIORITY
 Claim: live view `sap_integration_v2.\`RCL 04_new order credit shell\`` produces 1,247 duplicated

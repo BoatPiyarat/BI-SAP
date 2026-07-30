@@ -16,6 +16,16 @@ Re-quantification must isolate `POSTED_WRONG` using mirror + successful status +
 evidence and segment Class 1 by `has_CMI_sibling`; `L79871659` has no CMI. Until then, no incident
 population or value goes to FA.
 
+**D16 SPLIT:** 559/71 are also superseded because they measured symptoms rather than causes.
+Track separately: INCIDENT-002a CMI identifier change (263-class); INCIDENT-002b credit-shell
+double-deduction (244 cause-aligned diagnostic orders); 224 unexplained orders (out of scope); and
+the onetime M1/V1 split (`L78496990`, `sap_dashboard_carepay_fully_paid`). `sap_fa_verification`
+is REQUIRED / NOT YET IMPLEMENTED; FA/Aware evidence must land there before approval.
+
+**SAP_LIVE BLOAT HOLD:** `SAP_LIVE` is an append-only audit trail. Do not clean, deduplicate,
+truncate, rebuild, or delete historical rows before the bloat incident is closed and a reviewed
+preservation/retention decision exists. Investigation and read-only baselines may continue.
+
 **D12/D13 MATERIALITY:** amount variance tolerance is ±฿10 per order after aggregation;
 `MISPOSTING` has no buffer. The prior B1 `289 / ฿85,106.84` and five smallest-value pilot cases
 from `3106719` are **⚠️ SUPERSEDED / VOID** because they were selected before the order-level
@@ -27,9 +37,9 @@ query in `sql/ddl/039_sap_correction_log_and_b1_pilot.sql`, commit timestamp
 
 **D15:** authoritative pilots are `L80046687` + `L79900064`; `0a69143` is superseded.
 `L79871659` is too close to the noise floor and `L80524847` is rejected-output evidence, not a
-posted-correction known-answer. Two generators are now confirmed: credit-shell and onetime
-`sap_dashboard_carepay_fully_paid` (`L78496990`). Combined FA quantification is not ready:
-`3c10215` is under class-A review and reports an unresolved range. Credit-shell drift
+posted-correction known-answer. D16 supersedes the combined-generator framing: credit-shell and
+onetime `sap_dashboard_carepay_fully_paid` (`L78496990`) are separate tracks and must not be
+combined. `3c10215` was reviewed/BLOCKED for the merged interpretation. Credit-shell drift
 `698→700 keys / 612→613 orders` proves the bug remains active. Option A is the selected direction,
 with verbatim-backup, shadow-diff, and column-order gates before any deploy.
 
@@ -38,11 +48,12 @@ longer block Class 2 and remain relevant only to B2 where Expected itself is wro
 Method 1 does not remove a duplicate full-Expected document, so GL/JE duplication may remain.
 Await explicit pilot approval and Aware/FA GL verification for `L80046687` and `L79900064`.
 
-**INCIDENT-002 OPEN / INTERNAL ONLY:** CMI `add_ons` is being deducted
-per charge row in the credit-shell path instead of once per `(OrderItem, Period)`, while rows 2+
-also retain nonzero `ExpectedReceived`. Concrete evidence: `L80524847` (2026-07-28); live
-diagnostic source `sap_integration_v2.RCL 04_new order credit shell`, evidence commit `5171adb`
-at 23:47:45 ICT (exact query timestamp not retained). The incident is referred to operationally
+**INCIDENT-002a/002b OPEN / INTERNAL ONLY:** see the D16 split above. Historical evidence:
+credit-shell output deducted CMI `add_ons` per charge row instead of once per
+`(OrderItem, Period)`, while rows 2+ retained nonzero `ExpectedReceived`. `L80524847` is rejected
+output evidence only, not posted incident proof. Diagnostic source
+`sap_integration_v2.RCL 04_new order credit shell`, evidence commit `5171adb` at 23:47:45 ICT
+(exact query timestamp not retained). The CMI identifier issue is referred to operationally
 as the 263-transaction incident, but Claude Code is still producing the authoritative population
 and money impact; **do not notify outside the team or quote scope yet**. Aware + Sarawut/Boyd have
 confirmed both correction methods: adjustment (`Expected=0`, `Actual=delta`) tested on

@@ -79,9 +79,10 @@ Answer these from the repo. If you get any wrong, your context load failed — s
 2. **`SAP_LIVE` bloat investigation — read-only.** Live row count/freshness; distinct DocEntry vs total;
    are duplicate rows byte-identical (re-insert) or genuinely different documents; do NULL-`BatchRunDate`
    rows cluster around loader crash times; **is any DocEntry present in the extract output but missing
-   from `SAP_LIVE`** (real loss). Then: which baseline numbers must be recomputed. Propose a clean +
-   prevention plan (snapshot → dedup/rebuild → loader INSERT→MERGE by DocEntry → OOM sizing) but
-   **do not execute**.
+   from `SAP_LIVE`** (real loss). Then: which baseline numbers must be recomputed. Propose a
+   preservation + prevention plan (retain append-only audit history → fix future loader
+   INSERT→idempotent write by DocEntry → OOM sizing). **Do not clean/dedup/rebuild historical
+   `SAP_LIVE` before the incident is closed; do not execute changes.**
 3. **Small fixes:** alert routing (+`piyaratt@`, Slack); `PAID_AFTER_CANCEL` alert only on new/changed
    cases (currently re-fires the same 7 rows daily → alert fatigue); freshness guard (if `SAP_LIVE`
    older than 26h, mark the chain `DEGRADED`, don't let recon results drive decisions, ⚠️ in digest).

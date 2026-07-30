@@ -80,7 +80,9 @@ GCP project `pacific-plating-282708` | region `asia-southeast1` | auth: data@rab
   A Drive folder may be incomplete or stale and has previously caused incorrect analysis.
 - Every working repository must have a configured Git remote. A local/OneDrive-only repository is
   a single point of failure; treat a missing remote as a same-day operational risk.
-- Cleaning the 45× `SAP_LIVE` bloat is the highest-value storage/scan reduction, but cleanup still requires the approved investigation and destructive-action plan.
+- `SAP_LIVE` is append-only audit history. Investigate the 45× bloat and fix future ingestion, but
+  do not clean, deduplicate, truncate, rebuild, or delete historical rows before the incident is
+  closed and a reviewed preservation/retention decision exists.
 - Set `expiration_timestamp` on `diag_*` and scratch tables for 7–30 days.
 - Partition and cluster large v3 tables and require partition filters in every query that touches them.
 
@@ -92,6 +94,9 @@ GCP project `pacific-plating-282708` | region `asia-southeast1` | auth: data@rab
 - Before reporting a number to any stakeholder, prove the population from SAP-side evidence—not
   BI output, an export candidate, or an error XLSX. Error XLSX contains rejected rows. Posted-state
   claims require mirror + successful status + JE/import-success evidence.
+- FA/Aware verification must be captured in the `sap_fa_verification` control table, not only chat
+  or docs. Until the control exists and evidence is recorded, treat the claim as unverified and do
+  not ask the stakeholder to reconstruct prior evidence from memory.
 - If a metric looks impossible (too big, too round, 100%), assume your own query is wrong before assuming the data is.
 - For a new incident, record symptom → hypotheses tested → root cause → fix → lessons. When SAP import errors return, parse the import log before theorizing.
 - Money or accounting impact discovered → write it to `docs/FINDINGS_*` + `INPUTS_NEEDED.md` and **stop**. Do not fix, do not notify anyone outside the team.
@@ -117,7 +122,10 @@ GCP project `pacific-plating-282708` | region `asia-southeast1` | auth: data@rab
 
 ## Current state (2026-07-29)
 - V3 produces **no** interface file yet. All files SAP receives still come from the legacy `sap_view.*` path.
-- **Phase B/C are ON HOLD** pending investigation of `SAP_LIVE` bloat (151K → 6.9M rows in 3 days; suspected loader OOM crash-loop + plain INSERT on retry). This may be the root cause of the 496-docs-per-period and 89% NULL BatchRunDate anomalies, and it means every baseline number is suspect until cleaned.
+- **Phase B/C are ON HOLD** pending investigation of `SAP_LIVE` bloat (151K → 6.9M rows in 3 days;
+  suspected loader OOM crash-loop + plain INSERT on retry). This may be the root cause of the
+  496-docs-per-period and 89% NULL BatchRunDate anomalies. Baselines remain suspect, but the
+  append-only audit trail must not be cleaned before incident closure.
 - `sap-extract-schedule` may still be failing (401). If extract isn't scheduled, Boat presses EXECUTE manually; a missed-extract alert covers forgotten nights.
 - Alert delivery: must reach **piyaratt@rabbit.co.th** and/or Slack. `data@rabbit.co.th` alone is not sufficient.
 

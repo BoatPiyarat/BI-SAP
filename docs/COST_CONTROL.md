@@ -125,7 +125,7 @@ GROUP BY 1,2 ORDER BY gib_logical DESC LIMIT 30;
 | รายการ | สูตร | ค่าที่วัดได้ | หมายเหตุ |
 |---|---|---|---|
 | BigQuery query | TiB billed × unit price | ___ (จาก 2.1) | ตัวแปรใหญ่สุด ลดได้ด้วย PART 3 |
-| BigQuery storage | GiB × ราคา/GiB/เดือน | ___ (จาก 2.3) | ลดทันทีเมื่อ clean SAP_LIVE |
+| BigQuery storage | GiB × ราคา/GiB/เดือน | ___ (จาก 2.3) | ลด future growth ด้วย loader fix; `SAP_LIVE` audit history ห้าม clean ก่อน incident ปิด |
 | Cloud Run Job (extract) | วินาที × vCPU/mem | ~เศษดอลลาร์ | รันวันละครั้ง |
 | Cloud Run service (loader) | ตามการใช้ | ___ | ⚠️ ตอนนี้ crash-loop = จ่ายเกินโดยไม่ได้ผล |
 | Scheduler / Workflows / Eventarc | ตามจำนวน job/step | ~free tier | นับหลัก 30–100 executions/เดือน |
@@ -144,7 +144,7 @@ GROUP BY 1,2 ORDER BY gib_logical DESC LIMIT 30;
 ประเมินเป็น **effort** ไม่ใช่เงิน (เพราะเป็นเวลาคน + agent):
 | งาน | สถานะ | effort คร่าว |
 |---|---|---|
-| SAP_LIVE clean + loader fix | ค้าง (ใหญ่สุด) | 1–2 session ของ Claude Code + ต้องหาเจ้าของ loader |
+| SAP_LIVE preservation + loader fix | ค้าง (ใหญ่สุด) | 1–2 session ของ Claude Code + ต้องหาเจ้าของ loader; no historical cleanup before incident closure |
 | Cancelled status + 036 + regression | กำลังทำ | 1 session |
 | Phase B (56 columns + golden test) | รอ fixtures | 2–3 session |
 | Phase C (shadow export + cancel branch) | ยังไม่เริ่ม | 2–3 session |
@@ -156,7 +156,7 @@ GROUP BY 1,2 ORDER BY gib_logical DESC LIMIT 30;
 |---|---|
 | เลิก manual import ตาม list ของ FA | ชั่วโมงคนของ BI + FA ต่อรอบ (นับจาก 3 รอบล่าสุด) |
 | Import error รายคืน (~100 orders) → ~0 | ชั่วโมงแก้มือ + ความเสี่ยงบัญชี |
-| `SAP_LIVE` 45× bloat → clean | ค่า storage + ค่า scan ของทุก query ที่แตะ |
+| `SAP_LIVE` 45× bloat → stop future reinsert growth | ค่า storage + ค่า scanของทุก query; append-only history retained until incident closure |
 | Loader crash-loop → หยุด | ค่า compute ที่จ่ายทิ้งทุกคืน |
 | ตัวเลขผิดใน `sap_integrety_2025_RCL` (142,381 groups) | ความเสี่ยงตัดสินใจผิด (ตีเป็นเงินไม่ได้ แต่ต้องพูดถึง) |
 

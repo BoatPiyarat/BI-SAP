@@ -111,7 +111,8 @@ generate ไม่ใช่ signal จากต้นทาง (Data Dictionary/
 - **Compulsory ID:** `motor_item_type = 'MOTOR_TYPE_COMPULSORY'` เท่านั้น — ห้ามใช้ packageType
   (ต้นเหตุ 263-transaction mismatch)
 - **CMI add-on deduction grain:** หัก `add_ons` ได้ครั้งเดียวต่อ `(OrderItem, Period)` เท่านั้น
-  ห้ามหักซ้ำต่อ charge row. กฎนี้ป้องกัน `INCIDENT-002` ใน credit-shell path.
+  ห้ามหักซ้ำต่อ charge row. กฎนี้ป้องกัน `INCIDENT-002b` ใน credit-shell path; อย่ารวมกับ
+  `INCIDENT-002a` ซึ่งเป็น CMI identifier change.
 - **RCL installment:** ทุก payment ต้อง export ครบทุก period (full schedule)
 - **PaymentDate:** ใช้วันจ่ายจริง; ถ้าตกงวดบัญชีที่ปิดแล้ว → เลื่อนเป็นวันแรกของงวดเปิดถัดไป
   (cutoff จาก `sap_accounting_cutoff_dates` — Finance confirm รายเดือน, ห้าม hardcode)
@@ -189,10 +190,25 @@ Posting Periods Unlocked→PaymentDate | invalid date→ต้อง DDMMYYYY
 
 ---
 
+## ADDENDUM 2026-07-30 — D16 incident taxonomy and durable verification
+
+- **INCIDENT-002a:** CMI identifier change, 263-class. This is the pending “CMI issue.”
+- **INCIDENT-002b:** credit-shell `add_ons` double-deduction, 244 cause-aligned diagnostic orders.
+- **Separate/out of scope:** 224 orders with neither confirmed CMI sibling nor confirmed
+  duplication cause.
+- **Separate finding:** onetime M1/V1 split in
+  `sap_data_engineer.sap_dashboard_carepay_fully_paid`, known case `L78496990`.
+- Never combine these four populations. The earlier 559/71 totals are **⚠️ SUPERSEDED** because
+  they were calculated from output symptoms, not confirmed causes, in addition to the
+  rejected-vs-posted methodology gap.
+- `sap_fa_verification` is a required durable control. FA/Aware evidence must be recorded there
+  with SAP status, DocEntry, JE/import-success reference, verifier, decision, and timestamps; docs
+  alone are not an operational control.
+
 ## ADDENDUM 2026-07-30 — D10/D11 CMI correction execution
 
-- Canonical B1/B2/B3 definitions live in `docs/AUDIT_CMI_ADDONS.md`; these are
-  `INCIDENT-002` buckets, not historical pipeline labels.
+- Canonical B1/B2/B3 definitions live in `docs/AUDIT_CMI_ADDONS.md`; these are correction buckets,
+  not incident identities and not historical pipeline labels.
 - **D10:** Method-2 replacement naming is not decided. `M2` is already used by real CareOS items,
   so the naming template/prefix must be a configuration parameter, never a hardcoded suffix.
   The `C#` prefix seen around Credit Shell is only an SAP-side clue pending Aware Q4.
@@ -230,11 +246,10 @@ Posting Periods Unlocked→PaymentDate | invalid date→ต้อง DDMMYYYY
 - Authoritative pilots: Class 1 `L80046687` + Class 2 `L79900064`.
   `0a69143` is superseded: `L79871659` is too close to the noise floor and has no confirmed CMI
   sibling; `L80524847` was rejected and has no JE. It is a rejection-detection test only.
-- Defect classes have two known generators: credit-shell
+- D15's two-generator/combined-total framing is superseded by D16. Credit-shell
   (`sap_integration_v2.RCL 04_new order credit shell`) and onetime
-  (`sap_data_engineer.sap_dashboard_carepay_fully_paid`, known-answer `L78496990`).
-- FA totals must include both streams with order-level overlap removed; no combined point estimate
-  is approved while `3c10215` remains under review/range ambiguity.
+  (`sap_data_engineer.sap_dashboard_carepay_fully_paid`, known case `L78496990`) are separate
+  tracks; never combine them into one incident total.
 - Credit-shell drift `698→700 keys`, `612→613 orders` proves the generator remains active. Fix the
   generator before correction.
 - Option A selected: fix the v2 credit-shell view because the real

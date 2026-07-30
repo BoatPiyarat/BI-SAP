@@ -68,6 +68,9 @@ acceptance requires Aware/FA to verify GL/JE for both one Class-1 and one Class-
 - `POSTED_WRONG`: eligible only when mirror presence, successful SAP status, and JE reference from
   a successful import log all agree.
 - `REJECTED_NEVER_POSTED`: fix the generator and send the normal correct record; no adjustment.
+- FA/Aware acceptance is valid only when captured in `sap_fa_verification` with the relevant
+  order/item/period grain, SAP DocEntry/status, JE and successful import evidence, verifier,
+  decision, and timestamps. Docs/chat alone do not promote a candidate to approved.
 - Error XLSX is rejection evidence, never posted-state evidence.
 - Segment Class 1 by `has_CMI_sibling` before treating it as part of the CMI incident.
 

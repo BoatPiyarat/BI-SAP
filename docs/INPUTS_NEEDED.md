@@ -194,8 +194,10 @@ something I can just reassign).
    Leading hypothesis: the loader (`sap-order-payment-initial-phase`) crash-looped on its 1024 MiB
    memory limit for ~16 min around 2026-07-29 02:43-02:59 UTC and plain `INSERT` retries reinserted
    rows. Exact duplicate shape, any real loss, and downstream baseline impact are still
-   **UNVERIFIED**; Phase B/C remain ON HOLD. Read-only investigation must precede any cleanup,
-   memory, or idempotency change. See `docs/RETURN_TRIAGE_20260729.md` §1 and HANDOVER queue item 2.
+   **UNVERIFIED**; Phase B/C remain ON HOLD. `SAP_LIVE` is an append-only audit trail: no cleanup,
+   dedup, truncate, rebuild, or delete is allowed before the incident closes and a reviewed
+   preservation/retention decision exists. Read-only investigation must precede loader changes.
+   See `docs/RETURN_TRIAGE_20260729.md` §1 and HANDOVER queue item 2.
 2. **Legacy Cloud Functions reporting `crash` every night** (07-26/27/28, both Motor and NonMotor):
    root-caused to an expired/revoked Gmail SMTP app-password in the post-export notification email
    step (`mailer.py`), NOT the export itself - confirmed via log ordering that every real GCS file

@@ -5,31 +5,36 @@ evidence; new incidents are versioned here and synchronized to Drive.
 
 ---
 
-## INCIDENT-002 — CMI double-deduction in credit-shell
+## D16 incident split — do not merge these populations
+
+### INCIDENT-002a — CMI identifier change (263-class)
 
 - **Status:** OPEN — scope being quantified by Claude Code
 - **Confidentiality:** internal team only; do not notify outside the team until authoritative
   population and money impact are evidenced
-- **Operational incident label:** 263 transactions, supplied with the 2026-07-29 design evidence;
+- **Operational incident label:** 263-class, supplied with the 2026-07-29 design evidence;
   this is not yet a BigQuery measurement that may be quoted externally
-- **Concrete case:** `L80524847`, observed 2026-07-28
-- **Live diagnostic provenance:** `pacific-plating-282708.sap_integration_v2.RCL 04_new order credit shell`,
-  evidence committed in `5171adb` at 2026-07-29 23:47:45 ICT. Exact query timestamp was not
-  retained, so its diagnostic population is not the authoritative incident scope.
+- **Mechanism:** CMI identification changed; canonical identifier is
+  `careos.careos_order_items.motor_item_type = 'MOTOR_TYPE_COMPULSORY'`, never `packageType`.
+- **Boundary:** this is the “CMI issue” still pending. It is not the credit-shell double-deduction
+  population and must not inherit the 244-order figure.
 
-### Mechanism
+### INCIDENT-002b — credit-shell double-deduction
 
-The credit-shell path ranks charge rows using `charge_rank PARTITION BY transaction_id`. Multiple
-charge rows can reach one `(OrderItem, Period)`, and `add_ons` is deducted per charge row instead
-of once at the output grain. The path also repeats nonzero `ExpectedReceived` on later rows. All
-three orders inspected in the incident evidence violated the repeated-row rule.
+- **Status:** OPEN — cause-aligned diagnostic population is **244 orders**, not yet a correction
+  population and not stakeholder-citable.
+- **Source:** D16 evidence in `42b7c0a`; `sap_integration_v2.RCL 04_new order credit shell`.
+- **Mechanism:** multiple charge rows reach one `(OrderItem, Period)` and `add_ons` is deducted per
+  charge row instead of once at the output grain.
+- **Boundary:** separate from INCIDENT-002a. The 244 figure must pass SAP-side posted-state and
+  FA-verification controls before it can become a correction population.
 
 ### Violated canonical rules
 
 1. Rows 2+ within one `(OrderItem, Period)` must have `ExpectedReceived=0`.
 2. `add_ons` must be deducted once per `(OrderItem, Period)`, not once per charge row.
-3. CMI is identified only by
-   `careos.careos_order_items.motor_item_type = 'MOTOR_TYPE_COMPULSORY'`, never `packageType`.
+3. CMI is identified only by `motor_item_type = 'MOTOR_TYPE_COMPULSORY'`; this rule belongs to
+   INCIDENT-002a and is not evidence that every double-deduction row belongs to it.
 
 ### Correction and prevention
 
@@ -40,8 +45,7 @@ validation rules above; SQL changes are owned by Claude Code and are not authori
 
 ### Scope warning
 
-The broad duplicate-pair diagnostic in `docs/FINDINGS_CREDITSHELL_DUPLICATE_20260729.md` and the
-263-transaction incident label are different measurements with different provenance. Do not merge,
-subtract, or cite either as final incident scope until Claude Code returns the authoritative
-transaction list, source object, query timestamp, and impact calculation.
-
+The 559/71 symptom populations are **⚠️ SUPERSEDED — DO NOT CITE**. D16 showed they were computed
+from an output symptom rather than a confirmed cause. Keep four tracks separate:
+INCIDENT-002a (263-class CMI identifier), INCIDENT-002b (244 credit-shell double-deduction
+candidates), the 224 unexplained orders, and the onetime M1/V1 split finding.
