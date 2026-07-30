@@ -3,6 +3,44 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+## [2026-07-30 11:20 ICT] REVIEW REQUEST — class A — 🔴 MONEY-ADJACENT, D14 supplementary + unresolved pilot conflict
+
+Artifact: `docs/FINDINGS_CREDITSHELL_DUPLICATE_20260729.md` §"ADDENDUM 2026-07-30 (session, D14
+supplementary)" + `sql/ddl/039_sap_correction_log_and_b1_pilot.sql` supersession note; commit
+`9e6b44d`.
+
+Claim: (1) Method 1 for Class 2 (MISPOSTING) proved algebraically — per-key correction
+(`ExpectedReceived=0`, `ActualReceived=-key_delta`) drives per-key `SUM(Actual)` to the true
+Expected exactly, and order-level net to exactly 0, for every key/order, not merely "under buffer";
+(2) generating-bug fix: Option A (fix `sap_integration_v2` directly) vs. Option B (`v3` wrapper)
+compared — `sap_view.RCL_Motor_process_4_creditshell` (confirmed real nightly export consumer)
+reads the v2 view directly, so Option B alone would not stop new bad rows without also repointing
+that legacy view; recommends Option A, neither built/deployed; (3) `L78496990` is **not**
+credit-shell — traced to `sap_dashboard_carepay_fully_paid` instead (both M1/V1 sharing one
+payment's full `ActualReceived`/`InvoiceNo`, split logic did not apply) — flagged as a new, separate
+finding, not force-fit into Class 1/2 or B1/B2/B3; (4) B2 provenance re-run fresh: 700 keys/613
+orders now vs. 698/612 previously — real drift, evidence the generating bug is still active; (5)
+purity recheck at ฿10 buffer: Class 1 558/559 credit-shell-linked (1 unconfirmed exception,
+`L79806886`), Class 2 71/71 clean.
+
+⚠️ **Unresolved conflict, flagged rather than silently resolved**: commit `0a69143` (already on
+`origin/p0/stg-sap-state`, authored `piyaratt@rabbit.co.th`) landed its own D14 addendum naming
+pilots `L79871659` + `L80524847`. This directly conflicts with Boat's own D14 chat instruction to
+reject `L79871659` (too close to the noise floor) — this session instead selected and fully
+verified `L80046687` (Class 1) + `L79900064` (Class 2). Both pilot sets are documented in both
+files; **neither is sent**. Requesting Codex confirm which pilot pair Boat actually wants before
+either proceeds — this is a decision only Boat can make, not something to arbitrate between agents.
+
+Evidence: every query (Method 1 proof worked example, generating-bug consumer check via
+`INFORMATION_SCHEMA.JOBS_BY_PROJECT` + view-definition pull, `L78496990` trace across 4 objects,
+B2 fresh re-run, purity recheck) is in the FINDINGS addendum with its actual result stated inline.
+
+Reviewer: Codex
+Status: OPEN — requesting verification of the Method 1 proof and the generating-bug consumer
+finding, and specifically flagging the pilot-selection conflict with `0a69143` for resolution before
+either pilot is sent. Git push of commit `9e6b44d` also still blocked by the permission classifier —
+not circumvented, same as prior turns.
+
 ## [2026-07-30 10:05 ICT] REVIEW REQUEST — class A — 🔴 MONEY-ADJACENT, D13 order-level buffer
 Artifact: `docs/FINDINGS_CREDITSHELL_DUPLICATE_20260729.md` §"ADDENDUM 2026-07-29 (session, D13)"
 + `sql/ddl/039_sap_correction_log_and_b1_pilot.sql` supersession note; commit `4bbc16f`.
