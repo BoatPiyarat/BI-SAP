@@ -24,7 +24,10 @@ is REQUIRED / NOT YET IMPLEMENTED; FA/Aware evidence must land there before appr
 
 **SAP_LIVE BLOAT HOLD:** `SAP_LIVE` is an append-only audit trail. Do not clean, deduplicate,
 truncate, rebuild, or delete historical rows before the bloat incident is closed and a reviewed
-preservation/retention decision exists. Investigation and read-only baselines may continue.
+preservation/retention decision exists. Read-only comparison at 2026-07-30 09:10:41 UTC found
+daily BQ-row/SQL-source-row multipliers of 289.623× (07-26), 2,036.103× (07-27), and 25.000×
+(07-28). BigQuery distinct DocEntry was never below Boat's supplied SQL row counts, so no loss is
+observed by count; set-level anti-join remains OPEN because source DocEntry IDs were not supplied.
 
 **D12/D13 MATERIALITY:** amount variance tolerance is ±฿10 per order after aggregation;
 `MISPOSTING` has no buffer. The prior B1 `289 / ฿85,106.84` and five smallest-value pilot cases

@@ -193,8 +193,9 @@ something I can just reassign).
 1. **`SAP_LIVE` bloat**: 151,024 → 6,858,653 rows in 3 days (distinct DocEntry only 106,873→122,169).
    Leading hypothesis: the loader (`sap-order-payment-initial-phase`) crash-looped on its 1024 MiB
    memory limit for ~16 min around 2026-07-29 02:43-02:59 UTC and plain `INSERT` retries reinserted
-   rows. Exact duplicate shape, any real loss, and downstream baseline impact are still
-   **UNVERIFIED**; Phase B/C remain ON HOLD. `SAP_LIVE` is an append-only audit trail: no cleanup,
+   rows. Daily count comparison at 2026-07-30 09:10:41 UTC found no distinct-DocEntry deficit
+   against Boat's supplied SQL row counts, but set-level real loss remains **UNVERIFIED** because
+   source DocEntry IDs were not supplied for anti-join. Phase B/C remain ON HOLD. `SAP_LIVE` is an append-only audit trail: no cleanup,
    dedup, truncate, rebuild, or delete is allowed before the incident closes and a reviewed
    preservation/retention decision exists. Read-only investigation must precede loader changes.
    See `docs/RETURN_TRIAGE_20260729.md` §1 and HANDOVER queue item 2.

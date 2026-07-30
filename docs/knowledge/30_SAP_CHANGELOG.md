@@ -4,6 +4,21 @@ Append-only — entry ใหม่บนสุด ห้ามลบ/แก้�
 
 ---
 
+## 2026-07-30 — SAP_LIVE daily amplification measured; count-level loss not observed
+
+Recorded Boat's daily `SAP_LIVE` and SAP SQL Server `[@INSURANCE]` counts in
+`FINDINGS_SAP_MIRROR_20260726` and `RETURN_TRIAGE_20260729`. The source SQL execution timestamp was
+not captured. A read-only comparison through `scripts/bq_safe_query.sh` ran at
+2026-07-30 09:10:41 UTC / 16:10:41 ICT (dry-run estimate 133,186,480 bytes / 0.124 GiB).
+
+Replaced the old aggregate multiplier language with actual daily amplification, including
+289.623× on 07-26, 2,036.103× on 07-27, and 25.000× on 07-28. BigQuery distinct DocEntry was never
+below the supplied SQL row count and matched exactly on 07-28, 07-29, and 08-15. Therefore real
+loss is not observed by aggregate count, but zero loss remains unproven until source DocEntry IDs
+can be anti-joined. No loader or table mutation was made.
+
+---
+
 ## 2026-07-30 — Closed dormant integrity view; code-level cost guardrail begins
 
 Boat confirmed `sap_integration_v2.sap_integrety_2025_RCL` has no real consumer, consistent with

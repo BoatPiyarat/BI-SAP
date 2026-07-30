@@ -12,7 +12,7 @@ stakeholder จนได้ตรวจกับ cloud.google.com/pricing แล
 | 1 | **คนของ Boat** | 2 สัปดาห์เต็มไปกับ investigate/แก้มือ — แพงกว่าทุกอย่างรวมกัน |
 | 2 | **BigQuery scan ซ้ำซ้อน** | `COUNT(*)` บน view timeout 120s หลายครั้ง, diagnostic เดิมรันซ้ำหลายรอบ, `SELECT DISTINCT *` บนตารางกว้าง, agent 2 ตัว query ของเดียวกัน |
 | 3 | **Agent tokens** | session ยาว, verification verbose, Codex เกือบ verify config tables ที่ Claude Code ทำเสร็จแล้ว |
-| 4 | **BigQuery storage** | `SAP_LIVE` บวม 151K→6.9M rows (45×) = จ่ายค่าเก็บขยะ + ทุก query ที่แตะมันแพงขึ้น |
+| 4 | **BigQuery storage** | `SAP_LIVE` daily amplification จริง: 289.623× (07-26), 2,036.103× (07-27), 25.000× (07-28) = จ่ายค่าเก็บซ้ำ + ทุก query ที่แตะมันแพงขึ้น |
 | 5 | Infra (Scheduler/Workflows/Cloud Run/GCS/Eventarc) | เล็กมาก ระดับ free tier ถึงเศษดอลลาร์ |
 
 **ข้อสรุป:** ประหยัดที่ #2 และ #3 ได้ทันทีด้วยวินัย ไม่ต้องเปลี่ยนสถาปัตยกรรม / #4 ประหยัดได้ทันทีที่ clean
@@ -163,7 +163,7 @@ GROUP BY 1,2 ORDER BY gib_logical DESC LIMIT 30;
 |---|---|
 | เลิก manual import ตาม list ของ FA | ชั่วโมงคนของ BI + FA ต่อรอบ (นับจาก 3 รอบล่าสุด) |
 | Import error รายคืน (~100 orders) → ~0 | ชั่วโมงแก้มือ + ความเสี่ยงบัญชี |
-| `SAP_LIVE` 45× bloat → stop future reinsert growth | ค่า storage + ค่า scanของทุก query; append-only history retained until incident closure |
+| `SAP_LIVE` daily amplification (สูงสุด 2,036.103× ในวันที่ตรวจ) → stop future reinsert growth | ค่า storage + ค่า scanของทุก query; append-only history retained until incident closure |
 | Loader crash-loop → หยุด | ค่า compute ที่จ่ายทิ้งทุกคืน |
 | `sap_integrety_2025_RCL` | Dormant/obsolete; no real consumer in 90 days, no notification needed; housekeeping/archive candidate only |
 

@@ -30,6 +30,24 @@ with expected growth). This is a real storage/cost concern and an active loader 
 a correctness problem for anything V3 produces. **Not fixed — outside `sap_integration_v3`, needs
 your/Attila's call** (increase the loader's memory limit, and/or make the insert idempotent).
 
+### 2026-07-30 read-only daily comparison
+
+Boat supplied daily counts from both `sap_integration_v2.SAP_LIVE` and SAP SQL Server
+`[RCB_LIVE_DB].[dbo].[@INSURANCE]`; source-query execution timestamp was not captured. Codex
+re-ran the BigQuery side with distinct DocEntry at **2026-07-30 09:10:41 UTC / 16:10:41 ICT**
+through `scripts/bq_safe_query.sh` (dry-run estimate **133,186,480 bytes / 0.124 GiB**).
+
+Loader amplification varies materially by day. Actual BQ-row/SQL-source-row multipliers are:
+07-21 1.681×, 07-22 1.498×, 07-23 1.854×, 07-24 2.659×, 07-25 1.939×,
+**07-26 289.623×, 07-27 2,036.103×, 07-28 25.000×**, 07-29 1.000×, and
+08-15 1.000×. Full counts and provenance are in
+`docs/FINDINGS_SAP_MIRROR_20260726.md` §“ADDENDUM 2026-07-30”.
+
+BigQuery distinct DocEntry was never lower than the supplied SQL row count and matched exactly on
+07-28 (58,619), 07-29 (27), and 08-15 (5). Therefore no real loss is observed by aggregate count,
+but zero loss is not proven: the supplied SQL output lacks the source DocEntry set required for an
+anti-join. **Set-level real-loss verification remains OPEN.** No loader fix or cleanup was made.
+
 ## 2. Alerts — which fired, where, and whether delivery is confirmed working
 
 | Alert | Fired during 26-29? | Real condition or false alarm? | Destination |
@@ -122,8 +140,9 @@ Backlog is flat/improved. `audit_010` is confirmed reliable for what it reports.
 
 **Two things worth a decision before or alongside starting Phase B, not because Phase B depends on
 them, but because they're real and now confirmed**:
-1. **The `SAP_LIVE` loader memory/duplication bug** (§1) — storage/cost growing fast (45× in 3
-   days), a real active bug outside `sap_integration_v3`. Recommend raising the Cloud Run memory
+1. **The `SAP_LIVE` loader memory/duplication bug** (§1) — daily amplification measured at
+   289.623× on 07-26, 2,036.103× on 07-27, and 25.000× on 07-28; a real active bug outside
+   `sap_integration_v3`. Recommend raising the Cloud Run memory
    limit on `sap-order-payment-initial-phase` and/or confirming the insert path is idempotent.
 2. **The SMTP credential failure** (§4) causing both legacy Cloud Functions to report `crash` every
    night — cosmetic for data delivery (confirmed files still land) but means nobody gets that

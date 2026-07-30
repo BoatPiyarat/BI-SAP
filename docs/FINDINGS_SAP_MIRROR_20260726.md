@@ -435,3 +435,47 @@ itself is dormant (no real consumer in 90 days), there's no evidence anyone has 
 number from it recently — but `audit_010_careos_missing_in_sap_detail` **is** actively used and
 has not been checked for the same pattern in this pass (time-boxed) — that's the one to check
 first when this is picked back up.
+
+---
+
+## ADDENDUM 2026-07-30 — daily loader amplification and distinct-DocEntry loss check
+
+**Read-only only; no loader change and no cleanup.** `SAP_LIVE` remains append-only audit history
+until the incident closes.
+
+Sources:
+
+- BigQuery: `pacific-plating-282708.sap_integration_v2.SAP_LIVE`.
+- SAP SQL Server: `[RCB_LIVE_DB].[dbo].[@INSURANCE]`, grouped by `U_BatchRunDate`; result supplied
+  by Boat on 2026-07-30. Original SQL execution timestamp was **not captured**, so it must not be
+  invented.
+- Comparison query: executed through `scripts/bq_safe_query.sh` at
+  **2026-07-30 09:10:41 UTC / 16:10:41 ICT**. Dry-run estimate:
+  **133,186,480 bytes (0.124 GiB)**. It joined Boat's supplied daily SQL counts to BigQuery
+  `COUNT(*)` and `COUNT(DISTINCT DocEntry)` by `DATE(U_BatchRunDate)`.
+
+| Batch date | SQL `[@INSURANCE]` rows | BQ rows | BQ distinct DocEntry | Distinct − source | BQ/source rows |
+|---|---:|---:|---:|---:|---:|
+| 2026-08-15 | 5 | 5 | 5 | 0 | 1.000× |
+| 2026-07-29 | 27 | 27 | 27 | 0 | 1.000× |
+| 2026-07-28 | 58,619 | 1,465,475 | 58,619 | 0 | **25.000×** |
+| 2026-07-27 | 2,076 | 4,226,950 | 60,385 | +58,309 | **2,036.103×** |
+| 2026-07-26 | 8,578 | 2,484,385 | 66,952 | +58,374 | **289.623×** |
+| 2026-07-25 | 817 | 1,584 | 1,584 | +767 | 1.939× |
+| 2026-07-24 | 4,476 | 11,900 | 11,846 | +7,370 | 2.659× |
+| 2026-07-23 | 851 | 1,578 | 1,578 | +727 | 1.854× |
+| 2026-07-22 | 997 | 1,494 | 1,494 | +497 | 1.498× |
+| 2026-07-21 | 1,791 | 3,011 | 3,011 | +1,220 | 1.681× |
+
+`U_BatchRunDate=2026-08-15` is a value present in both supplied/current datasets; it is not the
+query execution date.
+
+### Real-loss conclusion
+
+There is **no count-level evidence of real loss** for the ten supplied dates: BigQuery distinct
+DocEntry is never below the SQL Server row count, and is exactly equal on 2026-07-28, 2026-07-29,
+and 2026-08-15. This is not yet proof of zero loss. The SQL result supplied only daily row counts,
+not the source DocEntry set or source distinct-DocEntry count; equal/greater counts cannot prove
+set inclusion. Closing real loss requires an anti-join of the extracted/source DocEntry list
+against `SAP_LIVE`, or equivalent source-side distinct IDs. Until then: **REAL LOSS NOT OBSERVED
+BY COUNT, SET-LEVEL VERIFICATION OPEN**.

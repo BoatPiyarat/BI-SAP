@@ -86,7 +86,8 @@ GCP project `pacific-plating-282708` | region `asia-southeast1` | auth: data@rab
   A Drive folder may be incomplete or stale and has previously caused incorrect analysis.
 - Every working repository must have a configured Git remote. A local/OneDrive-only repository is
   a single point of failure; treat a missing remote as a same-day operational risk.
-- `SAP_LIVE` is append-only audit history. Investigate the 45× bloat and fix future ingestion, but
+- `SAP_LIVE` is append-only audit history. Daily BQ-row/SQL-source-row amplification measured
+  289.623× (07-26), 2,036.103× (07-27), and 25.000× (07-28); fix future ingestion, but
   do not clean, deduplicate, truncate, rebuild, or delete historical rows before the incident is
   closed and a reviewed preservation/retention decision exists.
 - Every new `diag_*` or scratch table must declare `expiration_timestamp` at creation (7–30 days);
