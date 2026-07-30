@@ -24,11 +24,13 @@
 -- See docs/FINDINGS_CREDITSHELL_DUPLICATE_20260729.md "ADDENDUM 2026-07-29 (session, D14)" for full
 -- detail, the Method 1 proof for Class 2, and everything still outstanding before either is sent.
 --
--- ⚠️ CONFLICT, UNRESOLVED (2026-07-30): commit 0a69143 (already on origin/p0/stg-sap-state) names a
--- DIFFERENT pilot pair - L79871659 + L80524847 - which conflicts with Boat's own D14 chat rejection
--- of L79871659 as too close to the noise floor. Neither pilot pair (this file's L80046687/L79900064,
--- or 0a69143's L79871659/L80524847) should be sent until Boat/Aware confirms which is authoritative.
--- See "ADDENDUM 2026-07-30 (session, D14 supplementary)" in the FINDINGS doc for the full note.
+-- ⚠️ CONFLICT (2026-07-30) - RESOLVED by Boat, D15: commit 0a69143's pilot pair (L79871659 +
+-- L80524847) is superseded. Authoritative pilots are THIS file's pair, L80046687 (Class 1) +
+-- L79900064 (Class 2) - L79871659 stays rejected (too close to noise floor), L80524847 is kept as
+-- a permanent known-answer test rather than used as a pilot (too high a blast radius). Shadow-only
+-- correction rows for both authoritative pilots are drafted in
+-- sql/ddl/041_pilot_shadow_corrections_L80046687_L79900064.sql - still not sent, still gated on the
+-- generating-bug fix (040) landing first, per D15 item 3.
 --
 -- ============================================================================
 -- B1 quantification - CORRECTED SCOPE (important methodology note)

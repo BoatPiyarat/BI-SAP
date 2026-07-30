@@ -721,3 +721,134 @@ evidence that the real production wrapper reads this exact view. Neither option 
 
 `git remote add`/push remains blocked by the permission classifier from the prior turn. Per
 instruction, not circumvented. Waiting for Boat to run it directly, or to grant it in this session.
+
+---
+
+# ADDENDUM 2026-07-30 (session, D15) — pilot authority resolved; second stream quantified with a caught formula bug; Option A fix drafted; second stream needs its own separate fix
+
+Boat D15 resolved the pilot conflict flagged above: **`L80046687` (Class 1) + `L79900064` (Class 2)
+are authoritative**; `0a69143`'s pair (`L79871659` + `L80524847`) is superseded — `L79871659` is too
+close to the noise floor, `L80524847` has too high a blast radius to use as a pilot (kept instead as
+a permanent known-answer test for Class-2 queries, per its established role since D13). Option A
+(fix the `sap_integration_v2` view directly) is approved **as a direction**; deploy is still not
+approved.
+
+## Item 1 — second stream (`sap_dashboard_carepay_fully_paid`) quantified — ⚠️ a real formula bug caught mid-quantification, second bug potentially still open
+
+Boat's ask: quantify the "onetime" stream the same way as credit-shell (Class 1 ≥฿10/order, Class 2
+sign-flip within order), using `L78496990` as the known-answer test, with year split, sums, and
+overlap against the existing 629/630 credit-shell orders — since the number reported to FA must
+cover both streams or it will be incomplete again, exactly the risk Boat has flagged from the start.
+
+**Known-answer check first**: pulled `L78496990` directly from `sap_dashboard_carepay_fully_paid`
+(not `sap_mirror_state`, which is a later, already-imported snapshot with different numbers and isn't
+the right source for a *source-side* quantification). Real values: `M1` Period 1 balanced
+(Expected=Actual=฿645.21); `V1` Period 1 Expected ฿11,172.92, Actual ฿11,867.35, delta **+฿694.43**.
+No duplication for this specific order (2 rows total, one per item) — so `L78496990` classifies
+Class 1 (single-direction, ≥฿10), which became this stream's baseline known-answer test.
+
+**First quantification pass (mechanically reusing the credit-shell formula) — wrong, caught before
+reporting**: applying `single_expected = ARRAY_AGG(Expected ORDER BY (Actual IS NULL))[OFFSET(0)]`
+(the credit-shell pick, which relies on duplicate rows carrying an *identical* Expected value) gave
+**8,915 orders, Σ gross ฿15,487,986.70, Σ net ฿11,701,869.52** (0 Class 2 orders). Before reporting
+this, sampled raw duplicate-key rows directly and found the credit-shell assumption does **not**
+hold here: e.g. `L78864267-V1` Period 1 has 3 rows — `(0.00 / 36,900.00)`, `(0.00 / 36,900.00)`,
+`(36,900.00 / 36,900.00)` — Expected genuinely *differs* across the "duplicate" rows (0 vs. the real
+value), not identical as in credit-shell. `ARRAY_AGG ... ORDER BY (Actual IS NULL)` ties on all-non-
+null Actual and picks an **arbitrary** row — sometimes the real Expected, sometimes 0 — a
+nondeterministic, silently-wrong pick. **This is exactly the class of error the known-answer-test
+discipline exists to catch**, caught here by sampling raw rows rather than trusting the aggregate.
+
+**Root cause (confirmed via the view's own definition, not inferred)**: `sap_dashboard_carepay_fully_paid`'s
+`onetime_master` CTE assigns each transaction's `SUCCESSFUL` charges a `charge_rank` (`ROW_NUMBER()
+OVER (PARTITION BY transaction_id ORDER BY create_time)`), joins `charges` to `order_items` via the
+shared `transactions`/`orders` base (**not** a per-item key), and *by design* zeroes
+`ExpectedReceived` for every `charge_rank != 1` (to avoid double-counting Expected across a real
+item's own follow-up charges) while `ActualReceived` for `charge_rank != 1` carries the real charge
+amount. This is a **structurally different generator from credit-shell** — confirmed, not assumed,
+matching Boat's own hypothesis — credit-shell fans out via an installment-number join on `charges`;
+this stream fans out via a `transaction_id`-scoped `charge_rank` with no period/item key at all.
+
+**Fix applied**: `single_expected = MAX(ExpectedReceived)` (deterministic — correctly picks the one
+real non-zero value out of the charge_rank=1 row, since compulsory items hold the same value on
+every row anyway). Re-quantified: **8,525 orders, Σ gross ฿6,866,459.98, Σ net ฿3,033,610.26** — the
+naive pick had overstated gross by ~2.25× and net by ~3.9×. Still 0 Class 2 orders (no order in this
+stream shows both a positive and a negative key-delta — every real anomaly here is one-directional).
+Year split: 2025 = 5,313, 2026+ = 3,212, ≤2024 = 0.
+
+**⚠️ Second, smaller, still-open sub-issue found while sampling**: `L78864267`'s 3 "duplicate" rows
+trace back to **3 literally identical rows in `careos.carepay_charges` itself** — same
+`transaction_id`, same `installment_number=1`, same `amount=3,690,000` satang, same
+`create_time` (`2025-09-19 09:57:23`), all `status='SUCCESSFUL'`. This looks like raw upstream
+log-duplication (one real payment recorded 3 times), not 3 genuine separate charges — contrast with
+`L78881232`, which has 2 *legitimately distinct* charges (different amounts, different timestamps —
+one bundled first payment covering both `M1`+`V1`, one real later top-up), correctly handled by the
+view's own `charge_rank`/`compu_detail` split logic. Quantified the prevalence: of the 1,126
+duplicate `(OrderID, OrderItem, Period)` keys in this view, **179 (16%) have every row's
+`ActualReceived` value identical** (the `L78864267`-shaped risk — possible raw log-duplication);
+**929 (82%) have all-distinct values** (the `L78881232`-shaped pattern — genuine multiple real
+charges); 18 mixed. Re-ran the quantification collapsing exact full-row duplicates first (`SELECT
+DISTINCT` before the per-key aggregation): same 8,525 orders, but Σ gross drops further to
+**฿6,198,229.77** and Σ net to **฿2,365,380.05**.
+
+**Honest range, not a single number — do not quote one figure to FA yet**: **8,525 orders**, Σ gross
+**฿6.20M–6.87M**, Σ net **฿2.37M–3.03M**, depending on whether the 179 identical-repeated-charge keys
+represent real repeat payments (upper bound) or raw log-duplication that should count once (lower
+bound). This is **not yet resolved** and needs Boat/Aware's read on whether `carepay_charges` can
+legitimately contain 2+ truly-identical SUCCESSFUL charges (same amount, same timestamp) for one
+real payment, or whether that pattern itself is a known logging defect.
+
+**Overlap with credit-shell (629/630 orders)**: re-ran the credit-shell order list fresh alongside
+this stream's list in the same job — credit-shell **630** orders (drift continues, consistent with
+D14's finding that the credit-shell bug is still live), this stream **8,927** orders (Class 1 +
+Class 2 combined, pre-formula-fix count; post-fix Class 1 alone is 8,525, Class 2 is 0), **overlap =
+1 order**. The two populations are almost entirely disjoint — strong, direct evidence these are two
+separate generators, not one bug double-counted.
+
+**This population is an order of magnitude larger than credit-shell's** (8,525 vs. 630) and was not
+previously on FA's radar at all. Flagging prominently rather than downplaying: this may be the more
+consequential of the two incidents by total value, even accounting for the unresolved range above.
+Recommend Boat decide next steps (further validation, looping in Aware) before any number from this
+stream is quoted externally.
+
+## Item 2 — Option A drafted (`sql/ddl/040_generating_bug_option_a_dedup_charges.sql`); confirmed stream 2 needs its own separate fix
+
+Pulled the live `sap_integration_v2.\`RCL 04_new order credit shell\`` view's full definition
+directly (not reconstructed from memory) to draft Option A precisely: dedupe `charges` to one row
+per `(transaction_id, installment_number)` — `SUM(amount)` (real money, multiple genuine charges for
+one period should both count), with an explicitly flagged **open decision** (not mine to make) on
+which charge's `third_party_id` becomes the row's `InvoiceNo` when 2+ charges share a key. Full
+3-stage validation plan drafted (shadow view → row/distribution diff + 5 named samples → schema
+ordinal diff against `INFORMATION_SCHEMA.COLUMNS`) — **none of the 3 stages has been run**, nothing
+built or deployed. One assumption flagged as unverified: whether
+`transaction_snapshot_installment_details` (joined separately by `snapshot_id`+`period`) is itself
+already 1-row-per-key — if not, it's a second fanout source this fix would not touch. Not checked
+this session.
+
+**Stream 2 check (explicit D15 ask)**: does Option A's fix also apply to
+`sap_dashboard_carepay_fully_paid`? **No.** Confirmed directly from that view's own definition (see
+Item 1 above) — its fanout is `transaction_id`-scoped via `charge_rank`, not an installment-number
+join, and it deliberately zeroes Expected for non-first charges by design. Option A's dedup-by-
+`(transaction_id, installment_number)` approach doesn't map onto that join shape at all. Stream 2
+needs its own, separate fix design — not started; the `MAX(Expected)` correction used for
+quantification in Item 1 is a query-side workaround for measuring the problem, not a proposed fix
+for the view itself.
+
+## Item 3 — two pilots, shadow-only, prepared per Codex's request — not sent
+
+Drafted in `sql/ddl/041_pilot_shadow_corrections_L80046687_L79900064.sql`: the exact
+`sap_correction_log` insert rows for both authoritative pilots (`L80046687` Class 1, `L79900064`
+Class 2), reusing `fn_mint_adj_invoice`'s already-verified minting logic (`ADJ1_L80046687-V1`,
+`ADJ1_L79900064-M1`, `ADJ1_L79900064-V1` — all invoice-collision-checked clean in the D14
+addendum). Explicitly gated: **not run, not deployed, not sent** — blocked on the same three
+dependencies as before (the real `sap_accounting_cutoff_dates`, `sap_correction_log`/
+`fn_mint_adj_invoice` actually deployed, full validation pass) **plus** D15's explicit instruction
+that neither pilot goes out until the generating bug (Item 2) is actually fixed, since sending now
+risks the exact scenario Boat has repeatedly flagged — the bug regenerating the same case the same
+night it's corrected.
+
+## Item 4 — push: still blocked
+
+Retried `git push origin p0/stg-sap-state` with D15's explicit approval — still denied by the
+permission classifier, same as every prior attempt. Not circumvented. 2 local commits
+(`9e6b44d`, `deea417`) remain unpushed; Boat needs to run this directly or grant the permission.
