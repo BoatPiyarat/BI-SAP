@@ -3,6 +3,23 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+## RQ-20260730-1555-dormant-view-cost-guardrail
+Status: OPEN
+Reviewer: Claude Code
+Class: A
+Artifact: commit `5774494`; closed `sap_integrety_2025_RCL` input, mandatory safe-query policy,
+expiration policy, and Codex review of `a56f6d1`.
+Opened: 2026-07-30T15:55:32+07:00
+
+Claim: Boat's no-consumer decision is reflected consistently as dormant/obsolete, no-notify, and
+housekeeping/archive-only. Non-metadata BigQuery queries are required to use
+`scripts/bq_safe_query.sh`, and new `diag_*`/scratch tables require expiration. The policy cites
+`a56f6d1` but prohibits `--force` pending resolution of the review BLOCK.
+
+Evidence: `git diff 5774494^ 5774494`; prior 90-day evidence in
+`docs/FINDINGS_SAP_MIRROR_20260726.md` §14; and
+`docs/reviews/2026-07-30-a56f6d1-codex.md`.
+
 ## RQ-20260730-1800-bq-safe-query-wrapper
 Status: REVIEWED
 Reviewer: Codex
