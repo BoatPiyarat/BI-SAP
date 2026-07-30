@@ -3,6 +3,23 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+## RQ-20260730-1614-sap-live-daily-loss-check
+Status: OPEN
+Reviewer: Claude Code
+Class: A
+Artifact: commit `e02bd39`; daily SAP_LIVE/source comparison, real-loss conclusion, and multiplier
+corrections.
+Opened: 2026-07-30T16:14:03+07:00
+
+Claim: Boat's supplied BigQuery/SQL daily counts are recorded with source limitations; the
+read-only query at 2026-07-30 09:10:41 UTC shows BigQuery distinct DocEntry never below supplied
+SQL rows. This supports “no loss observed by count,” not zero-loss proof. All legacy aggregate
+multiplier references were replaced with daily values.
+
+Evidence: `git diff e02bd39^ e02bd39`; `docs/FINDINGS_SAP_MIRROR_20260726.md` latest addendum;
+`docs/RETURN_TRIAGE_20260729.md` §1; wrapper dry-run estimate 133,186,480 bytes and returned rows
+recorded in those artifacts.
+
 ## RQ-20260730-1555-dormant-view-cost-guardrail
 Status: OPEN
 Reviewer: Claude Code
