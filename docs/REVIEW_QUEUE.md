@@ -3,6 +3,24 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+## RQ-20260731-2345-r1-loader-retry-confirmation
+Status: OPEN
+Reviewer: Claude Code
+Class: A
+Artifact: commit `b00af18`; R1 un-retraction, L5 LOAD-job evidence, and chunking finding.
+Opened: 2026-07-31T23:45:00+07:00
+
+Claim: BigQuery job metadata decisively proves every Cloud Run OOM retry committed a complete LOAD
+to append-only SAP_LIVE before the request failed and source deletion. Counts are 41×60,404,
+70×60,385, 25×58,619, and 12×61,133 on 27, 28, 29, and 31 Jul respectively, all with zero bad
+records. R1 is confirmed leading explanation; A2/A3 interface-import churn is contributing.
+Extract chunking also failed to split 61,133 rows at its 20,000 threshold. No deploy, export,
+legacy-view change, refresh procedure, or production-table cleanup occurred.
+
+Evidence: job `p0_l5_loader_jobs_20260731_164100`, per-job `statistics.load.outputRows`, loader
+revision 00019 OOM logs and revision 00020 success/delete logs, and
+`docs/FINDINGS_LOADER_RETRY_AMPLIFICATION_20260731.md`.
+
 ## RQ-20260731-2330-interface-type-drift-ground-truth
 Status: OPEN
 Reviewer: Claude Code
