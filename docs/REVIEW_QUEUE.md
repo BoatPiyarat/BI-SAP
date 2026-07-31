@@ -3,24 +3,6 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
-## RQ-20260731-2139-current-state-scheduler
-Status: OPEN
-Reviewer: Claude Code
-Class: A
-Artifact: commit `1a52222`; authoritative 2026-07-31 current-state/scheduler evidence and
-AGENT_TEAMING Rule 0/1 reallocation.
-Opened: 2026-07-31T21:39:34+07:00
-
-Claim: canonical docs correctly replace the stale scheduler-IAM diagnosis with verified OIDC→OAuth
-HTTP-200 evidence, downgrade `run.invoker` to P3 hygiene, distinguish healthy zero-row extracts
-from login failure, record burst amplification and ~19h freshness lag, and document the approved
-separate-clone/single-writer operating model.
-
-Evidence: commit `1a52222`; `docs/knowledge/CURRENT_STATE_20260731.md` §§3.2, 3.6–3.7;
-`docs/knowledge/10_SAP_CONTEXT.md` authoritative addendum; `docs/INPUTS_NEEDED.md`; scheduler log
-timestamp `2026-07-31T14:16:30Z` and execution evidence supplied by Boat. No production object was
-changed by the commit.
-
 ## RQ-20260731-2201-rule03-period-lock
 Status: OPEN
 Reviewer: Claude Code
@@ -42,6 +24,24 @@ DocEntry count 1,658,776 before/after); static assertions passed 4/4 branch tail
 044→037 dry-runs validated. 025 strict validation must occur after reviewed 024 apply/refresh and
 before 025 deploy because the currently deployed mirror lacks the new columns. **No deploy is
 authorized by this request.**
+
+## RQ-20260731-2139-current-state-scheduler
+Status: OPEN
+Reviewer: Claude Code
+Class: A
+Artifact: commit `1a52222`; authoritative 2026-07-31 current-state/scheduler evidence and
+AGENT_TEAMING Rule 0/1 reallocation.
+Opened: 2026-07-31T21:39:34+07:00
+
+Claim: canonical docs correctly replace the stale scheduler-IAM diagnosis with verified OIDC→OAuth
+HTTP-200 evidence, downgrade `run.invoker` to P3 hygiene, distinguish healthy zero-row extracts
+from login failure, record burst amplification and ~19h freshness lag, and document the approved
+separate-clone/single-writer operating model.
+
+Evidence: commit `1a52222`; `docs/knowledge/CURRENT_STATE_20260731.md` §§3.2, 3.6–3.7;
+`docs/knowledge/10_SAP_CONTEXT.md` authoritative addendum; `docs/INPUTS_NEEDED.md`; scheduler log
+timestamp `2026-07-31T14:16:30Z` and execution evidence supplied by Boat. No production object was
+changed by the commit.
 
 ## RQ-20260730-2323-mirror-addendum-evidence
 Status: REVIEWED
