@@ -10,3 +10,11 @@ secrets/
 *.zip
 *.rar
 workspace.code-workspace
+
+# PII-bearing exports and SAP import evidence must stay outside OneDrive (use C:\dev only)
+*.mbox
+*.eml
+*.csv
+*.xlsx
+sap_import_logs/
+delta_out/

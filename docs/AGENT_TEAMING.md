@@ -9,9 +9,21 @@ Never point two agents at the same folder. Use a second git worktree (same histo
 **Gate 0.3 evidence (Boat + Claude approved 2026-07-31):** Codex runs from a separate clone whose
 repository top-level differs from Claude Code's checkout, with `origin` set to
 `https://github.com/BoatPiyarat/BI-SAP.git`; repository fsck is clean (a dangling blob is benign)
-and no OneDrive conflicted copy exists. This provides the required filesystem isolation even though
-both clones currently use branch `p0/stg-sap-state`. While the branch is shared, **Codex is the
-only writer**; Claude Code is reviewer and deployer only.
+and no OneDrive conflicted copy exists. Boat decided on 2026-08-01 that this Codex clone remains at
+its current OneDrive path until V3 is complete. This provides filesystem isolation even though both
+clones currently use branch `p0/stg-sap-state`.
+
+### OneDrive session gate (mandatory)
+
+Before every session run `git status --short --branch`, `git fsck --no-progress`, recursively scan
+for `*-DESKTOP-*`, and recursively scan for `*conflicted*`. Any conflicted copy is a hard stop:
+report it to Boat and do not edit. A dangling blob by itself is benign. If a git operation fails
+with a permission/lock error, allow OneDrive 30 seconds to sync and retry once; never force and
+never remove `.git/index.lock` manually. Push every completed work unit to the private GitHub
+remote because OneDrive has only the latest file state, not the recoverable audit history.
+
+PII-bearing `.mbox`, `.eml`, `.csv`, `.xlsx`, `sap_import_logs/`, and `delta_out/` must never be
+placed anywhere under OneDrive. Keep such local evidence under `C:\dev\` only and never commit it.
 
 ```bash
 # from the main repo
@@ -22,16 +34,19 @@ git worktree add ../repo-codex chore/docs-governance
 Both push to the same remote; integration happens through PRs, never through a shared folder.
 
 ## Rule 1 — ownership by domain (not by task)
-Boat reassigned the lanes on 2026-07-31 for 2026 budget control. This allocation supersedes the
-older executor/ownership assignments elsewhere in this document.
+Boat reassigned the lanes again on 2026-08-01. Both agents may commit and push to
+`p0/stg-sap-state`; fetch and rebase on `origin/p0/stg-sap-state` immediately before every push.
+On rejection, fetch + rebase and retry; never force-push.
 
 | Domain | Owner | Notes |
 |---|---|---|
-| **Execution:** `sql/**`, `scripts/**`, BigQuery queries/objects, data investigations, `docs/**` | **Codex** | One executor, one batched query plan; all queries use the mandatory cost-control wrapper after its guardrail review passes |
-| **Review and deploy only** | **Claude Code** | Reviews Codex work and performs approved deployments; does not implement executor changes |
+| `sql/**`, `docs/knowledge/**`, `docs/design/**`, `docs/FINDINGS_*`, `AGENT_RULES.md`, `CLAUDE.md`, this file | **Codex** | Main implementation and knowledge owner; one batched query plan |
+| `docs/reviews/*-claude.md` and Claude's review commits | **Claude Code** | Commits and pushes its own reviews; Codex reads but never edits these files |
+| Approved deployment | **Claude Code or explicitly assigned operator** | Still requires Boat's deploy authorization; branch ownership does not grant deploy authority |
 
-**Single-writer principle:** Codex is the implementation writer. Claude Code reviews and deploys
-approved work without editing executor-owned source. Cross-role requests go through Rule 2.
+**File-level single-writer principle:** ownership is by file domain, not by branch. Claude Code
+commits its own review files directly; Codex must not wait for or copy them. Both writers rebase
+before push. Cross-role requests and requested fixes go through Rule 2.
 
 ## Rule 2 — cross-domain requests go in a queue, not in the other agent's files
 Append to `docs/HANDOFF_QUEUE.md`:
@@ -43,10 +58,12 @@ Status: OPEN | DONE (<commit>)
 ```
 The receiving agent reads the queue at session start, does the work in its own domain, marks DONE.
 
-## Rule 3 — session notes instead of direct knowledge edits
-Claude Code (and any non-owner) writes findings to `docs/sessions/<YYYY-MM-DD>-<agent>.md`.
-Codex, as knowledge steward, folds them into `10_SAP_CONTEXT` / `20_SAP_PROGRESS` /
-`30_SAP_CHANGELOG` and cites the session file. This keeps append-at-top CHANGELOG conflicts at zero.
+## Rule 3 — reviews, handoff, and knowledge edits
+Claude Code commits and pushes its reviews under `docs/reviews/*-claude.md` and places requested
+fixes in `docs/HANDOFF_QUEUE.md`; Codex reads both after fetch/rebase. Codex never edits Claude's
+review files. Claude Code does not directly edit `docs/knowledge/**`; Codex folds confirmed findings
+into `10_SAP_CONTEXT` / `20_SAP_PROGRESS` / `30_SAP_CHANGELOG`. This keeps evidence attributable
+while allowing two writers on the shared branch.
 
 ## Rule 4 — source must exist before an object goes live
 Any object deployed to BigQuery must have its DDL committed **in the same session** it was deployed.

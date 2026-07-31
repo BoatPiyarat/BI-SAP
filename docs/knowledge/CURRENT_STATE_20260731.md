@@ -31,6 +31,11 @@ Verified against repo commit `19c49cf` (branch `p0/stg-sap-state`) + gcloud outp
   JSON. `BatchRunDate` ไม่ใช่ ingestion time และไม่มี retained source generation/job ID จึงยังระบุ
   OrderItem ที่หายหรือผลต่อ (ก)/(ง) ไม่ได้โดยสุจริต. ต้องมี approved isolated re-extract/source
   snapshot จึงวัดได้; ห้าม CALL refresh หรือ backfill ในช่วง hold.
+- P0 interface inventory ครบ 12 live process views: **MATCH 9 / DRIFT 2 / NO BASELINE 1**.
+  CREATE views ทั้ง 4 ไม่มี direct 2023/24 year exclusion แล้ว. Effective BatchRunDate ยังเป็น
+  current date สำหรับ RCL Motor และ upstream NonMotor; RCB Motor upstream มีทั้ง `31072026` path
+  และ current-date fallback. Live blacklist ไม่ใช่ 6 orders: RCB Motor create มี 26 OrderItems.
+  ดู `docs/FINDINGS_INTERFACE_VIEW_DRIFT_20260801.md`.
 
 ---
 

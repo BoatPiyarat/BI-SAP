@@ -4,6 +4,16 @@ Append-only — entry ใหม่บนสุด ห้ามลบ/แก้�
 
 ---
 
+## 2026-08-01 — OneDrive safety and 12 live interface views inventoried
+
+Recorded Boat's OneDrive-until-V3 decision, mandatory conflicted-copy/fsck gate, per-work-unit push,
+two-writer rebase protocol, and PII file exclusions. Live metadata classified the 12 process views
+as 9 match, 2 drift, and 1 without an exact-name baseline. Corrected prior assumptions: the four
+CREATE process views have no direct 2023/24 exclusion; effective BatchRunDate varies by upstream;
+the RCB Motor create blacklist contains 26 OrderItems, not six. Metadata query processed/billed
+10 MiB rather than the expected zero. No deploy, refresh, export, legacy-view edit, or SAP_LIVE
+cleanup occurred.
+
 ## 2026-08-01 — Legacy definition drift inventoried; live RULE-03 scope proposed
 
 Read 66 live view definitions through metadata job
