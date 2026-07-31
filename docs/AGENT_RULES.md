@@ -85,6 +85,10 @@ require constant clarification.
 - **Session end review gate:** after commit+push, create a REVIEW REQUEST for every class-A unit
   just completed without waiting to be asked; clear assigned OPEN reviews; rerun
   `scripts/review_status.sh`; report `Review debt: n OPEN (mine: n)`.
+- **Review classes (Boat 2026-08-01):** A = deployable SQL, FA/Aware numbers, production-object
+  changes/conclusions, or GCS writes and is blocking; B = docs/findings/design/runbook without any
+  Class-A element and never blocks progress; C = changelog/session/bookkeeping and needs no review.
+  Mixed artifacts inherit the highest class. If uncertain, use A; never wait on B/C.
 - Review-queue `Opened:` and ID time labels must be copied from `git show -s --format=%aI <commit>`
   (request commit when present; artifact commit only for reconstructed legacy requests), never
   invented from the current clock.

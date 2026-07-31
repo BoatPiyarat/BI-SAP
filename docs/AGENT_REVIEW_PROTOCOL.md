@@ -22,11 +22,13 @@ shipped three times. None of these needed a smarter agent — they needed a seco
 
 | Class | Applies to | Review |
 |---|---|---|
-| **A — BLOCKING** | anything deployed; any number that will reach a human/stakeholder; any conclusion that changes knowledge/design; anything money- or accounting-adjacent; anything that filters, excludes, or cancels records; anything writing to GCS | Must PASS before the author proceeds |
-| **B — NON-BLOCKING** | docs edits, folding session notes, refactors with no behaviour change, new source-only SQL not yet deployed | Author continues; reviewer comments within the same day; issues raised become fixes |
-| **C — NO REVIEW** | formatting, rename, `.gitignore`, typo, file moves | Just list it in the daily log |
+| **A — BLOCKING** | SQL intended for deployment; numbers intended for FA/Aware; production-object changes or behavioral conclusions; anything writing to GCS | Must PASS before the author proceeds with that Class-A unit |
+| **B — NON-BLOCKING** | docs, findings, design, and runbook work that contains no Class-A element | Author continues immediately; reviewer comments become fixes |
+| **C — NO REVIEW** | changelog, session log, bookkeeping, formatting, rename, `.gitignore`, typo, file moves | Record only; no review request required |
 
-If unsure which class: treat as A. Misclassifying downward is the failure mode that hurt us.
+Class is assigned from the highest-risk element in a mixed artifact. A docs commit containing a
+deployable SQL change, FA/Aware number, or production-object conclusion remains Class A. If unsure,
+treat it as A. Misclassifying downward is worse than waiting.
 
 ---
 
@@ -54,12 +56,12 @@ verbatim *"Checklist 1–12 reviewed; no gap found"* — and that sentence is au
 
 ## Mechanics
 1. Author finishes a unit of work → commits → writes/updates `docs/sessions/<date>-<agent>.md`
-   → appends a request to `docs/REVIEW_QUEUE.md`:
+   → appends a request to `docs/REVIEW_QUEUE.md` for Class A/B work:
 ```
 ## RQ-YYYYMMDD-HHMM-<slug>
 Status: OPEN
 Reviewer: Codex | Claude Code
-Class: A | B
+Class: A | B | C
 Artifact: <commit hash(es) / files / table(s)>
 Opened: YYYY-MM-DDTHH:MM:SS+07:00
 Claim: <what the author asserts, in one or two sentences>
@@ -70,7 +72,8 @@ Evidence: <where the reviewer can check it — query, table, session-note sectio
    risk statement. Marks the queue entry `REVIEWED`.
 3. **One round only.** Author answers each BLOCK item once. Still disagreeing → escalate to Boat with
    both positions in ≤ 5 lines each. **No ping-pong** — a second disagreement round is a human decision.
-4. Class A cannot proceed while a BLOCK stands. Class B proceeds; the note becomes a follow-up task.
+4. Class A cannot proceed while a BLOCK stands. Class B proceeds without waiting; the note becomes
+   a follow-up task. Class C does not enter the review queue.
 5. Reviewer read-access: **read-only BigQuery is allowed for verification**, one targeted query max.
    Reviewers never deploy, never write, never edit the author's files — findings go in the review file.
 
@@ -80,8 +83,8 @@ Evidence: <where the reviewer can check it — query, table, session-note sectio
 
 1. `git pull --ff-only`.
 2. Read `docs/REVIEW_QUEUE.md` and run `bash scripts/review_status.sh`.
-3. If any entry has `Status: OPEN` and `Reviewer:` equal to the current agent, review those entries
-   before starting other work.
+3. If any **Class A** entry has `Status: OPEN` and `Reviewer:` equal to the current agent, review
+   those entries before starting other Class-A work. Class B/C never blocks progress.
 4. If a new human instruction conflicts with clearing the review debt first, state the conflict and
    ask the human which takes priority. Never skip an assigned OPEN review silently.
 
@@ -108,7 +111,7 @@ in `Opened:`, and derive `HHMM` from that same timestamp.
 ## RQ-YYYYMMDD-HHMM-<slug>
 Status: OPEN
 Reviewer: Codex | Claude Code
-Class: A | B
+Class: A | B | C
 Artifact: <commit(s), files, objects>
 Opened: YYYY-MM-DDTHH:MM:SS+07:00
 ```

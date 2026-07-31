@@ -3,6 +3,15 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+## Class audit — Boat policy 2026-08-01
+
+The 13-entry backlog present when Boat issued the new class policy was reclassified by its
+highest-risk element. Twelve are Class A: every item contains deployable SQL, a number intended for
+FA/Aware, or a conclusion about a live production object. One is Class B:
+`RQ-20260730-2200-bq-safe-query-fix`, a local query-wrapper source fix with no deployable SQL,
+stakeholder number, GCS write, or production-object mutation. Claude Code reviewed five entries in
+commit `d50eb4c`; **8 OPEN remain, all Class A**. No Class B/C item is being waited on.
+
 ## RQ-20260801-0040-legacy-definition-governance
 Status: OPEN
 Reviewer: Claude Code
@@ -284,7 +293,7 @@ deploy authorized by this entry.
 ## RQ-20260730-2200-bq-safe-query-fix
 Status: REVIEWED
 Reviewer: Claude Code
-Class: A
+Class: B
 Artifact: `scripts/bq_safe_query.sh`, `docs/AGENT_RULES.md`; commit `93e87ea`.
 Opened: 2026-07-30T22:00:00+07:00
 Verdict: PASS WITH NOTES — `docs/reviews/2026-08-01-93e87ea-claude.md` (both BLOCK findings
