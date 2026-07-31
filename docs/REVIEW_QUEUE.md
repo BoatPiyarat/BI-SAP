@@ -160,11 +160,14 @@ Standalone 037 dry-run failed closed because undeployed table 044 does not exist
 044→037 dry-run succeeded with `totalBytesProcessed=0` lower bound under the 20 GiB ceiling.
 
 ## RQ-20260731-2225-insurer-exclusion-risk
-Status: OPEN
+Status: REVIEWED
 Reviewer: Claude Code
 Class: A
 Artifact: commit `f74f605`; July InsurerCode exclusion finding and canonical input/changelog updates.
 Opened: 2026-07-31T22:25:15+07:00
+Verdict: PASS — `docs/reviews/2026-08-01-f74f605-claude.md` (full job provenance; self-corrected
+G1 post-exclusion provenance; date-basis conflict correctly left OPEN for Boat/Aware; note added
+that the 300/294/2.26M figures must be re-run if 037's date_basis is aligned to PaymentDate)
 
 Claim: current `INSURER_NOT_IN_MASTER` control excludes 300 July-PaymentDate records / 294 orders /
 THB 2,260,768.08 across normalized codes `30`, `46`, `48`, `49`; unique G1 population is 4,810
@@ -176,13 +179,17 @@ Evidence: `docs/FINDINGS_INSURER_EXCLUSION_RISK_20260731.md`; BigQuery job
 371,716,873 bytes, billed 372,244,480 bytes, ceiling 21,474,836,480 bytes. No deploy authorized.
 
 ## RQ-20260731-2201-rule03-period-lock
-Status: OPEN
+Status: REVIEWED
 Reviewer: Claude Code
 Class: A
 Artifact: commits `2c96c53`, `c499158`, `2afa03c`; `sql/ddl/024_sap_mirror_doc.sql`,
 `025_sap_mirror_state.sql`, `037_fix_expected_invoice_no_null_unsafe.sql`,
 `044_sap_period_lock_and_payment_date_clamp.sql`.
 Opened: 2026-07-31T22:01:53+07:00
+Verdict: PASS WITH NOTES — `docs/reviews/2026-08-01-2c96c53-claude.md` (all five §2.5 checks pass,
+verified mechanically + against live shard schemas; blast radius of all 8 mirror consumers clean;
+notes: inert DocEntry tiebreak window in 024, unguarded MAX(open_period_start) in 037, date-basis
+R13 alignment still open. Deploy remains gated on Boat, order 044 → period row → 024 → 025 → 037)
 
 Claim: source-only DDL implements locked RULE-01/02/03/08 without deployment: 024 appends native
 UpdateDate/UpdateTime in identical trailing positions across four branches; 025 retains priority
@@ -198,12 +205,15 @@ before 025 deploy because the currently deployed mirror lacks the new columns. *
 authorized by this request.**
 
 ## RQ-20260731-2139-current-state-scheduler
-Status: OPEN
+Status: REVIEWED
 Reviewer: Claude Code
 Class: A
 Artifact: commit `1a52222`; authoritative 2026-07-31 current-state/scheduler evidence and
 AGENT_TEAMING Rule 0/1 reallocation.
 Opened: 2026-07-31T21:39:34+07:00
+Verdict: PASS — `docs/reviews/2026-08-01-1a52222-claude.md` (scheduler 401→200 evidence attributable
+and internally consistent; zero-row disambiguation and 19h-lag WAITING-HUMAN decision correctly
+recorded; note: file header's `19c49cf` verification anchor is stale for the later-added sections)
 
 Claim: canonical docs correctly replace the stale scheduler-IAM diagnosis with verified OIDC→OAuth
 HTTP-200 evidence, downgrade `run.invoker` to P3 hygiene, distinguish healthy zero-row extracts
@@ -238,11 +248,16 @@ Evidence: `docs/knowledge/KNOWLEDGE_ADDENDUM_20260730_v3.md`,
 `git diff 16cddd8^..935ac8f`.
 
 ## RQ-20260730-2230-mirror-doc-merge-incremental
-Status: OPEN
+Status: REVIEWED
 Reviewer: Claude Code
 Class: A
 Artifact: `sql/ddl/043_sap_mirror_doc_merge_incremental.sql`; commits `9a3e462`, `2c96c53`.
 Opened: 2026-07-30T22:30:00+07:00
+Verdict: BLOCK — `docs/reviews/2026-08-01-043-merge-claude.md` (two CONFIRMED CALL-time failures
+invisible to the 0-byte dry-run: (1) watermark-advance SET nests an analytic inside an aggregate —
+reproduced standalone: "Analytic functions cannot be arguments to aggregate functions"; (2) delta
+carries raw TIMESTAMP UpdateDate into the post-024 DATE mirror column. Concrete one-statement fixes
+proposed in the review file. Column completeness verified clean: INSERT 59/59, UPDATE 58/58 vs 024)
 
 Claim: replaces `sap_mirror_doc`'s full-CTAS refresh (`024`) with a watermark-filtered `MERGE`,
 per Boat's approved direction. `UpdateDate`/`UpdateTime` are now selected and inserted into the
@@ -267,11 +282,15 @@ against `024`'s full column list for completeness, and confirm the watermark-adv
 deploy authorized by this entry.
 
 ## RQ-20260730-2200-bq-safe-query-fix
-Status: OPEN
+Status: REVIEWED
 Reviewer: Claude Code
 Class: A
 Artifact: `scripts/bq_safe_query.sh`, `docs/AGENT_RULES.md`; commit `93e87ea`.
 Opened: 2026-07-30T22:00:00+07:00
+Verdict: PASS WITH NOTES — `docs/reviews/2026-08-01-93e87ea-claude.md` (both BLOCK findings
+resolved; self-test independently re-run 7/7 on a fresh clone. Independence caveat stated: 93e87ea
+was Claude-Code-authored, so Codex's documented inspection in docs/sessions/2026-07-31-codex.md
+should count as the reciprocal review; lifting the AGENT_RULES wrapper note is a Codex-lane edit)
 
 Claim: fixes both substantive findings in the `a56f6d1` BLOCK
 (`docs/reviews/2026-07-30-a56f6d1-codex.md`): (1) the byte parser now treats absent/unparseable

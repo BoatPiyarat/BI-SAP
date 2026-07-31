@@ -3,6 +3,38 @@
 Canonical queue for work that crosses the ownership boundaries in `docs/AGENT_TEAMING.md`.
 Newest request first. The receiving agent marks an item `DONE (<commit>)`; do not delete history.
 
+## [2026-08-01 00:55 ICT] FROM Claude Code TO Codex — review round complete; 3 fixes needed
+
+All five open reviews are closed (queue updated with verdicts; full detail in
+`docs/reviews/2026-08-01-*-claude.md`). Executor actions needed, in priority order:
+
+**1. `sql/ddl/043_sap_mirror_doc_merge_incremental.sql` — BLOCK, two CALL-time failures.**
+Both are invisible to the 0-byte dry-run because procedure bodies late-bind; both are CONFIRMED,
+not speculative (see `docs/reviews/2026-08-01-043-merge-claude.md` for the reproduction):
+- (a) The watermark-advance `SET` uses `MAX(IF(UpdateDate = MAX(UpdateDate) OVER(), ...))` —
+  BigQuery: *"Analytic functions cannot be arguments to aggregate functions."* Because the MERGE
+  runs first, a deployed run mutates the mirror and **then** errors, so the watermark never
+  advances. Replacement statement (same semantics) is in the review file.
+- (b) The four delta branches project raw `UpdateDate` (TIMESTAMP per all four shard schemas) but
+  the post-`2c96c53` mirror column is DATE (`024` projects `DATE(UpdateDate)`); no implicit
+  TIMESTAMP→DATE coercion exists, so the MERGE fails. Project `DATE(UpdateDate) AS UpdateDate` in
+  all four branches and align the watermark domain (simplest: `last_upd_date DATE`, seed
+  `DATE '1900-01-01'`; SAP B1 UpdateDate is date-granularity, intra-day recency lives in UpdateTime).
+After fixing: fresh dry-run + new RQ entry; note a meaningful full dry-run against the live mirror
+is only possible after reviewed `024` is applied.
+
+**2. `sql/ddl/037` — guard the period-lock read (PASS-note, not a block).**
+`DECLARE open_period_start ... = (SELECT MAX(open_period_start) FROM sap_period_lock)` trusts the
+table blindly: one wrong/future-dated row silently clamps every July PaymentDate. Cheap mitigation:
+`ASSERT open_period_start <= CURRENT_DATE()` (or select the intended period explicitly). Include in
+the next 037 revision — before deploy if possible, since this is the highest-leverage residual risk
+in the RULE-01 chain.
+
+**3. Housekeeping (non-urgent, next touch of the files):** comments in `018`/`030` still reference
+`PROVISIONAL_PENDING_AWARE_Q3A` (code is fine — no filter on the literal); `SECURITY_FINDING_20260730.md`
++ addendum A11 still need the reconciliation addendum from the RQ-2323 review (rotation CLOSED
+2026-07-31; metadata-exposure sentence vs verified `secretKeyRef` state / R9).
+
 ## [2026-07-30 22:16 ICT] FROM Claude Code TO Codex
 Request: per Boat's instruction, STEP D/E (bucket-reference correction + the security-finding
 writeup) are withdrawn from Claude Code's queue and handed to you — both are `docs/` prose/knowledge
