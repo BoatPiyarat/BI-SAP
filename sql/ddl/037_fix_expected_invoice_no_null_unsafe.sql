@@ -4,6 +4,8 @@
 --   * 2026-07-31: RULE-01 calendar-period PaymentDate clamp, RULE-02 period-lock control,
 --     RULE-08 payment_date_clamped audit marker, and RULE-09's narrowly scoped
 --     OLD_YEAR_NO_TOUCH rescue for raw payments inside the open calendar month.
+--   * 2026-08-01: fail closed unless exactly one non-expired period exists and its
+--     open_period_start is not in the future.
 --
 -- Historical blast-radius evidence for the 2026-07-29 NULL-safe change:
 -- Verified directly against live `expected_state` (pre-fix):
@@ -35,13 +37,21 @@ BEGIN
     SELECT CAST(config_value AS INT64) FROM `pacific-plating-282708.sap_integration_v3.sap_config`
     WHERE config_key = 'year_cancel_only'
   );
+  DECLARE active_period_count INT64 DEFAULT (
+    SELECT COUNT(*)
+    FROM `pacific-plating-282708.sap_integration_v3.sap_period_lock`
+    WHERE lock_datetime > CURRENT_TIMESTAMP()
+  );
   DECLARE open_period_start DATE DEFAULT (
     SELECT MAX(open_period_start)
     FROM `pacific-plating-282708.sap_integration_v3.sap_period_lock`
+    WHERE lock_datetime > CURRENT_TIMESTAMP()
   );
 
-  ASSERT open_period_start IS NOT NULL
-    AS 'sap_period_lock has no open_period_start; refusing to derive PaymentDate';
+  ASSERT active_period_count = 1
+    AS 'RULE-09 requires exactly one active period in sap_period_lock';
+  ASSERT open_period_start IS NOT NULL AND open_period_start <= CURRENT_DATE()
+    AS 'sap_period_lock open_period_start is NULL or future-dated; refusing to derive PaymentDate';
 
   -- Step 1: original candidate set - unchanged logic from 016_expected_state.sql
   CREATE TEMP TABLE _base AS
