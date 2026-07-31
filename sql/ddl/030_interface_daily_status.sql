@@ -46,7 +46,7 @@ BEGIN
       e.order_item, e.order_id, e.period, e.flow, e.expected_status, e.expected_invoice_no,
       e.expected_payment_date,
       s.TransactionStatus AS sap_status, s.U_InvoiceNo AS sap_invoice_no,
-      s.resolution_confidence,  -- added 2026-07-27: surfaces PROVISIONAL_PENDING_AWARE_Q3A rows
+      s.resolution_confidence,  -- audit marker only; no filter depends on any marker literal
       SAFE.PARSE_DATE('%d%m%Y', s.PaymentDate) AS sap_payment_date,
       IFNULL(oi.is_cancelled, FALSE) AS is_cancelled,
       DATE(oi.cancel_time) AS cancel_date

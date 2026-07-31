@@ -4,6 +4,15 @@ Append-only — entry ใหม่บนสุด ห้ามลบ/แก้�
 
 ---
 
+## 2026-08-01 — Credential finding reconciled with verified post-rotation state
+
+Corrected the stale claim that current extract-job metadata returns plaintext SAP DB values: live
+`SAP_DB_USER`/`SAP_DB_PASSWORD` bindings use `secretKeyRef key=latest`. Recorded rotation CLOSED
+(version 2 enabled 2026-07-31 11:32:25Z; exposed version 1 disabled) while retaining OPEN archive,
+history, access-control, and separate legacy SMTP remediation. Neutralized two stale
+`PROVISIONAL_PENDING_AWARE_Q3A` comments; executable SQL behavior is unchanged. No credential was
+read, printed, rotated, or modified and no production object changed.
+
 ## 2026-08-01 — Procedure 037 period selection fails closed in source
 
 Replaced the unbounded `MAX(open_period_start)` behavior with an active-row filter, exact-one-active

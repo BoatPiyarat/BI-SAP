@@ -150,13 +150,16 @@ Bucket ที่ deploy จริง: **`gs://rcb-bronze-zone/SAP/production_dat
 ชื่อ bucket ใน root-cause statement เดิม **ไม่มีอยู่จริง** → ทุกจุดต้องใช้ path จริงข้างต้น
 (หมายเหตุ: service account ชื่อ `sap-bucket-csv@...` ยังมีอยู่จริง อย่าสับสนระหว่างชื่อ SA กับชื่อ bucket)
 
-## A11. 🔴 Credential exposure ครั้งที่ 3 `[OPEN — P0]`
+## A11. Credential exposure ครั้งที่ 3 `[PARTIAL — ROTATION CLOSED 2026-07-31; HYGIENE OPEN]`
 Deployed source archive มี **plaintext SAP credentials ใน deployment helper files**
 - `10_SAP_CONTEXT.md` §GOVERNANCE บันทึกไว้เองว่า credential เคยหลุด **≥2 ครั้ง** → นี่คือครั้งที่ 3
 - Vector ใหม่ (source archive) คนละทางกับเดิม (chat) แต่ root cause เดียวกัน: credential hygiene
   ไม่เคยถูกแก้เชิงระบบ
-- **Action: rotate SAP DB credential, ย้ายเข้า Secret Manager, purge จาก source archive
-  (รวม git history ถ้าเคย commit)** — ไม่ต้องรอคิว review อื่น
+- **CLOSED:** SAP DB credential version 2 enabled `2026-07-31T11:32:25Z`; exposed version 1
+  disabled. Live extract job ใช้ `secretKeyRef key=latest` อยู่แล้ว; metadata แสดง reference
+  ไม่ใช่ plaintext value.
+- **OPEN:** purge credential-bearing source archive, ตรวจ git/build/history, จำกัด access และแยก
+  rotate/migrate legacy SMTP plaintext env metadata.
 - ยืนยันแล้วว่าไม่มีการ print ค่าจริงและ temporary local copy ถูกลบแล้ว
 
 ## A12. `bq_safe_query.sh` ถูก BLOCK — guardrail มี fail-open bug `[OPEN]`
@@ -340,7 +343,7 @@ GROUP BY batch_date ORDER BY batch_date;
 
 | Pri | Item | เจ้าของ | อ้างอิง |
 |---|---|---|---|
-| P0 | Rotate SAP credential + purge จาก source archive | Boat/DevOps | A11 |
+| P0 | Purge credential-bearing archive/history + restrict access; rotate/migrate legacy SMTP credential | Boat/DevOps | A11 |
 | P0 | `DocEntry 2345730` → OrderItem/Period → cross-check pool 401 + import files 26–28/07 → live หรือ historical? | Claude Code | A8 |
 | P1 | Fix fail-open parser ใน `bq_safe_query.sh` + parser tests | Claude Code | A12 |
 | P1 | ตอบ C8 (a)–(f) ก่อนเขียน migration task | Boat | C8 |

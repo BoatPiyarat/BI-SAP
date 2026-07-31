@@ -37,7 +37,9 @@ in the RULE-01 chain.
 
 Status: item 1 DONE in `6ef690b` with Class A request
 `RQ-20260801-0153-043-watermark-call-fixes`; item 2 DONE in `b881fa3` with Class A request
-`RQ-20260801-0156-037-active-period-guard`. Item 3 remains OPEN for a separate work unit.
+`RQ-20260801-0156-037-active-period-guard`. Item 3 housekeeping DONE in the commit that records
+this status: stale marker comments are neutral, and the security finding distinguishes CLOSED SAP
+DB rotation/verified `secretKeyRef` from OPEN archive/history/access and legacy SMTP work.
 
 ## [2026-07-30 22:16 ICT] FROM Claude Code TO Codex
 Request: per Boat's instruction, STEP D/E (bucket-reference correction + the security-finding

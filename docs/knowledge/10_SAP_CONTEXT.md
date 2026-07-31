@@ -512,9 +512,11 @@ Full evidence and migration inventory:
     `gs://rcb-bronze-zone/SAP/_extract_control/`. The nonexistent bucket
     old nonexistent bucket alias must never be confused with the real service account named
     `sap-bucket-csv@...`.
-11. Plaintext SAP credentials were exposed again through deployed source/deployment helpers and
-    Cloud Run execution metadata. This is the third known exposure (at least two earlier incidents
-    are recorded under GOVERNANCE). P0 owner is Boat; rotate and migrate to Secret Manager.
+11. Plaintext SAP DB credentials were exposed again through deployed source/deployment helper
+    archives. Rotation closed 2026-07-31: version 2 is enabled, exposed version 1 disabled, and the
+    live extract job already uses `secretKeyRef key=latest`; current job metadata exposes the
+    reference, not the value. Archive/history/access cleanup remains open. Legacy interface SMTP
+    plaintext environment metadata is a separate open credential vector owned by Boat.
 12. `UpdateTime` reaches all four SAP_LIVE tables; `_internal_update_datetime` does not.
     `SAP_LIVE` finer key `(DocEntry,U_BatchRunDate,UpdateDate,UpdateTime)` yields 297,604 states
     versus 297,413 without time, source query 2026-07-30 13:53:09 UTC. View resolution must select
