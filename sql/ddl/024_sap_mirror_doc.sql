@@ -2,8 +2,8 @@
 -- STEP 3 of TASK_CLEAN_SAP_MIRROR.md — sap_mirror_doc: one row per DocEntry, nothing dropped.
 --
 -- Same 4 source tables and same DocEntry-level resolution as
--- sap_integration_v2.SAP_LIVE_FULL (ROW_NUMBER PARTITION BY DocEntry ORDER BY
--- BatchRunDate DESC — this resolves repeat-loads of the SAME DocEntry caused by
+-- sap_integration_v2.SAP_LIVE_FULL (ROW_NUMBER PARTITION BY DocEntry). RULE-03
+-- now orders by native UpdateDate/UpdateTime recency; this resolves repeat-loads of the SAME DocEntry caused by
 -- the legacy loader being append-only, it does NOT collapse across DIFFERENT
 -- DocEntry values, per Boat's explicit instruction: "เก็บครบ ห้าม dedup ข้าม
 -- DocEntry"). The one deliberate difference from SAP_LIVE_FULL: no
@@ -65,7 +65,8 @@
 -- the existing sp_refresh_sap_state.sql convention). run_scope kept for
 -- calling-convention parity with the other sp_refresh_* procs.
 --
--- *** BUG FOUND AND FIXED 2026-07-27 *** (while cross-checking this table against
+-- *** HISTORICAL BUG FIX 2026-07-27; SUPERSEDED BY RULE-03 2026-07-31 ***
+-- (while cross-checking this table against
 -- stg_sap_state per Boat's ask, before collapsing stg_sap_state into a view over
 -- sap_mirror_state): the per-DocEntry ROW_NUMBER below ordered by `BatchRunDate DESC`,
 -- but by that point in the query `BatchRunDate` is already the DDMMYYYY STRING output
@@ -80,8 +81,9 @@
 -- parsing the string back to a date before ordering — same technique already used
 -- correctly in `002_sp_refresh_sap_state.sql`/`025_sap_mirror_state.sql`'s own picking
 -- rule (`SAFE.PARSE_TIMESTAMP('%d%m%Y', BatchRunDate) DESC`). Re-verified after the fix:
--- 0 status/invoice disagreements remain against stg_sap_state (see 30_SAP_CHANGELOG.md
--- 2026-07-27 entry for the full before/after numbers).
+-- 0 status/invoice disagreements remained against stg_sap_state at that time. RULE-03 now
+-- removes BatchRunDate from the dedup order because RULE-02 makes it constant in the open period;
+-- UpdateDate, UpdateTime, and DocEntry are the deterministic native-type order.
 
 CREATE OR REPLACE PROCEDURE `pacific-plating-282708.sap_integration_v3.sp_refresh_sap_mirror_doc`(run_scope STRING)
 BEGIN
@@ -97,7 +99,7 @@ BEGIN
       *,
       ROW_NUMBER() OVER (
         PARTITION BY DocEntry
-        ORDER BY SAFE.PARSE_DATE('%d%m%Y', BatchRunDate) DESC
+        ORDER BY UpdateDate DESC, UpdateTime DESC, DocEntry DESC
       ) AS _rn
     FROM (
 
@@ -158,7 +160,9 @@ BEGIN
         U_RefundAmt RefundAmountBeforeFee,
         U_RefundAmountAfterFee RefundAmountAfterFee,
         U_BillingAddress BillingAddress,
-        SAFE_CAST(FORMAT_DATE('%d%m%Y', U_BatchRunDate) AS STRING) AS BatchRunDate
+        SAFE_CAST(FORMAT_DATE('%d%m%Y', U_BatchRunDate) AS STRING) AS BatchRunDate,
+        DATE(UpdateDate) AS UpdateDate,
+        UpdateTime
       FROM `pacific-plating-282708.sap_integration_v2.SAP_LIVE_2024`
 
       UNION ALL
@@ -220,7 +224,9 @@ BEGIN
         U_RefundAmt RefundAmountBeforeFee,
         U_RefundAmountAfterFee RefundAmountAfterFee,
         U_BillingAddress BillingAddress,
-        SAFE_CAST(FORMAT_DATE('%d%m%Y', U_BatchRunDate) AS STRING) AS BatchRunDate
+        SAFE_CAST(FORMAT_DATE('%d%m%Y', U_BatchRunDate) AS STRING) AS BatchRunDate,
+        DATE(UpdateDate) AS UpdateDate,
+        UpdateTime
       FROM `pacific-plating-282708.sap_integration_v2.SAP_LIVE_2025`
 
       UNION ALL
@@ -282,7 +288,9 @@ BEGIN
         U_RefundAmt RefundAmountBeforeFee,
         U_RefundAmountAfterFee RefundAmountAfterFee,
         U_BillingAddress BillingAddress,
-        SAFE_CAST(FORMAT_DATE('%d%m%Y', U_BatchRunDate) AS STRING) AS BatchRunDate
+        SAFE_CAST(FORMAT_DATE('%d%m%Y', U_BatchRunDate) AS STRING) AS BatchRunDate,
+        DATE(UpdateDate) AS UpdateDate,
+        UpdateTime
       FROM `pacific-plating-282708.sap_integration_v2.SAP_LIVE_2026`
 
       UNION ALL
@@ -344,7 +352,9 @@ BEGIN
         U_RefundAmt RefundAmountBeforeFee,
         U_RefundAmountAfterFee RefundAmountAfterFee,
         U_BillingAddress BillingAddress,
-        SAFE_CAST(FORMAT_DATE('%d%m%Y', U_BatchRunDate) AS STRING) AS BatchRunDate
+        SAFE_CAST(FORMAT_DATE('%d%m%Y', U_BatchRunDate) AS STRING) AS BatchRunDate,
+        DATE(UpdateDate) AS UpdateDate,
+        UpdateTime
       FROM `pacific-plating-282708.sap_integration_v2.SAP_LIVE`
     )
   )

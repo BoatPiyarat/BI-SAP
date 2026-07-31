@@ -38,9 +38,10 @@ not this table, for day-to-day freshness.
 | 021_backfill_motor_newpayment_gap_20260726.sql | One-off: 279-row confirmed Motor newpayment gap backfill |
 | 022_backfill_rcl_creditshell_20260726.sql | One-off: 37-row RCL Credit-Shell gap backfill |
 | 023_backfill_rcb_creditshell_20260726.sql | One-off: 41-row RCB Credit-Shell gap backfill |
-| 024_sap_mirror_doc.sql | Doc-grain SAP mirror, one row per `DocEntry`, no dedup (evidence layer). **Fixed 2026-07-27**: per-DocEntry dedup was ordering by the DDMMYYYY BatchRunDate *string* (lexicographic, not chronological) — now parses to a real date first |
-| 025_sap_mirror_state.sql | State-grain SAP mirror, one row per (OrderItem, Period), picking rule tagged `PROVISIONAL_PENDING_AWARE_Q3A` where ambiguous. **Fixed 2026-07-27**: added `DocEntry DESC` as a final deterministic tiebreak for same-day same-status multi-invoice periods |
+| 024_sap_mirror_doc.sql | Doc-grain SAP mirror, one row per `DocEntry`. **RULE-03 2026-07-31:** appends native `UpdateDate`/`UpdateTime` after `BatchRunDate` in all four branches and deduplicates by recency, then `DocEntry` |
+| 025_sap_mirror_state.sql | State-grain SAP mirror, one row per (OrderItem, Period). Preserves status/InvoiceNo priority, resolves remaining ties by `UpdateDate`/`UpdateTime`, and tags multi-doc picks `MULTI_DOC_RESOLVED_BY_RECENCY` while retaining `docs_considered` |
 | 026_collapse_stg_sap_state_to_view.sql | Collapses `stg_sap_state` (was its own table, 002) into a view over `sap_mirror_state` — one picking rule instead of two; repoints the nightly chain to refresh `sap_mirror_doc`/`sap_mirror_state` instead of calling the now-retired `sp_refresh_sap_state` |
+| 044_sap_period_lock_and_payment_date_clamp.sql | Creates the RULE-01/02 period-lock control; apply before the current 037 expected-state procedure that clamps PaymentDate and emits `payment_date_clamped` |
 
 Every file is a full runnable script (per AGENTS.md: no diffs-as-answer). Apply with:
 ```

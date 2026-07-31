@@ -38,6 +38,13 @@ BEGIN
     SELECT CAST(config_value AS INT64) FROM `pacific-plating-282708.sap_integration_v3.sap_config`
     WHERE config_key = 'year_cancel_only'
   );
+  DECLARE open_period_start DATE DEFAULT (
+    SELECT MAX(open_period_start)
+    FROM `pacific-plating-282708.sap_integration_v3.sap_period_lock`
+  );
+
+  ASSERT open_period_start IS NOT NULL
+    AS 'sap_period_lock has no open_period_start; refusing to derive PaymentDate';
 
   -- Step 1: original candidate set - unchanged logic from 016_expected_state.sql
   CREATE TEMP TABLE _base AS
@@ -99,7 +106,11 @@ BEGIN
   -- Step 2: enrich with everything the exclusion rules need
   CREATE TEMP TABLE _enriched AS
   SELECT
-    b.*,
+    b.* REPLACE(
+      GREATEST(b.expected_payment_date, open_period_start) AS expected_payment_date
+    ),
+    b.expected_payment_date IS NOT NULL
+      AND b.expected_payment_date < open_period_start AS payment_date_clamped,
     d.first_name,
     d.last_name,
     d.insurer_code,
@@ -195,7 +206,7 @@ BEGIN
   CLUSTER BY order_item AS
   SELECT
     order_item, order_id, period, total_periods, flow, payment_option, expected_status,
-    expected_invoice_no, expected_payment_date, charge_id, charge_amount,
+    expected_invoice_no, expected_payment_date, payment_date_clamped, charge_id, charge_amount,
     CURRENT_TIMESTAMP() AS computed_at
   FROM _rules
   WHERE date_basis IS NOT NULL

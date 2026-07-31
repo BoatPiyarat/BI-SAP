@@ -185,19 +185,13 @@ BEGIN
     FROM `pacific-plating-282708.sap_integration_v2.SAP_LIVE`
     WHERE UpdateDate > wm_date OR (UpdateDate = wm_date AND UpdateTime > wm_time)
   )
-  -- Per-DocEntry pick within the delta batch itself: same rule as 024, PLUS the fix -
-  -- UpdateDate DESC, UpdateTime DESC now sit between BatchRunDate and the final DocEntry
-  -- DESC tiebreak (Boat's exact spec).
+  -- Per-DocEntry pick within the delta batch itself: same RULE-03 rule as 024.
   SELECT * EXCEPT(_rn)
   FROM (
     SELECT *,
       ROW_NUMBER() OVER (
         PARTITION BY DocEntry
-        ORDER BY
-          SAFE.PARSE_DATE('%d%m%Y', BatchRunDate) DESC,
-          UpdateDate DESC,
-          UpdateTime DESC,
-          DocEntry DESC
+        ORDER BY UpdateDate DESC, UpdateTime DESC, DocEntry DESC
       ) AS _rn
     FROM raw_delta
   )
@@ -236,7 +230,7 @@ BEGIN
     ExpectedDate = D.ExpectedDate, RefOrder = D.RefOrder,
     RefundAmountBeforeFee = D.RefundAmountBeforeFee,
     RefundAmountAfterFee = D.RefundAmountAfterFee, BillingAddress = D.BillingAddress,
-    BatchRunDate = D.BatchRunDate
+    BatchRunDate = D.BatchRunDate, UpdateDate = D.UpdateDate, UpdateTime = D.UpdateTime
   WHEN NOT MATCHED THEN INSERT (
     DocEntry, CompanyDB, U_OrderID, U_OrderItem, U_InvoiceNo, OrderDate, U_InsuredID, U_Title,
     U_FirstName, U_LastName, U_InsurerCode, U_InsuranceGroup, U_InsuranceType, U_InsuranceProduct,
@@ -247,7 +241,7 @@ BEGIN
     ExpectedReceived, U_ActualReceived, U_InterestThisPeriod, U_PrincipleThisPeriod,
     U_InterestEIRThisPeriod, U_PrincipleEIRThisPeriod, PaymentDate, U_Period, TotalPeriods,
     PendingPayment, PaymentMethod, PaymentChannel, ExpectedDate, RefOrder,
-    RefundAmountBeforeFee, RefundAmountAfterFee, BillingAddress, BatchRunDate
+    RefundAmountBeforeFee, RefundAmountAfterFee, BillingAddress, BatchRunDate, UpdateDate, UpdateTime
   ) VALUES (
     D.DocEntry, D.CompanyDB, D.U_OrderID, D.U_OrderItem, D.U_InvoiceNo, D.OrderDate,
     D.U_InsuredID, D.U_Title, D.U_FirstName, D.U_LastName, D.U_InsurerCode, D.U_InsuranceGroup,
@@ -260,7 +254,7 @@ BEGIN
     D.U_PrincipleThisPeriod, D.U_InterestEIRThisPeriod, D.U_PrincipleEIRThisPeriod,
     D.PaymentDate, D.U_Period, D.TotalPeriods, D.PendingPayment, D.PaymentMethod,
     D.PaymentChannel, D.ExpectedDate, D.RefOrder, D.RefundAmountBeforeFee,
-    D.RefundAmountAfterFee, D.BillingAddress, D.BatchRunDate
+    D.RefundAmountAfterFee, D.BillingAddress, D.BatchRunDate, D.UpdateDate, D.UpdateTime
   );
 
   SET row_count = (SELECT COUNT(*) FROM delta);
