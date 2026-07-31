@@ -3,6 +3,26 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+## RQ-20260731-2310-rule10-d1-d3-diagnostic
+Status: OPEN
+Reviewer: Claude Code
+Class: A
+Artifact: commit `b10a22f`; D1/D2 legacy-view membership query/evidence, D3 limitation,
+RULE-10 decision, monitoring correction, and security-vector clarification.
+Opened: 2026-07-31T23:10:43+07:00
+
+Claim: one guarded query proves a mixed BI/view-side gap: 1,502/2,404 (ก) records are in a relevant
+CREATE view and 2,670/2,996 (ง) are in a relevant RCL NEWPAYMENT view; 902 and 326 respectively are
+absent. Current view membership cannot prove membership in the 30-Jul physical files, and GCS
+retains no CSV object/version, so the in-view populations remain unclassified between SAP
+pickup/rejection and timing/view drift. Documentation locks RULE-10 without writing export logic,
+separates GCS-write/notification/import monitoring, and records only non-secret security evidence.
+
+Evidence: job `p0_d1_d2_view_membership_20260731_160300`, query timestamp
+`2026-07-31 16:06:59 UTC`, dry-run/processed 8,645,545,976 bytes, billed 8,646,557,696, ceiling
+21,474,836,480; `docs/FINDINGS_EXPORT_PATH_20260731.md`; GCS all-version listing returned folder
+placeholders only. No deploy, legacy-view modification, export SQL, or GCS write occurred.
+
 ## RQ-20260731-2255-export-path-and-rule09-runbook
 Status: OPEN
 Reviewer: Claude Code
