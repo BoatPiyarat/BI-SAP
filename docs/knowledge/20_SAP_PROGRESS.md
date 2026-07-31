@@ -1,4 +1,11 @@
 # 20_SAP_PROGRESS.md
+**2026-07-31 P0 MIRROR GATE BLOCKED:** bronze retains a 169,695,148-byte 31-Jul extract object
+created 11:34:52Z, while SAP_LIVE has zero batch rows for 30/31 Jul. One requested loader run and
+at least three automatic retries failed HTTP 503 at the 1,024 MiB memory ceiling; the object remains.
+The prior (ก)/(ง), overlap, and view-filter numbers are stale and prohibited until an authorized
+loader remediation succeeds and the full diagnostics are rerun. See
+`FINDINGS_MIRROR_STALENESS_20260731.md`.
+
 **2026-07-31 TYPE-CONTRACT / GROUND-TRUTH GAP:** live metadata proves type drift at 22/56
 money/quantity positions across the six CREATE/NEWPAYMENT views. Guard 028 intentionally checks
 names/order only, so add a WARN-only type check after 03/08; do not fail or deploy now. Current

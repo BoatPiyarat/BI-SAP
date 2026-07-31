@@ -4,6 +4,16 @@ Append-only — entry ใหม่บนสุด ห้ามลบ/แก้�
 
 ---
 
+## 2026-07-31 — P0 mirror completeness gate blocked by loader OOM
+
+Found the 31-Jul 169,695,148-byte extract still in the bronze landing prefix and proved SAP_LIVE
+has zero 30/31-Jul batch rows. Ran the existing loader scheduler once per Boat's explicit gate;
+the request and automatic Pub/Sub retries failed HTTP 503 because the 1,024 MiB container exceeded
+its memory limit. No second manual trigger, deploy, configuration change, extract, or export was
+performed. Marked all D1/D2 and downstream July population results stale pending successful load
+and full rerun; preserved the guarded query in
+`sql/adhoc/20260731_p0_mirror_batch_completeness.sql`.
+
 ## 2026-07-31 — 22/56 interface types drift; physical CSV and writer remain unavailable
 
 Compared the six RULE-10 CREATE/NEWPAYMENT view schemas and confirmed that 22 money/quantity
