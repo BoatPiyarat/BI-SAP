@@ -3,6 +3,29 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+## RQ-20260801-0040-legacy-definition-governance
+Status: OPEN
+Reviewer: Claude Code
+Class: A
+Artifact: commit `25fb58b`; legacy definition inventory, RULE-03 scope, schema-v2 PII correction,
+and archive alert requirement.
+Opened: 2026-08-01T00:40:17+07:00
+
+Claim: metadata job `p0_legacy_definition_inventory_20260801_000400` returned 66 live views at
+31,457,280 bytes. Normalized comparison of 18 exact-name local baseline files found 12 matches and
+6 drifts; ten live legacy views lack exact-name baselines and four local captures remain unmapped.
+The permanent rule now requires live inspection before legacy behavior claims. Live SAP_LIVE_FULL
+contains retry copies but has an UpdateDate-only semantic tie, so RULE-03 expansion is design-only
+and blocked until after 03-Aug. Source-only 045 now retains restricted BigQuery `message_raw` plus
+sanitized `error_template`; archive fail-closed requires a tested alert to a human. DDL dry-run
+validated at 0 bytes. No production object, procedure, view, export, or bucket object changed.
+
+Evidence: `docs/FINDINGS_LEGACY_DEFINITION_DRIFT_20260801.md`,
+`sql/adhoc/20260801_legacy_view_definition_inventory.sql`,
+`docs/design/SAP_LIVE_FULL_RULE03_SCOPE_20260801.md`,
+`sql/ddl/045_sap_import_result_schema_v2.sql`, and
+`docs/design/INTERFACE_ARCHIVE_ON_WRITE_20260731.md`.
+
 ## RQ-20260801-0000-import-log-s1-archive-design
 Status: OPEN
 Reviewer: Claude Code
