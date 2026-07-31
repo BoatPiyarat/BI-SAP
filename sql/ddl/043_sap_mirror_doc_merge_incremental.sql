@@ -34,6 +34,11 @@
 -- ⚠️ SAP_LIVE append-only hold reaffirmed: nothing in this design cleans, dedupes, truncates,
 -- rebuilds, or deletes any row in SAP_LIVE or its shards. This only changes how
 -- `sap_integration_v3.sap_mirror_doc` (a v3 object) is refreshed.
+--
+-- ⚠️ Watermark boundary: the filter is strictly newer than `(last_upd_date,
+-- last_upd_time)`. A source row that arrives late with exactly the already-merged DATE/HHMM pair
+-- is not discoverable by this incremental path. The mandatory row-for-row comparison with a fresh
+-- 024 full rebuild is the cutover gate; no claim of losslessness is made before that check passes.
 
 -- ============================================================================
 -- New control table: tracks the high-water mark actually merged, so the next run's source
@@ -42,7 +47,7 @@
 -- ============================================================================
 CREATE TABLE IF NOT EXISTS `pacific-plating-282708.sap_integration_v3.sap_mirror_doc_watermark` (
   singleton_id INT64,       -- always 1; single-row control table
-  last_upd_date TIMESTAMP,  -- MAX(UpdateDate) actually merged as of the last successful run
+  last_upd_date DATE,       -- MAX(DATE(UpdateDate)) actually merged as of the last successful run
   last_upd_time INT64,      -- MAX(UpdateTime) among rows sharing last_upd_date
   updated_at TIMESTAMP
 );
@@ -53,7 +58,7 @@ CREATE TABLE IF NOT EXISTS `pacific-plating-282708.sap_integration_v3.sap_mirror
 /*
 INSERT INTO `pacific-plating-282708.sap_integration_v3.sap_mirror_doc_watermark`
   (singleton_id, last_upd_date, last_upd_time, updated_at)
-VALUES (1, TIMESTAMP('1900-01-01'), 0, CURRENT_TIMESTAMP());
+VALUES (1, DATE '1900-01-01', 0, CURRENT_TIMESTAMP());
 */
 
 CREATE OR REPLACE PROCEDURE `pacific-plating-282708.sap_integration_v3.sp_refresh_sap_mirror_doc_incremental`(run_scope STRING)
@@ -61,9 +66,9 @@ BEGIN
   DECLARE run_id STRING DEFAULT GENERATE_UUID();
   DECLARE started TIMESTAMP DEFAULT CURRENT_TIMESTAMP();
   DECLARE row_count INT64;
-  DECLARE wm_date TIMESTAMP;
+  DECLARE wm_date DATE;
   DECLARE wm_time INT64;
-  DECLARE new_wm_date TIMESTAMP;
+  DECLARE new_wm_date DATE;
   DECLARE new_wm_time INT64;
 
   SET (wm_date, wm_time) = (
@@ -109,7 +114,7 @@ BEGIN
       U_RefOrder RefOrder, U_RefundAmt RefundAmountBeforeFee,
       U_RefundAmountAfterFee RefundAmountAfterFee, U_BillingAddress BillingAddress,
       SAFE_CAST(FORMAT_DATE('%d%m%Y', U_BatchRunDate) AS STRING) AS BatchRunDate,
-      UpdateDate, UpdateTime  -- *** the fix: now carried through ***
+      DATE(UpdateDate) AS UpdateDate, UpdateTime  -- native mirror type; recency time stays separate
     FROM `pacific-plating-282708.sap_integration_v2.SAP_LIVE_2024`
     WHERE UpdateDate > wm_date OR (UpdateDate = wm_date AND UpdateTime > wm_time)
     UNION ALL
@@ -133,7 +138,7 @@ BEGIN
       U_Period, U_TotalPeriods, U_PendingPayment, U_PaymentMethod, U_PaymentChannel,
       SAFE_CAST(FORMAT_DATE('%d%m%Y', U_ExpectedDate) AS STRING), U_RefOrder, U_RefundAmt,
       U_RefundAmountAfterFee, U_BillingAddress,
-      SAFE_CAST(FORMAT_DATE('%d%m%Y', U_BatchRunDate) AS STRING), UpdateDate, UpdateTime
+      SAFE_CAST(FORMAT_DATE('%d%m%Y', U_BatchRunDate) AS STRING), DATE(UpdateDate), UpdateTime
     FROM `pacific-plating-282708.sap_integration_v2.SAP_LIVE_2025`
     WHERE UpdateDate > wm_date OR (UpdateDate = wm_date AND UpdateTime > wm_time)
     UNION ALL
@@ -157,7 +162,7 @@ BEGIN
       U_Period, U_TotalPeriods, U_PendingPayment, U_PaymentMethod, U_PaymentChannel,
       SAFE_CAST(FORMAT_DATE('%d%m%Y', U_ExpectedDate) AS STRING), U_RefOrder, U_RefundAmt,
       U_RefundAmountAfterFee, U_BillingAddress,
-      SAFE_CAST(FORMAT_DATE('%d%m%Y', U_BatchRunDate) AS STRING), UpdateDate, UpdateTime
+      SAFE_CAST(FORMAT_DATE('%d%m%Y', U_BatchRunDate) AS STRING), DATE(UpdateDate), UpdateTime
     FROM `pacific-plating-282708.sap_integration_v2.SAP_LIVE_2026`
     WHERE UpdateDate > wm_date OR (UpdateDate = wm_date AND UpdateTime > wm_time)
     UNION ALL
@@ -181,7 +186,7 @@ BEGIN
       U_Period, U_TotalPeriods, U_PendingPayment, U_PaymentMethod, U_PaymentChannel,
       SAFE_CAST(FORMAT_DATE('%d%m%Y', U_ExpectedDate) AS STRING), U_RefOrder, U_RefundAmt,
       U_RefundAmountAfterFee, U_BillingAddress,
-      SAFE_CAST(FORMAT_DATE('%d%m%Y', U_BatchRunDate) AS STRING), UpdateDate, UpdateTime
+      SAFE_CAST(FORMAT_DATE('%d%m%Y', U_BatchRunDate) AS STRING), DATE(UpdateDate), UpdateTime
     FROM `pacific-plating-282708.sap_integration_v2.SAP_LIVE`
     WHERE UpdateDate > wm_date OR (UpdateDate = wm_date AND UpdateTime > wm_time)
   )
@@ -259,12 +264,14 @@ BEGIN
 
   SET row_count = (SELECT COUNT(*) FROM delta);
 
-  SET (new_wm_date, new_wm_time) = (
-    SELECT AS STRUCT MAX(UpdateDate), MAX(IF(UpdateDate = MAX(UpdateDate) OVER(), UpdateTime, NULL))
-    FROM delta
-  );
-
   IF row_count > 0 THEN
+    SET (new_wm_date, new_wm_time) = (
+      SELECT AS STRUCT UpdateDate, MAX(UpdateTime) AS UpdateTime
+      FROM delta
+      WHERE UpdateDate = (SELECT MAX(UpdateDate) FROM delta)
+      GROUP BY UpdateDate
+    );
+
     UPDATE `pacific-plating-282708.sap_integration_v3.sap_mirror_doc_watermark`
     SET last_upd_date = new_wm_date, last_upd_time = new_wm_time, updated_at = CURRENT_TIMESTAMP()
     WHERE singleton_id = 1;
