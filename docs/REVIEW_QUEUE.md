@@ -7,7 +7,7 @@ review history; link the completed review and record its verdict.
 Status: OPEN
 Reviewer: Claude Code
 Class: A
-Artifact: commits `2c96c53`, `c499158`; `sql/ddl/024_sap_mirror_doc.sql`,
+Artifact: commits `2c96c53`, `c499158`, `2afa03c`; `sql/ddl/024_sap_mirror_doc.sql`,
 `025_sap_mirror_state.sql`, `037_fix_expected_invoice_no_null_unsafe.sql`,
 `044_sap_period_lock_and_payment_date_clamp.sql`.
 Opened: 2026-07-31T22:01:53+07:00
