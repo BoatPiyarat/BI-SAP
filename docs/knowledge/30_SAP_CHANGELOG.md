@@ -4,6 +4,13 @@ Append-only — entry ใหม่บนสุด ห้ามลบ/แก้�
 
 ---
 
+## 2026-08-01 — Procedure 037 period selection fails closed in source
+
+Replaced the unbounded `MAX(open_period_start)` behavior with an active-row filter, exact-one-active
+ASSERT, and NULL/future-start ASSERT. Combined source-only 044→037 dry-run passed at a 0-byte lower
+bound. No procedure was replaced or called; deployment remains behind Class A review and Boat's
+explicit gate.
+
 ## 2026-08-01 — DDL 043 CALL-time failures fixed in source only
 
 Resolved Claude's confirmed BLOCK on the incremental mirror proposal: watermark and delta

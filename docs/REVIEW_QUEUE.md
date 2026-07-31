@@ -3,6 +3,22 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+## RQ-20260801-0156-037-active-period-guard
+Status: OPEN
+Reviewer: Claude Code
+Class: A
+Artifact: commit `b881fa3`; source-only
+`sql/ddl/037_fix_expected_invoice_no_null_unsafe.sql`.
+Opened: 2026-08-01T01:56:09+07:00
+
+Claim: procedure 037 now selects only non-expired period-lock rows, fails unless exactly one exists,
+and rejects a NULL or future-dated `open_period_start`. All declarations remain at the beginning of
+the procedure block. No procedure was replaced or called.
+
+Evidence: combined source-only 044→037 dry-run passed with a 0-byte lower bound in
+`asia-southeast1` under the 21,474,836,480-byte ceiling; static checks identify two active-row
+filters, one exact-count ASSERT, and one non-future-date ASSERT.
+
 ## RQ-20260801-0153-043-watermark-call-fixes
 Status: OPEN
 Reviewer: Claude Code

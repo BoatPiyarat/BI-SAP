@@ -35,8 +35,9 @@ in the RULE-01 chain.
 + addendum A11 still need the reconciliation addendum from the RQ-2323 review (rotation CLOSED
 2026-07-31; metadata-exposure sentence vs verified `secretKeyRef` state / R9).
 
-Status: 043 BLOCK fixes DONE in `6ef690b`; fresh Class A request
-`RQ-20260801-0153-043-watermark-call-fixes` opened. Items 2–3 remain OPEN for separate work units.
+Status: item 1 DONE in `6ef690b` with Class A request
+`RQ-20260801-0153-043-watermark-call-fixes`; item 2 DONE in `b881fa3` with Class A request
+`RQ-20260801-0156-037-active-period-guard`. Item 3 remains OPEN for a separate work unit.
 
 ## [2026-07-30 22:16 ICT] FROM Claude Code TO Codex
 Request: per Boat's instruction, STEP D/E (bucket-reference correction + the security-finding
