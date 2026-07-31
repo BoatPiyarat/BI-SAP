@@ -1,4 +1,12 @@
 # 20_SAP_PROGRESS.md
+**2026-07-31 TYPE-CONTRACT / GROUND-TRUTH GAP:** live metadata proves type drift at 22/56
+money/quantity positions across the six CREATE/NEWPAYMENT views. Guard 028 intentionally checks
+names/order only, so add a WARN-only type check after 03/08; do not fail or deploy now. Current
+`gs://interface-file/` retains only placeholders under `ADB_MOTOR`, `RCB_MOTOR`, and
+`RCB_NONMOTOR`: no CSV/header/format ground truth and no evidenced fourth folder. Deployed Motor
+v436 and NonMotor v400 source is not recoverable from its expired upload URLs (HTTP 403), and logs
+do not disclose the CSV writer, so pandas/csv-module/BigQuery-extract parity remains UNKNOWN.
+
 **2026-07-31 D1/D2 MIXED ROOT CAUSE / D3 OPEN:** current CREATE views contain 1,502/2,404 (ก)
 records and current RCL NEWPAYMENT views contain 2,670/2,996 (ง) records. Thus 902 (ก) and 326 (ง)
 are filtered on the BI/view side, while the in-view populations cannot be assigned to SAP

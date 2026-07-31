@@ -4,6 +4,50 @@ Evidence timestamp: deployed-function logs from `2026-07-30T18:30:05Z` through
 `2026-07-30T18:39:04Z`, function metadata read 2026-07-31, and live BigQuery
 `INFORMATION_SCHEMA.COLUMNS` read 2026-07-31. No object was changed.
 
+## P0 finding: 028 omits data types and 22/56 positions have live type drift
+
+`028_column_contract_guard.sql` intentionally checks column names and ordinal positions but not
+data types; its documented rationale was that type checks would create more false positives than
+useful signal. A 2026-07-31 live `INFORMATION_SCHEMA.COLUMNS` comparison of the four CREATE and two
+RCL NEWPAYMENT views now proves real type drift at 22 of the 56 contract positions. All 22 are
+money or quantity fields:
+
+`GrossPremium`, `StampDuty`, `VAT`, `TotalPremium`, `WHT`, `TotalEIR`, `TotalSBT`,
+`ProcessingFee`, `ProcessingFeeVat`, `ShippingFee`, `ShippingFeeVat`, `TotalAmount`, `Discount`,
+`ExpectedReceived`, `ActualReceived`, `InterestThisPeriod`, `PrincipleThisPeriod`,
+`InterestEIRThisPeriod`, `PrincipleEIRThisPeriod`, `PendingPayment`, `RefundAmountBeforeFee`, and
+`RefundAmountAfterFee`.
+
+Positions 22–34 and 39–40 drift between `STRING` and `FLOAT64`; positions 41–44 and 48 drift
+between `INT64` and `FLOAT64`; positions 53–54 appear as `STRING`, `INT64`, and `FLOAT64` across
+the six views. The current guard therefore passes a positional contract while leaving a real CSV
+serialization risk undetected: quoting, decimal places, and scientific notation may differ by
+view. This is a risk, not proof that a successfully imported file used any particular rendering;
+the physical files and deployed serialization code are unavailable (ground-truth limits below).
+
+After the 2026-08-03 close, add data-type comparison to the contract guard as **WARN**, not FAIL,
+until each accepted coercion has an explicit contract. No guard or production object was changed
+as part of this finding.
+
+## G1/G2 ground-truth limits
+
+An all-version recursive read of `gs://interface-file/` on 2026-07-31 found only three prefixes:
+`ADB_MOTOR`, `RCB_MOTOR`, and `RCB_NONMOTOR`. Each contains only a zero-name folder placeholder;
+no retained CSV or object version exists. Consequently the latest successful CREATE file cannot
+be inspected for header presence, physical 56-versus-57 column count, quoting, decimal places, or
+scientific notation. A fourth BU folder is **not evidenced** by the live bucket and must not be
+invented.
+
+The deployed writers are Gen-1 Python 3.12 Cloud Functions
+`rcb-motor-order-payment-sap-bucket-1` version 436 and
+`rcb-nonmotor-order-payment-sap-bucket-1` version 400, both with entry point
+`extract_and_store`. Their metadata exposes only expired one-time `sourceUploadUrl` locations;
+read-back returned HTTP 403, with no source archive/repository location. Repository search found
+no deployed `main.py`, and a targeted 30-Jul log search found no explicit `to_csv`, `csv.writer`,
+`extract_table`, `EXPORT DATA`, or `pandas` marker. The deployed serialization method is therefore
+**unknown**. Parity between the legacy writer and BigQuery `EXPORT DATA` is not established and
+remains a blocker for manual export logic.
+
 ## P0 D1/D2 membership diagnostic
 
 Job `p0_d1_d2_view_membership_20260731_160300`, query timestamp

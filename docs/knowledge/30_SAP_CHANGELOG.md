@@ -4,6 +4,17 @@ Append-only — entry ใหม่บนสุด ห้ามลบ/แก้�
 
 ---
 
+## 2026-07-31 — 22/56 interface types drift; physical CSV and writer remain unavailable
+
+Compared the six RULE-10 CREATE/NEWPAYMENT view schemas and confirmed that 22 money/quantity
+positions vary among STRING, INT64, and FLOAT64. Recorded the uncovered risk in
+`FINDINGS_EXPORT_PATH_20260731.md`: 028 deliberately omitted types, so a future post-close guard
+should report type drift as WARN rather than FAIL. Read-only all-version bucket inspection found
+only placeholder objects in `ADB_MOTOR`, `RCB_MOTOR`, and `RCB_NONMOTOR`; no physical CSV remains
+to prove formatting, header, or 56-versus-57 columns. Function metadata/build provenance cannot
+recover the deployed source (upload URL read-back is HTTP 403), and targeted logs do not identify
+the serialization library. No SQL guard, bucket object, view, function, or deployment changed.
+
 ## 2026-07-31 — D1/D2 legacy-view membership diagnosed; D3 remains unproven
 
 One guarded 8.65-GB batch compared (ก)/(ง) with the six relevant live views. Of 2,404 (ก) records,
