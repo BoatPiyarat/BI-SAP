@@ -4,6 +4,19 @@ Created 2026-07-27 per `TASK_V3_GAP_CLOSURE_v2.md` (A0, A5, Housekeeping — "ke
 Nothing here blocks build work that doesn't depend on the specific answer; each item notes what
 IS being done in the meantime.
 
+## RESOLVED 2026-07-31 — scheduler 401; run.invoker downgraded to P3 hygiene
+
+The scheduler used an OIDC ID token against the Cloud Run Admin API, which requires OAuth. It was
+changed to OAuth using the default compute service account and returned HTTP 200 at
+`2026-07-31T14:16:30Z`; IAM was never the blocker. The former blocking Attila request below is
+superseded. A future `run.invoker` grant for `sap-bucket-csv@` is P3 least-privilege hygiene only.
+
+## Boat — extract timing before 2026-08-03 reconciliation
+
+**Decision needed:** approve one manual extract immediately before reconciliation (recommended),
+or add a permanent morning schedule. The current 20:30 ICT extract trails the ~01:30 ICT interface
+import by about 19 hours. Until Boat decides, do not manually trigger the job.
+
 ## RESOLVED 2026-07-30 — GitHub remote URL
 
 Repository remote is `https://github.com/BoatPiyarat/BI-SAP.git`. `origin` was configured and
@@ -30,7 +43,7 @@ question “cancel+re-import vs manual SAP correction — รอคำตอบ 
 
 ---
 
-## Attila (IAM) — blocking real freshness
+## SUPERSEDED 2026-07-31 — Attila IAM request was not blocking freshness
 
 **Ask**: grant `roles/run.invoker` to `sap-bucket-csv@pacific-plating-282708.iam.gserviceaccount.com`
 on the Cloud Run job `sap-extract-job`, so `sap-extract-schedule` (Cloud Scheduler, 20:30 ICT
@@ -45,9 +58,9 @@ gcloud run jobs add-iam-policy-binding sap-extract-job \
   --member="serviceAccount:sap-bucket-csv@pacific-plating-282708.iam.gserviceaccount.com" \
   --role="roles/run.invoker"
 ```
-**In the meantime**: extract is being triggered manually/by other means; freshness depends on that
-until this lands. Every real-time freshness claim in the dashboard/recon should be read with this
-caveat.
+**Current status**: scheduler automation works through OAuth with the default compute SA. Retain
+this command only as a P3 least-privilege option for switching back to `sap-bucket-csv@`; it is not
+a recovery action and manual compensation must stop.
 
 ---
 

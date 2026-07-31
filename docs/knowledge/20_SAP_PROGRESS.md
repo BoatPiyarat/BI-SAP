@@ -1,4 +1,18 @@
 # 20_SAP_PROGRESS.md
+**2026-07-31 SCHEDULER RESOLVED:** changed Cloud Scheduler authentication from OIDC to OAuth while
+keeping the Cloud Run Admin API URI. Scheduler log `2026-07-31T14:16:30Z` returned HTTP 200 and
+execution `kqcjd` ran as the default compute SA. IAM was never the blocker; `run.invoker` for the
+narrower `sap-bucket-csv@` identity is now P3 hygiene. Stop manual triggers. Verify the first
+automatic run at `2026-08-01T13:30:00Z`.
+
+**2026-07-31 AMPLIFICATION/FRESHNESS:** `k95ws` extracted 61,133 rows over 20h41m; the immediately
+following 2h42m window in `kqcjd` extracted 0 rows while advancing the watermark and reporting
+`caught_up=True`. This refutes continuous ~60K churn and confirms a burst tied to nightly interface
+imports. Healthy zero rows require success + watermark advance + caught_up; login failure has zero
+chunks, unchanged watermark, and no success marker. The nightly extract trails SAP import by ~19h,
+so Boat must choose a one-off pre-reconcile extract or permanent morning schedule for 03/08.
+`8,324,155` and prior daily amplification snapshots are stale and must not be cited.
+
 **2026-07-30 MIRROR ASSESSMENT:** corrected STEP A cleared the accounting-overwrite gate over
 63,757 affected DocEntries: 54,055 had a real pre-07-26 baseline, 9,702 were `NO_BASELINE`, and
 all monitored monetary fields had `POPULATION=0` / `MUTATION=0`. Source:
@@ -231,8 +245,9 @@ Started the new gap-closure task (supersedes v1, built on the pre-07-24 architec
 status per the task's own preamble, cross-checked against this file's history — all still true:
 V3 produces no interface file yet (legacy `sap_view.*` still generates every real file); `SAP_LIVE`
 is genuinely fresh (the earlier "stale mirror" diagnosis was wrong — real defect is 328,071
-multi-document (OrderItem, Period) keys with no agreed picking rule); `sap-extract-schedule` is
-still failing 401 UNAUTHENTICATED, still blocked on Attila's IAM grant.
+multi-document (OrderItem, Period) keys with no agreed picking rule). The contemporaneous statement
+that `sap-extract-schedule` was blocked on Attila IAM is **SUPERSEDED 2026-07-31** by the OAuth
+HTTP-200 evidence at the top of this file.
 
 PHASE 0 (cheap, do-first, doc-only — no production change): grepped the whole repo for
 `raw_sap_live`/`sap-bucket-csv`/`auto_load_sap_data_in_bucket_to_bigquery`/`B1` (21 files). Most

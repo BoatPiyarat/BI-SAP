@@ -6,6 +6,13 @@ deployed live BigQuery objects whose source was still uncommitted.
 ## Rule 0 — one working tree per agent, always
 Never point two agents at the same folder. Use a second git worktree (same history, separate files):
 
+**Gate 0.3 evidence (Boat + Claude approved 2026-07-31):** Codex runs from a separate clone whose
+repository top-level differs from Claude Code's checkout, with `origin` set to
+`https://github.com/BoatPiyarat/BI-SAP.git`; repository fsck is clean (a dangling blob is benign)
+and no OneDrive conflicted copy exists. This provides the required filesystem isolation even though
+both clones currently use branch `p0/stg-sap-state`. While the branch is shared, **Codex is the
+only writer**; Claude Code is reviewer and deployer only.
+
 ```bash
 # from the main repo
 git worktree add ../repo-codex chore/docs-governance
@@ -15,15 +22,16 @@ git worktree add ../repo-codex chore/docs-governance
 Both push to the same remote; integration happens through PRs, never through a shared folder.
 
 ## Rule 1 — ownership by domain (not by task)
+Boat reassigned the lanes on 2026-07-31 for 2026 budget control. This allocation supersedes the
+older executor/ownership assignments elsewhere in this document.
+
 | Domain | Owner | Notes |
 |---|---|---|
-| **EXPENSIVE:** `sql/**`, all BigQuery queries/objects, deployments, data investigations | **Claude Code** | One agent, one batched query plan; BigQuery cost + higher token cost |
-| **CHEAP:** `docs/knowledge/**`, `docs/design/**`, `AGENT_RULES.md`, `INPUTS_NEEDED.md`, CHANGELOG, PROGRESS, runbook | **Codex** | No BigQuery queries in the normal lane; single writer for knowledge |
-| `docs/findings/**`, `docs/sessions/**` | whoever produced the finding | Own file per session, never a shared file |
-| Alerts / scheduler / Cloud Run config | **Claude Code** | Same deploy-gate rules apply |
+| **Execution:** `sql/**`, `scripts/**`, BigQuery queries/objects, data investigations, `docs/**` | **Codex** | One executor, one batched query plan; all queries use the mandatory cost-control wrapper after its guardrail review passes |
+| **Review and deploy only** | **Claude Code** | Reviews Codex work and performs approved deployments; does not implement executor changes |
 
-**Single-writer principle:** only the owner edits files in its domain. Cross-domain needs go through
-Rule 2 — never "just quickly fix" a file in the other agent's domain.
+**Single-writer principle:** Codex is the implementation writer. Claude Code reviews and deploys
+approved work without editing executor-owned source. Cross-role requests go through Rule 2.
 
 ## Rule 2 — cross-domain requests go in a queue, not in the other agent's files
 Append to `docs/HANDOFF_QUEUE.md`:

@@ -4,6 +4,24 @@ Version: 3.0 (consolidated 2026-07-16 จาก SAP_CONTEXT v2.1 + Team Context 
 
 ---
 
+## AUTHORITATIVE ADDENDUM — 2026-07-31 scheduler and extract behavior
+
+- `sap-extract-schedule` 401 is **RESOLVED**. Root cause was OIDC ID token sent to the Cloud Run
+  Admin API, which requires OAuth; it was never an IAM blocker. OAuth through the default compute
+  SA returned HTTP 200 at `2026-07-31T14:16:30Z`. `run.invoker` for `sap-bucket-csv@` is P3
+  least-privilege hygiene only. Older statements below that call 401 an IAM issue are superseded.
+- Amplification arrives in a burst tied to the nightly interface import, not continuously:
+  `k95ws` extracted 61,133 rows over 20h41m; `kqcjd` extracted 0 rows over the following 2h42m
+  while advancing the watermark with `caught_up=True`.
+- `rows=0` is healthy only when the run logs success, advances the watermark, and is caught up.
+  Zero rows with zero chunks, unchanged watermark, and no success marker is a login failure.
+- The 20:30 ICT extract trails the ~01:30 ICT SAP import by ~19 hours. Before the 03/08 close
+  reconciliation, Boat must choose an approved one-off extract or a permanent morning schedule.
+  Until then, do not manually trigger: scheduled automation is working.
+- SAP_LIVE count `8,324,155` and prior daily amplification snapshots are stale and non-citable.
+
+---
+
 ## PROJECT GOAL
 
 ไม่ใช่แค่ export CSV — เป้าหมายคือ integration platform ระหว่าง CareOS ↔ SAP ที่
@@ -169,7 +187,8 @@ generate ไม่ใช่ signal จากต้นทาง (Data Dictionary/
 - Secrets ต้อง bind ผ่าน `--update-secrets` (`sap-db-username`, `sap-db-password`) —
   code อ่าน env var ตรงๆ ถูกแล้ว, ห้าม deploy ด้วย `--set-env-vars` plaintext อีก
 - `sed` corrupt password ที่มี `&`/`\`
-- **`sap-extract-schedule` ล่มอยู่** (401, IAM binding ไม่เคย apply สำเร็จ) — ดู ARCHITECTURE ด้านบน
+- **Scheduler status superseded 2026-07-31:** OAuth fix verified HTTP 200; ดู authoritative
+  addendum ด้านบน. IAM ไม่เคยเป็น blocker และห้าม manual trigger ชดเชยอีก
 
 ---
 

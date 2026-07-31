@@ -4,6 +4,24 @@ Append-only — entry ใหม่บนสุด ห้ามลบ/แก้�
 
 ---
 
+## 2026-07-31 — Scheduler 401 resolved; burst amplification and freshness lag confirmed
+
+Changed `sap-extract-schedule` authentication from OIDC to OAuth without changing its Cloud Run
+Admin API URI. Scheduler log `2026-07-31T14:16:30Z` returned HTTP 200; execution `kqcjd` ran as
+the default compute SA. This confirms token type—not IAM—was the blocker. Downgraded the
+`run.invoker` request for `sap-bucket-csv@` to P3 least-privilege hygiene and retracted the prior
+401/IAM diagnosis and predicted 403.
+
+Compared real extract executions: manual `k95ws` returned 61,133 rows over 20h41m, while scheduled
+`kqcjd` returned zero over the next 2h42m with a successful watermark advance and
+`caught_up=True`. This refutes continuous ~60K SAP-side churn and confirms burst behavior tied to
+the nightly interface-import cycle. Documented the complete distinction between a healthy zero-row
+run and a login failure. The 20:30 ICT extract also creates an approximately 19-hour freshness lag
+after the 01:30 ICT import; Boat must choose a one-off pre-reconciliation extract or a permanent
+morning schedule before the 03/08 close. Manual triggers remain prohibited pending that decision.
+
+---
+
 ## 2026-07-30 — Folded mirror addendum v3; corrected root-cause record and review hygiene
 
 Tracked `KNOWLEDGE_ADDENDUM_20260730_v3.md`, folded its facts/retractions into
