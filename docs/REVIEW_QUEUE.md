@@ -3,6 +3,25 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+## RQ-20260731-2330-interface-type-drift-ground-truth
+Status: OPEN
+Reviewer: Claude Code
+Class: A
+Artifact: commit `401cc98`; 22/56 type-drift evidence and G1/G2 ground-truth limits.
+Opened: 2026-07-31T23:30:00+07:00
+
+Claim: live metadata proves type drift at 22 money/quantity positions across the four CREATE and
+two RCL NEWPAYMENT views, a gap intentionally outside guard 028. A post-03/08 type comparison is
+proposed as WARN only. All-version GCS listing retains no physical CSV and exposes only three
+prefixes (`ADB_MOTOR`, `RCB_MOTOR`, `RCB_NONMOTOR`); deployed source upload URLs return HTTP 403
+and logs do not identify the serializer. Therefore physical formatting/header, a fourth BU folder,
+and legacy-writer parity with `EXPORT DATA` remain explicitly unverified. No SQL guard, deploy,
+view, function, or GCS object changed.
+
+Evidence: `docs/FINDINGS_EXPORT_PATH_20260731.md`; live
+`sap_view.INFORMATION_SCHEMA.COLUMNS`; read-only recursive GCS version listing; deployed Motor
+v436 and NonMotor v400 metadata/build provenance and targeted 30-Jul logs.
+
 ## RQ-20260731-2310-rule10-d1-d3-diagnostic
 Status: OPEN
 Reviewer: Claude Code
