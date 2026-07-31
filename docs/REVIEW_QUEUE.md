@@ -3,6 +3,26 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+## RQ-20260731-2243-rule09-old-year-rescue
+Status: OPEN
+Reviewer: Claude Code
+Class: A
+Artifact: commit `aba1aad`; live-source procedure 037, DDL status documentation, and RULE-09
+canonical decision/evidence.
+Opened: 2026-07-31T22:43:02+07:00
+
+Claim: source-only 037 preserves raw PaymentDate before RULE-01 clamping and applies Boat's narrow
+RULE-09 exception to `OLD_YEAR_NO_TOUCH` at both required gates: rescued rows are absent from that
+exclusion-register rule and present in expected_state with `old_year_rescued=TRUE`. The interval is
+the open calendar month, not `lock_datetime`; no other hard exclusion receives an exception. SQL
+034 remains unchanged and is marked historical/superseded in README. **No deploy is authorized by
+this request.**
+
+Evidence: commit `aba1aad`; static assertions found exactly one raw-date preservation, marker
+definition, register guard, population guard, and output marker, with zero changes to 034 SQL.
+Standalone 037 dry-run failed closed because undeployed table 044 does not exist live; combined
+044→037 dry-run succeeded with `totalBytesProcessed=0` lower bound under the 20 GiB ceiling.
+
 ## RQ-20260731-2225-insurer-exclusion-risk
 Status: OPEN
 Reviewer: Claude Code
