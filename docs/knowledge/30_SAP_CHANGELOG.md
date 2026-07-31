@@ -4,6 +4,16 @@ Append-only — entry ใหม่บนสุด ห้ามลบ/แก้�
 
 ---
 
+## 2026-08-01 — DDL 043 CALL-time failures fixed in source only
+
+Resolved Claude's confirmed BLOCK on the incremental mirror proposal: watermark and delta
+UpdateDate domains are DATE end-to-end, all four raw-shard projections cast explicitly, and the
+invalid analytic-inside-aggregate selector is replaced by a grouped maximum-date selector. A
+targeted dry-run caught and fixed a missing STRUCT alias before commit. Full source, selector, and
+four-shard type dry-runs pass at 0-byte lower bound. The strict DATE/HHMM late-arrival boundary is
+documented; meaningful MERGE/CALL verification still waits for reviewed 024. No DDL was applied and
+no procedure was called.
+
 ## 2026-08-01 — OneDrive safety and 12 live interface views inventoried
 
 Recorded Boat's OneDrive-until-V3 decision, mandatory conflicted-copy/fsck gate, per-work-unit push,

@@ -43,6 +43,7 @@ not this table, for day-to-day freshness.
 | 026_collapse_stg_sap_state_to_view.sql | Collapses `stg_sap_state` (was its own table, 002) into a view over `sap_mirror_state` — one picking rule instead of two; repoints the nightly chain to refresh `sap_mirror_doc`/`sap_mirror_state` instead of calling the now-retired `sp_refresh_sap_state` |
 | 034_expected_state_exclusion_rules.sql | **Superseded by 037; kept for history only.** Earlier E1/E2/E3 definition of `sp_refresh_expected_state`; do not apply after 037 |
 | 037_fix_expected_invoice_no_null_unsafe.sql | **Live source definition of `sp_refresh_expected_state`.** Includes the NULL-safe fix plus RULE-01/02/08 period handling and RULE-09 OLD_YEAR_NO_TOUCH rescue |
+| 043_sap_mirror_doc_merge_incremental.sql | **Source only / not deployed.** Incremental replacement proposal for 024. Commit `6ef690b` fixes the CALL-time DATE/TIMESTAMP mismatch and invalid watermark aggregation; meaningful MERGE/CALL validation waits for reviewed 024 and a new Class A PASS |
 | 044_sap_period_lock_and_payment_date_clamp.sql | Creates the RULE-01/02 period-lock control; apply before the current 037 expected-state procedure that clamps PaymentDate and emits `payment_date_clamped` |
 | 045_sap_import_result_schema_v2.sql | **Source only / not deployed.** Creates non-destructive partitioned shadow `sap_import_result_v2`; parser K1/K2/K3 and separate swap gate required |
 

@@ -3,6 +3,26 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+## RQ-20260801-0153-043-watermark-call-fixes
+Status: OPEN
+Reviewer: Claude Code
+Class: A
+Artifact: commit `6ef690b`; corrected source-only
+`sql/ddl/043_sap_mirror_doc_merge_incremental.sql`.
+Opened: 2026-08-01T01:53:23+07:00
+
+Claim: DDL 043 now projects `DATE(UpdateDate)` in all four delta branches, stores and declares the
+watermark date as DATE, and replaces the invalid analytic-in-aggregate watermark calculation with
+a grouped maximum-date selector inside the non-empty-delta guard. A targeted dry-run caught and
+fixed the additional missing STRUCT alias. The strict DATE/HHMM late-arrival boundary is documented
+and remains gated by a row-for-row comparison with a fresh 024 rebuild. No object was deployed or
+called.
+
+Evidence: `docs/reviews/2026-08-01-043-merge-claude.md`; full-file dry-run lower bound 0 bytes;
+standalone watermark-selector dry-run 0 bytes; four-shard DATE-projection dry-run 0 bytes. A
+meaningful MERGE/CALL validation remains impossible until reviewed 024 supplies live
+`sap_mirror_doc.UpdateDate/UpdateTime`.
+
 ## Class audit — Boat policy 2026-08-01
 
 The 13-entry backlog present when Boat issued the new class policy was reclassified by its
