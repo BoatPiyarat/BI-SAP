@@ -175,6 +175,14 @@ hygiene** เพื่อสลับกลับไปใช้ SA ที่แ
   **และรวมเข้ากับคำขอ cancel/refund date columns เป็น contract change ครั้งเดียว**
 
 ## §3.6 `[CONFIRMED]` Amplification มาเป็น burst ผูกกับ nightly interface import
+
+### R1 UN-RETRACTED 2026-07-31 — `[CONFIRMED — leading explanation]`
+
+BigQuery job metadata พิสูจน์ว่า OOM request แต่ละรอบ commit LOAD เต็มไฟล์ก่อน container ตาย:
+27/07 = 41×60,404, 28/07 = 70×60,385, 29/07 = 25×58,619 และ 31/07 = 12×61,133.
+Loader retry จึงเป็น leading explanation; interface import/A2/A3 เป็น contributing factor ที่ทำให้
+extract ใหญ่. Append-only hold ถูกต้อง และ 043 MERGE คือ destination-side fix จริง. ดู
+`FINDINGS_LOADER_RETRY_AMPLIFICATION_20260731.md`.
 Execution `k95ws` (manual, `2026-07-31T11:34:17Z`) ครอบคลุม window 20h41m และดึง 61,133 rows.
 Execution `kqcjd` (scheduler, `2026-07-31T14:16:27Z`) ครอบคลุม window
 `11:34:33Z–14:16:42Z` 2h42m และดึง **0 rows**, แต่ watermark ขยับและ `caught_up=True`.
@@ -206,7 +214,6 @@ deadline `2026-08-03 14:00 ICT` จะเห็น SAP state ล่าสุด�
 
 | # | ข้อที่ต้องเลิกใช้ | แทนด้วย |
 |---|---|---|
-| R1 | "loader crash-loop อ่านไฟล์เดิมซ้ำ" เป็น root cause ของ amplification | watermark re-extract + plain-append loader (§3.6) |
 | R2 | "มี unidentified SAP writer แก้ SAP production" | Boat ยืนยันว่าเป็น interface import ของ BI เอง |
 | R3 | "ต้อง hold งานรอ Attila/run.invoker ก่อน scheduler ใช้ได้" | OAuth + default compute SA ทำงานแล้ว; run.invoker เหลือ P3 hygiene (§3.2) |
 | R4 | "฿645.21 ตรงกับ pilot `L77828566` → อาจเป็น order เดียวกัน" | 645.21 = เบี้ย พ.ร.บ. มาตรฐาน ไม่ใช่ fingerprint ของ order |

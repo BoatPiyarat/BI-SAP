@@ -4,6 +4,14 @@ Append-only — entry ใหม่บนสุด ห้ามลบ/แก้�
 
 ---
 
+## 2026-07-31 — R1 un-retracted and confirmed by LOAD-job output
+
+After Boat raised loader memory to 4Gi, autonomous Pub/Sub retry loaded and deleted the 31-Jul
+file. Job metadata proves 12 complete LOAD jobs of 61,133 rows each (733,596 committed), plus
+41×60,404 on 27-Jul, 70×60,385 on 28-Jul, and 25×58,619 on 29-Jul. R1 is now confirmed leading
+explanation; interface-import churn is contributing. Recorded ineffective 61,133-row single-chunk
+behavior versus the 20,000 threshold. No deploy/export/view change by Codex.
+
 ## 2026-07-31 — P0 mirror completeness gate blocked by loader OOM
 
 Found the 31-Jul 169,695,148-byte extract still in the bronze landing prefix and proved SAP_LIVE
@@ -113,8 +121,8 @@ Boat-owned credential-rotation/Secret-Manager item without recording any secret 
 Recorded corrected STEP A from `sap_integration_v2.SAP_LIVE` at
 2026-07-30 14:27:28 UTC: 54,055 baseline-comparable records, 9,702 `NO_BASELINE`, and zero
 population/mutation changes across every monitored monetary field. The accounting-overwrite gate
-is CLEARED, while the mirror incident remains OPEN. Retracted crash-loop, watermark-reset, and
-unidentified-writer explanations; recorded the scheduler → function → external importer pathway
+is CLEARED, while the mirror incident remains OPEN. Historical note superseded 2026-07-31:
+crash-loop is confirmed leading explanation; watermark-reset and unidentified-writer remain retracted. Recorded the scheduler → function → external importer pathway
 and the separate ~2.19× normal-day baseline-duplication finding.
 
 Kept the `a56f6d1` and `84df583` reviews BLOCKED on substantive evidence gaps. Corrected three

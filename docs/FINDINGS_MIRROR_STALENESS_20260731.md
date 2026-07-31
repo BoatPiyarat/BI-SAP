@@ -1,5 +1,10 @@
 # P0 SAP mirror completeness gate — BLOCKED
 
+> **SUPERSEDED later 2026-07-31:** Boat raised loader memory to 4 GiB; autonomous Pub/Sub retry
+> succeeded and deleted the object. The load was amplified to 12 complete LOAD jobs ×61,133 rows.
+> See `FINDINGS_LOADER_RETRY_AMPLIFICATION_20260731.md`. L3 remains blocked from using the old
+> materialized mirror tables because they predate this load.
+
 Evidence timestamp: 2026-07-31. This investigation was read-only except for one explicit run of
 the existing loader scheduler requested by Boat. No extract, deploy, view change, export, or file
 write/delete was performed by Codex.

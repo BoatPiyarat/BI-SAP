@@ -525,8 +525,9 @@ observed by BigQuery are unrecoverable.
 
 ### §B — retractions
 
-- Retract loader crash-loop/full-bucket reread as the primary cause. Use the structural mechanism
-  in A3.
+- **UN-RETRACT R1 (2026-07-31):** loader crash-loop/full-bucket reread is the confirmed leading
+  explanation for acute amplification. BigQuery metadata proves each OOM retry committed a full
+  LOAD before request failure/deletion. A3 interface-import changes remain a contributing factor.
 - Retract “unidentified writer”; Boat attributes it to BI interface import through the narrowed
   scheduled pathway in A2.
 - Retract watermark reset/loss: 14 generations advance continuously with no reset, gap or

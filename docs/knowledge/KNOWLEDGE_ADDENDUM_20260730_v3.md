@@ -177,7 +177,7 @@ missing field, malformed value, threshold equality, threshold+1)
 
 | # | ข้อที่ต้องเลิกใช้ | เหตุผล | แทนด้วย |
 |---|---|---|---|
-| B1 | "loader crash-loop อ่านไฟล์เดิมซ้ำ" เป็น root cause ของ amplification | Cloud Run/run-log evidence refutes it | A3: interface import updates SAP-owned update fields → watermark re-extract → plain-append loader |
+| B1 | **UN-RETRACTED 2026-07-31:** loader crash-loop อ่านไฟล์เดิมซ้ำ | 149 successful LOAD jobs prove full-file commits during OOM retries | `[CONFIRMED — leading explanation]`; A2/A3 is contributing factor |
 | B2 | "มี unidentified writer แก้ SAP production" | Boat ยืนยันว่าเป็น interface import ของ BI เอง | A2 |
 | B3 | "ต้องหยุด nightly manual triggering / hold Attila IAM ticket" (คำแนะนำของ Claude ในเซสชันนี้) | Premise หายไปพร้อม B2 — extract ทำถูกทุกอย่าง | ปิด Attila IAM ticket ได้ตามปกติ ไม่ต้อง hold |
 | B4 | "฿645.21 ตรงเป๊ะกับ pilot `L77828566` → อาจเป็น order เดียวกัน" (คำกล่าวของ Claude ในเซสชันนี้) | 645.21 = เบี้ย พ.ร.บ. มาตรฐาน ไม่ใช่เลขเฉพาะ order | A9 |

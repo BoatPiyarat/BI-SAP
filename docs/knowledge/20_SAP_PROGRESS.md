@@ -1,5 +1,11 @@
 # 20_SAP_PROGRESS.md
-**2026-07-31 P0 MIRROR GATE BLOCKED:** bronze retains a 169,695,148-byte 31-Jul extract object
+**2026-07-31 R1 CONFIRMED / LOAD COMPLETE BUT AMPLIFIED:** Boat raised loader memory to 4Gi;
+Pub/Sub retry completed and deleted the bronze file. L5 proves 12 successful LOAD jobs ×61,133
+rows on 31-Jul, plus 41×60,404, 70×60,385, and 25×58,619 on 27–29 Jul. R1 loader retry is the
+leading explanation; A2/A3 is contributing. 043 MERGE and real extract chunking are permanent
+fixes. Post-load L3 must use live dedup because materialized mirror tables predate the load.
+
+**2026-07-31 P0 MIRROR GATE BLOCKED (superseded by successful 4Gi retry):** bronze retains a 169,695,148-byte 31-Jul extract object
 created 11:34:52Z, while SAP_LIVE has zero batch rows for 30/31 Jul. One requested loader run and
 at least three automatic retries failed HTTP 503 at the 1,024 MiB memory ceiling; the object remains.
 The prior (ก)/(ง), overlap, and view-filter numbers are stale and prohibited until an authorized
@@ -52,8 +58,8 @@ so Boat must choose a one-off pre-reconcile extract or permanent morning schedul
 all monitored monetary fields had `POPULATION=0` / `MUTATION=0`. Source:
 `sap_integration_v2.SAP_LIVE`, query timestamp 2026-07-30 14:27:28 UTC. The result remains a lower
 bound because states between extracts are unrecoverable. The root-cause incident remains OPEN as a
-storage/control issue; crash-loop, watermark-reset, and unidentified-writer hypotheses are
-retracted. Current row snapshot is 8,324,155 at 2026-07-30 13:53:09 UTC and is stale after Boat's
+storage/control issue. **Correction 2026-07-31:** crash-loop is now confirmed leading explanation;
+watermark-reset and unidentified-writer remain retracted. Current row snapshot is 8,324,155 at 2026-07-30 13:53:09 UTC and is stale after Boat's
 21:53 manual run. `DocEntry=2345730` is `WAITING HUMAN` for Boat/FA UI verification.
 
 **P0 SECURITY:** deployed `sap-extract-job` artifacts expose plaintext SAP credentials. This is
