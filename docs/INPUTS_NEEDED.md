@@ -4,6 +4,26 @@ Created 2026-07-27 per `TASK_V3_GAP_CLOSURE_v2.md` (A0, A5, Housekeeping — "ke
 Nothing here blocks build work that doesn't depend on the specific answer; each item notes what
 IS being done in the meantime.
 
+## P0 — Aware disposition for July InsurerCode exclusions
+
+Job `p0_insurer_risk_20260731_152353` at `2026-07-31 15:23:55 UTC` found 300 July-PaymentDate
+records / 294 orders / THB 2,260,768.08 excluded as `INSURER_NOT_IN_MASTER`. Aware must confirm the
+disposition for normalized codes `30`, `46`, `48`, `49`: add to SAP master, map to an existing
+code, or intentionally hold. Do not silently restore/delete records; see
+`docs/FINDINGS_INSURER_EXCLUSION_RISK_20260731.md`.
+
+## Boat — reconcile exclusion date basis with RULE-01
+
+Current procedure 037 still derives exclusion eligibility from `GREATEST(OrderDate, PolicyDate)`,
+while the locked 2026-07-31 instruction says July scope date basis is PaymentDate. Confirm that E1
+year exclusions must also migrate to PaymentDate; no agent inference or production change has been
+made.
+
+## DEFERRED until after 2026-08-03 — enrich excluded-record audit
+
+Add amount and date_basis to `sap_excluded_records`, sourced from the existing `_rules` temp table.
+This improves EXCLUDED ≠ DELETED observability but is not on the close critical path.
+
 ## RESOLVED 2026-07-31 — scheduler 401; run.invoker downgraded to P3 hygiene
 
 The scheduler used an OIDC ID token against the Cloud Run Admin API, which requires OAuth. It was

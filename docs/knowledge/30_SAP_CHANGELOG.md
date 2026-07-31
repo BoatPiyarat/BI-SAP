@@ -4,6 +4,20 @@ Append-only — entry ใหม่บนสุด ห้ามลบ/แก้�
 
 ---
 
+## 2026-07-31 — Quantified July InsurerCode exclusion risk
+
+Read-only job `p0_insurer_risk_20260731_152353` at `2026-07-31 15:23:55 UTC` measured 300 records /
+294 orders / THB 2,260,768.08 with July PaymentDate excluded by `INSURER_NOT_IN_MASTER`; no amount
+was NULL. Sent codes `30`, `46`, `48`, `49` to the Aware input queue without changing master data or
+restoring records. The same batched query confirmed 4,810 unique G1 orders and
+`year_no_touch_max=2024`.
+
+Recorded an unresolved rule conflict: current exclusion date_basis remains
+`GREATEST(OrderDate,PolicyDate)` while RULE-01 makes PaymentDate authoritative for July scope.
+Deferred adding amount/date_basis to `sap_excluded_records` until after 03/08. Nothing deployed.
+
+---
+
 ## 2026-07-31 — Scheduler 401 resolved; burst amplification and freshness lag confirmed
 
 Changed `sap-extract-schedule` authentication from OIDC to OAuth without changing its Cloud Run
