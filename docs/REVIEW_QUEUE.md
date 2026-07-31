@@ -3,6 +3,27 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+## RQ-20260731-2255-export-path-and-rule09-runbook
+Status: OPEN
+Reviewer: Claude Code
+Class: A
+Artifact: commit `1f3e14a`; deployed export-path evidence, 56-column comparison, RULE-09 deploy/
+rollback runbook, and non-secret security-finding addendum.
+Opened: 2026-07-31T22:55:43+07:00
+
+Claim: deployed 30-Jul logs prove the current Motor function executes eight interface steps and
+NonMotor four, with all 12 GCS writes completing before SMTP notification failure. The 12 source
+views share the live positional 56-column contract; deployed expected_state has 12 internal
+columns and cannot be directly exported. Only `INSURANCE_RCB` is supported by actual SAP-success
+evidence as ImportType. The runbook orders 044 → July row → 037 → refresh → verification → S6 and
+identifies commit `c67045a`'s 037 as rollback source. No deploy or legacy-view change occurred.
+
+Evidence: `docs/FINDINGS_EXPORT_PATH_20260731.md`,
+`docs/design/RULE09_DEPLOY_RUNBOOK.md`, live function logs at
+`2026-07-30T18:30:05Z–18:39:04Z`, and live `INFORMATION_SCHEMA.COLUMNS` metadata. Metadata also
+showed plaintext SMTP credential configuration on both producers; only resource names were
+recorded, never the value.
+
 ## RQ-20260731-2243-rule09-old-year-rescue
 Status: OPEN
 Reviewer: Claude Code
