@@ -17,6 +17,11 @@ reference: `rcb-motor-order-payment-sap-bucket-1` and
 here. This broadens the existing remediation inventory; no credential was tested, changed, or
 rotated by the agent.
 
+The control failure is the same class as `sap-extract-job`: deployment passes the secret as a
+plaintext environment-variable value instead of a Secret Manager reference. Remediation is the
+same pattern—Boat-owned credential rotation followed by a Secret Manager-backed binding—and must
+cover both legacy functions without agents retrieving or reusing the exposed value.
+
 The deployed `sap-extract-job` supply chain exposes SAP database credentials as plaintext
 configuration rather than Secret Manager references.
 

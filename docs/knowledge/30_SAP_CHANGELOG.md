@@ -4,6 +4,21 @@ Append-only — entry ใหม่บนสุด ห้ามลบ/แก้�
 
 ---
 
+## 2026-07-31 — D1/D2 legacy-view membership diagnosed; D3 remains unproven
+
+One guarded 8.65-GB batch compared (ก)/(ง) with the six relevant live views. Of 2,404 (ก) records,
+1,502 are in a CREATE view and 902 are not. Of 2,996 (ง), 2,670 are in an RCL NEWPAYMENT view and
+326 are not. This proves a BI/view-filter component but not a single root cause. The production GCS
+folders retain no CSV objects or versions, so row membership in the successful 30-Jul files cannot
+be proven and the in-view rows cannot yet be labelled SAP reject/pickup failures.
+
+Locked RULE-10 as manual July CSV sourced from V3 without legacy modification/cutover, documented
+the deliberate RULE-02 BatchRunDate override, and separated per-file GCS success, notification
+health, and SAP pickup/import in runbook/design monitoring. No export logic or production object
+was changed.
+
+---
+
 ## 2026-07-31 — Verified live 12-file export path and prepared RULE-09 deploy runbook
 
 Deployed-function logs from 30-Jul prove Motor ran eight interface steps and NonMotor four; all 12

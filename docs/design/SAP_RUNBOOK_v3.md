@@ -6,6 +6,14 @@ Date: 2026-07-23 | Audience: ทีม BI ทุกคน (ไม่ต้อง
 
 ## 1. เช้านี้เช็คอะไร: "เมื่อคืนวิ่งครบไหม" (2 นาที)
 
+### Legacy interface success criterion
+
+Do not use the final Cloud Function status alone as the export verdict. For the legacy Motor and
+NonMotor functions, success requires a `Data extracted and stored in GCS` marker for every expected
+step/file. A later SMTP notification failure can mark the invocation `crash` or `timeout` after all
+12 exports have already succeeded, as proven on 2026-07-30. Monitoring must report export-step
+completion separately from notification health; SAP pickup/import remains a third, later status.
+
 ```sql
 -- Q1: สถานะทุก step ของ run ล่าสุด
 SELECT step, status, rows_in, rows_out, started_at, ended_at,

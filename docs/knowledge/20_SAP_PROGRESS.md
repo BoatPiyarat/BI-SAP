@@ -1,4 +1,10 @@
 # 20_SAP_PROGRESS.md
+**2026-07-31 D1/D2 MIXED ROOT CAUSE / D3 OPEN:** current CREATE views contain 1,502/2,404 (ก)
+records and current RCL NEWPAYMENT views contain 2,670/2,996 (ง) records. Thus 902 (ก) and 326 (ง)
+are filtered on the BI/view side, while the in-view populations cannot be assigned to SAP
+pickup/reject because the 30-Jul physical CSVs are no longer retained in GCS. Export SQL remains
+blocked. Job `p0_d1_d2_view_membership_20260731_160300`, timestamp 16:06:59 UTC.
+
 **2026-07-31 EXPORT PATH RE-VERIFIED:** deployed 30-Jul logs show the Motor function now runs eight
 steps and NonMotor four, with all 12 GCS writes succeeding before SMTP notification failure. The
 12 views share the live 56-position CSV contract; deployed expected_state has only 12 internal

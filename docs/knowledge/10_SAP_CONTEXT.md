@@ -30,6 +30,15 @@ Version: 3.0 (consolidated 2026-07-16 จาก SAP_CONTEXT v2.1 + Team Context 
 - This exception does not apply to test-customer, insurer-master, missing-date, 2025-paid, or
   2025-cancel rules. Retained rows carry `old_year_rescued=TRUE` for FA auditability.
 
+## AUTHORITATIVE ADDENDUM — 2026-07-31 RULE-10 July delivery
+
+- July close is a manual CSV sourced from V3. Do not modify legacy `sap_view.*`, cut V3 into the
+  nightly producer, or write export logic until the physical 56-column contract is verified.
+- Legacy nightly automation remains untouched under RULE-06. The manual CSV is a delivery method,
+  not a cutover.
+- RULE-02 deliberately overrides legacy run-date BatchRunDate: July uses the last day of the open
+  period (`31072026`), even when the manual file is generated in August.
+
 ---
 
 ## PROJECT GOAL

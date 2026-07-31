@@ -119,6 +119,12 @@ on_error ทุก step → alert พร้อมชื่อ step   # dead man'
 
 ## 4. Failure Handling & Observability
 
+**Legacy evidence correction (2026-07-31):** Cloud Function terminal status is not an export
+success signal. Track three independent states: per-file GCS-write marker, post-export notification,
+and SAP pickup/import result. The 30-Jul functions wrote all 12 files before SMTP failure changed
+their terminal status to crash/timeout. Any alert based only on function status produces a false
+delivery failure and must instead key on missing expected GCS-write markers.
+
 1. **ทุก step fail → Workflow ส่ง alert ระบุ step + หยุดเส้น** — ไม่มี partial export (validation คุมไว้ก่อน export เสมอ)
 2. **Dead man's switch**: ถ้า `interface_daily_status` ไม่มี row ของวันนี้ภายใน 22:00 → scheduled query ยิง alert (จับเคส workflow ไม่ถูก trigger เลย)
 3. **Extract fail กลางคืน**: watermark ไม่ขยับ → รันคืนถัดไปเก็บครบเอง (design เดิมของ Phase 6 — คงไว้)
