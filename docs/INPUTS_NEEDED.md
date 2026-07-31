@@ -12,12 +12,12 @@ disposition for normalized codes `30`, `46`, `48`, `49`: add to SAP master, map 
 code, or intentionally hold. Do not silently restore/delete records; see
 `docs/FINDINGS_INSURER_EXCLUSION_RISK_20260731.md`.
 
-## Boat — reconcile exclusion date basis with RULE-01
+## RESOLVED 2026-07-31 — RULE-09 narrow OLD_YEAR_NO_TOUCH exception
 
-Current procedure 037 still derives exclusion eligibility from `GREATEST(OrderDate, PolicyDate)`,
-while the locked 2026-07-31 instruction says July scope date basis is PaymentDate. Confirm that E1
-year exclusions must also migrate to PaymentDate; no agent inference or production change has been
-made.
+Boat kept `GREATEST(OrderDate, PolicyDate)` as the year-rule basis and approved one narrow
+exception: `OLD_YEAR_NO_TOUCH` does not remove a row whose raw PaymentDate falls inside the open
+calendar month. For July the exact window is `[2026-07-01, 2026-08-01)`; `lock_datetime` does not
+extend it. No other exclusion rule inherits this exception.
 
 ## DEFERRED until after 2026-08-03 — enrich excluded-record audit
 

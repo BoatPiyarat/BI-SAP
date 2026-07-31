@@ -1,4 +1,11 @@
 # 20_SAP_PROGRESS.md
+**2026-07-31 RULE-09 SOURCE READY / NOT DEPLOYED:** Boat locked a narrow
+`OLD_YEAR_NO_TOUCH` rescue using raw PaymentDate within the open calendar month. Live-source file
+037 now preserves raw PaymentDate before RULE-01 clamping, keeps the exclusion register aligned
+with the expected-state population, and emits `old_year_rescued`. Combined 044→037 dry-run passed
+at a 0-byte lower bound. Await Claude Code review/deploy; G1 and all gap figures remain stale until
+the procedure is applied and refreshed.
+
 **2026-07-31 SCHEDULER RESOLVED:** changed Cloud Scheduler authentication from OIDC to OAuth while
 keeping the Cloud Run Admin API URI. Scheduler log `2026-07-31T14:16:30Z` returned HTTP 200 and
 execution `kqcjd` ran as the default compute SA. IAM was never the blocker; `run.invoker` for the

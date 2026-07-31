@@ -41,6 +41,8 @@ not this table, for day-to-day freshness.
 | 024_sap_mirror_doc.sql | Doc-grain SAP mirror, one row per `DocEntry`. **RULE-03 2026-07-31:** appends native `UpdateDate`/`UpdateTime` after `BatchRunDate` in all four branches and deduplicates by recency, then `DocEntry` |
 | 025_sap_mirror_state.sql | State-grain SAP mirror, one row per (OrderItem, Period). Preserves status/InvoiceNo priority, resolves remaining ties by `UpdateDate`/`UpdateTime`, and tags multi-doc picks `MULTI_DOC_RESOLVED_BY_RECENCY` while retaining `docs_considered` |
 | 026_collapse_stg_sap_state_to_view.sql | Collapses `stg_sap_state` (was its own table, 002) into a view over `sap_mirror_state` — one picking rule instead of two; repoints the nightly chain to refresh `sap_mirror_doc`/`sap_mirror_state` instead of calling the now-retired `sp_refresh_sap_state` |
+| 034_expected_state_exclusion_rules.sql | **Superseded by 037; kept for history only.** Earlier E1/E2/E3 definition of `sp_refresh_expected_state`; do not apply after 037 |
+| 037_fix_expected_invoice_no_null_unsafe.sql | **Live source definition of `sp_refresh_expected_state`.** Includes the NULL-safe fix plus RULE-01/02/08 period handling and RULE-09 OLD_YEAR_NO_TOUCH rescue |
 | 044_sap_period_lock_and_payment_date_clamp.sql | Creates the RULE-01/02 period-lock control; apply before the current 037 expected-state procedure that clamps PaymentDate and emits `payment_date_clamped` |
 
 Every file is a full runnable script (per AGENTS.md: no diffs-as-answer). Apply with:

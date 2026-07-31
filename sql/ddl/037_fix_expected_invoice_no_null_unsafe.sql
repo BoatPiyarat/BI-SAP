@@ -1,13 +1,11 @@
 -- 037_fix_expected_invoice_no_null_unsafe.sql
--- Boat 2026-07-29, REDIRECT item 1 - approved, deploying now. Fixes the NULL-unsafe
--- `motor_item_type != 'MOTOR_TYPE_COMPULSORY'` predicate found during TASK_V2_HOTFIX H2's
--- inventory (docs/sessions/2026-07-29-claude.md), in the ONE place it's live and active:
--- `sp_refresh_expected_state`'s `expected_invoice_no` CASE (034, line 82).
+-- Live source definition of sp_refresh_expected_state. It supersedes 034 and combines:
+--   * 2026-07-29: NULL-safe expected_invoice_no generation;
+--   * 2026-07-31: RULE-01 calendar-period PaymentDate clamp, RULE-02 period-lock control,
+--     RULE-08 payment_date_clamped audit marker, and RULE-09's narrowly scoped
+--     OLD_YEAR_NO_TOUCH rescue for raw payments inside the open calendar month.
 --
--- Blast-radius check BEFORE fixing (Boat's explicit ask - one query, against live pre-fix data):
--- this predicate ONLY gates whether `fn_invoice_no(...)` gets called for a NULL-motor_item_type
--- row; it does not touch routing, ExpectedReceived (v3's expected_state has no such column -
--- that's a legacy dashboard-view concept), expected_status, expected_payment_date, or charge_id.
+-- Historical blast-radius evidence for the 2026-07-29 NULL-safe change:
 -- Verified directly against live `expected_state` (pre-fix):
 --   26,801 rows total where motor_item_type IS NULL
 --   status_null = 0                (expected_status always computed - unaffected, already NULL-safe)
@@ -15,7 +13,8 @@
 --   charge_id_null    = 15,216     (= exactly the Pending rows - correct, not a symptom)
 --   invoice_no_null   = 26,801     (= ALL rows, including the 11,585 that are expected_status='Paid'
 --                                    with a real charge_id already - THIS is the isolated symptom)
--- So the fix is confirmed to touch exactly one column, for exactly the rows where it's wrong.
+-- That earlier fix was confirmed to touch exactly one column for the affected rows. This file's
+-- current scope is broader because the locked 2026-07-31 rules above were subsequently folded in.
 -- Distinct-item count of the harmful subset (Paid + NULL invoice, post-exclusion, in live
 -- expected_state right now): 5,579 order_items / 11,585 rows.
 --
@@ -24,9 +23,7 @@
 -- makes them correctly reach the same fn_invoice_no() call NonMotor Paid rows already use, nothing
 -- new is introduced.
 --
--- Fix: `!=` -> `(!= OR motor_item_type IS NULL)` on line 82's WHEN, matching the H2 fix pattern
--- exactly. Every other line in this procedure is byte-for-byte identical to 034 - see that file's
--- header for the full design rationale (E1/E2/E3, EXCLUDED != DELETED, etc.), unchanged here.
+-- 034 is retained only as historical source; do not apply it after this live definition.
 
 CREATE OR REPLACE PROCEDURE `pacific-plating-282708.sap_integration_v3.sp_refresh_expected_state`()
 BEGIN
@@ -109,6 +106,7 @@ BEGIN
     b.* REPLACE(
       GREATEST(b.expected_payment_date, open_period_start) AS expected_payment_date
     ),
+    b.expected_payment_date AS raw_payment_date,
     b.expected_payment_date IS NOT NULL
       AND b.expected_payment_date < open_period_start AS payment_date_clamped,
     d.first_name,
@@ -134,6 +132,12 @@ BEGIN
   SELECT
     e.*,
     EXTRACT(YEAR FROM e.date_basis) AS basis_year,
+    e.date_basis IS NOT NULL
+      AND EXTRACT(YEAR FROM e.date_basis) <= year_no_touch_max
+      AND e.raw_payment_date IS NOT NULL
+      AND e.raw_payment_date >= open_period_start
+      AND e.raw_payment_date < DATE_ADD(open_period_start, INTERVAL 1 MONTH)
+      AS old_year_rescued,
     EXISTS(
       SELECT 1 FROM `pacific-plating-282708.sap_integration_v3.sap_test_customer_name_patterns` p
       WHERE LOWER(TRIM(e.first_name)) = p.pattern OR LOWER(TRIM(e.last_name)) = p.pattern
@@ -165,7 +169,12 @@ BEGIN
   SELECT order_item, period, 'OLD_YEAR_NO_TOUCH',
     CONCAT('date basis year ', CAST(basis_year AS STRING), ' <= ', CAST(year_no_touch_max AS STRING)),
     CURRENT_TIMESTAMP()
-  FROM _rules WHERE date_basis IS NOT NULL AND basis_year <= year_no_touch_max;
+  FROM _rules
+  WHERE date_basis IS NOT NULL
+    AND basis_year <= year_no_touch_max
+    AND NOT (raw_payment_date IS NOT NULL
+      AND raw_payment_date >= open_period_start
+      AND raw_payment_date < DATE_ADD(open_period_start, INTERVAL 1 MONTH));
 
   INSERT INTO `pacific-plating-282708.sap_integration_v3.sap_excluded_records`
     (order_item, period, rule_code, reason, detected_at)
@@ -206,11 +215,12 @@ BEGIN
   CLUSTER BY order_item AS
   SELECT
     order_item, order_id, period, total_periods, flow, payment_option, expected_status,
-    expected_invoice_no, expected_payment_date, payment_date_clamped, charge_id, charge_amount,
+    expected_invoice_no, expected_payment_date, payment_date_clamped, old_year_rescued,
+    charge_id, charge_amount,
     CURRENT_TIMESTAMP() AS computed_at
   FROM _rules
   WHERE date_basis IS NOT NULL
-    AND basis_year > year_no_touch_max
+    AND (basis_year > year_no_touch_max OR old_year_rescued)
     AND NOT (basis_year = year_cancel_only AND NOT is_cancelled)
     AND NOT (basis_year = year_cancel_only AND is_cancelled AND NOT already_in_sap)
     AND NOT is_test_name

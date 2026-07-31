@@ -4,6 +4,17 @@ Append-only — entry ใหม่บนสุด ห้ามลบ/แก้�
 
 ---
 
+## 2026-07-31 — RULE-09 OLD_YEAR_NO_TOUCH rescue prepared source-only
+
+Boat locked the exception to `OLD_YEAR_NO_TOUCH` only: old-year rows remain eligible when their
+raw PaymentDate is inside the open calendar month. Updated live-source procedure 037 at both the
+exclusion-register write and final expected-state filter, preserved raw PaymentDate before clamp,
+and added `old_year_rescued` to expected_state. Marked 034 historical/superseded in the DDL README.
+Combined 044→037 dry-run passed with a 0-byte lower bound. Nothing was deployed; G1 and gap
+re-quantification wait for reviewed apply/refresh.
+
+---
+
 ## 2026-07-31 — Quantified July InsurerCode exclusion risk
 
 Read-only job `p0_insurer_risk_20260731_152353` at `2026-07-31 15:23:55 UTC` measured 300 records /

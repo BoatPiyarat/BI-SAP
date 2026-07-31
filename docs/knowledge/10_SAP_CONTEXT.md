@@ -20,6 +20,16 @@ Version: 3.0 (consolidated 2026-07-16 จาก SAP_CONTEXT v2.1 + Team Context 
   Until then, do not manually trigger: scheduled automation is working.
 - SAP_LIVE count `8,324,155` and prior daily amplification snapshots are stale and non-citable.
 
+## AUTHORITATIVE ADDENDUM — 2026-07-31 RULE-09 old-year rescue
+
+- `OLD_YEAR_NO_TOUCH` alone has a narrow exception: a row whose OrderDate/PolicyDate `date_basis`
+  year is at or below `year_no_touch_max` is retained when its **raw** CareOS PaymentDate is inside
+  the open calendar month `[open_period_start, DATE_ADD(open_period_start, INTERVAL 1 MONTH))`.
+- For the July 2026 close the window is `[2026-07-01, 2026-08-01)`. Payments dated 01–03 August
+  are not July, regardless of `lock_datetime`; never evaluate RULE-09 against a clamped date.
+- This exception does not apply to test-customer, insurer-master, missing-date, 2025-paid, or
+  2025-cancel rules. Retained rows carry `old_year_rescued=TRUE` for FA auditability.
+
 ---
 
 ## PROJECT GOAL
