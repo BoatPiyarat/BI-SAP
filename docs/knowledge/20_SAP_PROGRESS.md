@@ -1,4 +1,10 @@
 # 20_SAP_PROGRESS.md
+**2026-07-31 EXPORT PATH RE-VERIFIED:** deployed 30-Jul logs show the Motor function now runs eight
+steps and NonMotor four, with all 12 GCS writes succeeding before SMTP notification failure. The
+12 views share the live 56-position CSV contract; deployed expected_state has only 12 internal
+columns and cannot be exported directly. The only SAP-confirmed ImportType is `INSURANCE_RCB`.
+See `docs/FINDINGS_EXPORT_PATH_20260731.md`. No legacy object changed.
+
 **2026-07-31 RULE-09 SOURCE READY / NOT DEPLOYED:** Boat locked a narrow
 `OLD_YEAR_NO_TOUCH` rescue using raw PaymentDate within the open calendar month. Live-source file
 037 now preserves raw PaymentDate before RULE-01 clamping, keeps the exclusion register aligned

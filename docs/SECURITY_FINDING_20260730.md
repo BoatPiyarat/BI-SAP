@@ -8,6 +8,15 @@ Agent authority: **REPORT ONLY — do not read, print, rotate, revoke, or modify
 
 ## Finding
 
+### Addendum 2026-07-31 — legacy interface functions
+
+Read-only metadata inspection found that both deployed legacy interface producers expose an SMTP
+credential through plaintext environment-variable metadata rather than a Secret Manager
+reference: `rcb-motor-order-payment-sap-bucket-1` and
+`rcb-nonmotor-order-payment-sap-bucket-1`. No value, fragment, or masked representation is retained
+here. This broadens the existing remediation inventory; no credential was tested, changed, or
+rotated by the agent.
+
 The deployed `sap-extract-job` supply chain exposes SAP database credentials as plaintext
 configuration rather than Secret Manager references.
 

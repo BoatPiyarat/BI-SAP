@@ -4,6 +4,22 @@ Append-only — entry ใหม่บนสุด ห้ามลบ/แก้�
 
 ---
 
+## 2026-07-31 — Verified live 12-file export path and prepared RULE-09 deploy runbook
+
+Deployed-function logs from 30-Jul prove Motor ran eight interface steps and NonMotor four; all 12
+logged successful GCS writes before later SMTP notification failures. Captured the common
+56-position CSV contract and compared it with the 12-column deployed expected_state. Only
+`INSURANCE_RCB` is evidenced as a successful SAP ImportType; (ก)/(ค)/(ง) are not existing
+ImportTypes or filenames, and current expected_state lacks enough routing fields to state an exact
+file count without inference.
+
+Prepared the source-only 044 → July-row → 037 → refresh → verify → S6 deployment and rollback
+sequence. Also expanded the existing P0 security finding: both legacy interface functions expose
+an SMTP credential through plaintext environment metadata. No value was retained and nothing was
+deployed, rotated, or changed externally.
+
+---
+
 ## 2026-07-31 — RULE-09 OLD_YEAR_NO_TOUCH rescue prepared source-only
 
 Boat locked the exception to `OLD_YEAR_NO_TOUCH` only: old-year rows remain eligible when their
