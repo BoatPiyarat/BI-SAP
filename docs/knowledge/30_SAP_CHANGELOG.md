@@ -7,7 +7,8 @@ Append-only — entry ใหม่บนสุด ห้ามลบ/แก้�
 ## 2026-07-31 — R1 un-retracted and confirmed by LOAD-job output
 
 After Boat raised loader memory to 4Gi, autonomous Pub/Sub retry loaded and deleted the 31-Jul
-file. Job metadata proves 12 complete LOAD jobs of 61,133 rows each (733,596 committed), plus
+file at 16:37:43Z. Job metadata proves 12 complete LOAD jobs of 61,133 rows each (733,596 committed,
+672,463 duplicates above expected; bad_records=0), plus
 41×60,404 on 27-Jul, 70×60,385 on 28-Jul, and 25×58,619 on 29-Jul. R1 is now confirmed leading
 explanation; interface-import churn is contributing. Recorded ineffective 61,133-row single-chunk
 behavior versus the 20,000 threshold. No deploy/export/view change by Codex.

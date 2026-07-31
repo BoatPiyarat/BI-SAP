@@ -159,3 +159,7 @@ copying of body snippets is not an acceptable substitute for row-level error evi
 1. ลง `30_SAP_CHANGELOG.md` (append-only) — เกิดอะไร แก้ยังไง
 2. เคสใหม่ที่ runbook ไม่มี → เพิ่มแถวในตาราง §3 ทันที (เอกสารนี้โตจาก incident จริงเท่านั้น)
 3. ถ้า root cause = pipeline bug → เปิด INCIDENT ใน SAP_INCIDENT_LOG ตาม template เดิม
+The same outer/inner rule applies to the SAP mirror loader: HTTP 503 does not mean BigQuery did not
+load. Check the destination LOAD job, `statistics.load.outputRows`, and whether the bronze object
+was deleted. This joins the existing two ambiguity rules: function status ≠ export success, and
+rows=0 needs chunks/watermark/success-marker context.

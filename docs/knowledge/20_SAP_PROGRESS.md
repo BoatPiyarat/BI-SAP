@@ -1,7 +1,8 @@
 # 20_SAP_PROGRESS.md
-**2026-07-31 R1 CONFIRMED / LOAD COMPLETE BUT AMPLIFIED:** Boat raised loader memory to 4Gi;
+**2026-07-31 R1 CONFIRMED / +672,463 DUPLICATES:** Boat raised loader memory to 4Gi;
 Pub/Sub retry completed and deleted the bronze file. L5 proves 12 successful LOAD jobs ×61,133
-rows on 31-Jul, plus 41×60,404, 70×60,385, and 25×58,619 on 27–29 Jul. R1 loader retry is the
+rows on 31-Jul: 733,596 committed versus 61,133 expected, bad_records=0. Plus 41×60,404,
+70×60,385, and 25×58,619 on 27–29 Jul. R1 loader retry is the
 leading explanation; A2/A3 is contributing. 043 MERGE and real extract chunking are permanent
 fixes. Post-load L3 must use live dedup because materialized mirror tables predate the load.
 

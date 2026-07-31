@@ -183,6 +183,11 @@ BigQuery job metadata พิสูจน์ว่า OOM request แต่ละ
 Loader retry จึงเป็น leading explanation; interface import/A2/A3 เป็น contributing factor ที่ทำให้
 extract ใหญ่. Append-only hold ถูกต้อง และ 043 MERGE คือ destination-side fix จริง. ดู
 `FINDINGS_LOADER_RETRY_AMPLIFICATION_20260731.md`.
+
+Incident 31/07 16:37:43Z: expected 61,133 แต่ commit 733,596 = duplicate ใหม่ 672,463 rows,
+bad_records=0. Revision 00020-jub / 4Gi ทำให้ request สุดท้ายจบ แต่ 11 retries ก่อนหน้าคอมมิตแล้ว.
+บทเรียนร่วม: HTTP 503 ≠ data not loaded; function status ≠ export success; rows=0 มีสองความหมาย.
+ทั้งสามกรณีห้ามใช้ outer status แทนหลักฐาน inner side effect.
 Execution `k95ws` (manual, `2026-07-31T11:34:17Z`) ครอบคลุม window 20h41m และดึง 61,133 rows.
 Execution `kqcjd` (scheduler, `2026-07-31T14:16:27Z`) ครอบคลุม window
 `11:34:33Z–14:16:42Z` 2h42m และดึง **0 rows**, แต่ watermark ขยับและ `caught_up=True`.
