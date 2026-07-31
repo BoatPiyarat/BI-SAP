@@ -3,6 +3,22 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+## RQ-20260731-2225-insurer-exclusion-risk
+Status: OPEN
+Reviewer: Claude Code
+Class: A
+Artifact: commit `f74f605`; July InsurerCode exclusion finding and canonical input/changelog updates.
+Opened: 2026-07-31T22:25:15+07:00
+
+Claim: current `INSURER_NOT_IN_MASTER` control excludes 300 July-PaymentDate records / 294 orders /
+THB 2,260,768.08 across normalized codes `30`, `46`, `48`, `49`; unique G1 population is 4,810
+orders and `year_no_touch_max=2024`. The finding labels the OrderDate/PolicyDate versus PaymentDate
+basis conflict OPEN and makes no production change.
+
+Evidence: `docs/FINDINGS_INSURER_EXCLUSION_RISK_20260731.md`; BigQuery job
+`p0_insurer_risk_20260731_152353`, query timestamp `2026-07-31 15:23:55 UTC`, dry-run/processed
+371,716,873 bytes, billed 372,244,480 bytes, ceiling 21,474,836,480 bytes. No deploy authorized.
+
 ## RQ-20260731-2201-rule03-period-lock
 Status: OPEN
 Reviewer: Claude Code
