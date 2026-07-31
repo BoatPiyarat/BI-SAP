@@ -4,6 +4,15 @@ Append-only — entry ใหม่บนสุด ห้ามลบ/แก้�
 
 ---
 
+## 2026-07-31 — SAP import-log S1 and archive-on-write designs prepared
+
+Read the live empty `sap_import_result` schema and documented its missing audit fields and raw
+message PII risk. Added source-only 045 with the allow-listed sanitized schema, imported_at
+partitioning, and no invented expiration. Added archive-on-write design using identical bytes,
+hash verification, generation preconditions, restricted storage, and fail-closed delivery. No
+mailbox content was accessed and no BigQuery/GCS object changed; K1/K2/K3 remain gated on Boat's
+email export.
+
 ## 2026-07-31 — R1 un-retracted and confirmed by LOAD-job output
 
 After Boat raised loader memory to 4Gi, autonomous Pub/Sub retry loaded and deleted the 31-Jul

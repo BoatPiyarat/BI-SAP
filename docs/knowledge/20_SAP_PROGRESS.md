@@ -6,6 +6,13 @@ rows on 31-Jul: 733,596 committed versus 61,133 expected, bad_records=0. Plus 41
 leading explanation; A2/A3 is contributing. 043 MERGE and real extract chunking are permanent
 fixes. Post-load L3 must use live dedup because materialized mirror tables predate the load.
 
+**2026-07-31 SAP IMPORT LOG S1:** live `sap_import_result` is empty, unpartitioned, and has only
+seven obsolete body-oriented fields; it cannot answer LogID/status/period/row-count questions and
+its generic message field is a PII risk. Source-only 045 creates a non-destructive partitioned v2
+shadow because BigQuery rejects replacing a table with a different partition spec. No expiration
+pending a reviewed audit-retention decision. S2–S4
+wait for Boat's real email export and must pass K1/K2/K3 before ingestion.
+
 **2026-07-31 P0 MIRROR GATE BLOCKED (superseded by successful 4Gi retry):** bronze retains a 169,695,148-byte 31-Jul extract object
 created 11:34:52Z, while SAP_LIVE has zero batch rows for 30/31 Jul. One requested loader run and
 at least three automatic retries failed HTTP 503 at the 1,024 MiB memory ceiling; the object remains.

@@ -44,6 +44,7 @@ not this table, for day-to-day freshness.
 | 034_expected_state_exclusion_rules.sql | **Superseded by 037; kept for history only.** Earlier E1/E2/E3 definition of `sp_refresh_expected_state`; do not apply after 037 |
 | 037_fix_expected_invoice_no_null_unsafe.sql | **Live source definition of `sp_refresh_expected_state`.** Includes the NULL-safe fix plus RULE-01/02/08 period handling and RULE-09 OLD_YEAR_NO_TOUCH rescue |
 | 044_sap_period_lock_and_payment_date_clamp.sql | Creates the RULE-01/02 period-lock control; apply before the current 037 expected-state procedure that clamps PaymentDate and emits `payment_date_clamped` |
+| 045_sap_import_result_schema_v2.sql | **Source only / not deployed.** Creates non-destructive partitioned shadow `sap_import_result_v2`; parser K1/K2/K3 and separate swap gate required |
 
 Every file is a full runnable script (per AGENTS.md: no diffs-as-answer). Apply with:
 ```
