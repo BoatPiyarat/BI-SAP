@@ -4,6 +4,18 @@ Append-only — entry ใหม่บนสุด ห้ามลบ/แก้�
 
 ---
 
+## 2026-08-01 — Legacy definition drift inventoried; live RULE-03 scope proposed
+
+Read 66 live view definitions through metadata job
+`p0_legacy_definition_inventory_20260801_000400` (31,457,280 bytes). Of 18 exact-name local
+baseline files, 12 normalized-text matched and 6 drifted; ten live views in `sap_view` and
+`sap_data_engineer` have no exact-name baseline, while four local captures remain unmapped.
+Established the permanent repo-is-not-live rule, corrected the earlier repo-007 reasoning, and
+proposed post-close RULE-03 coverage for live SAP_LIVE_FULL's UpdateDate-only tie. Updated source-only
+045 to retain restricted BigQuery `message_raw` plus sanitized `error_template`, and required a
+tested human alert with archive fail-closed. No deploy, refresh, export, bucket write, or legacy
+object mutation occurred.
+
 ## 2026-07-31 — SAP import-log S1 and archive-on-write designs prepared
 
 Read the live empty `sap_import_result` schema and documented its missing audit fields and raw

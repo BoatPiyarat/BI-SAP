@@ -72,6 +72,13 @@ manual delta is protected from this specific double-posting mechanism. Current i
 and scan cost; semantic winner correctness remains governed by the separate UpdateDate/UpdateTime
 work and must not be conflated with retry-copy deduplication.
 
+The first safety explanation cited repository file 007 as though it were the deployed definition.
+That reasoning was wrong: live inspection later showed the deployed ordering is `UpdateDate`, while
+007 orders by `BatchRunDate`. The narrow conclusion remains valid because the live definition also
+has per-branch `DISTINCT`, DocEntry `ROW_NUMBER`, and `_rn=1`; only those live predicates support it.
+Protection is limited to identical retry copies. It does not prove the semantic winner is correct
+when two legitimate versions share an UpdateDate.
+
 ## Process lesson
 
 R1 was retracted earlier on 31-Jul because a plausible interface-import/watermark narrative was

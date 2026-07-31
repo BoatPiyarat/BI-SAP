@@ -11,6 +11,29 @@ Verified against repo commit `19c49cf` (branch `p0/stg-sap-state`) + gcloud outp
 
 ---
 
+## [CONFIRMED 2026-08-01] Legacy definition drift is a governance constraint
+
+- **repo ≠ live** สำหรับ legacy object `sap_view.*` และ `sap_data_engineer.*`.
+  `sql/production/*` / `sql/sap_view/*` เป็น baseline capture ที่ drift ได้; ทุกข้อสรุปเรื่อง live
+  behavior ต้องยืนยันจาก `INFORMATION_SCHEMA.VIEWS` หรือ `bq show --view` พร้อม timestamp ก่อน.
+- Metadata job `p0_legacy_definition_inventory_20260801_000400`,
+  `2026-07-31T17:33:01.029Z–17:33:01.838Z`, 31,457,280 bytes: exact-name local baselines
+  18 ไฟล์ = match 12 / drift 6. ใน `sap_view` + `sap_data_engineer` ยังมี live view 10 ตัวที่ไม่มี
+  exact-name baseline และ local capture 4 ไฟล์ยัง map ตามชื่อไม่ได้. รายละเอียด:
+  `docs/FINDINGS_LEGACY_DEFINITION_DRIFT_20260801.md`.
+- Claude เคยยืนยันว่า retry duplicate ไม่ทะลุ interface โดยอ้าง repo 007. ข้อสรุปเฉพาะ identical
+  retry copies ยังถูก เพราะ live `SAP_LIVE_FULL` มี per-branch DISTINCT + DocEntry `_rn=1`, แต่เหตุผล
+  ที่อ้าง repo เป็น live ผิด. Semantic same-day winner ยัง OPEN.
+- Live `SAP_LIVE_FULL` ใช้ `ORDER BY UpdateDate DESC` ไม่มี `UpdateTime`; RULE-03 จึงต้องครอบ object
+  นี้หลัง close. Design only: `docs/design/SAP_LIVE_FULL_RULE03_SCOPE_20260801.md`; **ห้าม deploy ก่อน
+  2026-08-03**.
+- L7 22–24/07 ยังเป็น permanent-mirror-gap uncertainty: ไม่มี loader POST 22–23/07 และ 24/07 ไม่มี
+  JSON. `BatchRunDate` ไม่ใช่ ingestion time และไม่มี retained source generation/job ID จึงยังระบุ
+  OrderItem ที่หายหรือผลต่อ (ก)/(ง) ไม่ได้โดยสุจริต. ต้องมี approved isolated re-extract/source
+  snapshot จึงวัดได้; ห้าม CALL refresh หรือ backfill ในช่วง hold.
+
+---
+
 # §1. LOCKED RULES (Boat confirmed 2026-07-31 — ห้าม re-litigate)
 
 | ID | Rule | หมายเหตุ |

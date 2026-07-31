@@ -17,7 +17,8 @@ It cannot answer the requested audit questions. Missing fields are `log_id`, `im
 ## Source-only proposal
 
 `sql/ddl/045_sap_import_result_schema_v2.sql` creates non-destructive shadow table
-`sap_import_result_v2` with only approved metadata plus `error_message_template`, partitions by
+`sap_import_result_v2` with approved metadata plus restricted `message_raw` and sanitized
+`error_template`, partitions by
 `DATE(imported_at)`, and clusters by `log_id, order_item, error_type`. Dry-run proved BigQuery
 rejects `CREATE OR REPLACE` when partitioning changes, so swap/drop/rename remains a separate
 reviewed deployment gate after parser validation.
@@ -34,8 +35,10 @@ No parser or ingestion starts until a real export passes all three known answers
 - K2 `L79871659`: successfully posted since March 2026, no CMI;
 - K3 shared 16-Jul `INSURANCE_RCB_CANCEL` error.
 
-Failure on any one stops ingestion. Raw body, attachment, header, names, InsuredID, and address are
-never stored in git or this table.
+Failure on any one stops ingestion. Raw body, attachment, and header are not stored in the audit
+table. `message_raw` may contain names, InsuredID, address, or other PII and is therefore retained
+only in restricted BigQuery for diagnosis. It must never be quoted or copied into git, docs, review
+artifacts, logs, or chat; reports use `error_template`.
 
 ## Definition drift found
 
