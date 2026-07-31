@@ -3,13 +3,57 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
-## RQ-20260730-2323-mirror-addendum-evidence
+## RQ-20260731-2139-current-state-scheduler
 Status: OPEN
+Reviewer: Claude Code
+Class: A
+Artifact: commit `1a52222`; authoritative 2026-07-31 current-state/scheduler evidence and
+AGENT_TEAMING Rule 0/1 reallocation.
+Opened: 2026-07-31T21:39:34+07:00
+
+Claim: canonical docs correctly replace the stale scheduler-IAM diagnosis with verified OIDC→OAuth
+HTTP-200 evidence, downgrade `run.invoker` to P3 hygiene, distinguish healthy zero-row extracts
+from login failure, record burst amplification and ~19h freshness lag, and document the approved
+separate-clone/single-writer operating model.
+
+Evidence: commit `1a52222`; `docs/knowledge/CURRENT_STATE_20260731.md` §§3.2, 3.6–3.7;
+`docs/knowledge/10_SAP_CONTEXT.md` authoritative addendum; `docs/INPUTS_NEEDED.md`; scheduler log
+timestamp `2026-07-31T14:16:30Z` and execution evidence supplied by Boat. No production object was
+changed by the commit.
+
+## RQ-20260731-2201-rule03-period-lock
+Status: OPEN
+Reviewer: Claude Code
+Class: A
+Artifact: commit `2c96c53`; `sql/ddl/024_sap_mirror_doc.sql`,
+`025_sap_mirror_state.sql`, `037_fix_expected_invoice_no_null_unsafe.sql`,
+`044_sap_period_lock_and_payment_date_clamp.sql`.
+Opened: 2026-07-31T22:01:53+07:00
+
+Claim: source-only DDL implements locked RULE-01/02/03/08 without deployment: 024 appends native
+UpdateDate/UpdateTime in identical trailing positions across four branches; 025 retains priority
+layers 1–2, resolves layer 3 by recency, retains `docs_considered`, and updates the confidence tag;
+period-lock-backed PaymentDate clamping fails closed and exposes `payment_date_clamped` without
+storing a duplicate original date.
+
+Evidence: `docs/sessions/2026-07-31-codex.md`; G1 job `g1_20260731_144401` (one winner changed,
+zero InvoiceNo changed, no UpdateDate/UpdateTime NULL in 496 Invoice + 45 SaleOrder rows, final
+DocEntry count 1,658,776 before/after); static assertions passed 4/4 branch tails; 024, 044, and
+044→037 dry-runs validated. 025 strict validation must occur after reviewed 024 apply/refresh and
+before 025 deploy because the currently deployed mirror lacks the new columns. **No deploy is
+authorized by this request.**
+
+## RQ-20260730-2323-mirror-addendum-evidence
+Status: REVIEWED
 Reviewer: Claude Code
 Class: A
 Artifact: commits `16cddd8`, `935ac8f`; mirror addendum v3 fold, corrected STEP A/retractions,
 bucket-reference corrections, migration task, P0 security finding, and review-queue hygiene.
 Opened: 2026-07-30T23:23:02+07:00
+Verdict: PASS WITH NOTES — `docs/reviews/2026-07-31-935ac8f-claude.md` (security-finding
+metadata-exposure claim conflicts with the 2026-07-31 verified `secretKeyRef` state / R9, and the
+finding's OPEN-rotate status is stale now that rotation CLOSED 2026-07-31 — reconciliation addendum
+required before next fold; all other checks pass, zero reviewer queries used)
 
 Claim: canonical docs now preserve all six migration confirmations without inference, use the
 real extract/control bucket paths, classify the credential exposure without reproducing secrets,
@@ -23,9 +67,9 @@ Evidence: `docs/knowledge/KNOWLEDGE_ADDENDUM_20260730_v3.md`,
 
 ## RQ-20260730-2230-mirror-doc-merge-incremental
 Status: OPEN
-Reviewer: Codex
+Reviewer: Claude Code
 Class: A
-Artifact: `sql/ddl/043_sap_mirror_doc_merge_incremental.sql`; commit `9a3e462`.
+Artifact: `sql/ddl/043_sap_mirror_doc_merge_incremental.sql`; commits `9a3e462`, `2c96c53`.
 Opened: 2026-07-30T22:30:00+07:00
 
 Claim: replaces `sap_mirror_doc`'s full-CTAS refresh (`024`) with a watermark-filtered `MERGE`,
@@ -52,7 +96,7 @@ deploy authorized by this entry.
 
 ## RQ-20260730-2200-bq-safe-query-fix
 Status: OPEN
-Reviewer: Codex
+Reviewer: Claude Code
 Class: A
 Artifact: `scripts/bq_safe_query.sh`, `docs/AGENT_RULES.md`; commit `93e87ea`.
 Opened: 2026-07-30T22:00:00+07:00
@@ -73,7 +117,7 @@ Evidence: `bash scripts/bq_safe_query.sh --self-test` → 7/7 passed, both with 
 longer silently accepted — passing it now errors loudly (`unexpected extra argument`) instead of
 being swallowed.
 
-Status: OPEN — requesting Codex re-review against the original BLOCK's 12-point checklist and
+Status: OPEN — requesting Claude Code re-review against the original BLOCK's 12-point checklist and
 confirm the two substantive findings are resolved before lifting the "do not use the wrapper" note
 in `docs/AGENT_RULES.md`.
 
