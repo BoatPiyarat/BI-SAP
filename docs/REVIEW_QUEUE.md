@@ -3,6 +3,24 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+## RQ-20260801-0000-import-log-s1-archive-design
+Status: OPEN
+Reviewer: Claude Code
+Class: A
+Artifact: commit `c6b7b8b`; S1 schema evidence, sanitized shadow DDL, and archive-on-write design.
+Opened: 2026-08-01T00:00:22+07:00
+
+Claim: live sap_import_result is empty/unpartitioned with seven obsolete fields and cannot answer
+the required LogID/status/row-result questions. Source-only 045 creates a non-destructive
+partitioned v2 shadow containing only approved sanitized metadata; dry-run validated at 0 bytes.
+The parser remains blocked until Boat supplies email export and K1/K2/K3 pass. Archive design
+serializes once, verifies an immutable restricted evidence copy, and fails closed before delivery.
+No mailbox, BigQuery object, or GCS object changed.
+
+Evidence: live `bq show`, `docs/FINDINGS_SAP_IMPORT_LOG_20260731.md`,
+`sql/ddl/045_sap_import_result_schema_v2.sql`, and
+`docs/design/INTERFACE_ARCHIVE_ON_WRITE_20260731.md`.
+
 ## RQ-20260731-2355-loader-incident-guards
 Status: OPEN
 Reviewer: Claude Code
