@@ -1,4 +1,12 @@
 # 20_SAP_PROGRESS.md
+**2026-08-01 MANUAL SYNC RECOVERED / ORCHESTRATOR SOURCE READY:** extract produced 2,241 rows;
+single loader job `2017bec6-c8cf-446e-a804-21e32624849f` committed exactly 2,241 with 0 bad records
+and removed the bronze object. The 21:00 V3 schedule preceded the 21:15 load. Whole-chain catch-up
+then hit the cumulative 20 GiB cap during validation after partial commits, so it was not retried.
+Separate validation/delta/status jobs all completed. Source-only PowerShell orchestrator now skips
+a pending extract, triggers loader at most once, waits for bronze deletion, and gives every V3 step
+its own dry-run and 20 GiB cap. Class A review required before operator use.
+
 **2026-08-01 CHAIN 3 REPOINT DEPLOYED:** reviewed `047` replaced the nightly 024 full mirror call
 with 043 incremental while retaining all downstream calls, including
 `sp_refresh_interface_daily_status`. Deploy job `deploy_047_repoint_20260801_193500` completed at

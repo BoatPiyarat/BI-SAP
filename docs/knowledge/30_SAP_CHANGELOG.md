@@ -4,6 +4,21 @@ Append-only — entry ใหม่บนสุด ห้ามลบ/แก้�
 
 ---
 
+## 2026-08-01 — Manual extract/load/V3 recovery completed; one-command source added
+
+Confirmed the live loader is Pub/Sub-triggered by scheduler `auto_load_sap_data_in_bucket_to_bigquery`,
+not directly by the extract's GCS write. Triggered it exactly once for the pending 2,241-row bronze
+file: LOAD job `2017bec6-c8cf-446e-a804-21e32624849f` wrote 2,241 rows with zero bad records and
+deleted the object. Because the scheduled V3 run finished before this late loader, ran a catch-up;
+the wrapper CALL exposed a cumulative-cap defect and failed in validation after partial commits at
+20,246,650,795 processed bytes. It was not retried. Separate validation, delta, and daily-status jobs
+all completed successfully.
+
+Added source-only `scripts/run_sap_sync_manual.ps1` and its runbook. The script handles a pre-existing
+bronze object without re-extracting, triggers the loader once, waits fail-closed for deletion, and
+runs all ten V3 procedures as separate capped jobs. Static PowerShell parse passed; Class A review
+is required before using the new script.
+
 ## 2026-08-01 — Chain 3 nightly repointed from full 024 to incremental 043
 
 Following Class A PASS (`5d8d6f9`) and Boat's explicit authorization, deployed reviewed `047` as
