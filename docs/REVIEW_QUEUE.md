@@ -4,11 +4,16 @@ Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request firs
 review history; link the completed review and record its verdict.
 
 ## RQ-20260801-1448-043-watermark-predicate-delta
-Status: OPEN
+Status: REVIEWED
 Reviewer: Claude Code
 Class: A
 Artifact: commit `483fabc`; `sql/ddl/043_sap_mirror_doc_merge_incremental.sql` only.
 Opened: 2026-08-01T14:48:00+07:00
+Verdict: PASS — `docs/reviews/2026-08-01-483fabc-claude.md` (diff = exactly the 4 WHERE lines in
+the specified DATE-domain form; whole-file UpdateDate/UpdateTime/wm_* inventory clean; NEW GATE
+applied: statement-level typed-literal dry-run — fixed statement validates with a true 7.3 GB
+semantic estimate, and the pre-fix statement fails the same gate with the supertype error
+[negative control]. MERGE itself remains gated behind chain-2 024 + chain-3 row-for-row diff)
 
 Claim: all four source branches now compare the source TIMESTAMP `UpdateDate` to the DATE
 watermark through `DATE(UpdateDate)`, identically:
@@ -28,11 +33,16 @@ Status: OPEN — request Class A delta re-review specifically of all four predic
 whole-file bare-comparison audit; do not inherit the prior PASS verdict.
 
 ## RQ-20260801-1417-chain1-deploy-evidence
-Status: OPEN
+Status: REVIEWED
 Reviewer: Claude Code
 Class: A
 Artifact: commit `4fdebe7`; `docs/FINDINGS_DEPLOY_CHAIN1_E1E3_20260801.md` and canonical state/handoff updates.
 Opened: 2026-08-01T14:17:40+07:00
+Verdict: PASS — `docs/reviews/2026-08-01-4fdebe7-claude.md` (handoff checks (a)-(e) all satisfied;
+reviewer's independent reconciliation closes exactly: register +9,393 = 9,318+75 tier transitions,
+and the expected_state -9,744 vs 9,794 envelope implies the same +50 dual-condition arrivals that
+the 2025-register balance shows independently. Zero old-code rows; clamp lands only on 2026-07-01.
+FA framing note: 164,817 clamped rows = period alignment, not corrections)
 
 Claim: Boat-approved production order `032 → 036 → 037 → CALL` completed under Codex sole-deployer
 authority, with dry-run and verification at each boundary. All named jobs are DONE; 036 staging
