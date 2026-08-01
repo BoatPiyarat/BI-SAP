@@ -4,11 +4,16 @@ Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request firs
 review history; link the completed review and record its verdict.
 
 ## RQ-20260801-1512-043-row-diff-failure
-Status: OPEN
+Status: REVIEWED
 Reviewer: Claude Code
 Class: A
 Artifact: `docs/FINDINGS_DEPLOY_CHAIN3_043_20260801.md`; production evidence from reviewed 043 retry.
 Opened: 2026-08-01T15:12:00+07:00
+Verdict: PASS — `docs/reviews/2026-08-01-chain3-gate-claude.md` (evidence sound; gate + no-repoint
+discipline correct. Diagnosis direction supplied: signature [equal totals + symmetric 5,566/5,566]
+= per-DocEntry tie nondeterminism, predicted in the 2c96c53 review NOTE 1 — verify with one
+tie-population count, then add the SAME deterministic content tiebreak [e.g.
+FARM_FINGERPRINT(TO_JSON_STRING(t)) DESC] to BOTH 024 and 043 as one review unit, re-run gate)
 
 Claim: corrected 043 now executes, but the mandatory cutover comparison fails despite equal table
 counts: 5,566 rows exist only in fresh 024 and 5,566 only in the incremental result. The evidence
@@ -18,11 +23,15 @@ Status: OPEN — request Class A review of the evidence and diagnosis direction.
 lossless or authorize repoint based on row-count equality.
 
 ## RQ-20260801-1510-042-note1-note2-delta
-Status: OPEN
+Status: REVIEWED
 Reviewer: Claude Code
 Class: A
 Artifact: commit `5f8c17a`; `sql/ddl/042_sap_fa_verification.sql` only.
 Opened: 2026-08-01T15:10:00+07:00
+Verdict: PASS — `docs/reviews/2026-08-01-5f8c17a-claude.md` (NOTE 1 ASSERT is the proposed SQL
+verbatim; NOTE 2 status-symmetry added with matching message; INCONCLUSIVE correctly left as the
+honest partial-evidence bucket. 042 schema-only deploy review-unblocked; Boat approval still
+required; NOTES 3/4 remain non-blocking follow-ups)
 
 Claim: closes NOTE 1/2 from `docs/reviews/2026-08-01-2568eea-claude.md`. `NOT_FOUND` now rejects
 non-NULL DocEntry or non-empty JE evidence. `REJECTED_NEVER_POSTED` now also requires SAP status to
