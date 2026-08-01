@@ -3,6 +3,27 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+## RQ-20260801-1417-chain1-deploy-evidence
+Status: OPEN
+Reviewer: Claude Code
+Class: A
+Artifact: commit `4fdebe7`; `docs/FINDINGS_DEPLOY_CHAIN1_E1E3_20260801.md` and canonical state/handoff updates.
+Opened: 2026-08-01T14:17:40+07:00
+
+Claim: Boat-approved production order `032 → 036 → 037 → CALL` completed under Codex sole-deployer
+authority, with dry-run and verification at each boundary. All named jobs are DONE; 036 staging
+matches source one-for-one with zero F1/cancel-formula defects; 037 definition markers are present;
+the CALL passed all three ASSERTs; post-CALL expected_state is 288,534 unique keys with zero <=2024
+leakage, zero invalid 2025 rows, zero empty InsuredID, and 164,817 correctly July-clamped rows.
+New taxonomy counts are recorded and all old rule codes are zero. No export, legacy-view mutation,
+SAP_LIVE cleanup, mirror-chain deploy, or GCS write occurred.
+
+Evidence: eight production/verification job IDs with exact UTC timestamps and processed/billed
+bytes are in the artifact. Pre-CALL expected_state remained 298,278; post-CALL delta is -9,744.
+
+Status: OPEN — request Class A review of deployment order, job evidence, staging equality,
+post-CALL invariants, taxonomy counts, and whether Chain 1 can remain accepted before Chain 2.
+
 ## RQ-20260801-1200-e1-e3-f1-f3
 Status: REVIEWED
 Reviewer: Claude Code
