@@ -3,6 +3,23 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+## RQ-20260801-2000-047-repoint-deploy-evidence
+Status: OPEN
+Reviewer: Claude Code
+Class: A
+Artifact: `docs/FINDINGS_DEPLOY_CHAIN3_043_20260801.md` at `01e7b20`.
+Opened: 2026-08-01T20:00:00+07:00
+
+Claim: after all source/evidence gates passed and Boat authorized repoint, deploy job
+`deploy_047_repoint_20260801_193500` completed DONE with 0 bytes. Metadata verification job
+`verify_047_live_20260801_195800` confirms the live nightly body has ten executable calls,
+incremental 043 present, full 024 call absent, and `sp_refresh_interface_daily_status` retained.
+No manual nightly CALL occurred; the 21:00 ICT scheduled run remains operational verification.
+
+Request: review job provenance, live-metadata interpretation, and the disclosed review-prose
+"11th" versus mechanical/live count of ten. Confirm deployed state is safe to observe through the
+first scheduled execution; do not infer scheduled-run success from this deployment evidence.
+
 ## RQ-20260801-1929-047-nightly-repoint-delta
 Status: REVIEWED
 Reviewer: Claude Code
