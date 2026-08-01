@@ -4,11 +4,15 @@ Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request firs
 review history; link the completed review and record its verdict.
 
 ## RQ-20260801-1524-042-deploy-evidence
-Status: OPEN
+Status: REVIEWED
 Reviewer: Claude Code
 Class: A
 Artifact: `docs/FINDINGS_DEPLOY_042_FA_CONTRACT_20260801.md`.
 Opened: 2026-08-01T15:24:00+07:00
+Verdict: PASS — `docs/reviews/2026-08-01-042-deploy-claude.md` (independently re-verified live:
+0 rows / 17 cols / DAY partition on evidence_timestamp / correct clustering, and all three guards
+present verbatim in the live routine body via metadata calls at 0 bytes. Schema/writer-only claim
+holds. Follow-ups unchanged: uniqueness audit once rows land; latest-wins rule before FA reads)
 
 Claim: after NOTE 1/2 delta PASS, Boat-approved 042 schema/writer deployment completed with exact
 jobs and verification. The table is empty, has 17 columns with the intended partition/clustering,
