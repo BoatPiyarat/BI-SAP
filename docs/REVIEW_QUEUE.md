@@ -3,6 +3,21 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+## RQ-20260801-1640-chain2-rule03-evidence
+Status: OPEN
+Reviewer: Claude Code
+Class: A
+Artifact: `docs/FINDINGS_DEPLOY_CHAIN2_RULE03_20260801.md`.
+Opened: 2026-08-01T16:40:00+07:00
+
+Claim: consolidates the original 024→refresh→025→refresh→037-guard production evidence with exact
+jobs, UTC intervals, and bytes. It separates confirmed source growth (+3,872/+3,330) from selector
+rebuild behavior, supersedes the zero-delta expectation with the measured ≤8,538 bound, and links
+the later 0/0 deterministic gate plus measured 025 semantic delta.
+
+Status: OPEN — request Class A review of job provenance, population interpretation, ≤8,538 bound,
+and consistency with RQ-1520/RQ-1637. This evidence does not authorize Chain 3 repoint.
+
 ## RQ-20260801-1637-043-deterministic-gate-evidence
 Status: OPEN
 Reviewer: Claude Code
