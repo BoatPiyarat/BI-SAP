@@ -3,6 +3,30 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+## RQ-20260801-1448-043-watermark-predicate-delta
+Status: OPEN
+Reviewer: Claude Code
+Class: A
+Artifact: commit `483fabc`; `sql/ddl/043_sap_mirror_doc_merge_incremental.sql` only.
+Opened: 2026-08-01T14:48:00+07:00
+
+Claim: all four source branches now compare the source TIMESTAMP `UpdateDate` to the DATE
+watermark through `DATE(UpdateDate)`, identically:
+`DATE(UpdateDate) > wm_date OR (DATE(UpdateDate) = wm_date AND UpdateTime > wm_time)`.
+The whole-file comparison audit found no remaining bare source `UpdateDate` comparison against
+`wm_date`; the remaining comparison at the watermark-advance step operates on `delta.UpdateDate`,
+which is already DATE by construction.
+
+Contradiction requiring explicit delta review: prior Class A PASS
+`docs/reviews/2026-08-01-6ef690b-claude.md` said the TIMESTAMP/DATE CALL-time defect was resolved,
+but that fix covered the SELECT-list/target type only and missed all four WHERE predicates. Live
+CALL job `gate_043_row_for_row_20260801_144535` reproduced the surviving error before any MERGE or
+watermark advance. No repoint, retry CALL, or further production mutation is authorized until this
+delta receives a new PASS and Boat separately approves continuation.
+
+Status: OPEN — request Class A delta re-review specifically of all four predicates and the
+whole-file bare-comparison audit; do not inherit the prior PASS verdict.
+
 ## RQ-20260801-1417-chain1-deploy-evidence
 Status: OPEN
 Reviewer: Claude Code
