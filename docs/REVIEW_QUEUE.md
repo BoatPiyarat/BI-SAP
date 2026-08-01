@@ -8,7 +8,7 @@ Status: OPEN
 Reviewer: Claude Code
 Class: A
 Artifact: `scripts/run_sap_sync_manual.ps1` and
-`docs/design/SAP_MANUAL_SYNC_RUNBOOK_20260801.md` at `87d6b3c`.
+`docs/design/SAP_MANUAL_SYNC_RUNBOOK_20260801.md` at `d5917d0`.
 Opened: 2026-08-01T21:28:00+07:00
 
 Claim: one-command PowerShell manual path safely orders extract → one loader trigger → bronze-empty
