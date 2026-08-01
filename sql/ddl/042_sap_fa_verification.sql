@@ -6,6 +6,9 @@
 -- business grain and evidence provenance are explicit. Raw email bodies, screenshots, names,
 -- identity numbers, or other PII must not be copied into this table or this source file; retain a
 -- controlled source URI/reference instead.
+-- INCONCLUSIVE may retain partial SAP/import evidence because it records an unresolved
+-- investigation. NOT_FOUND and REJECTED_NEVER_POSTED are fail-closed below so they cannot carry
+-- contradictory evidence that a SAP document/status/JE exists.
 
 CREATE TABLE IF NOT EXISTS `pacific-plating-282708.sap_integration_v3.sap_fa_verification` (
   verification_id STRING NOT NULL,
@@ -96,15 +99,22 @@ BEGIN
     AND p_import_evidence IS NOT NULL AND TRIM(p_import_evidence) != ''
   ) AS 'posted decisions require DocEntry, SAP status, JE, import LogID, and success evidence';
 
+  -- NOT_FOUND cannot simultaneously claim that SAP document or JE evidence exists.
+  ASSERT p_decision != 'NOT_FOUND' OR (
+    p_sap_doc_entry IS NULL
+    AND (p_je_reference IS NULL OR TRIM(p_je_reference) = '')
+  ) AS 'NOT_FOUND decisions require no DocEntry/JE';
+
   -- A rejected decision must identify the import attempt and its rejection evidence, but must not
-  -- pretend that a SAP document or JE exists.
+  -- pretend that a SAP document, SAP status, or JE exists.
   ASSERT p_decision != 'REJECTED_NEVER_POSTED' OR (
     p_sap_doc_entry IS NULL
+    AND (p_sap_status IS NULL OR TRIM(p_sap_status) = '')
     AND (p_je_reference IS NULL OR TRIM(p_je_reference) = '')
     AND p_import_log_id IS NOT NULL AND TRIM(p_import_log_id) != ''
     AND p_import_outcome = 'REJECTED'
     AND p_import_evidence IS NOT NULL AND TRIM(p_import_evidence) != ''
-  ) AS 'rejected decisions require import rejection evidence and no DocEntry/JE';
+  ) AS 'rejected decisions require import rejection evidence and no DocEntry/SAP status/JE';
 
   INSERT INTO `pacific-plating-282708.sap_integration_v3.sap_fa_verification` (
     verification_id,
