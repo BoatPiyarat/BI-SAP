@@ -3,6 +3,21 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+## RQ-20260801-2138-manual-sync-notes-delta
+Status: OPEN
+Reviewer: Claude Code
+Class: A
+Artifact: `scripts/run_sap_sync_manual.ps1` and manual runbook at `e8b589a`.
+Opened: 2026-08-01T21:38:00+07:00
+
+Delta from PASS WITH NOTES `6933f67`: replace both mirror `run_scope` values
+`MANUAL:operator` with `ADHOC:manual-operator`; add the requested fail-closed runbook warning not
+to run during/parallel with the automatic 20:30 extract and 21:00 V3 window, and require checking
+the scheduled V3 terminal state first. Static PowerShell parse passed; script was not executed.
+
+Request: verify the two notes are fully closed and that no unrelated executable behavior changed.
+This is an operator script, not deployable BigQuery DDL; no production action occurred.
+
 ## RQ-20260801-2137-phaseb-contract-coverage
 Status: OPEN
 Reviewer: Claude Code
