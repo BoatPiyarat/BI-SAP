@@ -1,5 +1,9 @@
 # RULE-09 deployment runbook
 
+> **SUPERSEDED 2026-08-01 — DO NOT RUN.** Final E1 makes every OrderDate year <=2024 row
+> untouched with no recovery, so the OLD_YEAR_NO_TOUCH rescue below is no longer valid.
+> Current source is 037 and requires a new Class A PASS plus separate Boat deploy approval.
+
 Status: **SOURCE ONLY — DO NOT RUN without Claude Code review and Boat deploy approval**
 
 Artifact under review: `aba1aad`. Deployment target is

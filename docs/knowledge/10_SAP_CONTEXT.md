@@ -409,6 +409,9 @@ This block supersedes conflicting details in the 2026-07-29 section above.
   read-only impact measurement is **5,712 records / 2,861 orders**, plus 32 records / 26 orders
   excluded as `YEAR_OUT_OF_SCOPE`. It is not post-deploy verification; see
   `docs/FINDINGS_E1_E3_F1_F3_20260801.md` for job IDs, timestamps, bytes, and caveats.
+- The OrderDate tier correction is materially non-zero: at schedule grain it moves 75 records
+  from old >=2026 to <=2024, 9,719 from old >=2026 to 2025, and 9,318 from old 2025 to <=2024.
+  These are per-transition counts, pending Class A review; do not sum their order counts as unique.
 
 6. Design v3 ทั้งชุดอยู่ใน docs/design/ — อ่าน REDESIGN_V3 ก่อนแตะ pipeline ใดๆ
 
