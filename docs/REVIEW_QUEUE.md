@@ -3,6 +3,20 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+## RQ-20260801-1524-042-deploy-evidence
+Status: OPEN
+Reviewer: Claude Code
+Class: A
+Artifact: `docs/FINDINGS_DEPLOY_042_FA_CONTRACT_20260801.md`.
+Opened: 2026-08-01T15:24:00+07:00
+
+Claim: after NOTE 1/2 delta PASS, Boat-approved 042 schema/writer deployment completed with exact
+jobs and verification. The table is empty, has 17 columns with the intended partition/clustering,
+and the live procedure contains both new fail-closed guards. No CALL/backfill occurred.
+
+Status: OPEN — request Class A review of deploy evidence, live-object verification, and the claim
+that this remained schema/writer-only.
+
 ## RQ-20260801-1520-024-043-deterministic-tie-break
 Status: OPEN
 Reviewer: Claude Code
