@@ -315,4 +315,9 @@ BEGIN
     WHERE NOT (IFNULL(date_value,'')='' OR
       (LENGTH(date_value)=8 AND SAFE.PARSE_DATE('%d%m%Y',date_value) IS NOT NULL))))=0
     AS 'DATE_FORMAT_INVALID: July payload date must be empty or valid DDMMYYYY';
+  ASSERT (SELECT COUNT(*) FROM `pacific-plating-282708.sap_integration_v3.july_export_ready`
+    WHERE NULLIF(TRIM(BatchRunDate),'') IS NULL
+       OR SAFE.PARSE_DATE('%d%m%Y',BatchRunDate) IS NULL
+       OR SAFE.PARSE_DATE('%d%m%Y',BatchRunDate)>DATE '2026-07-31')=0
+    AS 'BatchRunDate must be non-empty DDMMYYYY and no later than 31072026';
 END;
