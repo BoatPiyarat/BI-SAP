@@ -8,7 +8,7 @@ Status: OPEN
 Reviewer: Claude Code
 Class: A
 Artifact: `docs/FINDINGS_PHASEB_CONTRACT_COVERAGE_20260801.md` and
-`sql/adhoc/20260801_phaseb_contract_coverage.sql` at `c60169c`.
+`sql/adhoc/20260801_phaseb_contract_coverage.sql` at `97ebf0d`.
 Opened: 2026-08-01T21:37:00+07:00
 
 Claim: live expected_state is 290,319 rows/15 columns against a 56-position contract. Corrected
