@@ -234,6 +234,12 @@ recalculation cascade. `[OPEN]` DocEntry overlap test (31/07 vs 27/07) ไม่
   → ไฟล์เดียว ~167MB · loader memory pressure · ไม่มี partial progress ถ้าล่มกลางทาง
 `[OPEN]` SAP_LIVE row count / daily amplification table **stale** — เลข `8,324,155` ห้ามอ้าง.
 
+**UpdateDate comparison supplied by Boat 2026-08-01:** SAP_LIVE distinct DocEntry และ SAP source
+เท่ากันที่ 60,118 สำหรับ 01/08 (strong count evidence, ยังไม่ใช่ set proof). วันที่ 06/07 และ
+07/07 BigQuery ต่ำกว่า source 40 และ 64 ตามลำดับ = historical count-gap signal ใหม่; ต้องใช้
+source DocEntry anti-join ก่อนระบุ missing IDs. วันที่ BQ สูงกว่าห้ามตีความว่า source ข้อมูลหาย
+เพราะ SAP_LIVE เป็น append-only snapshot history. Source query timestamp ไม่ได้ส่งมา.
+
 ## §3.7 `[CONFIRMED]` Extract freshness lag ~19 ชั่วโมงกระทบ July close
 Nightly interface import เข้า SAP ประมาณ 01:30 ICT แต่ extract รัน 20:30 ICT. Reconcile ก่อน
 deadline `2026-08-03 14:00 ICT` จะเห็น SAP state ล่าสุดเพียงรอบ 20:30 ICT ของ 02/08; ไฟล์ที่ส่ง

@@ -571,3 +571,64 @@ The following hypotheses are retracted:
 Days 21–25/07 are not 1:1: BQ/source ratios are 1.681×, 1.498×, 1.854×, 2.659× and 1.939×
 (approximately 2.19× average). This baseline behavior had not previously been isolated. It is
 separate from the acute 26–28/07 amplification and remains **OPEN**.
+
+---
+
+## ADDENDUM 2026-08-01 — UpdateDate comparison supplied by Boat
+
+Boat supplied current counts grouped by `UpdateDate` from BigQuery `SAP_LIVE` and SAP SQL Server
+`[RCB_LIVE_DB].[dbo].[@INSURANCE]`. The source-query execution timestamp and query text were not
+supplied, so they must not be invented. BigQuery is `COUNT(DISTINCT DocEntry)`; the SAP result's
+unnamed count column is treated as source rows, expected to be one row per DocEntry but not proven
+distinct by the supplied output.
+
+| UpdateDate | BQ distinct DocEntry | SAP source rows | BQ − source |
+|---|---:|---:|---:|
+| 2026-08-01 | 60,118 | 60,118 | 0 |
+| 2026-07-31 | 59,280 | 2,261 | +57,019 |
+| 2026-07-30 | 1,880 | 966 | +914 |
+| 2026-07-29 | 58,619 | 725 | +57,894 |
+| 2026-07-28 | 60,385 | 2,067 | +58,318 |
+| 2026-07-27 | 62,081 | 3,871 | +58,210 |
+| 2026-07-26 | 6,850 | 5,071 | +1,779 |
+| 2026-07-25 | 1,832 | 923 | +909 |
+| 2026-07-24 | 10,813 | 4,288 | +6,525 |
+| 2026-07-23 | 1,603 | 1,097 | +506 |
+| 2026-07-22 | 2,336 | 1,115 | +1,221 |
+| 2026-07-21 | 1,832 | 1,814 | +18 |
+| 2026-07-20 | 6,873 | 1,196 | +5,677 |
+| 2026-07-19 | 8,657 | 1,097 | +7,560 |
+| 2026-07-18 | 339 | 339 | 0 |
+| 2026-07-17 | 32,033 | 13,936 | +18,097 |
+| 2026-07-16 | 1,422 | 1,413 | +9 |
+| 2026-07-15 | 1,009 | 1,004 | +5 |
+| 2026-07-14 | 796 | 796 | 0 |
+| 2026-07-13 | 77 | 77 | 0 |
+| 2026-07-12 | 118 | 118 | 0 |
+| 2026-07-11 | 899 | 897 | +2 |
+| 2026-07-10 | 475 | 475 | 0 |
+| 2026-07-09 | 1,190 | 1,090 | +100 |
+| 2026-07-08 | 596 | 596 | 0 |
+| 2026-07-07 | 981 | 1,045 | **−64** |
+| 2026-07-06 | 2 | 42 | **−40** |
+| 2026-07-05 | 652 | 505 | +147 |
+| 2026-07-04 | 2,025 | 949 | +1,076 |
+| 2026-07-03 | 2,587 | 1,396 | +1,191 |
+| 2026-07-02 | 7,839 | 6,310 | +1,529 |
+| 2026-07-01 | 15,836 | 6,527 | +9,309 |
+| 2026-06-30 | 5,135 | not supplied | not comparable |
+
+Interpretation:
+
+- 01-Aug is an exact count match at 60,118, strong current-batch evidence but not proof of identical
+  DocEntry membership. A source-ID anti-join is still required for set completeness.
+- BigQuery is append-only snapshot history. The same DocEntry can remain under an older UpdateDate
+  observation after SAP's current row advances, so positive BQ−source deltas do not mean SAP lost
+  rows and cannot establish completeness.
+- 06-Jul and 07-Jul are the only supplied comparable dates where BigQuery is lower, by 40 and 64.
+  This is a new **count-level historical gap signal** requiring source distinct-DocEntry lists (or
+  anti-join output) before assigning exact missing IDs. It does not establish that 104 unique
+  documents are missing overall because date-bucket membership can change when a source row is
+  updated.
+- This UpdateDate comparison is different from the earlier BatchRunDate comparison and does not
+  replace it. Mixing those date bases would create a false reconciliation.

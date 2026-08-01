@@ -4,6 +4,16 @@ Append-only — entry ใหม่บนสุด ห้ามลบ/แก้�
 
 ---
 
+## 2026-08-01 — UpdateDate source/mirror counts refreshed
+
+Recorded Boat's current `UpdateDate` counts for SAP_LIVE distinct DocEntry versus SQL Server
+`[@INSURANCE]`. 01-Aug matches exactly at 60,118; this is strong count evidence but not set-level
+proof. 06-Jul and 07-Jul are the only supplied comparable dates where BigQuery is lower, by 40 and
+64, creating a new historical count-gap signal. Positive BigQuery deltas remain consistent with
+append-only historical snapshots and cannot prove completeness. Source query timestamp/query text
+were not supplied; a source DocEntry anti-join remains required. No query or production mutation
+was performed for this update.
+
 ## 2026-08-01 — Credential finding reconciled with verified post-rotation state
 
 Corrected the stale claim that current extract-job metadata returns plaintext SAP DB values: live
