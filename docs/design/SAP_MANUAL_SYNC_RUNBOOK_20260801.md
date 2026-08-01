@@ -8,12 +8,19 @@ Run from the repository root in PowerShell:
 .\scripts\run_sap_sync_manual.ps1
 ```
 
+Do not start this recovery command during the automatic 20:30 extract / 21:00 V3 window. A manual
+extract can overlap the scheduled extract before either has written its bronze object, and a manual
+V3 refresh can overlap the scheduled V3 procedure. Wait until the scheduled V3 run has reached a
+terminal state (normally after 21:05 ICT), inspect bronze/extract status, and use this command only
+to recover a missing or stale chain. Never run it in parallel with either schedule.
+
 The command is fail-closed and ordered:
 
 1. If exactly one bronze object already exists, it skips extract rather than create a second batch.
 2. Otherwise it executes `sap-extract-job --wait`.
 3. It triggers `auto_load_sap_data_in_bucket_to_bigquery` at most once and waits for bronze deletion.
-4. It runs each V3 procedure as a separate BigQuery job, each with its own dry-run and 20 GiB cap.
+4. It runs each V3 procedure as a separate BigQuery job, each with its own dry-run and 20 GiB cap;
+   the mirror procedures use `ADHOC:manual-operator` so audit logs cannot mislabel recovery as nightly.
 5. Any failure stops the sequence; never rerun blindly or trigger the loader again while an object remains.
 
 The separate BigQuery jobs are mandatory. On 2026-08-01, the single wrapper CALL
