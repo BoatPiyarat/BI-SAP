@@ -27,6 +27,11 @@ Boat clarification after opening the request: `InsuredID` is the insured person'
 ID or passport number; `InsurerCode` maps the insurance-company name. The canonical text now states
 these definitions explicitly. This is a documentation clarification only; SQL behavior is unchanged.
 
+Boat correction to item 16: Pending requires status `Pending` and empty InvoiceNo, PaymentDate,
+PaymentMethod, and PaymentChannel. ExpectedReceived and ActualReceived are not in the mandatory-
+empty list. This supersedes the request's earlier interpretation; no status-field SQL check has yet
+been implemented, so no executable SQL behavior changes in this delta.
+
 ## RQ-20260801-2138-manual-sync-notes-delta
 Status: REVIEWED
 Reviewer: Claude Code

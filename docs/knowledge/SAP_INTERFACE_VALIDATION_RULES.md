@@ -39,10 +39,11 @@ remain separately auditable.
 
 12. Paid requires non-empty `InvoiceNo`, `ExpectedReceived`, `ActualReceived`, `PaymentDate`,
     `PaymentMethod`, and `PaymentChannel`, with status `Paid`.
-13. Pending requires empty `InvoiceNo`, `ActualReceived`, `PaymentDate`, `PaymentMethod`, and
-    `PaymentChannel`, with status `Pending`. `ExpectedReceived` remains populated as the scheduled
-    amount. This corrects the literal wording of item 16, which conflicts with accepted SAP
-    installment evidence.
+13. Pending requires `TransactionStatus='Pending'` and empty `InvoiceNo`, `PaymentDate`,
+    `PaymentMethod`, and `PaymentChannel`, because those fields arise from a completed payment.
+    `ExpectedReceived` and `ActualReceived` are not part of this rule's mandatory-empty set.
+    In the normal installment schedule, ExpectedReceived remains available as the scheduled
+    amount. This wording supersedes the earlier interpretation recorded in this file.
 14. One `(OrderItem,Period)` may contain multiple payment rows. Rank 1 carries scheduled
     ExpectedReceived; later rows use ExpectedReceived=0. Sum ExpectedReceived equals the period
     expectation. Compare summed ActualReceived at order grain: absolute variance below THB 10 is
