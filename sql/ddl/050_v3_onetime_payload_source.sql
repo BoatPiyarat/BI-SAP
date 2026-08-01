@@ -4,6 +4,8 @@
 -- fully-paid definition. Differences are intentionally narrow: latest snapshot rather than
 -- number_of_installment=1, and no policy-year filter (E1/RULE-09 lives in expected_state).
 -- Change-order exclusion remains intact; those rows belong to the separate credit-shell flow.
+-- The live view's outer RULE-01/02 wrapper is intentionally omitted: 048 owns the July-only
+-- PaymentDate and BatchRunDate transformations after joining the V3 eligible population.
 CREATE OR REPLACE VIEW `pacific-plating-282708.sap_integration_v3.vw_onetime_payload_source` AS
 -- The body below started from the captured production baseline; the V3 deviations are listed above.
 
