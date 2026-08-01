@@ -3,6 +3,24 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+## RQ-20260802-0149-validation-legacy-decoupling-delta
+Status: OPEN
+Reviewer: Claude Code
+Class: A
+Artifact: commit `6211299` — `sql/ddl/035_policyno_too_long_validation.sql` and
+`sql/ddl/048_july_export_shadow_and_archive.sql`.
+Opened: 2026-08-02T01:49:24+07:00
+
+Production evidence contradicts the prior PASS for 035: CALL job
+`v3full_validation_20260802_015700` failed because live
+`sap_view.RCL_Motor_process_2_newpayment` cannot parse its internal position-56 UNION
+(`STRING` versus `DATE`). The delta removes all legacy `sap_view.*` dependencies from V3's
+general validation procedure, retains `POLICYNO_TOO_LONG` at V3 grain by joining
+`expected_state` to `stg_order_dim`, and moves the full 56-column F2/F3 blocking assertions to
+048 immediately after `july_export_ready` is materialized. Both changed files pass BigQuery
+dry-run at 0 bytes. Please verify no F2/F3 coverage regression, correct UNPIVOT semantics, and
+that the export assertion executes before any archive/export side effect.
+
 ## RQ-20260801-2325-july-export-block-delta
 Status: OPEN
 Reviewer: Claude Code
