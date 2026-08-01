@@ -4,12 +4,15 @@ Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request firs
 review history; link the completed review and record its verdict.
 
 ## RQ-20260801-0156-037-active-period-guard
-Status: OPEN
+Status: REVIEWED
 Reviewer: Claude Code
 Class: A
 Artifact: commit `b881fa3`; source-only
 `sql/ddl/037_fix_expected_invoice_no_null_unsafe.sql`.
 Opened: 2026-08-01T01:56:09+07:00
+Verdict: PASS — `docs/reviews/2026-08-01-b881fa3-claude.md` (all three failure modes from the
+aba1aad-review guard spec now fail closed; exactly-one ASSERT is stricter than the spec's LIMIT 1
+on the overlap case — correct choice; cosmetic UTC-vs-ICT CURRENT_DATE note, errs fail-closed)
 
 Claim: procedure 037 now selects only non-expired period-lock rows, fails unless exactly one exists,
 and rejects a NULL or future-dated `open_period_start`. All declarations remain at the beginning of
@@ -20,12 +23,17 @@ Evidence: combined source-only 044→037 dry-run passed with a 0-byte lower boun
 filters, one exact-count ASSERT, and one non-future-date ASSERT.
 
 ## RQ-20260801-0153-043-watermark-call-fixes
-Status: OPEN
+Status: REVIEWED
 Reviewer: Claude Code
 Class: A
 Artifact: commit `6ef690b`; corrected source-only
 `sql/ddl/043_sap_mirror_doc_merge_incremental.sql`.
 Opened: 2026-08-01T01:53:23+07:00
+Verdict: PASS — `docs/reviews/2026-08-01-6ef690b-claude.md` (both BLOCK items resolved as
+specified: grouped selector re-verified valid by standalone 0-byte dry-run and moved inside the
+non-empty guard; DATE(UpdateDate) in all 4 branches + full DATE watermark chain. **The
+RQ-20260730-2230 BLOCK is cleared.** 043 remains gated behind reviewed-024 apply + row-for-row
+cutover diff + Boat approval)
 
 Claim: DDL 043 now projects `DATE(UpdateDate)` in all four delta branches, stores and declares the
 watermark date as DATE, and replaces the invalid analytic-in-aggregate watermark calculation with
