@@ -22,6 +22,7 @@ BEGIN
   CALL `pacific-plating-282708.sap_integration_v3.sp_refresh_expected_state`();
   CALL `pacific-plating-282708.sap_integration_v3.sp_run_validation`();
   CALL `pacific-plating-282708.sap_integration_v3.sp_refresh_delta_export`();
+  CALL `pacific-plating-282708.sap_integration_v3.sp_refresh_interface_daily_status`();
 END;
 
 -- ============================================================================
@@ -39,5 +40,6 @@ BEGIN
   CALL `pacific-plating-282708.sap_integration_v3.sp_refresh_expected_state`();
   CALL `pacific-plating-282708.sap_integration_v3.sp_run_validation`();
   CALL `pacific-plating-282708.sap_integration_v3.sp_refresh_delta_export`();
+  CALL `pacific-plating-282708.sap_integration_v3.sp_refresh_interface_daily_status`();
 END;
 */

@@ -13,6 +13,11 @@ that restores the 024 call. BigQuery dry-run completed successfully with 0 bytes
 No deploy, CALL, scheduler change, export, or GCS write occurred. Deployment remains gated on Class
 A PASS for RQ-1637/RQ-1640.
 
+**Review correction:** Claude compared against live routine metadata and found the live chain has a
+final `sp_refresh_interface_daily_status` call missing from the repo's 026-era baseline used to draft
+047. The first review was correctly BLOCKED. Both the cutover and rollback bodies now preserve this
+11th call; RQ-1637/RQ-1640 subsequently passed, and deployment awaits 047 delta re-review only.
+
 ## 2026-08-01 — UpdateDate source/mirror counts refreshed
 
 Recorded Boat's current `UpdateDate` counts for SAP_LIVE distinct DocEntry versus SQL Server

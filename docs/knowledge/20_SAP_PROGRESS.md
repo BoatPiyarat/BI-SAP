@@ -1,10 +1,12 @@
 # 20_SAP_PROGRESS.md
-**2026-08-01 CHAIN 3 REPOINT SOURCE READY / REVIEW BLOCKED:** `047` defines the minimal nightly
+**2026-08-01 CHAIN 3 REPOINT SOURCE READY / DELTA RE-REVIEW:** `047` defines the minimal nightly
 cutover from full `sp_refresh_sap_mirror_doc` (024) to reviewed incremental
 `sp_refresh_sap_mirror_doc_incremental` (043), preserving every downstream call and order. It
-includes an exact rollback to the 024 call and passed a 0-byte BigQuery script dry-run. Production
-execution remains blocked until RQ-1637 and RQ-1640 are reviewed PASS; Boat has explicitly approved
-continuing the V3 critical path. No production object changed in this source-only step.
+includes an exact rollback to the 024 call and passed a 0-byte BigQuery script dry-run. Claude's
+first review correctly found repo/live drift: the live procedure has a final
+`sp_refresh_interface_daily_status` call absent from the 026-era baseline. The call is now retained
+in both cutover and rollback bodies; RQ-1637/RQ-1640 are PASS and only 047 delta re-review remains.
+Boat explicitly approved continuing the V3 critical path. No production object changed here.
 
 **2026-07-31 R1 CONFIRMED / +672,463 DUPLICATES:** Boat raised loader memory to 4Gi;
 Pub/Sub retry completed and deleted the bronze file. L5 proves 12 successful LOAD jobs ×61,133
