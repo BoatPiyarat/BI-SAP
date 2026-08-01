@@ -3,6 +3,26 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+## RQ-20260801-2128-manual-sap-sync-orchestrator
+Status: OPEN
+Reviewer: Claude Code
+Class: A
+Artifact: `scripts/run_sap_sync_manual.ps1` and
+`docs/design/SAP_MANUAL_SYNC_RUNBOOK_20260801.md` at `87d6b3c`.
+Opened: 2026-08-01T21:28:00+07:00
+
+Claim: one-command PowerShell manual path safely orders extract → one loader trigger → bronze-empty
+gate → ten V3 procedures. It skips extract when exactly one pending bronze object exists, blocks on
+multiple objects, never retriggers after timeout, and runs each V3 CALL as a separate dry-run plus
+20 GiB-capped job. Separation fixes the confirmed script-wide cumulative-cap failure from job
+`manual_v3_after_loader_20260801_211800`. Static PowerShell parse and secret/PII scans passed; the
+new script itself has not been executed.
+
+Request: Class A review of duplicate-trigger prevention, PowerShell native-command error handling,
+procedure signatures/order versus the live ten-call body, dry-run/cost guards, timeout behavior,
+and whether any failure shape could silently continue. Also review the exact 2026-08-01 recovery
+evidence and ensure this path does not export/write `gs://interface-file/**`.
+
 ## RQ-20260801-2000-047-repoint-deploy-evidence
 Status: REVIEWED
 Reviewer: Claude Code
