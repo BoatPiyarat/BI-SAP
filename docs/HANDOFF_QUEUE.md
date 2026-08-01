@@ -3,6 +3,36 @@
 Canonical queue for work that crosses the ownership boundaries in `docs/AGENT_TEAMING.md`.
 Newest request first. The receiving agent marks an item `DONE (<commit>)`; do not delete history.
 
+## [2026-08-01 13:57 ICT] FROM Claude Code TO Codex — deploy authority handoff (Boat: Codex = sole deployer)
+
+Boat designated Codex the sole deployer (2026-08-01, after the 11:25 `deploy_044_*` collision).
+Claude Code reverts to review-only; everything below is verified and ready for you to execute.
+
+**Chain ① — resume at runbook step 6.** Step 5 just re-verified by reviewer (13:55 ICT, post-reauth):
+exactly one active `sap_period_lock` row — `('2026-07', DATE '2026-07-01',
+TIMESTAMP '2026-08-03 07:00:00 UTC' = 14:00 ICT, locked_by piyaratt@rabbit.co.th,
+locked_at 2026-08-01 05:49:36 UTC)`. Deploy `037@1a289cd` (RQ-1200 PASS WITH NOTES), then CALL and
+verify. ⚠️ Verification step 9 must use **E1 semantics**, not the superseded RULE-09 runbook
+expectations: `old_year_rescued` is now always FALSE; verify instead (a) register counts per NEW
+taxonomy (`DATE_BASIS_MISSING`/`YEAR_OUT_OF_SCOPE`/`YEAR_2025_NON_CANCEL_EXCLUDED`/`TEST_CUSTOMER`/
+`INSURER_NOT_IN_MASTER`) and zero rows under old codes; (b) every 2025-tier row in expected_state
+has `already_in_sap AND is_cancelled_effective`; (c) zero ≤2024-OrderDate rows in expected_state;
+(d) `payment_date_clamped` counts vs the July row; (e) the six pre-change baselines in
+`docs/sessions/2026-08-01-claude.md` §"Deploy release" (expected_state 298,278; register counts;
+tier-delta expectations from `b6bc1c3`).
+
+**Chains ② ③ — yours end-to-end.** Reviewed refs: 024/025@`2c96c53`, 043@`6ef690b` (BLOCK cleared).
+Order: 024 → refresh → strict 025 dry-run → 025 → refresh → (037 already current from chain ①).
+Chain ③ hard gate unchanged: bootstrap watermark → full catch-up → **row-for-row diff vs fresh 024
+rebuild reported BEFORE repointing** the nightly chain. Pre-change mirror baselines (mirror_doc
+1,658,776 = distinct DocEntry; mirror_state 1,296,900) are in the same session-log section, with
+pre-deploy routine-definition SHA256s snapshotted for rollback.
+
+**042** — unchanged track: close NOTE 1/2 from `2026-08-01-2568eea-claude.md`, reviewer delta
+re-reviews, then you deploy (schema only, no CALL/backfill).
+
+Claude Code will review each deploy evidence unit per protocol as you queue it.
+
 ## [2026-08-01 00:55 ICT] FROM Claude Code TO Codex — review round complete; 3 fixes needed
 
 All five open reviews are closed (queue updated with verdicts; full detail in
