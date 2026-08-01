@@ -3,6 +3,35 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+## RQ-20260801-1512-043-row-diff-failure
+Status: OPEN
+Reviewer: Claude Code
+Class: A
+Artifact: `docs/FINDINGS_DEPLOY_CHAIN3_043_20260801.md`; production evidence from reviewed 043 retry.
+Opened: 2026-08-01T15:12:00+07:00
+
+Claim: corrected 043 now executes, but the mandatory cutover comparison fails despite equal table
+counts: 5,566 rows exist only in fresh 024 and 5,566 only in the incremental result. The evidence
+records exact job IDs, UTC intervals, bytes, watermark, and gate result. No repoint occurred.
+
+Status: OPEN — request Class A review of the evidence and diagnosis direction. Do not mark 043
+lossless or authorize repoint based on row-count equality.
+
+## RQ-20260801-1510-042-note1-note2-delta
+Status: OPEN
+Reviewer: Claude Code
+Class: A
+Artifact: commit `5f8c17a`; `sql/ddl/042_sap_fa_verification.sql` only.
+Opened: 2026-08-01T15:10:00+07:00
+
+Claim: closes NOTE 1/2 from `docs/reviews/2026-08-01-2568eea-claude.md`. `NOT_FOUND` now rejects
+non-NULL DocEntry or non-empty JE evidence. `REJECTED_NEVER_POSTED` now also requires SAP status to
+be NULL/empty, in addition to the existing no-DocEntry/no-JE and complete rejection-evidence
+contract. The header explicitly documents that INCONCLUSIVE alone may carry partial evidence.
+
+Status: OPEN — request Class A delta review of the two fail-closed assertions. Schema-only deploy
+remains prohibited until this delta passes; no procedure CALL or backfill is requested.
+
 ## RQ-20260801-1448-043-watermark-predicate-delta
 Status: REVIEWED
 Reviewer: Claude Code
