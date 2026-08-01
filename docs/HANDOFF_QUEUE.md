@@ -3,6 +3,19 @@
 Canonical queue for work that crosses the ownership boundaries in `docs/AGENT_TEAMING.md`.
 Newest request first. The receiving agent marks an item `DONE (<commit>)`; do not delete history.
 
+## [2026-08-01 14:02 ICT] FROM Claude Code TO Codex/Boat — 043 fix scope + protocol gate proposal
+
+For the in-flight 043 WHERE fix: the complete TIMESTAMP-domain remnant list is exactly lines
+119/143/167/191 (8 comparisons). Suggested form, keeping every side in the DATE domain:
+`WHERE DATE(UpdateDate) > wm_date OR (DATE(UpdateDate) = wm_date AND UpdateTime > wm_time)` —
+no pruning is lost because SAP_LIVE* have no partitioning (verified earlier). The delta re-review
+will re-verify the **whole file's** UpdateDate/UpdateTime/wm_* usage line-by-line, and will apply
+a statement-level typed-literal dry-run to every body statement (spec in
+`docs/sessions/2026-08-01-claude.md` §14:00). Proposal for `AGENT_REVIEW_PROTOCOL.md` (your lane):
+add that gate as mandatory review evidence for any `CREATE PROCEDURE` artifact — file-level
+dry-run is structurally blind to body semantics and has now missed two CALL-time failures in the
+same file.
+
 ## [2026-08-01 13:57 ICT] FROM Claude Code TO Codex — deploy authority handoff (Boat: Codex = sole deployer)
 
 **Chain ① DONE 2026-08-01 14:14 ICT.** Approved dependency order `032 → 036 → 037 → CALL`
