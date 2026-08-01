@@ -47,6 +47,7 @@ not this table, for day-to-day freshness.
 | 044_sap_period_lock_and_payment_date_clamp.sql | Creates the RULE-01/02 period-lock control; apply before the current 037 expected-state procedure that clamps PaymentDate and emits `payment_date_clamped` |
 | 045_sap_import_result_schema_v2.sql | **Source only / not deployed.** Creates non-destructive partitioned shadow `sap_import_result_v2`; parser K1/K2/K3 and separate swap gate required |
 | 046_exclusion_format_morning_report.sql | **Source only / Class A.** Separates E1-E3 exclusions, F1-F3 validation signals, insurer-code list, and real backlog in the morning report |
+| 047_repoint_nightly_mirror_to_incremental.sql | **Source only / Class A.** Chain 3 cutover definition: changes the nightly mirror call from full 024 to incremental 043 without altering downstream order; includes an exact 024-call rollback definition |
 
 Every file is a full runnable script (per AGENTS.md: no diffs-as-answer). Apply with:
 ```

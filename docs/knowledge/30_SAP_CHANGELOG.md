@@ -4,6 +4,15 @@ Append-only — entry ใหม่บนสุด ห้ามลบ/แก้�
 
 ---
 
+## 2026-08-01 — Chain 3 nightly incremental repoint prepared
+
+Added source-only `047_repoint_nightly_mirror_to_incremental.sql`. The current nightly procedure is
+reproduced in full with exactly one functional change: its 024 full mirror call becomes the 043
+incremental call. Downstream order is unchanged, and the file contains an exact rollback definition
+that restores the 024 call. BigQuery dry-run completed successfully with 0 bytes processed/billed.
+No deploy, CALL, scheduler change, export, or GCS write occurred. Deployment remains gated on Class
+A PASS for RQ-1637/RQ-1640.
+
 ## 2026-08-01 — UpdateDate source/mirror counts refreshed
 
 Recorded Boat's current `UpdateDate` counts for SAP_LIVE distinct DocEntry versus SQL Server

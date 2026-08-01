@@ -1,4 +1,11 @@
 # 20_SAP_PROGRESS.md
+**2026-08-01 CHAIN 3 REPOINT SOURCE READY / REVIEW BLOCKED:** `047` defines the minimal nightly
+cutover from full `sp_refresh_sap_mirror_doc` (024) to reviewed incremental
+`sp_refresh_sap_mirror_doc_incremental` (043), preserving every downstream call and order. It
+includes an exact rollback to the 024 call and passed a 0-byte BigQuery script dry-run. Production
+execution remains blocked until RQ-1637 and RQ-1640 are reviewed PASS; Boat has explicitly approved
+continuing the V3 critical path. No production object changed in this source-only step.
+
 **2026-07-31 R1 CONFIRMED / +672,463 DUPLICATES:** Boat raised loader memory to 4Gi;
 Pub/Sub retry completed and deleted the bronze file. L5 proves 12 successful LOAD jobs ×61,133
 rows on 31-Jul: 733,596 committed versus 61,133 expected, bad_records=0. Plus 41×60,404,
