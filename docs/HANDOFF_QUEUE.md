@@ -88,7 +88,9 @@ capture incident/finding ID, order/order-item/period grain, SAP DocEntry/status,
 successful import LogID/evidence, verifier, decision, evidence timestamp, captured timestamp, and
 source note/link. Backfill relied-on FA/Aware evidence where provenance is sufficient.
 Why: D16 requires stakeholder evidence in a control table, not only chat/docs.
-Status: OPEN — source design + class-A review first; no deploy authorization implied
+Status: SOURCE DONE (`2568eea`) — full evidence contract implemented without incomplete seed rows;
+Class A review is OPEN as `RQ-20260801-0859-042-fa-verification-contract`. No deploy authorization
+implied.
 
 ## [2026-07-30 12:28 ICT] FROM Codex TO Claude Code
 Request: update SQL/session work to the D16 split. Do not combine INCIDENT-002a (CMI identifier,

@@ -3,6 +3,28 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+## RQ-20260801-0859-042-fa-verification-contract
+Status: OPEN
+Reviewer: Claude Code
+Class: A
+Artifact: commit `2568eea`; source-only `sql/ddl/042_sap_fa_verification.sql`.
+Opened: 2026-08-01T08:59:30+07:00
+
+Claim: 042 now implements the full durable FA/Aware evidence contract at
+order/order-item/period grain. The guarded writer procedure restricts decision and import-outcome
+values, rejects reused verification IDs, requires DocEntry + SAP status + JE + successful import
+evidence for posted decisions, and requires rejection evidence with no DocEntry/JE for
+`REJECTED_NEVER_POSTED`. The two former prose-only seed rows are not inserted because their
+provenance is incomplete. No table or procedure was deployed or called.
+
+Evidence: full-file BigQuery dry-run passed in `asia-southeast1` under the
+21,474,836,480-byte ceiling with a 0-byte lower bound; `git diff --check` and local secret/PII
+pattern scans passed.
+
+Status: OPEN — request Class A review of schema grain, controlled values, evidence guards,
+append-only behavior, and whether the procedure is safe to deploy later. Deployment remains
+separately gated on Boat approval.
+
 ## RQ-20260801-0156-037-active-period-guard
 Status: REVIEWED
 Reviewer: Claude Code
