@@ -1,4 +1,12 @@
 # 20_SAP_PROGRESS.md
+**2026-08-01 PHASE B CONTRACT COVERAGE BLOCK:** live expected_state has 290,319 rows/15 columns;
+the positional contract has 56. Corrected job `phaseb_coverage_corrected_20260801_213400` found
+276,660 rows covered by one of the two 56-column CareOS views and 13,659 uncovered (ONETIME 12,665;
+RCL 986; RCL_CMI 8). Source duplicate exposure is 322 fully-paid + 1,325 installment keys. Do not
+build a naive shadow join. The preceding `phaseb_coverage_20260801_213300` aggregation is RETRACTED
+because it multiplied rows by joining per-flow totals back to detail. Next: classify uncovered and
+select duplicate winners in one batched diagnostic before writing Phase B DDL.
+
 **2026-08-01 MANUAL SYNC RECOVERED / ORCHESTRATOR SOURCE READY:** extract produced 2,241 rows;
 single loader job `2017bec6-c8cf-446e-a804-21e32624849f` committed exactly 2,241 with 0 bad records
 and removed the bronze object. The 21:00 V3 schedule preceded the 21:15 load. Whole-chain catch-up

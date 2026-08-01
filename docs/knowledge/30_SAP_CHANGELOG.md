@@ -4,6 +4,15 @@ Append-only — entry ใหม่บนสุด ห้ามลบ/แก้�
 
 ---
 
+## 2026-08-01 — Phase B 56-column source coverage measured; naive shadow build blocked
+
+Live metadata confirms `expected_state` remains a 15-column engine table while the contract has 56
+positions. Corrected coverage job `phaseb_coverage_corrected_20260801_213400` found 276,660/290,319
+expected rows in exactly one contract-shaped CareOS view, leaving 13,659 uncovered; the two sources
+also expose 1,647 duplicate keys. No shadow DDL was written. The first query
+`phaseb_coverage_20260801_213300` is explicitly retracted for an aggregation fan-out bug; its output
+must not be cited. Added the corrected reproducible ad hoc SQL and detailed finding.
+
 ## 2026-08-01 — Manual extract/load/V3 recovery completed; one-command source added
 
 Confirmed the live loader is Pub/Sub-triggered by scheduler `auto_load_sap_data_in_bucket_to_bigquery`,
