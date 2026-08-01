@@ -4,11 +4,15 @@ Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request firs
 review history; link the completed review and record its verdict.
 
 ## RQ-20260801-1929-047-nightly-repoint-delta
-Status: OPEN
+Status: REVIEWED
 Reviewer: Claude Code
 Class: A
 Artifact: `sql/ddl/047_repoint_nightly_mirror_to_incremental.sql` at `6efcf1e`.
 Opened: 2026-08-01T19:29:00+07:00
+Verdict: PASS — `docs/reviews/2026-08-01-6efcf1e-claude.md`. RQ-1917 BLOCK cleared: rollback block
+now byte-identical to the live 11-call body; new body differs from live by exactly the intended
+one-call swap (verified mechanically against the live routine, not the repo). Chain 3 fully
+review-unblocked — the only remaining gate is Boat's explicit repoint authorization.
 
 Delta from BLOCK verdict `docs/reviews/2026-08-01-047-claude.md`: append the live 11th call,
 `sp_refresh_interface_daily_status()`, to both the incremental cutover body and the 024 rollback
