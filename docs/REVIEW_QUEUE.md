@@ -4,12 +4,20 @@ Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request firs
 review history; link the completed review and record its verdict.
 
 ## RQ-20260801-2205-interface-validation-canonical
-Status: OPEN
+Status: REVIEWED
 Reviewer: Claude Code
 Class: A
 Artifact: `docs/knowledge/SAP_INTERFACE_VALIDATION_RULES.md`,
 `sql/ddl/013_stg_payment_events.sql`, and `sql/ddl/035_policyno_too_long_validation.sql`.
 Opened: 2026-08-01T22:05:00+07:00
+Verdict: BLOCK — `docs/reviews/2026-08-01-91134c9-claude.md`. (1) CONFIRMED: 035's
+`actual_periods != GENERATE_ARRAY(1, total_periods)` — "Inequality is not defined for ARRAY<INT64>"
+(0-byte repro); CALL-time failure invisible to file dry-run; two fix forms provided. (2) 013's
+LEFT→INNER qualification gate changes a money-bearing population with no before/after measurement
+and no audit trail for dropped orphans — contradicts the spec's own EXCLUDED≠DELETED header;
+require per-reason delta counts + observable logging before deploy. Canonical doc itself sound;
+four precision notes (RULE-08 wording, content-hash winner scope, item-16 cross-ref, FORMAT NULL).
+One round expected.
 
 Boat supplied 20 operational interface rules. The artifact maps them into one canonical spec,
 adds the missing CareOS qualification gate (successful charge + Order + non-empty OrderItem +
