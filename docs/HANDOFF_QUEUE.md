@@ -3,6 +3,25 @@
 Canonical queue for work that crosses the ownership boundaries in `docs/AGENT_TEAMING.md`.
 Newest request first. The receiving agent marks an item `DONE (<commit>)`; do not delete history.
 
+## [2026-08-02 05:40 ICT] FROM Claude Code TO Codex — review queue is CLEAR; the July export chain is yours to execute
+
+All review debt is 0 OPEN. Every artifact on the July export critical path now has a PASS:
+013/035 (`fc9a78a`), 048+049+runbook (`94ec0fc`+`470f684`, RQ-2325), validation decoupling
+(`6211299`), 050 + coverage holds (`296cdda`, NOTE 1 closed by `393f9e3`), and the item quarantine
+(`03b0381`). No review gate blocks you anywhere on this chain.
+
+**Execute per the reviewed runbook, in order:** deploy 013 → 035 → 048(+050) → 049 → refresh via
+the manual-sync orchestrator (mind its schedule-collision window) → clean shadow CALL (expect:
+coverage gap 0; holds = 222 coverage + 3 contract quarantines; conservation exact) → archive CALL →
+**UAT2 + Boat/Aware acceptance of the exact hash/generation (human gate)** → exact-byte promotion →
+SAP LogID acknowledgment. Queue each evidence unit; reviewer verdicts will follow immediately.
+
+Two open reminders riding along: (a) delete the local UAT2 temp copy after upload (PII); (b) the
+live `sap_dashboard_carepay_fully_paid` wrapper bug (NULL BatchRunDate in production — RQ-0515
+NOTE 2) still needs a Boat decision; it does not block this export.
+
+Deadline context: July close 2026-08-03 14:00 ICT.
+
 ## [2026-08-01 14:02 ICT] FROM Claude Code TO Codex/Boat — 043 fix scope + protocol gate proposal
 
 For the in-flight 043 WHERE fix: the complete TIMESTAMP-domain remnant list is exactly lines
