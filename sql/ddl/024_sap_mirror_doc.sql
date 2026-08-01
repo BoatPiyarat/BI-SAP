@@ -96,10 +96,13 @@ BEGIN
   SELECT * EXCEPT(_rn)
   FROM (
     SELECT
-      *,
+      raw_doc.*,
       ROW_NUMBER() OVER (
         PARTITION BY DocEntry
-        ORDER BY UpdateDate DESC, UpdateTime DESC, DocEntry DESC
+        ORDER BY
+          UpdateDate DESC,
+          UpdateTime DESC,
+          SHA256(TO_JSON_STRING(raw_doc)) DESC
       ) AS _rn
     FROM (
 
@@ -356,7 +359,7 @@ BEGIN
         DATE(UpdateDate) AS UpdateDate,
         UpdateTime
       FROM `pacific-plating-282708.sap_integration_v2.SAP_LIVE`
-    )
+    ) AS raw_doc
   )
   WHERE _rn = 1;
 

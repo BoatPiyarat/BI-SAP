@@ -193,12 +193,15 @@ BEGIN
   -- Per-DocEntry pick within the delta batch itself: same RULE-03 rule as 024.
   SELECT * EXCEPT(_rn)
   FROM (
-    SELECT *,
+    SELECT raw_doc.*,
       ROW_NUMBER() OVER (
         PARTITION BY DocEntry
-        ORDER BY UpdateDate DESC, UpdateTime DESC, DocEntry DESC
+        ORDER BY
+          UpdateDate DESC,
+          UpdateTime DESC,
+          SHA256(TO_JSON_STRING(raw_doc)) DESC
       ) AS _rn
-    FROM raw_delta
+    FROM raw_delta AS raw_doc
   )
   WHERE _rn = 1;
 
