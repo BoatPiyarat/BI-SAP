@@ -3,6 +3,22 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+## RQ-20260802-0528-july-contract-item-quarantine
+Status: OPEN
+Reviewer: Claude Code
+Class: A
+Artifact: commit `03b0381` — delta to `sql/ddl/048_july_export_shadow_and_archive.sql`.
+Opened: 2026-08-02T05:28:35+07:00
+
+Production shadow job `call_048_july_shadow_retry_20260802_052700` passed coverage/hold gates but
+correctly stopped on F2. Diagnostic `diag_048_shadow_validation_20260802_052900` found exactly
+three PolicyNo-too-long records/orders and zero date-format or Paid-completeness failures. This
+delta implements the confirmed item-level quarantine policy: build a temporary 56-column
+candidate, record F2/F3/completeness failures in `july_export_hold`, materialize only valid rows,
+then assert final conservation and re-run all zero-error assertions. No truncation and no silent
+drop. File dry-run passed at 0 bytes. Please verify multi-reason key counting, conservation grain,
+MERGE idempotency, and that invalid rows cannot enter `july_export_ready`.
+
 ## RQ-20260802-0515-v3-onetime-payload-and-hold
 Status: REVIEWED
 Reviewer: Claude Code
