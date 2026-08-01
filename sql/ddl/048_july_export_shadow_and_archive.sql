@@ -211,7 +211,7 @@ BEGIN
     WHERE s.OrderItem IS NULL);
   ASSERT gap_count=0 AS 'July eligible rows lack a verified 56-column payload source';
 
-  CREATE OR REPLACE TABLE `pacific-plating-282708.sap_integration_v3.july_export_ready` AS
+  CREATE TEMP TABLE _july_export_candidate AS
   SELECT
     CAST(s.CompanyDB AS STRING) CompanyDB, CAST(s.OrderID AS STRING) OrderID,
     CAST(s.OrderItem AS STRING) OrderItem, CAST(e.expected_invoice_no AS STRING) InvoiceNo,
@@ -255,6 +255,46 @@ BEGIN
     FORMAT_DATE('%d%m%Y',LAST_DAY(open_period_start)) BatchRunDate
   FROM _eligible e JOIN _payload_source s
     ON s.OrderItem=e.order_item AND SAFE_CAST(s.Period AS INT64)=e.period;
+
+  CREATE TEMP TABLE _contract_invalid AS
+  SELECT DISTINCT OrderItem,SAFE_CAST(Period AS INT64) period,'POLICYNO_TOO_LONG' hold_reason
+  FROM _july_export_candidate WHERE LENGTH(PolicyNo)>50
+  UNION DISTINCT
+  SELECT DISTINCT OrderItem,SAFE_CAST(Period AS INT64),'PAID_COMPLETENESS'
+  FROM _july_export_candidate
+  WHERE NULLIF(TRIM(InvoiceNo),'') IS NULL OR NULLIF(TRIM(PaymentDate),'') IS NULL
+     OR NULLIF(TRIM(PaymentMethod),'') IS NULL OR NULLIF(TRIM(PaymentChannel),'') IS NULL
+  UNION DISTINCT
+  SELECT DISTINCT OrderItem,SAFE_CAST(Period AS INT64),'DATE_FORMAT_INVALID'
+  FROM _july_export_candidate
+  UNPIVOT(date_value FOR date_column IN
+    (OrderDate,PolicyDate,PaymentDate,ExpectedDate,BatchRunDate))
+  WHERE NOT(IFNULL(date_value,'')='' OR
+    (LENGTH(date_value)=8 AND SAFE.PARSE_DATE('%d%m%Y',date_value) IS NOT NULL));
+
+  MERGE `pacific-plating-282708.sap_integration_v3.july_export_hold` t
+  USING (
+    SELECT e.order_item,e.period,e.charge_id,e.raw_payment_date,i.hold_reason
+    FROM _eligible e JOIN _contract_invalid i
+      ON i.OrderItem=e.order_item AND i.period=e.period
+  ) s
+  ON t.order_item=s.order_item AND t.period=s.period AND t.charge_id=s.charge_id
+     AND t.hold_reason=s.hold_reason
+  WHEN MATCHED THEN UPDATE SET detected_at=CURRENT_TIMESTAMP()
+  WHEN NOT MATCHED THEN INSERT
+    (order_item,period,charge_id,raw_payment_date,hold_reason,detected_at)
+  VALUES (s.order_item,s.period,s.charge_id,s.raw_payment_date,s.hold_reason,CURRENT_TIMESTAMP());
+
+  CREATE OR REPLACE TABLE `pacific-plating-282708.sap_integration_v3.july_export_ready` AS
+  SELECT c.* FROM _july_export_candidate c
+  WHERE NOT EXISTS (SELECT 1 FROM _contract_invalid i
+    WHERE i.OrderItem=c.OrderItem AND i.period=SAFE_CAST(c.Period AS INT64));
+
+  ASSERT (SELECT COUNT(*) FROM _eligible_all)=
+    (SELECT COUNT(*) FROM `pacific-plating-282708.sap_integration_v3.july_export_ready`)+
+    (SELECT COUNT(*) FROM _coverage WHERE hold_reason IS NOT NULL)+
+    (SELECT COUNT(*) FROM (SELECT DISTINCT OrderItem,period FROM _contract_invalid))
+    AS 'Final July conservation failed: eligible_all must equal ready plus all held keys';
 
   SET august_count = (SELECT COUNT(*) FROM _eligible WHERE raw_payment_date >= DATE '2026-08-01');
   ASSERT august_count=0 AS 'August raw PaymentDate leaked into July export scope';
