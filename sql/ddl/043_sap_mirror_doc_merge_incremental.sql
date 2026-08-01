@@ -116,7 +116,7 @@ BEGIN
       SAFE_CAST(FORMAT_DATE('%d%m%Y', U_BatchRunDate) AS STRING) AS BatchRunDate,
       DATE(UpdateDate) AS UpdateDate, UpdateTime  -- native mirror type; recency time stays separate
     FROM `pacific-plating-282708.sap_integration_v2.SAP_LIVE_2024`
-    WHERE UpdateDate > wm_date OR (UpdateDate = wm_date AND UpdateTime > wm_time)
+    WHERE DATE(UpdateDate) > wm_date OR (DATE(UpdateDate) = wm_date AND UpdateTime > wm_time)
     UNION ALL
     SELECT DocEntry, U_CompanyCode, U_OrderID, U_OrderItem, U_InvoiceNo,
       SAFE_CAST(FORMAT_DATE('%d%m%Y', U_OrderDate) AS STRING), U_InsuredID, U_Title, U_FirstName,
@@ -140,7 +140,7 @@ BEGIN
       U_RefundAmountAfterFee, U_BillingAddress,
       SAFE_CAST(FORMAT_DATE('%d%m%Y', U_BatchRunDate) AS STRING), DATE(UpdateDate), UpdateTime
     FROM `pacific-plating-282708.sap_integration_v2.SAP_LIVE_2025`
-    WHERE UpdateDate > wm_date OR (UpdateDate = wm_date AND UpdateTime > wm_time)
+    WHERE DATE(UpdateDate) > wm_date OR (DATE(UpdateDate) = wm_date AND UpdateTime > wm_time)
     UNION ALL
     SELECT DocEntry, U_CompanyCode, U_OrderID, U_OrderItem, U_InvoiceNo,
       SAFE_CAST(FORMAT_DATE('%d%m%Y', U_OrderDate) AS STRING), U_InsuredID, U_Title, U_FirstName,
@@ -164,7 +164,7 @@ BEGIN
       U_RefundAmountAfterFee, U_BillingAddress,
       SAFE_CAST(FORMAT_DATE('%d%m%Y', U_BatchRunDate) AS STRING), DATE(UpdateDate), UpdateTime
     FROM `pacific-plating-282708.sap_integration_v2.SAP_LIVE_2026`
-    WHERE UpdateDate > wm_date OR (UpdateDate = wm_date AND UpdateTime > wm_time)
+    WHERE DATE(UpdateDate) > wm_date OR (DATE(UpdateDate) = wm_date AND UpdateTime > wm_time)
     UNION ALL
     SELECT DocEntry, U_CompanyCode, U_OrderID, U_OrderItem, U_InvoiceNo,
       SAFE_CAST(FORMAT_DATE('%d%m%Y', U_OrderDate) AS STRING), U_InsuredID, U_Title, U_FirstName,
@@ -188,7 +188,7 @@ BEGIN
       U_RefundAmountAfterFee, U_BillingAddress,
       SAFE_CAST(FORMAT_DATE('%d%m%Y', U_BatchRunDate) AS STRING), DATE(UpdateDate), UpdateTime
     FROM `pacific-plating-282708.sap_integration_v2.SAP_LIVE`
-    WHERE UpdateDate > wm_date OR (UpdateDate = wm_date AND UpdateTime > wm_time)
+    WHERE DATE(UpdateDate) > wm_date OR (DATE(UpdateDate) = wm_date AND UpdateTime > wm_time)
   )
   -- Per-DocEntry pick within the delta batch itself: same RULE-03 rule as 024.
   SELECT * EXCEPT(_rn)
