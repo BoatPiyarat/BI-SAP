@@ -4,11 +4,15 @@ Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request firs
 review history; link the completed review and record its verdict.
 
 ## RQ-20260801-2243-v3-july-production-runbook
-Status: OPEN
+Status: REVIEWED
 Reviewer: Claude Code
 Class: A
 Artifact: `docs/design/V3_JULY_EXPORT_RUNBOOK_20260801.md`.
 Opened: 2026-08-01T22:43:00+07:00
+Verdict: BLOCK — `docs/reviews/2026-08-01-213626c-claude.md` (inherits RQ-2241: blocked scripts +
+the runbook must add the missing UAT2 stage between shadow gate and production, plus the post-write
+exact-byte archive step and SAP import-result acknowledgment capture. Deploy order, shadow
+checklist, and no-blind-rerun guidance are sound and should survive the fix round unchanged)
 
 Runbook sequences reviewed manual full refresh, 013/035/048/049 deploy dependencies, shadow hard
 gate, one production GCS write, three-layer Gmail evidence, and mirror reconciliation. Confirm it
@@ -16,12 +20,20 @@ cannot proceed on coverage gap, August raw date, validation failure, duplicate a
 active July period, or ambiguous PREPARED-after-export state. No production action occurred.
 
 ## RQ-20260801-2241-july-shadow-export-structure
-Status: OPEN
+Status: REVIEWED
 Reviewer: Claude Code
 Class: A
 Artifact: `sql/ddl/048_july_export_shadow_and_archive.sql` and
 `sql/ddl/049_export_july_payment_to_gcs.sql`.
 Opened: 2026-08-01T22:41:00+07:00
+Verdict: BLOCK — `docs/reviews/2026-08-01-73f7c08-claude.md`. (1) CONFIRMED: `SELECT *` UNION of
+the two source views fails — "Column 22 in UNION ALL has incompatible types: STRING, DOUBLE"
+(0-byte repro; position 22 = GrossPremium, the first known drift position); fix = explicit 56-column
+per-branch projection with harmonized types. (2) G3 skipped: no UAT2 pass before production
+RCB_MOTOR while header/quoting/NULL-money rendering are unverified against the unknown legacy
+serializer. Also required: post-write exact-byte archive (object copy + generation + hash) — row
+JSON is value-level only; rule-12 completeness ASSERTs. 56-column output order verified exact;
+scope/idempotency/fail-closed gates otherwise sound.
 
 Source-only structure prepared while earlier reviews run. 048 selects only Paid rows whose raw
 charge_time is in `[2026-07-01,2026-08-01)`, excludes delivered keys, deterministically resolves
@@ -36,12 +48,16 @@ audit pending exact-byte GCS archive. 048 file-level dry-run passed; 049 dry-run
 blocked until 048 exists live and must not be deployed/CALLed on that basis. No production action.
 
 ## RQ-20260801-2236-phaseb-uncovered-refresh
-Status: OPEN
+Status: REVIEWED
 Reviewer: Claude Code
 Class: A
 Artifact: `sql/adhoc/20260801_phaseb_uncovered_classification.sql` and
 `docs/FINDINGS_PHASEB_UNCOVERED_20260801.md`.
 Opened: 2026-08-01T22:36:00+07:00
+Verdict: PASS — `docs/reviews/2026-08-01-8255891-claude.md` (arithmetic closes on every axis;
+output-vs-raw date distinction correctly drawn; the 12,395 Paid/absent class plausibly overlaps the
+70,395 disqualified charges — re-measure after Rule-2 staging deploys and quote that number in the
+048 gap-gate expectation)
 
 Current expected_state yields 12,689 uncovered records, superseding 13,659. The dominant class is
 12,395 Paid keys absent from both 56-column sources; 278 are no-charge Pending spine and 16 are
@@ -50,13 +66,17 @@ PaymentDate. Request reproduction/method review and confirmation that Phase-B pa
 blocked until qualification refresh/re-measurement. No deploy, CALL, export, or GCS write.
 
 ## RQ-20260801-2233-interface-validation-block-delta
-Status: OPEN
+Status: REVIEWED
 Reviewer: Claude Code
 Class: A
 Artifact: BLOCK delta to `sql/ddl/013_stg_payment_events.sql`,
 `sql/ddl/035_policyno_too_long_validation.sql`, canonical knowledge, and
 `docs/FINDINGS_PAYMENT_QUALIFICATION_20260801.md`.
 Opened: 2026-08-01T22:33:00+07:00
+Verdict: PASS — `docs/reviews/2026-08-01-fc9a78a-claude.md`. **RQ-2205 BLOCK cleared**: JSON-array
+comparison gate-validated (8,682,609-byte semantic estimate); impact measured (70,395 = 52,828 +
+17,567 ✓) and preserved at charge grain in sap_payment_qualification_exclusion; all four doc notes
+closed including the unprompted TotalPeriods-versions check.
 
 Addresses `docs/reviews/2026-08-01-91134c9-claude.md`: ARRAY inequality replaced by deterministic
 JSON-array comparison; NULL/inconsistent TotalPeriods are self-describing. Rule-2 impact measured:
@@ -67,11 +87,14 @@ join/fan-out audit, taxonomy review, and confirmation both BLOCKs plus four note
 No deploy, CALL, export, GCS write, or production mutation occurred.
 
 ## RQ-20260801-2228-v3-export-readiness-block
-Status: OPEN
+Status: REVIEWED
 Reviewer: Claude Code
 Class: A
 Artifact: `docs/FINDINGS_V3_EXPORT_READINESS_20260801.md`.
 Opened: 2026-08-01T22:28:00+07:00
+Verdict: PASS — `docs/reviews/2026-08-01-export-readiness-claude.md` (fail-closed stop was
+correct; all four gate failures metadata-backed; Gmail correctly scoped as baseline; the
+required-before-retry list has since materialized as 048/049/runbook, reviewed under RQ-2241/2243)
 
 Boat authorized one July-only production export and prohibited August. Codex stopped before any
 GCS write because live metadata proves no export/manual-export routine, no export_archive, and only
