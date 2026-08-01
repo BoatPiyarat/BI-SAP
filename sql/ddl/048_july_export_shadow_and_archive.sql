@@ -1,0 +1,129 @@
+-- Source only / Class A. Builds a fail-closed July-only 56-column shadow; it does NOT write GCS.
+-- Boat 2026-08-01: raw PaymentDate scope is [2026-07-01, 2026-08-01), never August; delivery
+-- folder is temporarily RCB_MOTOR for all output. Deploy/run/export require separate reviewed gates.
+
+CREATE TABLE IF NOT EXISTS `pacific-plating-282708.sap_integration_v3.export_archive` (
+  export_run_id STRING,
+  order_item STRING,
+  period INT64,
+  charge_id STRING,
+  raw_payment_date DATE,
+  file_name STRING,
+  gcs_uri STRING,
+  delivery_folder STRING,
+  contract_version STRING,
+  payload_hash STRING,
+  payload_json STRING,
+  run_type STRING,
+  delivery_status STRING,
+  exported_at TIMESTAMP,
+  sap_log_id STRING,
+  sap_result_status STRING,
+  acknowledged_at TIMESTAMP
+)
+PARTITION BY DATE(exported_at)
+CLUSTER BY order_item, period, export_run_id;
+
+CREATE OR REPLACE PROCEDURE `pacific-plating-282708.sap_integration_v3.sp_build_july_export_shadow`()
+BEGIN
+  DECLARE open_period_start DATE;
+  DECLARE gap_count INT64;
+  DECLARE duplicate_count INT64;
+  DECLARE august_count INT64;
+
+  ASSERT (SELECT COUNT(*) FROM `pacific-plating-282708.sap_integration_v3.sap_period_lock`
+    WHERE lock_datetime > CURRENT_TIMESTAMP()) = 1
+    AS 'July export requires exactly one active sap_period_lock row';
+
+  SET open_period_start = (SELECT open_period_start
+    FROM `pacific-plating-282708.sap_integration_v3.sap_period_lock`
+    WHERE lock_datetime > CURRENT_TIMESTAMP());
+  ASSERT open_period_start = DATE '2026-07-01'
+    AS 'This release is July-only; active open_period_start must be 2026-07-01';
+
+  CREATE TEMP TABLE _eligible AS
+  SELECT e.*, DATE(pe.charge_time) AS raw_payment_date
+  FROM `pacific-plating-282708.sap_integration_v3.expected_state` e
+  JOIN `pacific-plating-282708.sap_integration_v3.stg_payment_events` pe USING (charge_id)
+  LEFT JOIN `pacific-plating-282708.sap_integration_v3.export_archive` a
+    ON a.charge_id=e.charge_id AND a.order_item=e.order_item AND a.period=e.period
+   AND a.delivery_status IN ('DELIVERED','ACKNOWLEDGED')
+  WHERE e.expected_status='Paid'
+    AND DATE(pe.charge_time) >= DATE '2026-07-01'
+    AND DATE(pe.charge_time) < DATE '2026-08-01'
+    AND a.charge_id IS NULL;
+
+  CREATE TEMP TABLE _payload_source AS
+  SELECT * FROM (
+    SELECT s.*, ROW_NUMBER() OVER (
+      PARTITION BY OrderItem, SAFE_CAST(Period AS INT64)
+      ORDER BY SAFE.PARSE_DATE('%d%m%Y', NULLIF(CAST(BatchRunDate AS STRING), '')) DESC,
+        FARM_FINGERPRINT(TO_JSON_STRING(s)) DESC
+    ) AS _rn
+    FROM (
+      SELECT * FROM `pacific-plating-282708.sap_data_engineer.sap_dashboard_carepay_fully_paid`
+      UNION ALL
+      SELECT * FROM `pacific-plating-282708.sap_data_engineer.sap_dashboard_carepay_installment`
+    ) s
+  ) WHERE _rn=1;
+
+  SET duplicate_count = (SELECT COUNT(*) FROM (
+    SELECT OrderItem, SAFE_CAST(Period AS INT64), COUNT(*) n
+    FROM _payload_source GROUP BY 1,2 HAVING n>1));
+  ASSERT duplicate_count=0 AS 'Deterministic source winner failed to reach one row per key';
+
+  SET gap_count = (SELECT COUNT(*) FROM _eligible e LEFT JOIN _payload_source s
+    ON s.OrderItem=e.order_item AND SAFE_CAST(s.Period AS INT64)=e.period
+    WHERE s.OrderItem IS NULL);
+  ASSERT gap_count=0 AS 'July eligible rows lack a verified 56-column payload source';
+
+  CREATE OR REPLACE TABLE `pacific-plating-282708.sap_integration_v3.july_export_ready` AS
+  SELECT
+    CAST(s.CompanyDB AS STRING) CompanyDB, CAST(s.OrderID AS STRING) OrderID,
+    CAST(s.OrderItem AS STRING) OrderItem, CAST(e.expected_invoice_no AS STRING) InvoiceNo,
+    CAST(s.OrderDate AS STRING) OrderDate, COALESCE(NULLIF(TRIM(CAST(s.InsuredID AS STRING)),''),'-') InsuredID,
+    CAST(s.Title AS STRING) Title, CAST(s.FirstName AS STRING) FirstName, CAST(s.LastName AS STRING) LastName,
+    CAST(s.InsurerCode AS STRING) InsurerCode, CAST(s.InsuranceGroup AS STRING) InsuranceGroup,
+    CAST(s.InsuranceType AS STRING) InsuranceType, CAST(s.InsuranceProduct AS STRING) InsuranceProduct,
+    CAST(s.ProductType AS STRING) ProductType, CAST(s.PolicyType AS STRING) PolicyType,
+    CAST(s.Endorse AS STRING) Endorse, CAST(s.PolicyDate AS STRING) PolicyDate,
+    CAST(s.PolicyNo AS STRING) PolicyNo, CAST(s.EndorsementNo AS STRING) EndorsementNo,
+    CAST(s.ChassisNo AS STRING) ChassisNo, CAST(s.LicensePlate AS STRING) LicensePlate,
+    FORMAT('%.2f',SAFE_CAST(s.GrossPremium AS FLOAT64)) GrossPremium,
+    FORMAT('%.2f',SAFE_CAST(s.StampDuty AS FLOAT64)) StampDuty,
+    FORMAT('%.2f',SAFE_CAST(s.VAT AS FLOAT64)) VAT,
+    FORMAT('%.2f',SAFE_CAST(s.TotalPremium AS FLOAT64)) TotalPremium,
+    FORMAT('%.2f',SAFE_CAST(s.WHT AS FLOAT64)) WHT,
+    FORMAT('%.2f',SAFE_CAST(s.TotalEIR AS FLOAT64)) TotalEIR,
+    FORMAT('%.2f',SAFE_CAST(s.TotalSBT AS FLOAT64)) TotalSBT,
+    FORMAT('%.2f',SAFE_CAST(s.ProcessingFee AS FLOAT64)) ProcessingFee,
+    FORMAT('%.2f',SAFE_CAST(s.ProcessingFeeVat AS FLOAT64)) ProcessingFeeVat,
+    FORMAT('%.2f',SAFE_CAST(s.ShippingFee AS FLOAT64)) ShippingFee,
+    FORMAT('%.2f',SAFE_CAST(s.ShippingFeeVat AS FLOAT64)) ShippingFeeVat,
+    FORMAT('%.2f',SAFE_CAST(s.TotalAmount AS FLOAT64)) TotalAmount,
+    FORMAT('%.2f',SAFE_CAST(s.Discount AS FLOAT64)) Discount,
+    'Paid' TransactionStatus, CAST(s.SubmissionStatus AS STRING) SubmissionStatus,
+    CAST(s.ApprovalStatus AS STRING) ApprovalStatus, CAST(s.PaymentStatus AS STRING) PaymentStatus,
+    FORMAT('%.2f',SAFE_CAST(s.ExpectedReceived AS FLOAT64)) ExpectedReceived,
+    FORMAT('%.2f',SAFE_CAST(s.ActualReceived AS FLOAT64)) ActualReceived,
+    FORMAT('%.2f',SAFE_CAST(s.InterestThisPeriod AS FLOAT64)) InterestThisPeriod,
+    FORMAT('%.2f',SAFE_CAST(s.PrincipleThisPeriod AS FLOAT64)) PrincipleThisPeriod,
+    FORMAT('%.2f',SAFE_CAST(s.InterestEIRThisPeriod AS FLOAT64)) InterestEIRThisPeriod,
+    FORMAT('%.2f',SAFE_CAST(s.PrincipleEIRThisPeriod AS FLOAT64)) PrincipleEIRThisPeriod,
+    FORMAT_DATE('%d%m%Y',e.expected_payment_date) PaymentDate,
+    CAST(e.period AS STRING) Period, CAST(e.total_periods AS STRING) TotalPeriods,
+    CAST(s.PendingPayment AS STRING) PendingPayment, CAST(s.PaymentMethod AS STRING) PaymentMethod,
+    CAST(s.PaymentChannel AS STRING) PaymentChannel, CAST(s.ExpectedDate AS STRING) ExpectedDate,
+    CAST(s.RefOrder AS STRING) RefOrder,
+    FORMAT('%.2f',SAFE_CAST(s.RefundAmountBeforeFee AS FLOAT64)) RefundAmountBeforeFee,
+    FORMAT('%.2f',SAFE_CAST(s.RefundAmountAfterFee AS FLOAT64)) RefundAmountAfterFee,
+    CAST(s.BillingAddress AS STRING) BillingAddress,
+    FORMAT_DATE('%d%m%Y',LAST_DAY(open_period_start)) BatchRunDate
+  FROM _eligible e JOIN _payload_source s
+    ON s.OrderItem=e.order_item AND SAFE_CAST(s.Period AS INT64)=e.period;
+
+  SET august_count = (SELECT COUNT(*) FROM _eligible WHERE raw_payment_date >= DATE '2026-08-01');
+  ASSERT august_count=0 AS 'August raw PaymentDate leaked into July export scope';
+  ASSERT (SELECT COUNT(*) FROM `pacific-plating-282708.sap_integration_v3.INFORMATION_SCHEMA.COLUMNS`
+    WHERE table_name='july_export_ready')=56 AS 'SAP interface payload must contain exactly 56 columns';
+END;

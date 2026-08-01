@@ -3,6 +3,26 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+## RQ-20260801-2241-july-shadow-export-structure
+Status: OPEN
+Reviewer: Claude Code
+Class: A
+Artifact: `sql/ddl/048_july_export_shadow_and_archive.sql` and
+`sql/ddl/049_export_july_payment_to_gcs.sql`.
+Opened: 2026-08-01T22:41:00+07:00
+
+Source-only structure prepared while earlier reviews run. 048 selects only Paid rows whose raw
+charge_time is in `[2026-07-01,2026-08-01)`, excludes delivered keys, deterministically resolves
+the two 56-column sources, fails if any July key lacks payload, emits exactly the contract order,
+and locks BatchRunDate to 31072026. 049 calls 048, persists exact row JSON/hash as PREPARED, asserts
+zero August, exports one explicit 56-column CSV to Boat-authorized RCB_MOTOR, then marks DELIVERED.
+
+Request deep review of late-bound procedure bodies, source UNION type drift, duplicate winner,
+money formatting, variable/column scoping, archive-before-export failure recovery, positional
+contract, raw-date scope, filename/ImportType, and whether BigQuery row JSON is sufficient durable
+audit pending exact-byte GCS archive. 048 file-level dry-run passed; 049 dry-run is dependency-
+blocked until 048 exists live and must not be deployed/CALLed on that basis. No production action.
+
 ## RQ-20260801-2236-phaseb-uncovered-refresh
 Status: OPEN
 Reviewer: Claude Code
