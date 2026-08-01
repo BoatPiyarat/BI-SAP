@@ -4,6 +4,14 @@ Append-only — entry ใหม่บนสุด ห้ามลบ/แก้�
 
 ---
 
+## 2026-08-01 — Chain 3 nightly repointed from full 024 to incremental 043
+
+Following Class A PASS (`5d8d6f9`) and Boat's explicit authorization, deployed reviewed `047` as
+job `deploy_047_repoint_20260801_193500` (12:57:37.068Z–12:57:37.597Z, 0 bytes). Metadata
+verification `verify_047_live_20260801_195800` at 12:58:01Z confirms ten executable calls,
+incremental mirror present, full 024 call absent, and `sp_refresh_interface_daily_status` retained.
+No manual procedure call was made; the scheduled 21:00 ICT execution is the operational proof.
+
 ## 2026-08-01 — Chain 3 nightly incremental repoint prepared
 
 Added source-only `047_repoint_nightly_mirror_to_incremental.sql`. The current nightly procedure is

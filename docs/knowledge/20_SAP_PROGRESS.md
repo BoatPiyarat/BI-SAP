@@ -1,4 +1,11 @@
 # 20_SAP_PROGRESS.md
+**2026-08-01 CHAIN 3 REPOINT DEPLOYED:** reviewed `047` replaced the nightly 024 full mirror call
+with 043 incremental while retaining all downstream calls, including
+`sp_refresh_interface_daily_status`. Deploy job `deploy_047_repoint_20260801_193500` completed at
+12:57:37.597Z with 0 bytes. Live metadata job `verify_047_live_20260801_195800` at 12:58:01Z proves
+10 calls, incremental present, full 024 absent, monitoring present. No manual CALL; verify the first
+scheduled 21:00 ICT run before declaring operational completion.
+
 **2026-08-01 CHAIN 3 REPOINT SOURCE READY / DELTA RE-REVIEW:** `047` defines the minimal nightly
 cutover from full `sp_refresh_sap_mirror_doc` (024) to reviewed incremental
 `sp_refresh_sap_mirror_doc_incremental` (043), preserving every downstream call and order. It

@@ -78,6 +78,26 @@ and 885 raw `InvoiceNo` changes. The 885 are entirely representation-only: 449 N
 and 436 empty string→NULL; zero empty↔real-value and zero real-value→different-value changes.
 Therefore semantic InvoiceNo change is zero.
 
-The mandatory evidence is now complete, but the nightly chain is still **not repointed** in this
-step. Deterministic hash selection remains semantically arbitrary for the 2,602 cross-source ties;
+The mandatory evidence was complete at this step, but the nightly chain was still **not repointed**
+yet. Deterministic hash selection remains semantically arbitrary for the 2,602 cross-source ties;
 future source priority is a separate Boat/Aware decision.
+
+## Nightly repoint deployed — 2026-08-01
+
+After RQ-1637/RQ-1640 PASS and the corrected 047 delta PASS at review commit `5d8d6f9`, Codex
+deployed the Boat-authorized nightly repoint.
+
+| Step | Job ID | UTC interval | Processed | Billed | Result |
+|---|---|---:|---:|---:|---|
+| Deploy 047 | `deploy_047_repoint_20260801_193500` | 12:57:37.068Z–12:57:37.597Z | 0 | 0 | DONE |
+| Verify live routine metadata | `verify_047_live_20260801_195800` | query timestamp 12:58:01Z | 0 | 0 | PASS |
+
+Live `INFORMATION_SCHEMA.ROUTINES` evidence: `call_count=10`, incremental call present, full 024
+call absent, `sp_refresh_interface_daily_status` present, routine SHA256
+`11f40bbef39a882002b3da9768b9dd9b6131a7d8defb67c4fae29e22c4afa692`. Review prose called the
+monitoring call the "11th call", but its own mechanical comparison said the intended call plus the
+other nine calls; live metadata confirms ten executable CALL statements. This wording mismatch
+does not change the reviewed defect or fix: the monitoring call is present in production.
+
+No manual nightly CALL was made. The first scheduled 21:00 ICT execution remains the required
+end-to-end operational verification; rollback stays available in `047`.
