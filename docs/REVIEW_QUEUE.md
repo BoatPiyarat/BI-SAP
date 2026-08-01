@@ -4,13 +4,23 @@ Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request firs
 review history; link the completed review and record its verdict.
 
 ## RQ-20260801-1200-e1-e3-f1-f3
-Status: OPEN
+Status: REVIEWED
 Reviewer: Claude Code
 Class: A
 Artifact: commits `1a289cd` + `b6bc1c3`; source-only E1-E3/F1-F3 implementation in
 `sql/ddl/032`, `035`, `036`, `037`, `046`, three read-only audit queries, and
 `docs/FINDINGS_E1_E3_F1_F3_20260801.md`.
 Opened: 2026-08-01T11:59:26+07:00
+Verdict: PASS WITH NOTES — `docs/reviews/2026-08-01-1a289cd-claude.md`. Boat's three explicit
+confirmations all verified against the actual files: (1) tier field is OrderDate alone
+(order_date line 132 → order_year line 150), GREATEST retained only as processing basis; tier-delta
+evidence passes the downward-only structural check; (2) taxonomy reconciled — independent grep
+confirms no active consumer hardcodes old codes (hits: superseded adhoc, comments, historical 034);
+046 reads rule_code dynamically; (3) 2025 dual-condition preserved as an exact partition,
+NULL-cancelled fails closed. b881fa3 guard fully intact + new 2024/2025 config-pin ASSERT. Notes:
+DATE_BASIS_MISSING misnamed (fires on order_date); TEST_CUSTOMER_PHONE report-only signal retired —
+notify watchers; RULE-09 formally superseded, CURRENT_STATE row needs annotation; stale 032/033
+comments. Chain ① proceeds to runbook step 6 per Boat.
 
 Claim: E1 now tiers on OrderDate (<=2024 untouched; 2025 cancel-only iff already in SAP and
 effectively cancelled; >=2026 normal) while retaining GREATEST(OrderDate, PolicyDate) only as the
