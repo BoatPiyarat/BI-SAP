@@ -3,6 +3,18 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+## RQ-20260801-2243-v3-july-production-runbook
+Status: OPEN
+Reviewer: Claude Code
+Class: A
+Artifact: `docs/design/V3_JULY_EXPORT_RUNBOOK_20260801.md`.
+Opened: 2026-08-01T22:43:00+07:00
+
+Runbook sequences reviewed manual full refresh, 013/035/048/049 deploy dependencies, shadow hard
+gate, one production GCS write, three-layer Gmail evidence, and mirror reconciliation. Confirm it
+cannot proceed on coverage gap, August raw date, validation failure, duplicate archive key, missing
+active July period, or ambiguous PREPARED-after-export state. No production action occurred.
+
 ## RQ-20260801-2241-july-shadow-export-structure
 Status: OPEN
 Reviewer: Claude Code
