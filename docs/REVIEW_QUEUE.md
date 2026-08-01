@@ -4,11 +4,17 @@ Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request firs
 review history; link the completed review and record its verdict.
 
 ## RQ-20260801-1917-047-nightly-incremental-repoint
-Status: OPEN
+Status: REVIEWED
 Reviewer: Claude Code
 Class: A
 Artifact: `sql/ddl/047_repoint_nightly_mirror_to_incremental.sql` at `849aa0e`.
 Opened: 2026-08-01T19:17:00+07:00
+Verdict: BLOCK — `docs/reviews/2026-08-01-047-claude.md`. The LIVE nightly body (fetched via
+routine metadata, not the repo's 026-era description) contains an 11th final call —
+`sp_refresh_interface_daily_status()` — which 047 omits in BOTH the new definition and the
+rollback block; deploying would silently drop the nightly 030 refresh and rollback would not
+restore it. Fix: append that call to both blocks and regenerate the rollback byte-equal from the
+live definition. Everything else exact (one-call delta, order, preconditions). One round expected.
 
 Claim: full runnable Chain 3 cutover definition changes exactly one nightly call from 024 full
 refresh to 043 incremental MERGE, preserves the remaining procedure body and call order, and
