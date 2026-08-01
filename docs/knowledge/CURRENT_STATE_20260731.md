@@ -11,6 +11,19 @@ Verified against repo commit `19c49cf` (branch `p0/stg-sap-state`) + gcloud outp
 
 ---
 
+## [CONFIRMED 2026-08-01 14:14 ICT] Chain 1 E1-E3/F1 deployed and verified
+
+- Boat-approved order `032 → 036 → 037 → CALL` completed by Codex as sole deployer.
+- `expected_state` is now 288,534 unique `(order_item, period)` rows, down 9,744 from the 298,278
+  pre-CALL baseline. Zero <=2024 OrderDate leakage; zero invalid 2025 rows; zero empty InsuredID;
+  164,817 payment dates clamped to 2026-07-01 with zero wrong-date rows.
+- New exclusion taxonomy is live; old rule-code count is zero. RULE-09 rescue is superseded and
+  `old_year_rescued` is retained only for schema compatibility, always FALSE.
+- Full job IDs, timestamps, bytes, staging invariants, and rule counts:
+  `docs/FINDINGS_DEPLOY_CHAIN1_E1E3_20260801.md`.
+
+---
+
 ## [CONFIRMED 2026-08-01] Legacy definition drift is a governance constraint
 
 - **repo ≠ live** สำหรับ legacy object `sap_view.*` และ `sap_data_engineer.*`.

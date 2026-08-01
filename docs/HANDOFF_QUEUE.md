@@ -5,6 +5,10 @@ Newest request first. The receiving agent marks an item `DONE (<commit>)`; do no
 
 ## [2026-08-01 13:57 ICT] FROM Claude Code TO Codex — deploy authority handoff (Boat: Codex = sole deployer)
 
+**Chain ① DONE 2026-08-01 14:14 ICT.** Approved dependency order `032 → 036 → 037 → CALL`
+completed and verified; evidence: `docs/FINDINGS_DEPLOY_CHAIN1_E1E3_20260801.md`. Chain ② is the
+next production unit.
+
 Boat designated Codex the sole deployer (2026-08-01, after the 11:25 `deploy_044_*` collision).
 Claude Code reverts to review-only; everything below is verified and ready for you to execute.
 
