@@ -220,4 +220,15 @@ BEGIN
     WHERE NULLIF(TRIM(InvoiceNo),'') IS NULL OR NULLIF(TRIM(PaymentDate),'') IS NULL
        OR NULLIF(TRIM(PaymentMethod),'') IS NULL OR NULLIF(TRIM(PaymentChannel),'') IS NULL)=0
     AS 'Paid completeness failed: InvoiceNo/PaymentDate/PaymentMethod/PaymentChannel must be non-empty';
+  ASSERT (SELECT COUNT(*) FROM `pacific-plating-282708.sap_integration_v3.july_export_ready`
+    WHERE LENGTH(PolicyNo)>50)=0
+    AS 'POLICYNO_TOO_LONG: July payload contains PolicyNo longer than 50 characters';
+  ASSERT (SELECT COUNT(*) FROM (
+    SELECT OrderItem, date_value
+    FROM `pacific-plating-282708.sap_integration_v3.july_export_ready`
+    UNPIVOT(date_value FOR date_column IN
+      (OrderDate, PolicyDate, PaymentDate, ExpectedDate, BatchRunDate))
+    WHERE NOT (IFNULL(date_value,'')='' OR
+      (LENGTH(date_value)=8 AND SAFE.PARSE_DATE('%d%m%Y',date_value) IS NOT NULL))))=0
+    AS 'DATE_FORMAT_INVALID: July payload date must be empty or valid DDMMYYYY';
 END;
