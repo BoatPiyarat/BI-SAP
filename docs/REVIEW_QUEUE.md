@@ -23,6 +23,10 @@ sources use three spellings. Request review of these interpretations, source joi
 comparison syntax, blast radius, and whether the changes belong in new versioned DDL rather than
 the existing 013/035 sources. Source only: no deploy, CALL, export, or production mutation.
 
+Boat clarification after opening the request: `InsuredID` is the insured person's Thai national
+ID or passport number; `InsurerCode` maps the insurance-company name. The canonical text now states
+these definitions explicitly. This is a documentation clarification only; SQL behavior is unchanged.
+
 ## RQ-20260801-2138-manual-sync-notes-delta
 Status: REVIEWED
 Reviewer: Claude Code

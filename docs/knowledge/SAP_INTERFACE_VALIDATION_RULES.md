@@ -25,9 +25,12 @@ remain separately auditable.
 7. `OrderDate`, `PolicyDate`, `PaymentDate`, `ExpectedDate`, and `BatchRunDate` are empty only where
    status permits, or exactly eight parseable `DDMMYYYY` characters. `BatRunDate` is a typo;
    `BatchRunDate` is the contract field.
-8. `InsuredID` is customer identity. NULL/empty source becomes `-` and is never blank in the file.
-9. `InsurerCode` is distinct from `InsuredID`. Motor codes are digits; NonMotor codes are `N`
-   followed by digits. Boat's item 11 named InsurerID but described InsurerCode format.
+8. `InsuredID` is the insured person's Thai national identification number or passport number.
+   NULL/empty source becomes `-` and is never blank in the file.
+9. `InsurerCode` is the code used to map the insurance-company name. It is distinct from
+   `InsuredID`. Motor codes are digits; NonMotor codes are `N` followed by digits. Boat's item 11
+   named InsurerID but described InsurerCode format; Boat clarified the two definitions on
+   2026-08-01.
 10. PolicyNo longer than 50 characters is blocked as `POLICYNO_TOO_LONG`; never truncate.
 11. Contract column 35 is `TransactionStatus`; SAP stores the same semantic value as
     `U_PolicyStatus`. They are cross-system aliases, not two CSV columns.
