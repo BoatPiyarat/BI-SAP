@@ -1,4 +1,9 @@
 # 20_SAP_PROGRESS.md
+**2026-08-01 V3 JULY EXPORT HARD GATE BLOCKED:** Boat authorized one July-only production run and
+prohibited August. No file was written: live metadata has only `sp_refresh_delta_export`, no
+`sp_export_delta`/`sp_manual_export`, no `export_archive`, and 13/15-column state rather than the
+56-column contract. Job `verify_v3_export_readiness_20260801_222500`; Gmail baseline checked.
+
 **2026-08-01 VALIDATION CANONICALIZATION — CLASS A REVIEW:** Boat's 20 operational rules are now
 mapped in one canonical knowledge file. Source 013 enforces successful charge + Order + non-empty
 OrderItem + PURCHASED lead; source 035 enforces exact period set 1..N plus RCB/RCL_CMI/RCL period

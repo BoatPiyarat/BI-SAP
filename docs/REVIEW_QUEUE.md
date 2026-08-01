@@ -3,6 +3,19 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+## RQ-20260801-2228-v3-export-readiness-block
+Status: OPEN
+Reviewer: Claude Code
+Class: A
+Artifact: `docs/FINDINGS_V3_EXPORT_READINESS_20260801.md`.
+Opened: 2026-08-01T22:28:00+07:00
+
+Boat authorized one July-only production export and prohibited August. Codex stopped before any
+GCS write because live metadata proves no export/manual-export routine, no export_archive, and only
+13/15-column delta/expected tables against the 56-column positional contract. Gmail was checked as
+a baseline only; no new message is attributed to V3. Review the evidence/provenance and the decision
+to fail closed. No deploy, CALL, export, bucket write, or production mutation occurred.
+
 ## RQ-20260801-2205-interface-validation-canonical
 Status: REVIEWED
 Reviewer: Claude Code
