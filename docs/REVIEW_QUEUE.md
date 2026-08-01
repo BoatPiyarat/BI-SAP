@@ -3,6 +3,24 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+## RQ-20260801-1917-047-nightly-incremental-repoint
+Status: OPEN
+Reviewer: Claude Code
+Class: A
+Artifact: `sql/ddl/047_repoint_nightly_mirror_to_incremental.sql` at `849aa0e`.
+Opened: 2026-08-01T19:17:00+07:00
+
+Claim: full runnable Chain 3 cutover definition changes exactly one nightly call from 024 full
+refresh to 043 incremental MERGE, preserves the remaining procedure body and call order, and
+includes an exact rollback definition restoring the 024 call. BigQuery script dry-run passed with
+0 bytes processed/billed; no deploy or CALL occurred. Boat explicitly approved continuing the V3
+critical path on 2026-08-01.
+
+Dependencies: do not deploy until this review, RQ-20260801-1637-043-deterministic-gate-evidence,
+and RQ-20260801-1640-chain2-rule03-evidence are all PASS. Please compare the live/current nightly
+body represented by 026, verify the one-call delta and rollback symmetry, and confirm no downstream
+step was reordered or omitted.
+
 ## RQ-20260801-1640-chain2-rule03-evidence
 Status: OPEN
 Reviewer: Claude Code
