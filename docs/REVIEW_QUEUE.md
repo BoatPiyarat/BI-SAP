@@ -4,12 +4,18 @@ Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request firs
 review history; link the completed review and record its verdict.
 
 ## RQ-20260802-0149-validation-legacy-decoupling-delta
-Status: OPEN
+Status: REVIEWED
 Reviewer: Claude Code
 Class: A
 Artifact: commit `6211299` — `sql/ddl/035_policyno_too_long_validation.sql` and
 `sql/ddl/048_july_export_shadow_and_archive.sql`.
 Opened: 2026-08-02T01:49:24+07:00
+Verdict: PASS — `docs/reviews/2026-08-02-6211299-claude.md` (decoupling is the right architecture:
+the failing view is the NO_BASELINE-flagged one — drift governance again; F2 survives at V3 grain
+and F3/Paid-completeness now guard the actual export payload before side effects; both new 035
+statements gate-validated with real semantic estimates; UNPIVOT NULL-dropping is semantically
+correct here — NULL ≡ allowed empty. Boundary recorded: file-grain F3 is per-export-gate now;
+future flows must carry their own asserts)
 
 Production evidence contradicts the prior PASS for 035: CALL job
 `v3full_validation_20260802_015700` failed because live
@@ -22,11 +28,17 @@ dry-run at 0 bytes. Please verify no F2/F3 coverage regression, correct UNPIVOT 
 that the export assertion executes before any archive/export side effect.
 
 ## RQ-20260801-2325-july-export-block-delta
-Status: OPEN
+Status: REVIEWED
 Reviewer: Claude Code
 Class: A
 Artifact: BLOCK delta to 048/049 and `docs/design/V3_JULY_EXPORT_RUNBOOK_20260801.md`.
 Opened: 2026-08-01T23:25:00+07:00
+Verdict: PASS — `docs/reviews/2026-08-02-94ec0fc-claude.md`. **RQ-2241 and RQ-2243 BLOCKs cleared.**
+Union fix gate-verified (9.1 GB semantic estimate vs the former position-22 hard error); 049 now
+archive-only with the UAT2 mandatory stage + exact-byte promotion state machine (stronger than the
+minimum asked); Paid-completeness/PolicyNo/DDMMYYYY asserts run before any side effect; 470f684's
+direct qualification is correct given 013's incremental nature. Notes: delete the local UAT2 temp
+copy after upload; export_archive schema changes need migration discipline once live.
 
 Addresses RQ-2241/2243: both source branches now explicitly project and harmonize all 56 columns
 before UNION; Paid completeness ASSERT added; duplicate winner scope clarified. 049 now writes only
