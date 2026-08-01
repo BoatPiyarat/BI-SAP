@@ -69,6 +69,13 @@ BEGIN
   SELECT e.*, DATE(pe.charge_time) AS raw_payment_date
   FROM `pacific-plating-282708.sap_integration_v3.expected_state` e
   JOIN `pacific-plating-282708.sap_integration_v3.stg_payment_events` pe USING (charge_id)
+  -- Direct qualification is required for this historical July close. 013 is incremental and
+  -- cannot retroactively remove pre-deploy unqualified charges already present in staging.
+  JOIN `pacific-plating-282708.careos.careos_orders` co ON co.human_id=e.order_id
+  JOIN `pacific-plating-282708.careos.careos_order_items` coi
+    ON coi.order_id=co.id AND coi.human_id=e.order_item
+  JOIN `pacific-plating-282708.careos.careos_leads` cl
+    ON CONCAT('leads/',cl.id)=co.lead AND cl.status='LEAD_STATUS_PURCHASED'
   LEFT JOIN `pacific-plating-282708.sap_integration_v3.export_archive` a
     ON a.charge_id=e.charge_id AND a.order_item=e.order_item AND a.period=e.period
    AND a.delivery_status IN ('DELIVERED','ACKNOWLEDGED')

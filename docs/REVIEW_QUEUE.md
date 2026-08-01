@@ -20,6 +20,11 @@ Request reproduction of the former position-22 type failure, complete 56-positio
 late-bound body checks, UAT2 sufficiency, archive bucket/path/PII controls, and exact-byte promotion
 state machine. No deploy, CALL, UAT2 write, production write, or export occurred.
 
+Follow-up before deploy: 048 now re-applies Order + exact OrderItem + PURCHASED-lead qualification
+directly to the historical July export scope. This is necessary because 013 is an incremental MERGE
+and does not retroactively delete old unqualified staging rows. Historical cleanup remains separate;
+the July export no longer depends on it.
+
 ## RQ-20260801-2243-v3-july-production-runbook
 Status: REVIEWED
 Reviewer: Claude Code
