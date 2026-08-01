@@ -7,8 +7,8 @@ review history; link the completed review and record its verdict.
 Status: OPEN
 Reviewer: Claude Code
 Class: A
-Artifact: commit `22fc175`; source-only E1-E3/F1-F3 implementation in `sql/ddl/032`, `035`,
-`036`, `037`, `046`, two read-only audit queries, and
+Artifact: commits `1a289cd` + `b6bc1c3`; source-only E1-E3/F1-F3 implementation in
+`sql/ddl/032`, `035`, `036`, `037`, `046`, three read-only audit queries, and
 `docs/FINDINGS_E1_E3_F1_F3_20260801.md`.
 Opened: 2026-08-01T11:59:26+07:00
 
@@ -31,6 +31,12 @@ The old 373,044 is explicitly superseded. F1 job
 `bqjob_r335b01f924d2c5db_0000019fbbae3c0f_1` found only ONETIME incomplete: 18 current records;
 RCL and RCL_CMI were zero. A rejected pre-normalization E3 zero result is documented rather than
 cited.
+
+Pinned-criteria follow-up: repository inventory found no active source monitor hardcoding the old
+taxonomy; fixed-code consumers are historical/superseded and RULE-09's runbook is now marked DO
+NOT RUN. Tier-basis delta job `bqjob_r7ce7c676734cde22_0000019fbbb3bc99_1` measured the expected
+OrderDate correction: old >=2026 -> <=2024 = 75 records / 68 orders; old >=2026 -> 2025 = 9,719 /
+6,176; old 2025 -> <=2024 = 9,318 / 6,542. Order counts are per transition, not globally unique.
 
 Status: OPEN — request Class A review of tier/exclusion completeness, insurer canonicalization,
 F1 propagation, F2/F3 block semantics across the 56-column contract, morning-report separation,
