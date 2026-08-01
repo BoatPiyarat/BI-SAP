@@ -187,7 +187,7 @@ missing field, malformed value, threshold equality, threshold+1)
 | B5 | "SAP_LIVE bloat = 45×" | Aggregate กลบ peak จริง | A4: peak ~2,036× ต่อวัน |
 | B6 | bucket B1 ในแผนเก่าเป็นจุดเกิดปัญหา | ไม่พบ bucket ชื่อนั้น | A10: `gs://rcb-bronze-zone/SAP/production_database/` |
 | B7 | ตัวเลข **559 / 71** | SUPERSEDED (posted-vs-rejected methodology error + คำนวณจากอาการแทนสาเหตุ) | รอ population ที่ผ่าน review |
-| B8 | 401 orders / ฿267,775.28 / pilot `L77828566` เป็นข้อสรุป | BLOCK `5abaed3` ยังไม่ปิด (population ผสม 2 sub-mechanism, `042` schema ไม่ครบ, pilot ไม่มีหลักฐาน FA/SAP) | ห้ามอ้างเป็นตัวเลขจริงจนกว่า block ปิด |
+| B8 | 401 orders / ฿267,775.28 / pilot `L77828566` เป็นข้อสรุป | Historical 401 ไม่มี job ID/query timestamp และผสม sub-shape; 042 schema แก้ใน source แล้วแต่ยังไม่ deploy; pilot ยังไม่มี FA/SAP/JE/import evidence. Fresh job `d16_002a_split_20260801_111420` (2026-08-01 04:14:25.294 UTC) แยก grain แต่ไม่ reproduce 401 และยังรอ Class A review | ห้ามอ้าง historical 401 เป็นตัวเลขจริง และห้ามเลื่อน pilot จน evidence control ครบ |
 | B9 | "watermark ถูก reset/ลบ/ไม่ advance" | 14 generations เดินหน้าต่อเนื่อง ไม่มี reset/gap/failure-to-advance; 60,404→60,385→58,619 ลดลง ไม่เข้ากับ replay จาก default | A1/A3 และ watermark evidence 2026-07-30 |
 
 **หลักการที่ได้จากเซสชันนี้:** ทั้ง B3 และ B4 เป็นข้อสรุปที่ Claude เสนอเองแล้วต้องถอนภายในเซสชันเดียว

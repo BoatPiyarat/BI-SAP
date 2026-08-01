@@ -355,7 +355,7 @@ pilot, correction record, or deploy was changed.
 
 ---
 
-## 2026-07-29 — Confirmed SAP correction methods; opened INCIDENT-002
+## 2026-07-29 — Historical: confirmed SAP correction methods; opened pre-D16 merged INCIDENT-002
 
 Closed the validation library's pending Aware question using confirmation from Aware and
 Sarawut/Boyd. Method 1 is an adjustment line with the original Period,
@@ -369,7 +369,9 @@ an additional payment. Classification and type-level reconciliation require a du
 marker. Added canonical validations that rows 2+ of one `(OrderItem, Period)` must have
 `ExpectedReceived=0`, and that `add_ons` is deducted once per item-period rather than per charge.
 
-Opened `INCIDENT-002` for CMI double-deduction in the credit-shell path. Evidence includes
+Opened the then-current merged `INCIDENT-002` label for CMI double-deduction in the credit-shell
+path. **Superseded by D16:** identifier-change = 002a; credit-shell double-deduction = 002b; their
+populations must not be combined. Historical evidence includes
 `L80524847` dated 2026-07-28 and live diagnostic commit `5171adb` at 23:47:45 ICT; the exact query
 timestamp was not retained. The incident is known operationally as the 263-transaction incident,
 but authoritative scope and money impact remain under Claude Code quantification. It is internal

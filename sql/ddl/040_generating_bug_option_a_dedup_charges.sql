@@ -1,5 +1,5 @@
 -- 040_generating_bug_option_a_dedup_charges.sql
--- Boat D15 (2026-07-30), INCIDENT-002 generating-bug fix, Option A (approved direction, NOT approved
+-- Boat D15 (2026-07-30), INCIDENT-002b credit-shell generating-bug fix, Option A (approved direction, NOT approved
 -- to deploy). SOURCE ONLY. Nothing in this file has been run to CREATE OR REPLACE anything; the live
 -- `sap_integration_v2.\`RCL 04_new order credit shell\`` view is untouched.
 --

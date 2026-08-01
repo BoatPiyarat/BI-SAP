@@ -18,6 +18,13 @@ evidence; new incidents are versioned here and synchronized to Drive.
   `careos.careos_order_items.motor_item_type = 'MOTOR_TYPE_COMPULSORY'`, never `packageType`.
 - **Boundary:** this is the “CMI issue” still pending. It is not the credit-shell double-deduction
   population and must not inherit the 244-order figure.
+- **2026-08-01 traceability correction:** the historical `401 orders / ฿267,775.28` result has no
+  captured job ID or query timestamp and is not citable. Read-only job
+  `d16_002a_split_20260801_111420` (`2026-08-01 04:14:25.294 UTC`) applies a mutually exclusive
+  shape split but does not reproduce 401; results remain Class A review-pending. See
+  `docs/FINDINGS_D16_002A_POPULATION_SPLIT_20260801.md`.
+- **Pilot:** `L77828566` remains unconfirmed pending FA/Aware SAP status, JE, successful import,
+  verifier, timestamp, and source evidence. Boat owns coordination; no correction is authorized.
 
 ### INCIDENT-002b — credit-shell double-deduction
 

@@ -23,7 +23,7 @@ requires its own cause, population, and fix.
 
 ## Reporting constraint
 
-Do not combine this finding into an INCIDENT-002 total. Commit `3c10215` contains a first
+Do not combine this finding into INCIDENT-002a, INCIDENT-002b, or a merged incident total. Commit `3c10215` contains a first
 quantification but reports a range because raw identical-charge rows are not yet proven to be
 duplicate logs versus real payments. No point estimate may be reported until the SAP-posted
 population, cause, and `sap_fa_verification` evidence are complete and class-A review passes.

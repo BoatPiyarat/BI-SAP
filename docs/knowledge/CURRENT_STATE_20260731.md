@@ -260,7 +260,7 @@ deadline `2026-08-03 14:00 ICT` จะเห็น SAP state ล่าสุด�
 | R12 | RULE-03 = แก้ ORDER BY บรรทัดเดียวใน `025` | ต้องแก้ `024` ก่อน (§2) — `UpdateDate`/`UpdateTime` ไม่มีใน `sap_mirror_doc` |
 | R13 | Date basis = `GREATEST(OrderDate, PolicyDate)` สำหรับ July close | **`PaymentDate`** (RULE-01) |
 | R14 | 401 = ปัญหา IAM ที่ Attila ต้องแก้อย่างเดียว | token type เป็น blocker จริง; OAuth ผ่าน end-to-end โดยไม่เปลี่ยน IAM |
-| R15 | 401/71 · 401 orders / ฿267,775.28 / pilot `L77828566` เป็นข้อสรุป | BLOCK `5abaed3` ยังไม่ปิด — ห้ามอ้างเป็นตัวเลขจริง |
+| R15 | 401/71 · 401 orders / ฿267,775.28 / pilot `L77828566` เป็นข้อสรุป | BLOCK ยังไม่ปิด: historical 401 ไม่มี job ID/query timestamp และผสม sub-shape; job `d16_002a_split_20260801_111420` (2026-08-01 04:14:25.294 UTC) แยก grain แล้วแต่ไม่ reproduce 401 และยังรอ Class A review; pilot ยังขาด FA/SAP/JE/import evidence — ห้ามอ้างเป็นตัวเลขจริงหรือ approved pilot |
 
 **หลักการ**: ข้อสรุปที่ "อธิบายได้สวย" คือตัวที่เสี่ยงที่สุด — ห้ามเลื่อนสถานะเป็น fact
 ถ้ายังไม่มี Boat / FA / Aware ยืนยัน

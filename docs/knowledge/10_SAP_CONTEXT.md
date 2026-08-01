@@ -540,5 +540,9 @@ observed by BigQuery are unrecoverable.
 - Retract ฿645.21 as evidence of mass monetary overwrite or a unique order fingerprint.
 - Retract the old nonexistent bucket alias as a bucket/root-cause location; use
   `gs://rcb-bronze-zone/SAP/production_database/`.
-- Superseded CMI figures 559/71 and blocked 401/฿267,775.28/pilot claims remain non-citable until
-  their review blocks close.
+- Superseded CMI figures 559/71 and blocked historical 401/฿267,775.28/pilot claims remain
+  non-citable. The historical 401 run has no captured job ID/query timestamp; the reproducible
+  split job `d16_002a_split_20260801_111420` at `2026-08-01 04:14:25.294 UTC` does not reproduce
+  401 and remains Class A review-pending. `L77828566` is unconfirmed pending FA/SAP/JE/import
+  evidence. See `FINDINGS_D16_002A_POPULATION_SPLIT_20260801.md`; keep all related correction
+  populations blocked until their review gates close.

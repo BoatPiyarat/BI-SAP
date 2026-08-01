@@ -1,5 +1,7 @@
 -- 039_sap_correction_log_and_b1_pilot.sql
--- Boat D11 follow-up (2026-07-30), INCIDENT-002 B1 pilot prep. SOURCE ONLY. NOT DEPLOYED.
+-- Boat D11 follow-up (2026-07-30), pre-D16 symptom-based B1 pilot prep. SOURCE ONLY. NOT DEPLOYED.
+-- This historical artifact does not define INCIDENT-002a or INCIDENT-002b and must not combine
+-- their populations. See docs/FINDINGS_D16_002A_POPULATION_SPLIT_20260801.md.
 -- Nothing in this file has been run against BigQuery; no correction file has been sent to SAP.
 --
 -- ⚠️ SUPERSEDED 2026-07-29 (same-day, later): D13 set the materiality buffer at ฿10 PER ORDER (not
@@ -95,7 +97,7 @@
 -- (none exists) and needs Finance/Boat confirmation, same open question already on record.
 
 -- ----------------------------------------------------------------------------
--- sap_correction_log: the one place every INCIDENT-002 (and future) manual/semi-manual money
+-- sap_correction_log: the one place every incident (and future) manual/semi-manual money
 -- correction gets recorded, regardless of bucket or method - so nothing is ever a correction that
 -- exists only inside a chat message or a one-off query result.
 -- ----------------------------------------------------------------------------
@@ -128,7 +130,7 @@ CLUSTER BY order_item;
 --   0 AS correction_expected,
 --   ROUND(-(ActualReceived - ExpectedReceived), 2) AS correction_actual,
 --   CONCAT('ADJ1_', OrderItem) AS correction_invoice_no,  -- verified: 0 prior ADJ invoices on all 5 orders
---   'INCIDENT-002-B1' AS audit_case_id
+--   'HISTORICAL_PRE_D16_B1' AS audit_case_id
 -- FROM (the 5 cases below)
 --
 -- | OrderItem      | Period | Expected | Actual  | delta | correction_actual | sap_invoice_no (existing) | sap_status |

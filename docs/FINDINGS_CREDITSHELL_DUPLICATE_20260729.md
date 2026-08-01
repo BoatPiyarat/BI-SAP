@@ -136,15 +136,17 @@ Note on `pairs_with_cmi_sibling`: joins on `OrderID` matching any row in the vie
 `products/health-insurance` (644 rows) — no `NonMotor` value exists here, hence the BU-split caveat
 above.
 
-## Relation to INCIDENT-002 / the “263-transaction” incident
+## Historical relation to the pre-D16 merged `INCIDENT-002` label
 
-Boat's subsequent evidence on 2026-07-29 identifies the CMI credit-shell double-deduction as
-`INCIDENT-002` and refers to it operationally as the 263-transaction incident. That supersedes this
+Boat's subsequent evidence on 2026-07-29 used the then-current merged label `INCIDENT-002` and
+referred to it operationally as the 263-transaction incident. **D16 supersedes that merge:** the
+identifier-change mechanism is INCIDENT-002a; credit-shell double-deduction is INCIDENT-002b. This
+historical wording must not be used to combine their populations. That supersedes this
 finding's earlier inference that the two were unrelated. The broad duplicate-pair diagnostic in
 this file is not automatically the authoritative incident population: it came from a different
 query grain and its exact query timestamp was not retained. Claude Code is quantifying the
 transaction list, amount impact, and overlap. Until that result is recorded, do not merge or cite
-these counts as final `INCIDENT-002` scope.
+these counts as final scope for either INCIDENT-002a or INCIDENT-002b.
 
 ## Fix method (per Boat/Aware, already recorded — NOT actioned)
 
@@ -606,7 +608,7 @@ matches what that split logic should produce** (M1 should show ~฿645.21, not �
 split did not apply.
 
 **This is a real, confirmed, money-adjacent misposting — but a DIFFERENT bug, in a DIFFERENT view,
-from a DIFFERENT mechanism than the credit-shell duplication (INCIDENT-002) this whole FINDINGS
+from a DIFFERENT mechanism than the credit-shell duplication (the pre-D16 merged incident label) this whole FINDINGS
 document is about.** Not force-fit into Class 1/Class 2 — those classes are specific to the
 credit-shell view. This needs its own dedicated investigation (why did `sap_dashboard_carepay_fully_paid`'s
 own split formula not apply here), not started beyond this confirmation. Flagging for Boat/FA
@@ -1003,6 +1005,13 @@ reflect `L80046687`'s rejection once a replacement is found.
 
 # ADDENDUM 2026-07-30 (session, D16 Boat) — scope redefined by CAUSE (CMI-not-deducted), not symptom; 559/71 both formally dropped; new population quantified, disjoint from credit-shell's 244; new pilot found
 
+> **SUPERSEDED / BLOCKED 2026-08-01:** this historical addendum retained no query text, BigQuery
+> job ID, or query timestamp for `401 orders / ฿267,775.28`, and its arithmetic filter mixes pure
+> INCIDENT-002a with the shared-full-payment finding. Do not cite its population or pilot claim.
+> The separated reproducible query, actual job provenance, and current diagnostic result are in
+> `FINDINGS_D16_002A_POPULATION_SPLIT_20260801.md`. INCIDENT-002b and the 224 unknown-cause orders
+> remain separate and were not re-scoped there.
+
 Boat's scope call: the "CMI issue" is **only** the population where a CMI item exists and the
 compulsory (พรบ.) premium was never deducted from what the customer paid (the 263-transaction
 mechanism). The 559/71 figures were computed from the *symptom* (Expected≠Actual in
@@ -1024,7 +1033,7 @@ Checked all three of Boat's diagnostic angles:
 - **V1's `ActualReceived` = the full amount still including the CMI premium**: built directly and
   checked against `sap_mirror_doc` (ground truth, not the symptom view).
 
-**Query, built and self-corrected**: for every order with a CMI sibling, compared its non-CMI
+**Historical query description only — executable SQL and job provenance were not retained**: for every order with a CMI sibling, compared its non-CMI
 item's `sap_mirror_doc` Period-1 row (`(Actual − Expected)`) against the CMI sibling's own
 `gross_premium`, `TransactionStatus = 'Paid'` only. First pass (no `Expected > 0` filter): **648
 orders, Σ ฿441,447.49** — but sampling the top matches showed most were `Expected = 0` rows
@@ -1032,13 +1041,16 @@ orders, Σ ฿441,447.49** — but sampling the top matches showed most were `Ex
 pattern** (additional-payment/correction-shaped rows per `SAP_VALIDATION_LIBRARY.md`'s own
 `CORRECTION_MARKER_MISSING` warning — structurally indistinguishable from a real topup without a
 marker), not CMI-non-deduction. **Filtered to `Expected > 0` only** (the item's own real premium
-must be present for "premium + undeducted CMI" to mean anything): **401 orders, Σ ฿267,775.28**.
+must be present for "premium + undeducted CMI" to mean anything): **401 orders, Σ ฿267,775.28
+(BLOCKED historical result; job ID = NOT CAPTURED; query timestamp = NOT CAPTURED)**.
 Sampled 3 of the remaining matches directly — clean, exact matches: e.g. `L80378696-V1` Expected
 12,320.00 → Actual 12,965.21 (delta **exactly** +645.21, the CMI premium, not just within
 tolerance).
 
 **Results**:
-- **401 orders**, Σ over-expected **฿267,775.28**, all confirmed `TransactionStatus = 'Paid'` with a
+- **401 orders**, Σ over-expected **฿267,775.28** (**BLOCKED historical result; job ID and query
+  timestamp were not captured; the 2026-08-01 reproducible split does not reproduce 401**), all
+  observed `TransactionStatus = 'Paid'` with a
   real `DocEntry` (POSTED_WRONG by construction — this population was built directly from
   `sap_mirror_doc`, not the symptom view, so the key-level POSTED check from Item 2 is already
   satisfied for this specific population).
@@ -1102,7 +1114,7 @@ before *this* incident (CMI-non-deduction + credit-shell + the unknown-224 bucke
 destroy the only evidence able to answer "was this ever actually posted, and with what number, at
 the time." No cleanup action taken or proposed here; citing the existing rule as sufficient.
 
-## Item 5 — new pilot found: `L77828566`, clean single-row case, Method 1 eligible
+## Item 5 — unconfirmed pilot candidate: `L77828566` (not approved)
 
 Sampled 3 of the 401-order population directly against `sap_mirror_doc`; 2 turned out unsuitable —
 `L80400094` is the M1/V1-shared-payment shape flagged above (needs a 2-item fix, not a clean V1-only
@@ -1110,13 +1122,18 @@ correction); `L80378696` has a **negative** `ExpectedReceived` on `M1` (−1,034
 `SAP_VALIDATION_LIBRARY.md`'s explicit rule, a negative Expected mandates **Method 2** (Cancel +
 fresh Paid), not Method 1, so it's out for this pilot's purposes regardless.
 
-**`L77828566` is clean**: exactly **one** `sap_mirror_doc` row total for the whole order —
+**Historical mirror-only observation; not FA/SAP confirmation:** exactly **one** `sap_mirror_doc`
+row total was observed for `L77828566` —
 `L77828566-V1`, Period 1, `Expected = 17,155.79`, `Actual = 17,801.00` (delta **+645.21**, exactly
 the CMI premium), `TransactionStatus = 'Paid'`, real `DocEntry` `1972667`, `BatchRunDate` `05122025`
 (before the 29-Jun-2026 identifier change — consistent with the hypothesis for this specific case).
 Invoice check: only 1 invoice on record for this order (`1_L77828566-V1`), not `ADJ`-prefixed —
 `ADJ1_L77828566-V1` is collision-free. Correction draft (Method 1, since `Expected` here is positive
 and correct-looking): `ExpectedReceived=0`, `ActualReceived=-645.21`,
-`InvoiceNo=ADJ1_L77828566-V1`. **Not sent** — same outstanding dependencies as every other pilot
+`InvoiceNo=ADJ1_L77828566-V1`. **This is not an approved pilot and was not sent.** Missing evidence:
+FA/Aware decision at item-period grain, current SAP DocEntry/status confirmation, JE reference tied
+to a successful import LogID/evidence, verifier and evidence timestamp, and controlled source
+reference. FA/Aware own the SAP/JE/import evidence; Boat owns coordination and any authorization.
+The same outstanding dependencies as every other candidate also remain
 this session (cutoff dates, `sap_correction_log`/`fn_mint_adj_invoice` deploy, generating-bug fix
 first, full validation pass, shadow run, REVIEW_QUEUE sign-off).
