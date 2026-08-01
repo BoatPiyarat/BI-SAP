@@ -43,7 +43,7 @@ remain separately auditable.
     `PaymentMethod`, and `PaymentChannel`, because those fields arise from a completed payment.
     `ExpectedReceived` and `ActualReceived` are not part of this rule's mandatory-empty set.
     In the normal installment schedule, ExpectedReceived remains available as the scheduled
-    amount. This wording supersedes the earlier interpretation recorded in this file.
+    amount. This wording is Boat's corrected item 16 and supersedes the earlier interpretation.
 14. One `(OrderItem,Period)` may contain multiple payment rows. Rank 1 carries scheduled
     ExpectedReceived; later rows use ExpectedReceived=0. Sum ExpectedReceived equals the period
     expectation. Compare summed ActualReceived at order grain: absolute variance below THB 10 is
@@ -53,7 +53,9 @@ remain separately auditable.
 ## Accounting periods and cancellation
 
 15. PaymentDate uses the paid date while open. After month close, backlog imported into the next
-    open month uses that month's first day (`payment_date_clamped=TRUE`); preserve raw PaymentDate.
+    open month uses that month's first day (`payment_date_clamped=TRUE`). CareOS remains the source
+    of the original raw date; the durable V3 audit marker is `payment_date_clamped` rather than a
+    duplicated stored raw-date column.
 16. During an explicitly open July period, older rows may use BatchRunDate no later than
     31 July 2026. BatchRunDate is `last_day(open_period)` from `sap_period_lock`, not silently
     `CURRENT_DATE()`. Exactly one active period is required or processing fails closed.
@@ -82,8 +84,9 @@ remain separately auditable.
   DocEntry in `SAP_LIVE_FULL`) and listed in the morning report.
 - Correction/additional-payment rows need a durable marker because their shapes may match. Wrong
   or negative ExpectedReceived requires Cancel + Paid replacement.
-- Winner selection uses UpdateDate, UpdateTime, DocEntry recency while Cancelled remains terminal
-  and Paid never regresses to Pending.
+- At `(OrderItem,Period)` grain, winner selection uses UpdateDate, UpdateTime, then DocEntry while
+  Cancelled remains terminal and Paid never regresses to Pending. Per-DocEntry mirror dedup uses
+  the reviewed content-hash tiebreak after recency.
 - Column name+ordinal is a hard guard. Data-type drift should be WARN, not a positional substitute.
 
 ## Implementation status

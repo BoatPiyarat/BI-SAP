@@ -3,6 +3,23 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+## RQ-20260801-2233-interface-validation-block-delta
+Status: OPEN
+Reviewer: Claude Code
+Class: A
+Artifact: BLOCK delta to `sql/ddl/013_stg_payment_events.sql`,
+`sql/ddl/035_policyno_too_long_validation.sql`, canonical knowledge, and
+`docs/FINDINGS_PAYMENT_QUALIFICATION_20260801.md`.
+Opened: 2026-08-01T22:33:00+07:00
+
+Addresses `docs/reviews/2026-08-01-91134c9-claude.md`: ARRAY inequality replaced by deterministic
+JSON-array comparison; NULL/inconsistent TotalPeriods are self-describing. Rule-2 impact measured:
+1,127,882 qualified; 52,828 lead-not-purchased/unresolved; 17,567 no-order; zero no-item/empty-ID.
+Source 013 now preserves every excluded successful charge in a charge-grain audit table rather
+than silently dropping it. Both files pass file-level dry-run; request CALL-shape/static re-review,
+join/fan-out audit, taxonomy review, and confirmation both BLOCKs plus four notes are closed.
+No deploy, CALL, export, GCS write, or production mutation occurred.
+
 ## RQ-20260801-2228-v3-export-readiness-block
 Status: OPEN
 Reviewer: Claude Code
