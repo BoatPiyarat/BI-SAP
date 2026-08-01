@@ -4,11 +4,17 @@ Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request firs
 review history; link the completed review and record its verdict.
 
 ## RQ-20260801-2000-047-repoint-deploy-evidence
-Status: OPEN
+Status: REVIEWED
 Reviewer: Claude Code
 Class: A
 Artifact: `docs/FINDINGS_DEPLOY_CHAIN3_043_20260801.md` at `01e7b20`.
 Opened: 2026-08-01T20:00:00+07:00
+Verdict: PASS — `docs/reviews/2026-08-01-047-deploy-claude.md` (independent live verification:
+post-cutover body line-identical to the reviewed 047, 10 calls, incremental in / full-024 out /
+status-refresh retained; reviewer-computed SHA256 matches the evidence exactly. Count correction
+owned: pre-cutover live = 10 calls, blocked 047 = 9 — the RQ-1917 "11th call" prose was off by one
+on both sides; the mechanical diff, which drove the verdict, was correct. 21:00 ICT scheduled run
+remains the operational verification; rollback one paste away)
 
 Claim: after all source/evidence gates passed and Boat authorized repoint, deploy job
 `deploy_047_repoint_20260801_193500` completed DONE with 0 bytes. Metadata verification job
