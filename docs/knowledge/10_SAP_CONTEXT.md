@@ -118,6 +118,8 @@ SAP DB (RCB_LIVE_DB, ผ่าน WireGuard) --[pyodbc]--> sap-extract-job (Clou
 **6-Layer Standard (v2.1):** Extraction → Staging → Business Logic → Validation → Export →
 Reconciliation & Monitoring (Layer 6 อ่านอย่างเดียว ไม่ mutate)
 
+Canonical consolidated pre-interface rules: `docs/knowledge/SAP_INTERFACE_VALIDATION_RULES.md`.
+
 ---
 
 ## DESIGN PRINCIPLES

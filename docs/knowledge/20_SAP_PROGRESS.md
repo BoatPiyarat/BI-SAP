@@ -1,4 +1,10 @@
 # 20_SAP_PROGRESS.md
+**2026-08-01 VALIDATION CANONICALIZATION — CLASS A REVIEW:** Boat's 20 operational rules are now
+mapped in one canonical knowledge file. Source 013 enforces successful charge + Order + non-empty
+OrderItem + PURCHASED lead; source 035 enforces exact period set 1..N plus RCB/RCL_CMI/RCL period
+invariants. Dry-runs passed; not deployed. Pending 56-column Phase-B work includes status-field,
+InsurerCode-shape, repeated-row amount, cancel-preflight, and credit-shell linkage checks.
+
 **2026-08-01 PHASE B CONTRACT COVERAGE BLOCK:** live expected_state has 290,319 rows/15 columns;
 the positional contract has 56. Corrected job `phaseb_coverage_corrected_20260801_213400` found
 276,660 rows covered by one of the two 56-column CareOS views and 13,659 uncovered (ONETIME 12,665;

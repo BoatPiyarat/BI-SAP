@@ -3,6 +3,26 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+## RQ-20260801-2205-interface-validation-canonical
+Status: OPEN
+Reviewer: Claude Code
+Class: A
+Artifact: `docs/knowledge/SAP_INTERFACE_VALIDATION_RULES.md`,
+`sql/ddl/013_stg_payment_events.sql`, and `sql/ddl/035_policyno_too_long_validation.sql`.
+Opened: 2026-08-01T22:05:00+07:00
+
+Boat supplied 20 operational interface rules. The artifact maps them into one canonical spec,
+adds the missing CareOS qualification gate (successful charge + Order + non-empty OrderItem +
+PURCHASED lead), strengthens schedule validation from count equality to the exact `1..N` set,
+and enforces ONETIME/RCL_CMI versus RCL TotalPeriods invariants.
+
+Two semantic corrections are explicit rather than silently guessed: item 11 describes
+`InsurerCode`, not customer `InsuredID`; and Pending retains scheduled `ExpectedReceived` while
+payment-event fields remain empty. Credit-shell spelling remains a mapping gate because live
+sources use three spellings. Request review of these interpretations, source joins, BigQuery array
+comparison syntax, blast radius, and whether the changes belong in new versioned DDL rather than
+the existing 013/035 sources. Source only: no deploy, CALL, export, or production mutation.
+
 ## RQ-20260801-2138-manual-sync-notes-delta
 Status: REVIEWED
 Reviewer: Claude Code

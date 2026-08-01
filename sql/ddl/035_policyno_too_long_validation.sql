@@ -64,6 +64,29 @@ BEGIN
   FROM agg
   WHERE n_periods != n_total_periods;
 
+  -- Count equality alone can miss malformed sets such as {2,3} with TotalPeriods=2.
+  INSERT INTO `pacific-plating-282708.sap_integration_v3.sap_validation_error`
+  WITH per_item AS (
+    SELECT order_item, MAX(total_periods) AS total_periods,
+      ARRAY_AGG(DISTINCT period ORDER BY period) AS actual_periods
+    FROM `pacific-plating-282708.sap_integration_v3.expected_state`
+    GROUP BY order_item
+  )
+  SELECT order_item, CAST(NULL AS INT64), 'SCHEDULE_PERIOD_SET_INVALID',
+    FORMAT('expected 1..%d; found %s', total_periods,
+      ARRAY_TO_STRING(ARRAY(SELECT CAST(p AS STRING) FROM UNNEST(actual_periods) p), ',')),
+    CURRENT_TIMESTAMP()
+  FROM per_item
+  WHERE total_periods IS NULL OR total_periods < 1
+     OR actual_periods != GENERATE_ARRAY(1, total_periods);
+
+  INSERT INTO `pacific-plating-282708.sap_integration_v3.sap_validation_error`
+  SELECT order_item, period, 'FLOW_TOTAL_PERIODS_INVALID',
+    FORMAT('flow=%s; TotalPeriods=%d', flow, total_periods), CURRENT_TIMESTAMP()
+  FROM `pacific-plating-282708.sap_integration_v3.expected_state`
+  WHERE (flow IN ('ONETIME', 'RCL_CMI') AND total_periods != 1)
+     OR (flow = 'RCL' AND total_periods <= 1);
+
   INSERT INTO `pacific-plating-282708.sap_integration_v3.sap_validation_error`
   WITH known_insurers AS (
     SELECT DISTINCT SPLIT(U_InsurerCode, '-')[OFFSET(1)] AS insurer_code

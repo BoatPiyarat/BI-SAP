@@ -65,8 +65,15 @@ BEGIN
         ) AS item_rank
       FROM `pacific-plating-282708.careos.carepay_charges` c
       JOIN `pacific-plating-282708.careos.carepay_transactions` t ON t.id = c.transaction_id
-      LEFT JOIN `pacific-plating-282708.careos.careos_orders` o ON CONCAT('transactions/', t.id) = o.payment
-      LEFT JOIN `pacific-plating-282708.careos.careos_order_items` oi ON oi.order_id = o.id
+      -- Qualification gate: money alone is not an SAP-interface population. A successful charge
+      -- must resolve to an Order, a non-empty OrderItem human_id, and a PURCHASED lead.
+      JOIN `pacific-plating-282708.careos.careos_orders` o
+        ON CONCAT('transactions/', t.id) = o.payment
+      JOIN `pacific-plating-282708.careos.careos_order_items` oi
+        ON oi.order_id = o.id AND NULLIF(TRIM(oi.human_id), '') IS NOT NULL
+      JOIN `pacific-plating-282708.careos.careos_leads` l
+        ON CONCAT('leads/', l.id) = o.lead
+       AND l.status = 'LEAD_STATUS_PURCHASED'
       WHERE c.status = 'SUCCESSFUL'
         AND c.update_time > watermark
     )

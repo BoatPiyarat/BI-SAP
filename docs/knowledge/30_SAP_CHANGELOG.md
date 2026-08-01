@@ -4,6 +4,16 @@ Append-only — entry ใหม่บนสุด ห้ามลบ/แก้�
 
 ---
 
+## 2026-08-01 — Boat's 20 pre-interface rules consolidated; qualification/schedule source tightened
+
+Added the canonical `SAP_INTERFACE_VALIDATION_RULES.md` mapping all 20 operational rules plus
+existing E1-E3/F1-F3, correction, winner, and contract controls. Corrected two semantic hazards:
+Motor/NonMotor format applies to InsurerCode (not customer InsuredID), and Pending retains its
+scheduled ExpectedReceived while payment-event fields stay empty. Source-only 013 now requires a
+successful charge to resolve to Order, non-empty OrderItem, and PURCHASED lead. Source-only 035
+now validates the exact period set 1..N and flow/TotalPeriods invariants. Both SQL files passed
+BigQuery dry-run at 2026-08-01 22:16 ICT; no deploy or CALL occurred. Class A review is open.
+
 ## 2026-08-01 — Phase B 56-column source coverage measured; naive shadow build blocked
 
 Live metadata confirms `expected_state` remains a 15-column engine table while the contract has 56
