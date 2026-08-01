@@ -4,12 +4,20 @@ Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request firs
 review history; link the completed review and record its verdict.
 
 ## RQ-20260802-0515-v3-onetime-payload-and-hold
-Status: OPEN
+Status: REVIEWED
 Reviewer: Claude Code
 Class: A
 Artifact: commit `296cdda` — `sql/ddl/050_v3_onetime_payload_source.sql` and delta to
 `sql/ddl/048_july_export_shadow_and_archive.sql`.
 Opened: 2026-08-02T05:15:29+07:00
+Verdict: PASS WITH NOTES — `docs/reviews/2026-08-02-296cdda-claude.md`. Baseline delta verified
+mechanically against the LIVE definition (98.2% identical, 6 hunks): declared deviations check out;
+holds/conservation/no-unclassified all fail-closed; arithmetic 831+222=1,053 exact; change-order
+boundary double-enforced. NOTE 1 (required pre-deploy): a third, undeclared deviation exists — 050
+drops the live view's outer RULE-02 hotfix wrapper (correct to drop, must be declared). NOTE 2
+(separate live defect, legacy lane): that live wrapper parses an ISO literal with %d%m%Y —
+always NULL — so production fully_paid currently emits NULL BatchRunDate to every other consumer;
+Boat decision: fix literal to '31072026' or revert the hotfix. 050/048 unaffected.
 
 CALL `call_048_july_shadow_20260802_045000` correctly failed with 1,053 eligible rows lacking a
 verified payload. Temporary semantic test `test_050_coverage_retry_20260802_051400` proves the
