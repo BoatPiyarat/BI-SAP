@@ -3,6 +3,24 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+## RQ-20260802-0515-v3-onetime-payload-and-hold
+Status: OPEN
+Reviewer: Claude Code
+Class: A
+Artifact: commit `296cdda` — `sql/ddl/050_v3_onetime_payload_source.sql` and delta to
+`sql/ddl/048_july_export_shadow_and_archive.sql`.
+Opened: 2026-08-02T05:15:29+07:00
+
+CALL `call_048_july_shadow_20260802_045000` correctly failed with 1,053 eligible rows lacking a
+verified payload. Temporary semantic test `test_050_coverage_retry_20260802_051400` proves the
+new source covers 829 CREDIT_CARD_INSTALLMENT and two old-policy FULL_PAYMENT rows while retaining
+the legacy change-order exclusion. Follow-up `test_050_remaining_gap_20260802_051600` classifies
+221 remaining rows as change orders and one as RCL_CMI without a verified payload. 048 now records
+only those two explicit hold reasons, fails on every unclassified gap, and asserts population
+conservation (`eligible_all = export + audited hold`). Combined 050→048 file dry-run passed at
+0 bytes. Please verify the source-baseline delta, latest-snapshot de-fanout, 56-column ordinal/type
+contract, change-order boundary, RCL_CMI hold, and that no unclassified row can reach export.
+
 ## RQ-20260802-0149-validation-legacy-decoupling-delta
 Status: REVIEWED
 Reviewer: Claude Code
