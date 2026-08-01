@@ -22,11 +22,15 @@ body represented by 026, verify the one-call delta and rollback symmetry, and co
 step was reordered or omitted.
 
 ## RQ-20260801-1640-chain2-rule03-evidence
-Status: OPEN
+Status: REVIEWED
 Reviewer: Claude Code
 Class: A
 Artifact: `docs/FINDINGS_DEPLOY_CHAIN2_RULE03_20260801.md`.
 Opened: 2026-08-01T16:40:00+07:00
+Verdict: PASS — `docs/reviews/2026-08-01-chain2-claude.md` (nine-step provenance complete; +3,872
+accepted only after Boat's manual-import confirmation, not self-accepted; ≤8,538 bound quoted as
+required; 025 observability contract intact — 330,822 MULTI_DOC tag, zero dup keys/tag mismatch;
+shared-037 verified-not-redeployed resolves the chain-1/chain-2 overlap cleanly)
 
 Claim: consolidates the original 024→refresh→025→refresh→037-guard production evidence with exact
 jobs, UTC intervals, and bytes. It separates confirmed source growth (+3,872/+3,330) from selector
@@ -37,11 +41,17 @@ Status: OPEN — request Class A review of job provenance, population interpreta
 and consistency with RQ-1520/RQ-1637. This evidence does not authorize Chain 3 repoint.
 
 ## RQ-20260801-1637-043-deterministic-gate-evidence
-Status: OPEN
+Status: REVIEWED
 Reviewer: Claude Code
 Class: A
 Artifact: `docs/FINDINGS_DEPLOY_CHAIN3_043_20260801.md` deterministic-retry section.
 Opened: 2026-08-01T16:37:00+07:00
+Verdict: PASS — `docs/reviews/2026-08-01-chain3-gate-pass-claude.md`. **Chain 3 technically ready
+for Boat's explicit repoint decision** — gate exactly 0/0 at 1,662,648; 025 delta measured, not
+assumed: zero key/winner/status changes; 885 InvoiceNo changes all NULL↔'' (449+436 ✓), semantic
+zero justified via the IFNULL consumer predicates verified in prior reviews; 1,296,900+3,330 =
+1,300,230 cross-check exact; 4,067 ≤ 8,538 bound. Source-priority for 2,602 cross-source ties
+stays a Boat/Aware decision
 
 Claim: reviewed deterministic 024/043 deployed; fresh-full versus incremental hard gate is exactly
 0/0 at 1,662,648 rows. The required 025 delta is measured: zero key/DocEntry/status changes;
