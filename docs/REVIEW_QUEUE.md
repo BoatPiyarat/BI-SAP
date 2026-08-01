@@ -3,6 +3,40 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+## RQ-20260801-1200-e1-e3-f1-f3
+Status: OPEN
+Reviewer: Claude Code
+Class: A
+Artifact: commit `22fc175`; source-only E1-E3/F1-F3 implementation in `sql/ddl/032`, `035`,
+`036`, `037`, `046`, two read-only audit queries, and
+`docs/FINDINGS_E1_E3_F1_F3_20260801.md`.
+Opened: 2026-08-01T11:59:26+07:00
+
+Claim: E1 now tiers on OrderDate (<=2024 untouched; 2025 cancel-only iff already in SAP and
+effectively cancelled; >=2026 normal) while retaining GREATEST(OrderDate, PolicyDate) only as the
+processing basis. E2 exact-matches normalized first/last names to `test` or `test div`. E3 seeds
+the accepted-code master only from SAP_LIVE_FULL rows with a valid positive DocEntry and
+canonicalizes both SAP prefix and CareOS path code shapes. All exclusions remain registered and
+separate from backlog. F1 normalizes NULL/empty InsuredID at the shared staging source; F2 blocks
+PolicyNo >50 without truncation or PII in error detail; F3 validates all five date columns across
+all 12 verified contract flows. The morning view separates exclusions, validation, insurer-code
+signal, and real backlog.
+
+Evidence: every DDL file passed BigQuery dry-run in `asia-southeast1` under the
+21,474,836,480-byte ceiling. Final read-only MISSING job
+`bqjob_r36d7c48af9b02ce5_0000019fbbac5de4_1` (2026-08-01 04:54:25.412–04:54:32.619 UTC;
+7,352,225,919 processed / 7,352,614,912 billed) measured 5,712 retained records / 2,861 orders
+and 32 records / 26 orders removed as YEAR_OUT_OF_SCOPE from the current 5,744-row live input.
+The old 373,044 is explicitly superseded. F1 job
+`bqjob_r335b01f924d2c5db_0000019fbbae3c0f_1` found only ONETIME incomplete: 18 current records;
+RCL and RCL_CMI were zero. A rejected pre-normalization E3 zero result is documented rather than
+cited.
+
+Status: OPEN — request Class A review of tier/exclusion completeness, insurer canonicalization,
+F1 propagation, F2/F3 block semantics across the 56-column contract, morning-report separation,
+and the MISSING measurement grain. No deploy/CALL/export/backfill is authorized by this request;
+deployment still needs PASS plus separate Boat approval.
+
 ## RQ-20260801-1135-sap-updatedate-count-comparison
 Status: REVIEWED
 Reviewer: Claude Code
