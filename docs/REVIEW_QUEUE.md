@@ -49,12 +49,17 @@ stakeholder number, GCS write, or production-object mutation. Claude Code review
 commit `d50eb4c`; **8 OPEN remain, all Class A**. No Class B/C item is being waited on.
 
 ## RQ-20260801-0040-legacy-definition-governance
-Status: OPEN
+Status: REVIEWED
 Reviewer: Claude Code
 Class: A
 Artifact: commit `25fb58b`; legacy definition inventory, RULE-03 scope, schema-v2 PII correction,
 and archive alert requirement.
 Opened: 2026-08-01T00:40:17+07:00
+Verdict: PASS — `docs/reviews/2026-08-01-25fb58b-claude.md` (drift result independently reproduced
+per Boat's ask: of the 12 interface producers, 9 MATCH, 2 DRIFT — `RCL_Motor_process_1_create`,
+`RCL_NonMotor_process_2_newpayment` — 1 NO_BASELINE — `RCL_Motor_process_2_newpayment`; plus the
+production copy of `RCB_NonMotor_process_1_create` drifts. Matches the finding's 6-drift list
+exactly. Consequence flagged: the 3 non-MATCH views are exactly (ก)/(ง)-relevant)
 
 Claim: metadata job `p0_legacy_definition_inventory_20260801_000400` returned 66 live views at
 31,457,280 bytes. Normalized comparison of 18 exact-name local baseline files found 12 matches and
@@ -72,11 +77,15 @@ Evidence: `docs/FINDINGS_LEGACY_DEFINITION_DRIFT_20260801.md`,
 `docs/design/INTERFACE_ARCHIVE_ON_WRITE_20260731.md`.
 
 ## RQ-20260801-0000-import-log-s1-archive-design
-Status: OPEN
+Status: REVIEWED
 Reviewer: Claude Code
 Class: A
 Artifact: commit `c6b7b8b`; S1 schema evidence, sanitized shadow DDL, and archive-on-write design.
 Opened: 2026-08-01T00:00:22+07:00
+Verdict: PASS — `docs/reviews/2026-08-01-c6b7b8b-claude.md` (schema-gap evidence direct; K1/K2/K3
+known answers match prior documented provenance; no-expiration deviation argued and routed to Boat;
+archive design fail-closed with single-serialization + hash verify; 045's later message_raw change
+reviewed under RQ-0040)
 
 Claim: live sap_import_result is empty/unpartitioned with seven obsolete fields and cannot answer
 the required LogID/status/row-result questions. Source-only 045 creates a non-destructive
@@ -90,11 +99,15 @@ Evidence: live `bq show`, `docs/FINDINGS_SAP_IMPORT_LOG_20260731.md`,
 `docs/design/INTERFACE_ARCHIVE_ON_WRITE_20260731.md`.
 
 ## RQ-20260731-2355-loader-incident-guards
-Status: OPEN
+Status: REVIEWED
 Reviewer: Claude Code
 Class: A
 Artifact: commit `2647350`; exact-match table, downstream dedup evidence, and retry-guard design.
 Opened: 2026-07-31T23:55:00+07:00
+Verdict: PASS WITH NOTES — `docs/reviews/2026-08-01-2647350-claude.md` (arithmetic consistent with
+b00af18; DLQ honestly labelled containment-not-correctness. NOTE: Guard 1's exceeds-one threshold
+breaks once chunking is fixed — compare against the extract's reported chunk count instead; add
+ack-deadline/DLQ false-positive line to the runbook)
 
 Claim: the 31-Jul incident added 672,463 duplicate rows (733,596 committed versus 61,133 expected)
 with zero bad records. Live SAP_LIVE_FULL uses DISTINCT in every branch and DocEntry row-number
@@ -107,11 +120,15 @@ current Pub/Sub subscription description, official Pub/Sub dead-letter constrain
 `docs/design/SAP_LOADER_RETRY_GUARDS_20260731.md`.
 
 ## RQ-20260731-2345-r1-loader-retry-confirmation
-Status: OPEN
+Status: REVIEWED
 Reviewer: Claude Code
 Class: A
 Artifact: commit `b00af18`; R1 un-retraction, L5 LOAD-job evidence, and chunking finding.
 Opened: 2026-07-31T23:45:00+07:00
+Verdict: PASS — `docs/reviews/2026-08-01-b00af18-claude.md` (all 5 job-table rows multiply out
+exactly; strongest evidence class; correctly does NOT revive the original watermark-reset wording;
+22–24 Jul possible-mirror-loss caveat must ride with any FA-facing (ก)/(ง) number; CURRENT_STATE §4
+R1 row needs the un-retraction annotation — Codex lane)
 
 Claim: BigQuery job metadata decisively proves every Cloud Run OOM retry committed a complete LOAD
 to append-only SAP_LIVE before the request failed and source deletion. Counts are 41×60,404,
@@ -125,11 +142,14 @@ revision 00019 OOM logs and revision 00020 success/delete logs, and
 `docs/FINDINGS_LOADER_RETRY_AMPLIFICATION_20260731.md`.
 
 ## RQ-20260731-2330-interface-type-drift-ground-truth
-Status: OPEN
+Status: REVIEWED
 Reviewer: Claude Code
 Class: A
 Artifact: commit `401cc98`; 22/56 type-drift evidence and G1/G2 ground-truth limits.
 Opened: 2026-07-31T23:30:00+07:00
+Verdict: PASS — `docs/reviews/2026-08-01-401cc98-claude.md` (position arithmetic verified 15+5+2=22,
+all money/quantity; serializer-unknown blocker correctly interlocks with RULE-10's physical-contract
+gate; G3/UAT2 note: include field-level known-answer compare on the 22 drifting positions)
 
 Claim: live metadata proves type drift at 22 money/quantity positions across the four CREATE and
 two RCL NEWPAYMENT views, a gap intentionally outside guard 028. A post-03/08 type comparison is
@@ -144,12 +164,15 @@ Evidence: `docs/FINDINGS_EXPORT_PATH_20260731.md`; live
 v436 and NonMotor v400 metadata/build provenance and targeted 30-Jul logs.
 
 ## RQ-20260731-2310-rule10-d1-d3-diagnostic
-Status: OPEN
+Status: REVIEWED
 Reviewer: Claude Code
 Class: A
 Artifact: commit `b10a22f`; D1/D2 legacy-view membership query/evidence, D3 limitation,
 RULE-10 decision, monitoring correction, and security-vector clarification.
 Opened: 2026-07-31T23:10:43+07:00
+Verdict: PASS — `docs/reviews/2026-08-01-b10a22f-claude.md` (arithmetic matches locked G1
+populations exactly; 902/326 gaps correctly bounded as view-side with disposition pending — FA
+wording note: never quote as "lost"; D3 correctly declared unavailable, not inferred)
 
 Claim: one guarded query proves a mixed BI/view-side gap: 1,502/2,404 (ก) records are in a relevant
 CREATE view and 2,670/2,996 (ง) are in a relevant RCL NEWPAYMENT view; 902 and 326 respectively are
@@ -164,12 +187,16 @@ Evidence: job `p0_d1_d2_view_membership_20260731_160300`, query timestamp
 placeholders only. No deploy, legacy-view modification, export SQL, or GCS write occurred.
 
 ## RQ-20260731-2255-export-path-and-rule09-runbook
-Status: OPEN
+Status: REVIEWED
 Reviewer: Claude Code
 Class: A
 Artifact: commit `1f3e14a`; deployed export-path evidence, 56-column comparison, RULE-09 deploy/
 rollback runbook, and non-secret security-finding addendum.
 Opened: 2026-07-31T22:55:43+07:00
+Verdict: PASS — `docs/reviews/2026-08-01-1f3e14a-claude.md` (12-producer table log-evidenced;
+runbook order matches the reviewed sequencing, rollback correctly anchored to c67045a's 037; step 5
+is the manual counterpart of the aba1aad-review period-lock guard — keep both; SMTP-exposure
+addendum is a distinct surface, does not revive R9)
 
 Claim: deployed 30-Jul logs prove the current Motor function executes eight interface steps and
 NonMotor four, with all 12 GCS writes completing before SMTP notification failure. The 12 source
@@ -185,12 +212,17 @@ showed plaintext SMTP credential configuration on both producers; only resource 
 recorded, never the value.
 
 ## RQ-20260731-2243-rule09-old-year-rescue
-Status: OPEN
+Status: REVIEWED
 Reviewer: Claude Code
 Class: A
 Artifact: commit `aba1aad`; live-source procedure 037, DDL status documentation, and RULE-09
 canonical decision/evidence.
 Opened: 2026-07-31T22:43:02+07:00
+Verdict: PASS WITH NOTES — `docs/reviews/2026-08-01-aba1aad-claude.md` (both RULE-09 gates verified
+mechanically; RULE-08 holds — raw_payment_date stays in temp tables. NOTE 1: full period-lock guard
+spec required — lock_datetime is never read, MAX(open_period_start) fails on future rows and on
+early-August-row sequencing; SQL provided. NOTE 2: collapse the duplicated rescue-window predicate
+to the old_year_rescued marker)
 
 Claim: source-only 037 preserves raw PaymentDate before RULE-01 clamping and applies Boat's narrow
 RULE-09 exception to `OLD_YEAR_NO_TOUCH` at both required gates: rescued rows are absent from that
