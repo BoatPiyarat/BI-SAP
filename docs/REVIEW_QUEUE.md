@@ -10,6 +10,11 @@ Class: A
 Artifact: commit `03b0381` — delta to `sql/ddl/048_july_export_shadow_and_archive.sql`.
 Opened: 2026-08-02T05:28:35+07:00
 
+Follow-up commit `4da3ca8` adds Boat's explicit BatchRunDate gate: non-empty, valid DDMMYYYY, and
+not later than 2026-07-31. The generated value remains `31072026`; this prevents the separate live
+fully-paid wrapper's NULL BatchRunDate defect from leaking into the V3 July file. Follow-up file
+dry-run passed at 0 bytes.
+
 Production shadow job `call_048_july_shadow_retry_20260802_052700` passed coverage/hold gates but
 correctly stopped on F2. Diagnostic `diag_048_shadow_validation_20260802_052900` found exactly
 three PolicyNo-too-long records/orders and zero date-format or Paid-completeness failures. This
