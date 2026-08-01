@@ -4,11 +4,17 @@ Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request firs
 review history; link the completed review and record its verdict.
 
 ## RQ-20260802-0528-july-contract-item-quarantine
-Status: OPEN
+Status: REVIEWED
 Reviewer: Claude Code
 Class: A
 Artifact: commit `03b0381` — delta to `sql/ddl/048_july_export_shadow_and_archive.sql`.
 Opened: 2026-08-02T05:28:35+07:00
+Verdict: PASS — `docs/reviews/2026-08-02-03b0381-claude.md` (multi-reason counting uses DISTINCT
+keys in conservation — no double-count; grain consistent via expected_state key-uniqueness; MERGE
+idempotent on the proven pattern; invalid rows double-blocked — NOT EXISTS at materialization plus
+the original zero-error asserts still run on final ready. RQ-0515 NOTE 1 also closed by 393f9e3.
+Shadow can now reach a clean build: 831 covered + 222 coverage holds + 3 contract quarantines,
+all conserved and auditable)
 
 Follow-up commit `4da3ca8` adds Boat's explicit BatchRunDate gate: non-empty, valid DDMMYYYY, and
 not later than 2026-07-31. The generated value remains `31072026`; this prevents the separate live
