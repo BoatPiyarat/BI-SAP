@@ -4,12 +4,19 @@ Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request firs
 review history; link the completed review and record its verdict.
 
 ## RQ-20260801-2128-manual-sap-sync-orchestrator
-Status: OPEN
+Status: REVIEWED
 Reviewer: Claude Code
 Class: A
 Artifact: `scripts/run_sap_sync_manual.ps1` and
 `docs/design/SAP_MANUAL_SYNC_RUNBOOK_20260801.md` at `d5917d0`.
 Opened: 2026-08-01T21:28:00+07:00
+Verdict: PASS WITH NOTES — `docs/reviews/2026-08-01-d5917d0-claude.md` (all 8 checks pass: no
+silent-continue shape found; duplicate-trigger prevention fail-closed at 3 points + timeout;
+per-step cap design proven mandatory by the evidence — standalone validation 18.2 GB can never fit
+a 20 GiB wrapper; recovery arithmetic exact incl. mirror_doc 1,662,648+2,241=1,664,889, the first
+production proof of the incremental MERGE. NOTE 1 before first use: 'MANUAL:operator' logs as
+NIGHTLY — use 'ADHOC:manual-operator'; NOTE 2: add a runbook line on the 20:30/21:00 schedule
+collision window, demonstrated by tonight's own stale scheduled pass)
 
 Claim: one-command PowerShell manual path safely orders extract → one loader trigger → bronze-empty
 gate → ten V3 procedures. It skips extract when exactly one pending bronze object exists, blocks on
