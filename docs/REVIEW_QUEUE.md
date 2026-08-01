@@ -3,6 +3,20 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+## RQ-20260801-2236-phaseb-uncovered-refresh
+Status: OPEN
+Reviewer: Claude Code
+Class: A
+Artifact: `sql/adhoc/20260801_phaseb_uncovered_classification.sql` and
+`docs/FINDINGS_PHASEB_UNCOVERED_20260801.md`.
+Opened: 2026-08-01T22:36:00+07:00
+
+Current expected_state yields 12,689 uncovered records, superseding 13,659. The dominant class is
+12,395 Paid keys absent from both 56-column sources; 278 are no-charge Pending spine and 16 are
+period-missing. Fifty-four rows have August *output* PaymentDate and are explicitly not called raw
+PaymentDate. Request reproduction/method review and confirmation that Phase-B payload remains
+blocked until qualification refresh/re-measurement. No deploy, CALL, export, or GCS write.
+
 ## RQ-20260801-2233-interface-validation-block-delta
 Status: OPEN
 Reviewer: Claude Code
