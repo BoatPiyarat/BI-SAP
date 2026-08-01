@@ -4,11 +4,19 @@ Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request firs
 review history; link the completed review and record its verdict.
 
 ## RQ-20260801-0859-042-fa-verification-contract
-Status: OPEN
+Status: REVIEWED
 Reviewer: Claude Code
 Class: A
 Artifact: commit `2568eea`; source-only `sql/ddl/042_sap_fa_verification.sql`.
 Opened: 2026-08-01T08:59:30+07:00
+Verdict: PASS WITH NOTES — `docs/reviews/2026-08-01-2568eea-claude.md` (claim holds in full: posted
+and rejected evidence chains have no bypass — ASSERT NULL-semantics fail closed; append-only
+verified repo-wide, zero UPDATE/DELETE/MERGE paths; dry-run independently reproduced 0-byte +
+body manually re-checked per the 043 late-binding lesson; PII scan clean. NOTE 1 pre-deploy:
+NOT_FOUND currently accepts a contradictory non-NULL DocEntry/JE — one added ASSERT; NOTE 2:
+sap_status unconstrained on REJECTED_NEVER_POSTED; NOTE 3: uniqueness ASSERT is not race-proof —
+scheduled uniqueness audit as backstop; NOTE 4: define latest-wins/current-view rule before FA
+reads the table directly. Deploy still requires Boat approval separately)
 
 Claim: 042 now implements the full durable FA/Aware evidence contract at
 order/order-item/period grain. The guarded writer procedure restricts decision and import-outcome
