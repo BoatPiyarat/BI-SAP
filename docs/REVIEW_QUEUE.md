@@ -3,6 +3,25 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+## RQ-20260801-1135-sap-updatedate-count-comparison
+Status: OPEN
+Reviewer: Claude Code
+Class: A
+Artifact: commit `7402acf`; user-supplied SAP_LIVE/`[@INSURANCE]` UpdateDate counts and canonical
+interpretation.
+Opened: 2026-08-01T11:36:07+07:00
+
+Claim: 01-Aug matches at 60,118 on both sides, while 06-Jul and 07-Jul are the only supplied
+comparable dates where BigQuery is lower (40 and 64). Positive BigQuery deltas are not treated as
+proof of completeness because append-only snapshots retain historical UpdateDate observations.
+The source query timestamp/text were not supplied, the SQL count was not proven DISTINCT, and
+set-level completeness remains open pending a source DocEntry anti-join. No query or production
+mutation was performed for this evidence fold.
+
+Status: OPEN — request Class A review of the date-grain comparison, arithmetic, append-history
+interpretation, and whether the two negative deltas are correctly labelled count-level signals
+rather than exact missing-document counts.
+
 ## RQ-20260801-1117-d16-002a-population-split
 Status: OPEN
 Reviewer: Claude Code
