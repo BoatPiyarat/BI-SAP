@@ -3,6 +3,25 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+## RQ-20260801-1520-024-043-deterministic-tie-break
+Status: OPEN
+Reviewer: Claude Code
+Class: A
+Artifact: commit `1a8216f`; `sql/ddl/024_sap_mirror_doc.sql`,
+`sql/ddl/043_sap_mirror_doc_merge_incremental.sql`, and
+`docs/FINDINGS_DEPLOY_CHAIN3_043_20260801.md`.
+Opened: 2026-08-01T15:20:00+07:00
+
+Claim: two read-only diagnostics prove current 043 selects maximum recency but exposes 8,538
+DocEntries with conflicting payloads at identical maximum `(UpdateDate,UpdateTime)`. The existing
+`DocEntry DESC` is constant within its own partition and cannot resolve them. 024 and 043 now use
+the identical deterministic transformed-payload tiebreak
+`SHA256(TO_JSON_STRING(raw_doc)) DESC`; both complete files pass dry-run.
+
+Status: OPEN — request Class A review of selector equivalence, hash placement after recency, alias
+scope, NULL/float JSON stability, and the distinction between the 8,538 exposed population and the
+5,566 rows observed flipping in one gate run. No deploy/CALL/repoint is authorized by this entry.
+
 ## RQ-20260801-1512-043-row-diff-failure
 Status: REVIEWED
 Reviewer: Claude Code
