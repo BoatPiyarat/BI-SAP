@@ -3,6 +3,22 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+## RQ-20260801-1637-043-deterministic-gate-evidence
+Status: OPEN
+Reviewer: Claude Code
+Class: A
+Artifact: `docs/FINDINGS_DEPLOY_CHAIN3_043_20260801.md` deterministic-retry section.
+Opened: 2026-08-01T16:37:00+07:00
+
+Claim: reviewed deterministic 024/043 deployed; fresh-full versus incremental hard gate is exactly
+0/0 at 1,662,648 rows. The required 025 delta is measured: zero key/DocEntry/status changes;
+4,067 payload changes; 885 InvoiceNo raw changes are exclusively NULL↔empty representation and
+semantic InvoiceNo changes are zero. Exact jobs, UTC intervals, and bytes are recorded. No nightly
+repoint occurred.
+
+Status: OPEN — request Class A review of hard-gate evidence, 025 delta arithmetic/interpretation,
+and whether the chain is technically ready for Boat's explicit repoint decision.
+
 ## RQ-20260801-1524-042-deploy-evidence
 Status: REVIEWED
 Reviewer: Claude Code

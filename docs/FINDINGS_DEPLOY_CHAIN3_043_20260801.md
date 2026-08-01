@@ -53,3 +53,31 @@ Source-only proposal: make both 024 and 043 order identical top-recency ties by
 `SHA256(TO_JSON_STRING(raw_doc)) DESC`, where `raw_doc` is the already transformed mirror row.
 Both full files dry-run successfully. This proposal is not deployed and requires a new Class A
 review plus Boat approval.
+
+## Deterministic retry — hard gate passed, repoint still held
+
+After Class A PASS WITH NOTES (`docs/reviews/2026-08-01-1a8216f-claude.md`), Codex deployed both
+deterministic procedures and reran the required bootstrap comparison. Every query was preceded by
+a successful dry run and used the 20 GiB ceiling in `asia-southeast1`.
+
+| Step | Job ID | UTC interval | Processed | Billed | Result |
+|---|---|---:|---:|---:|---|
+| Deploy deterministic 024 | `deploy_024_deterministic_20260801_162740` | 09:27:50.268Z–09:27:51.674Z | 0 | 0 | DONE |
+| Deploy deterministic 043 | `deploy_043_deterministic_20260801_162815` | 09:28:26.129Z–09:28:27.423Z | 0 | 0 | DONE |
+| Fresh deterministic 024 | `refresh_024_deterministic_20260801_162845` | 09:28:50.520Z–09:29:07.461Z | 7,319,841,706 | 7,320,109,056 | DONE |
+| Bootstrap 043 + hard gate | `gate_043_deterministic_20260801_162955` | 09:30:01.175Z–09:30:46.621Z | 13,152,199,904 | 13,196,328,960 | **0/0 PASS** |
+| Refresh + measure 025 | `measure_025_deterministic_delta_20260801_163215` | 09:32:24.494Z–09:32:46.063Z | 4,032,314,737 | 4,033,871,872 | DONE |
+| Invoice NULL/empty diagnosis | `diag_025_invoice_null_empty_20260801_163445` | 09:35:06.106Z–09:35:06.475Z | 109,476,204 | 110,100,480 | DONE |
+
+Hard-gate result: fresh 024 and incremental both contain 1,662,648 rows; `only_in_024=0` and
+`only_in_incremental=0`. Watermark advanced to 2026-08-01 / 809.
+
+025 comparison against its pre-deterministic snapshot: 1,300,230 rows before and after, zero
+old-only/new-only keys, zero DocEntry winner changes, zero status changes, 4,067 payload changes,
+and 885 raw `InvoiceNo` changes. The 885 are entirely representation-only: 449 NULL→empty string
+and 436 empty string→NULL; zero empty↔real-value and zero real-value→different-value changes.
+Therefore semantic InvoiceNo change is zero.
+
+The mandatory evidence is now complete, but the nightly chain is still **not repointed** in this
+step. Deterministic hash selection remains semantically arbitrary for the 2,602 cross-source ties;
+future source priority is a separate Boat/Aware decision.
