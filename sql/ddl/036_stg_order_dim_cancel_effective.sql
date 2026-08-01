@@ -56,12 +56,12 @@ BEGIN
     SELECT
       oi.human_id AS order_item,
       o.human_id AS order_id,
-      COALESCE(
+      COALESCE(NULLIF(TRIM(
         CASE
           WHEN JSON_VALUE(o.data, '$.policyHolder.isCompany') = 'true'
             THEN JSON_VALUE(o.data, '$.policyHolder.companyTaxId')
           ELSE JSON_VALUE(o.data, '$.idNumber')
-        END,
+        END), ''),
         '-'
       ) AS insured_id,  -- F1: never empty, fixed at the one shared source
       JSON_VALUE(o.data, '$.policyHolder.title') AS title,
@@ -169,12 +169,12 @@ CLUSTER BY order_item AS
 SELECT
   oi.human_id AS order_item,
   o.human_id AS order_id,
-  COALESCE(
+  COALESCE(NULLIF(TRIM(
     CASE
       WHEN JSON_VALUE(o.data, '$.policyHolder.isCompany') = 'true'
         THEN JSON_VALUE(o.data, '$.policyHolder.companyTaxId')
       ELSE JSON_VALUE(o.data, '$.idNumber')
-    END,
+    END), ''),
     '-'
   ) AS insured_id,
   JSON_VALUE(o.data, '$.policyHolder.title') AS title,

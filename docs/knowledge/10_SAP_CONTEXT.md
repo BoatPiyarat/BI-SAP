@@ -387,6 +387,29 @@ STATUS_CONFLICT's unexplained jump has not passed regression testing. Return Tri
 measured before filtering and must not be reused. `DATE_BASIS_MISSING = 0` is consistent with a direct check finding zero
 candidate rows where both date inputs are NULL. See `sql/ddl/032-034`, commits `fa8d8cc` /
 `9825e97`, and `30_SAP_CHANGELOG.md`.
+
+### SUPERSEDING ADDENDUM 2026-08-01 — E1-E3 / F1-F3
+
+This block supersedes conflicting details in the 2026-07-29 section above.
+
+- E1 tier classification uses **OrderDate only**. <=2024 is untouched and registered as
+  `YEAR_OUT_OF_SCOPE`; 2025 is cancel-only and retained only when the order_item already exists in
+  SAP and `is_cancelled_effective=TRUE`; all other 2025 rows use
+  `YEAR_2025_NON_CANCEL_EXCLUDED`; >=2026 is normal. Processing date basis remains
+  `GREATEST(OrderDate, PolicyDate)` and is a separate field.
+- E2 is exact `LOWER(TRIM(FirstName/LastName)) IN ('test','test div')`, rule
+  `TEST_CUSTOMER`. No substring matching and no phone-based E2 exclusion.
+- E3 success means a non-empty InsurerCode on `SAP_LIVE_FULL` with a valid positive DocEntry.
+  Unknown codes use `INSURER_NOT_IN_MASTER` and appear as a distinct count/list each morning.
+- F1 defaults NULL **and empty** InsuredID to `-`; the pre-deploy audit found the only incomplete
+  current flow is ONETIME (18 records). F2 blocks PolicyNo >50 as `POLICYNO_TOO_LONG`, never
+  truncates. F3 permits only empty or an 8-character parseable DDMMYYYY value for all five date
+  columns in the 56-column contract.
+- The 373,044 MISSING figure is superseded and must not be cited. The 2026-08-01 pre-deploy,
+  read-only impact measurement is **5,712 records / 2,861 orders**, plus 32 records / 26 orders
+  excluded as `YEAR_OUT_OF_SCOPE`. It is not post-deploy verification; see
+  `docs/FINDINGS_E1_E3_F1_F3_20260801.md` for job IDs, timestamps, bytes, and caveats.
+
 6. Design v3 ทั้งชุดอยู่ใน docs/design/ — อ่าน REDESIGN_V3 ก่อนแตะ pipeline ใดๆ
 
 ## ⚠️ ADDENDUM 2026-07-29 v3 — DESIGN DECISIONS D1–D5

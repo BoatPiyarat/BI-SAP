@@ -41,7 +41,7 @@ WHEN NOT MATCHED THEN INSERT (config_key, config_value, updated_at)
 
 -- ============================================================================
 -- sap_test_customer_name_patterns: exact-match patterns (LOWER/TRIM'd) for E2/TEST_CUSTOMER_NAME.
--- Confirmed by Boat 2026-07-29: 'test' only - 'test div' explicitly removed from v1's proposal.
+-- E2 locked 2026-08-01: exact normalized values are 'test' and 'test div'.
 -- ============================================================================
 CREATE TABLE IF NOT EXISTS `pacific-plating-282708.sap_integration_v3.sap_test_customer_name_patterns` (
   pattern STRING,
@@ -49,7 +49,7 @@ CREATE TABLE IF NOT EXISTS `pacific-plating-282708.sap_integration_v3.sap_test_c
 );
 
 MERGE `pacific-plating-282708.sap_integration_v3.sap_test_customer_name_patterns` T
-USING (SELECT 'test' AS pattern) S
+USING (SELECT pattern FROM UNNEST(['test', 'test div']) AS pattern) S
 ON T.pattern = S.pattern
 WHEN NOT MATCHED THEN INSERT (pattern, added_at) VALUES (S.pattern, CURRENT_TIMESTAMP());
 
@@ -74,10 +74,9 @@ WHEN NOT MATCHED THEN INSERT (pattern_normalized, enforce_hard_filter, added_at)
   VALUES (S.pattern_normalized, S.enforce_hard_filter, CURRENT_TIMESTAMP());
 
 -- ============================================================================
--- sap_insurer_master: E3's master list. Seeded from InsurerCode values SAP_LIVE_FULL has
--- actually accepted historically (same source/logic as 017_sap_validation_error.sql's
--- MASTER_INSURER_UNKNOWN check, kept consistent with it). Pending: replace/supplement with
--- Aware's real master list when they provide one (docs/INPUTS_NEEDED.md).
+-- sap_insurer_master: E3's master list. "Successfully received" means a non-empty
+-- U_InsurerCode on a SAP_LIVE_FULL row with a non-NULL, positive DocEntry. SAP_LIVE_FULL is the
+-- confirmed truth source; stg_sap_state is deliberately not used to seed this master.
 -- ============================================================================
 CREATE TABLE IF NOT EXISTS `pacific-plating-282708.sap_integration_v3.sap_insurer_master` (
   insurer_code STRING,
@@ -87,10 +86,16 @@ CREATE TABLE IF NOT EXISTS `pacific-plating-282708.sap_integration_v3.sap_insure
 
 MERGE `pacific-plating-282708.sap_integration_v3.sap_insurer_master` T
 USING (
-  SELECT DISTINCT SPLIT(U_InsurerCode, '-')[OFFSET(1)] AS insurer_code
-  FROM `pacific-plating-282708.sap_integration_v3.stg_sap_state`
-  WHERE U_InsurerCode LIKE '%-%'
+  SELECT DISTINCT
+    COALESCE(
+      REGEXP_EXTRACT(TRIM(U_InsurerCode), r'/(.+)$'),
+      REGEXP_EXTRACT(TRIM(U_InsurerCode), r'^[^-]+-(.+)$'),
+      TRIM(U_InsurerCode)
+    ) AS insurer_code
+  FROM `pacific-plating-282708.sap_integration_v2.SAP_LIVE_FULL`
+  WHERE SAFE_CAST(DocEntry AS INT64) > 0
+    AND NULLIF(TRIM(U_InsurerCode), '') IS NOT NULL
 ) S
 ON T.insurer_code = S.insurer_code
 WHEN NOT MATCHED THEN INSERT (insurer_code, source, added_at)
-  VALUES (S.insurer_code, 'seeded_from_stg_sap_state_2026-07-29', CURRENT_TIMESTAMP());
+  VALUES (S.insurer_code, 'SAP_LIVE_FULL_valid_DocEntry', CURRENT_TIMESTAMP());

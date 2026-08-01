@@ -22,6 +22,26 @@
 
 CREATE OR REPLACE PROCEDURE `pacific-plating-282708.sap_integration_v3.sp_run_validation`()
 BEGIN
+  -- Contract-shaped inputs from all 12 currently exported flows. Keep columns named rather than
+  -- SELECT *: SAP consumes the CSV by ordinal position, while this validation is by semantic name.
+  CREATE TEMP TABLE _contract_rows AS
+  SELECT 'RCB_Motor_process_create' flow, OrderItem, SAFE_CAST(Period AS INT64) period,
+    CAST(InsuredID AS STRING) InsuredID, CAST(PolicyNo AS STRING) PolicyNo,
+    CAST(OrderDate AS STRING) OrderDate, CAST(PolicyDate AS STRING) PolicyDate,
+    CAST(PaymentDate AS STRING) PaymentDate, CAST(ExpectedDate AS STRING) ExpectedDate,
+    CAST(BatchRunDate AS STRING) BatchRunDate FROM `pacific-plating-282708.sap_view.RCB_Motor_process_create`
+  UNION ALL SELECT 'RCB_Motor_process_2_cancel_new', OrderItem, SAFE_CAST(Period AS INT64), CAST(InsuredID AS STRING), CAST(PolicyNo AS STRING), CAST(OrderDate AS STRING), CAST(PolicyDate AS STRING), CAST(PaymentDate AS STRING), CAST(ExpectedDate AS STRING), CAST(BatchRunDate AS STRING) FROM `pacific-plating-282708.sap_view.RCB_Motor_process_2_cancel_new`
+  UNION ALL SELECT 'RCB_Motor_process_3_change', OrderItem, SAFE_CAST(Period AS INT64), CAST(InsuredID AS STRING), CAST(PolicyNo AS STRING), CAST(OrderDate AS STRING), CAST(PolicyDate AS STRING), CAST(PaymentDate AS STRING), CAST(ExpectedDate AS STRING), CAST(BatchRunDate AS STRING) FROM `pacific-plating-282708.sap_view.RCB_Motor_process_3_change`
+  UNION ALL SELECT 'RCB_Motor_process_4_creditshell', OrderItem, SAFE_CAST(Period AS INT64), CAST(InsuredID AS STRING), CAST(PolicyNo AS STRING), CAST(OrderDate AS STRING), CAST(PolicyDate AS STRING), CAST(PaymentDate AS STRING), CAST(ExpectedDate AS STRING), CAST(BatchRunDate AS STRING) FROM `pacific-plating-282708.sap_view.RCB_Motor_process_4_creditshell`
+  UNION ALL SELECT 'RCL_Motor_process_1_create', OrderItem, SAFE_CAST(Period AS INT64), CAST(InsuredID AS STRING), CAST(PolicyNo AS STRING), CAST(OrderDate AS STRING), CAST(PolicyDate AS STRING), CAST(PaymentDate AS STRING), CAST(ExpectedDate AS STRING), CAST(BatchRunDate AS STRING) FROM `pacific-plating-282708.sap_view.RCL_Motor_process_1_create`
+  UNION ALL SELECT 'RCL_Motor_process_2_newpayment', OrderItem, SAFE_CAST(Period AS INT64), CAST(InsuredID AS STRING), CAST(PolicyNo AS STRING), CAST(OrderDate AS STRING), CAST(PolicyDate AS STRING), CAST(PaymentDate AS STRING), CAST(ExpectedDate AS STRING), CAST(BatchRunDate AS STRING) FROM `pacific-plating-282708.sap_view.RCL_Motor_process_2_newpayment`
+  UNION ALL SELECT 'RCL_Motor_process_3_cancel', OrderItem, SAFE_CAST(Period AS INT64), CAST(InsuredID AS STRING), CAST(PolicyNo AS STRING), CAST(OrderDate AS STRING), CAST(PolicyDate AS STRING), CAST(PaymentDate AS STRING), CAST(ExpectedDate AS STRING), CAST(BatchRunDate AS STRING) FROM `pacific-plating-282708.sap_view.RCL_Motor_process_3_cancel`
+  UNION ALL SELECT 'RCL_Motor_process_4_creditshell', OrderItem, SAFE_CAST(Period AS INT64), CAST(InsuredID AS STRING), CAST(PolicyNo AS STRING), CAST(OrderDate AS STRING), CAST(PolicyDate AS STRING), CAST(PaymentDate AS STRING), CAST(ExpectedDate AS STRING), CAST(BatchRunDate AS STRING) FROM `pacific-plating-282708.sap_view.RCL_Motor_process_4_creditshell`
+  UNION ALL SELECT 'RCB_NonMotor_process_1_create', OrderItem, SAFE_CAST(Period AS INT64), CAST(InsuredID AS STRING), CAST(PolicyNo AS STRING), CAST(OrderDate AS STRING), CAST(PolicyDate AS STRING), CAST(PaymentDate AS STRING), CAST(ExpectedDate AS STRING), CAST(BatchRunDate AS STRING) FROM `pacific-plating-282708.sap_view.RCB_NonMotor_process_1_create`
+  UNION ALL SELECT 'RCB_NonMotor_process_2_cancel', OrderItem, SAFE_CAST(Period AS INT64), CAST(InsuredID AS STRING), CAST(PolicyNo AS STRING), CAST(OrderDate AS STRING), CAST(PolicyDate AS STRING), CAST(PaymentDate AS STRING), CAST(ExpectedDate AS STRING), CAST(BatchRunDate AS STRING) FROM `pacific-plating-282708.sap_view.RCB_NonMotor_process_2_cancel`
+  UNION ALL SELECT 'RCL_NonMotor_process_1_create', OrderItem, SAFE_CAST(Period AS INT64), CAST(InsuredID AS STRING), CAST(PolicyNo AS STRING), CAST(OrderDate AS STRING), CAST(PolicyDate AS STRING), CAST(PaymentDate AS STRING), CAST(ExpectedDate AS STRING), CAST(BatchRunDate AS STRING) FROM `pacific-plating-282708.sap_view.RCL_NonMotor_process_1_create`
+  UNION ALL SELECT 'RCL_NonMotor_process_2_newpayment', OrderItem, SAFE_CAST(Period AS INT64), CAST(InsuredID AS STRING), CAST(PolicyNo AS STRING), CAST(OrderDate AS STRING), CAST(PolicyDate AS STRING), CAST(PaymentDate AS STRING), CAST(ExpectedDate AS STRING), CAST(BatchRunDate AS STRING) FROM `pacific-plating-282708.sap_view.RCL_NonMotor_process_2_newpayment`;
+
   CREATE OR REPLACE TABLE `pacific-plating-282708.sap_integration_v3.sap_validation_error`
   CLUSTER BY check_name AS
   SELECT order_item, period, 'PK_DUP' AS check_name,
@@ -90,11 +110,20 @@ BEGIN
 
   -- F2 (new): PolicyNo > 50 chars = BLOCK, never truncate.
   INSERT INTO `pacific-plating-282708.sap_integration_v3.sap_validation_error`
-  SELECT e.order_item, e.period, 'POLICYNO_TOO_LONG' AS check_name,
-    CONCAT('PolicyNo is ', CAST(LENGTH(d.policy_no) AS STRING),
-           ' chars (max 50): ', d.policy_no) AS detail,
+  SELECT OrderItem, period, 'POLICYNO_TOO_LONG' AS check_name,
+    CONCAT('flow=', flow, '; PolicyNo length=', CAST(LENGTH(PolicyNo) AS STRING), ' (max 50)') AS detail,
     CURRENT_TIMESTAMP() AS detected_at
-  FROM `pacific-plating-282708.sap_integration_v3.expected_state` e
-  JOIN `pacific-plating-282708.sap_integration_v3.stg_order_dim` d ON d.order_item = e.order_item
-  WHERE LENGTH(d.policy_no) > 50;
+  FROM _contract_rows
+  WHERE LENGTH(PolicyNo) > 50;
+
+  -- F3: every date column in the verified 56-column contract. Empty is allowed; every non-empty
+  -- value must be exactly DDMMYYYY and parse to a real calendar date.
+  INSERT INTO `pacific-plating-282708.sap_integration_v3.sap_validation_error`
+  SELECT OrderItem, period, 'DATE_FORMAT_INVALID' AS check_name,
+    CONCAT('flow=', flow, '; column=', date_column, '; value=', IFNULL(date_value, '<NULL>')) AS detail,
+    CURRENT_TIMESTAMP() AS detected_at
+  FROM _contract_rows
+  UNPIVOT(date_value FOR date_column IN (OrderDate, PolicyDate, PaymentDate, ExpectedDate, BatchRunDate))
+  WHERE NOT (IFNULL(date_value, '') = '' OR (
+    LENGTH(date_value) = 8 AND SAFE.PARSE_DATE('%d%m%Y', date_value) IS NOT NULL));
 END;

@@ -2,10 +2,12 @@
 -- Live source definition of sp_refresh_expected_state. It supersedes 034 and combines:
 --   * 2026-07-29: NULL-safe expected_invoice_no generation;
 --   * 2026-07-31: RULE-01 calendar-period PaymentDate clamp, RULE-02 period-lock control,
---     RULE-08 payment_date_clamped audit marker, and RULE-09's narrowly scoped
---     OLD_YEAR_NO_TOUCH rescue for raw payments inside the open calendar month.
+--     and RULE-08 payment_date_clamped audit marker.
 --   * 2026-08-01: fail closed unless exactly one non-expired period exists and its
 --     open_period_start is not in the future.
+--   * 2026-08-01: E1 tiering supersedes RULE-09 rescue: OrderDate <=2024 is untouched,
+--     2025 is cancel-only when already in SAP, and >=2026 follows normal processing.
+--     Processing date_basis remains GREATEST(OrderDate, PolicyDate); it is not the tier field.
 --
 -- Historical blast-radius evidence for the 2026-07-29 NULL-safe change:
 -- Verified directly against live `expected_state` (pre-fix):
@@ -50,6 +52,8 @@ BEGIN
 
   ASSERT active_period_count = 1
     AS 'RULE-09 requires exactly one active period in sap_period_lock';
+  ASSERT year_no_touch_max = 2024 AND year_cancel_only = 2025
+    AS 'E1 requires year_no_touch_max=2024 and year_cancel_only=2025';
   ASSERT open_period_start IS NOT NULL AND open_period_start <= CURRENT_DATE()
     AS 'sap_period_lock open_period_start is NULL or future-dated; refusing to derive PaymentDate';
 
@@ -119,11 +123,13 @@ BEGIN
     b.expected_payment_date AS raw_payment_date,
     b.expected_payment_date IS NOT NULL
       AND b.expected_payment_date < open_period_start AS payment_date_clamped,
+    d.insured_id,
     d.first_name,
     d.last_name,
     d.insurer_code,
-    d.is_cancelled,
-    d.phone_normalized,
+    d.policy_no,
+    d.is_cancelled_effective,
+    DATE(d.order_create_time) AS order_date,
     CASE
       WHEN d.order_create_time IS NULL AND d.policy_start_date IS NULL THEN NULL
       WHEN d.order_create_time IS NULL THEN DATE(d.policy_start_date)
@@ -141,27 +147,20 @@ BEGIN
   CREATE TEMP TABLE _rules AS
   SELECT
     e.*,
-    EXTRACT(YEAR FROM e.date_basis) AS basis_year,
-    e.date_basis IS NOT NULL
-      AND EXTRACT(YEAR FROM e.date_basis) <= year_no_touch_max
-      AND e.raw_payment_date IS NOT NULL
-      AND e.raw_payment_date >= open_period_start
-      AND e.raw_payment_date < DATE_ADD(open_period_start, INTERVAL 1 MONTH)
-      AS old_year_rescued,
+    EXTRACT(YEAR FROM e.order_date) AS order_year,
+    FALSE AS old_year_rescued,
     EXISTS(
       SELECT 1 FROM `pacific-plating-282708.sap_integration_v3.sap_test_customer_name_patterns` p
       WHERE LOWER(TRIM(e.first_name)) = p.pattern OR LOWER(TRIM(e.last_name)) = p.pattern
     ) AS is_test_name,
-    REGEXP_EXTRACT(e.insurer_code, r'/(.+)$') AS insurer_code_plain,
+    COALESCE(REGEXP_EXTRACT(TRIM(e.insurer_code), r'/(.+)$'),
+      REGEXP_EXTRACT(TRIM(e.insurer_code), r'^[^-]+-(.+)$'), TRIM(e.insurer_code)) AS insurer_code_plain,
     NOT EXISTS(
       SELECT 1 FROM `pacific-plating-282708.sap_integration_v3.sap_insurer_master` m
-      WHERE m.insurer_code = REGEXP_EXTRACT(e.insurer_code, r'/(.+)$')
-    ) AS insurer_not_in_master,
-    ph.pattern_normalized AS phone_match_pattern,
-    ph.enforce_hard_filter AS phone_enforce
-  FROM _enriched e
-  LEFT JOIN `pacific-plating-282708.sap_integration_v3.sap_test_customer_phone_patterns` ph
-    ON ph.pattern_normalized = e.phone_normalized;
+      WHERE m.insurer_code = COALESCE(REGEXP_EXTRACT(TRIM(e.insurer_code), r'/(.+)$'),
+        REGEXP_EXTRACT(TRIM(e.insurer_code), r'^[^-]+-(.+)$'), TRIM(e.insurer_code))
+    ) AS insurer_not_in_master
+  FROM _enriched e;
 
   -- Step 4: log every applicable exclusion - EXCLUDED != DELETED, nothing disappears silently.
   -- Full rebuild each run (CREATE OR REPLACE on the first write, plain INSERT after within the
@@ -171,54 +170,41 @@ BEGIN
   CLUSTER BY rule_code
   AS
   SELECT order_item, period, 'DATE_BASIS_MISSING' AS rule_code,
-    'OrderDate and PolicyDate both NULL' AS reason, CURRENT_TIMESTAMP() AS detected_at
-  FROM _rules WHERE date_basis IS NULL;
+    'OrderDate is NULL; E1 tier cannot be determined' AS reason, CURRENT_TIMESTAMP() AS detected_at
+  FROM _rules WHERE order_date IS NULL;
 
   INSERT INTO `pacific-plating-282708.sap_integration_v3.sap_excluded_records`
     (order_item, period, rule_code, reason, detected_at)
-  SELECT order_item, period, 'OLD_YEAR_NO_TOUCH',
-    CONCAT('date basis year ', CAST(basis_year AS STRING), ' <= ', CAST(year_no_touch_max AS STRING)),
+  SELECT order_item, period, 'YEAR_OUT_OF_SCOPE',
+    CONCAT('OrderDate year ', CAST(order_year AS STRING), ' <= ', CAST(year_no_touch_max AS STRING),
+      '; untouched: no interface, backlog, or recovery'),
     CURRENT_TIMESTAMP()
   FROM _rules
-  WHERE date_basis IS NOT NULL
-    AND basis_year <= year_no_touch_max
-    AND NOT (raw_payment_date IS NOT NULL
-      AND raw_payment_date >= open_period_start
-      AND raw_payment_date < DATE_ADD(open_period_start, INTERVAL 1 MONTH));
+  WHERE order_year <= year_no_touch_max;
 
   INSERT INTO `pacific-plating-282708.sap_integration_v3.sap_excluded_records`
     (order_item, period, rule_code, reason, detected_at)
-  SELECT order_item, period, 'NO_NEW_PAID_2025',
-    'year 2025, not cancelled - no new Paid status sent for this year per E1', CURRENT_TIMESTAMP()
-  FROM _rules WHERE date_basis IS NOT NULL AND basis_year = year_cancel_only AND NOT is_cancelled;
-
-  INSERT INTO `pacific-plating-282708.sap_integration_v3.sap_excluded_records`
-    (order_item, period, rule_code, reason, detected_at)
-  SELECT order_item, period, 'CANCEL_2025_NOT_IN_SAP',
-    'year 2025, cancelled, but never interfaced into SAP - cannot cancel what was never created (R4/R5)',
+  SELECT order_item, period, 'YEAR_2025_NON_CANCEL_EXCLUDED',
+    CONCAT('OrderDate year 2025 excluded: cancel-only requires already_in_sap=TRUE and ',
+      'is_cancelled_effective=TRUE; actual already_in_sap=', CAST(already_in_sap AS STRING),
+      ', is_cancelled_effective=', CAST(IFNULL(is_cancelled_effective, FALSE) AS STRING)),
     CURRENT_TIMESTAMP()
   FROM _rules
-  WHERE date_basis IS NOT NULL AND basis_year = year_cancel_only AND is_cancelled AND NOT already_in_sap;
+  WHERE order_year = year_cancel_only
+    AND NOT (already_in_sap AND IFNULL(is_cancelled_effective, FALSE));
 
   INSERT INTO `pacific-plating-282708.sap_integration_v3.sap_excluded_records`
     (order_item, period, rule_code, reason, detected_at)
-  SELECT order_item, period, 'TEST_CUSTOMER_NAME',
-    'FirstName or LastName exact-matches a configured test-customer name pattern', CURRENT_TIMESTAMP()
+  SELECT order_item, period, 'TEST_CUSTOMER',
+    'LOWER(TRIM(FirstName or LastName)) exactly matches test or test div', CURRENT_TIMESTAMP()
   FROM _rules WHERE is_test_name;
 
   INSERT INTO `pacific-plating-282708.sap_integration_v3.sap_excluded_records`
     (order_item, period, rule_code, reason, detected_at)
   SELECT order_item, period, 'INSURER_NOT_IN_MASTER',
-    CONCAT('insurer_code=', insurer_code_plain, ' not found in sap_insurer_master'), CURRENT_TIMESTAMP()
-  FROM _rules WHERE insurer_not_in_master AND insurer_code_plain IS NOT NULL;
-
-  INSERT INTO `pacific-plating-282708.sap_integration_v3.sap_excluded_records`
-    (order_item, period, rule_code, reason, detected_at)
-  SELECT order_item, period, 'TEST_CUSTOMER_PHONE',
-    CONCAT('phone matches configured test pattern ', phone_match_pattern,
-      IF(phone_enforce, ' (hard-filtered)', ' (report-only, NOT removed from expected_state)')),
-    CURRENT_TIMESTAMP()
-  FROM _rules WHERE phone_match_pattern IS NOT NULL;
+    CONCAT('insurer_code=', IFNULL(insurer_code_plain, '<NULL>'),
+      ' not found in SAP_LIVE_FULL valid-DocEntry master'), CURRENT_TIMESTAMP()
+  FROM _rules WHERE insurer_not_in_master;
 
   -- Step 5: final expected_state - same output schema as 016, only hard-excluded rows removed
   CREATE OR REPLACE TABLE `pacific-plating-282708.sap_integration_v3.expected_state`
@@ -226,14 +212,14 @@ BEGIN
   SELECT
     order_item, order_id, period, total_periods, flow, payment_option, expected_status,
     expected_invoice_no, expected_payment_date, payment_date_clamped, old_year_rescued,
+    insured_id,
     charge_id, charge_amount,
     CURRENT_TIMESTAMP() AS computed_at
   FROM _rules
-  WHERE date_basis IS NOT NULL
-    AND (basis_year > year_no_touch_max OR old_year_rescued)
-    AND NOT (basis_year = year_cancel_only AND NOT is_cancelled)
-    AND NOT (basis_year = year_cancel_only AND is_cancelled AND NOT already_in_sap)
+  WHERE order_date IS NOT NULL
+    AND date_basis IS NOT NULL
+    AND (order_year >= year_cancel_only + 1
+      OR (order_year = year_cancel_only AND already_in_sap AND IFNULL(is_cancelled_effective, FALSE)))
     AND NOT is_test_name
-    AND NOT (insurer_not_in_master AND insurer_code_plain IS NOT NULL)
-    AND NOT (phone_match_pattern IS NOT NULL AND phone_enforce);
+    AND NOT insurer_not_in_master;
 END;

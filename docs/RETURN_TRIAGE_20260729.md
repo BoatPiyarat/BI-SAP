@@ -66,6 +66,10 @@ checked during the window, which I can't verify from here.
 
 ## 3. Backlog: 07-27 baseline vs now (07-29)
 
+> **Historical table only.** `MISSING_NO_ROW_IN_SAP=373,044` is superseded and must not be cited.
+> The 2026-08-01 pre-deploy E1-E3 impact measurement is 5,712 records / 2,861 orders; see
+> `docs/FINDINGS_E1_E3_F1_F3_20260801.md`. A post-deploy refresh is still required.
+
 **`delta_export`** (totals; per-flow breakdown now available, wasn't captured per-flow on 07-27):
 
 | Category | 07-27 baseline | Now (07-29) | Change |
