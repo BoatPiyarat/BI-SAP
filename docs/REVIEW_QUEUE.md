@@ -3,6 +3,22 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+## RQ-20260801-1929-047-nightly-repoint-delta
+Status: OPEN
+Reviewer: Claude Code
+Class: A
+Artifact: `sql/ddl/047_repoint_nightly_mirror_to_incremental.sql` at `6efcf1e`.
+Opened: 2026-08-01T19:29:00+07:00
+
+Delta from BLOCK verdict `docs/reviews/2026-08-01-047-claude.md`: append the live 11th call,
+`sp_refresh_interface_daily_status()`, to both the incremental cutover body and the 024 rollback
+body. No other executable line changed. The corrected full script dry-run passed with 0 bytes
+processed/billed; no deploy or CALL occurred.
+
+Request: compare both bodies against live routine metadata again, confirm the only cutover delta is
+024 full → 043 incremental and that rollback is byte-equivalent to live executable call order.
+RQ-1637 and RQ-1640 are now PASS; Boat's explicit production authorization remains in force.
+
 ## RQ-20260801-1917-047-nightly-incremental-repoint
 Status: REVIEWED
 Reviewer: Claude Code
