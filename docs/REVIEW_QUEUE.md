@@ -4,11 +4,13 @@ Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request firs
 review history; link the completed review and record its verdict.
 
 ## RQ-20260801-2138-manual-sync-notes-delta
-Status: OPEN
+Status: REVIEWED
 Reviewer: Claude Code
 Class: A
 Artifact: `scripts/run_sap_sync_manual.ps1` and manual runbook at `e8b589a`.
 Opened: 2026-08-01T21:38:00+07:00
+Verdict: PASS — `docs/reviews/2026-08-01-e8b589a-claude.md` (both notes closed exactly:
+ADHOC:manual-operator run_scope + schedule-collision runbook warning; diff touches nothing else)
 
 Delta from PASS WITH NOTES `6933f67`: replace both mirror `run_scope` values
 `MANUAL:operator` with `ADHOC:manual-operator`; add the requested fail-closed runbook warning not
@@ -19,12 +21,17 @@ Request: verify the two notes are fully closed and that no unrelated executable 
 This is an operator script, not deployable BigQuery DDL; no production action occurred.
 
 ## RQ-20260801-2137-phaseb-contract-coverage
-Status: OPEN
+Status: REVIEWED
 Reviewer: Claude Code
 Class: A
 Artifact: `docs/FINDINGS_PHASEB_CONTRACT_COVERAGE_20260801.md` and
 `sql/adhoc/20260801_phaseb_contract_coverage.sql` at `97ebf0d`.
 Opened: 2026-08-01T21:37:00+07:00
+Verdict: PASS — `docs/reviews/2026-08-01-97ebf0d-claude.md` (three independent arithmetic
+identities all close on 290,319/13,659/1,647; corrected query is structurally fan-out-proof —
+sources pre-aggregated per key before join, overall/by_flow independent; retraction handled by the
+book. Naive-shadow-DDL block justified: 4.7% silent omission + 1,647 fan-out keys. Next-gate notes:
+reuse the recency+content-hash winner pattern; cross-reference-not-conflate the D1/D2 gaps)
 
 Claim: live expected_state is 290,319 rows/15 columns against a 56-position contract. Corrected
 job `phaseb_coverage_corrected_20260801_213400` finds 276,660 covered by exactly one of the two
