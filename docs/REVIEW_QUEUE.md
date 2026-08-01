@@ -18,13 +18,20 @@ Status: OPEN — request Class A review of deploy evidence, live-object verifica
 that this remained schema/writer-only.
 
 ## RQ-20260801-1520-024-043-deterministic-tie-break
-Status: OPEN
+Status: REVIEWED
 Reviewer: Claude Code
 Class: A
 Artifact: commit `1a8216f`; `sql/ddl/024_sap_mirror_doc.sql`,
 `sql/ddl/043_sap_mirror_doc_merge_incremental.sql`, and
 `docs/FINDINGS_DEPLOY_CHAIN3_043_20260801.md`.
 Opened: 2026-08-01T15:20:00+07:00
+Verdict: PASS WITH NOTES — `docs/reviews/2026-08-01-1a8216f-claude.md` (identical hash tiebreak
+both files, placement strictly after recency, inert DocEntry term correctly deleted; equivalence
+verified structurally via the 59/59 field mapping + identical transforms; both selectors pass the
+statement-level typed-literal gate at identical 7.3 GB semantic estimates; 8,538-vs-5,566 framing
+correct. NOTES: deterministic ≠ business-chosen for the 2,602 cross-source ties — source-priority
+key possible later; before repoint: gate re-run expected 0/0 + measured 025-level delta on flipped
+keys; chain-② verification must quote the ≤8,538 rebuild-delta bound)
 
 Claim: two read-only diagnostics prove current 043 selects maximum recency but exposes 8,538
 DocEntries with conflicting payloads at identical maximum `(UpdateDate,UpdateTime)`. The existing
