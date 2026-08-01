@@ -48,6 +48,17 @@ CREATE TABLE IF NOT EXISTS `pacific-plating-282708.sap_integration_v3.export_fil
 )
 CLUSTER BY export_run_id, delivery_status;
 
+CREATE TABLE IF NOT EXISTS `pacific-plating-282708.sap_integration_v3.july_export_hold` (
+  order_item STRING,
+  period INT64,
+  charge_id STRING,
+  raw_payment_date DATE,
+  hold_reason STRING,
+  detected_at TIMESTAMP
+)
+PARTITION BY raw_payment_date
+CLUSTER BY hold_reason, order_item;
+
 CREATE OR REPLACE PROCEDURE `pacific-plating-282708.sap_integration_v3.sp_build_july_export_shadow`()
 BEGIN
   DECLARE open_period_start DATE;
@@ -65,8 +76,10 @@ BEGIN
   ASSERT open_period_start = DATE '2026-07-01'
     AS 'This release is July-only; active open_period_start must be 2026-07-01';
 
-  CREATE TEMP TABLE _eligible AS
-  SELECT e.*, DATE(pe.charge_time) AS raw_payment_date
+  CREATE TEMP TABLE _eligible_all AS
+  SELECT e.*, DATE(pe.charge_time) AS raw_payment_date,
+    EXISTS (SELECT 1 FROM `pacific-plating-282708.careos.cancelled_change_orders` cco
+      WHERE cco.current_human_id=e.order_id) AS is_change_order
   FROM `pacific-plating-282708.sap_integration_v3.expected_state` e
   JOIN `pacific-plating-282708.sap_integration_v3.stg_payment_events` pe USING (charge_id)
   -- Direct qualification is required for this historical July close. 013 is incremental and
@@ -128,7 +141,7 @@ BEGIN
         SAFE_CAST(RefundAmountBeforeFee AS FLOAT64) RefundAmountBeforeFee,
         SAFE_CAST(RefundAmountAfterFee AS FLOAT64) RefundAmountAfterFee,
         CAST(BillingAddress AS STRING) BillingAddress, CAST(BatchRunDate AS STRING) BatchRunDate
-      FROM `pacific-plating-282708.sap_data_engineer.sap_dashboard_carepay_fully_paid`
+      FROM `pacific-plating-282708.sap_integration_v3.vw_onetime_payload_source`
       UNION ALL
       SELECT
         CAST(CompanyDB AS STRING), CAST(OrderID AS STRING), CAST(OrderItem AS STRING),
@@ -156,6 +169,37 @@ BEGIN
       FROM `pacific-plating-282708.sap_data_engineer.sap_dashboard_carepay_installment`
     ) s
   ) WHERE _rn=1;
+
+  CREATE TEMP TABLE _coverage AS
+  SELECT e.*,
+    CASE
+      WHEN e.is_change_order THEN 'CHANGE_ORDER_SEPARATE_FLOW'
+      WHEN s.OrderItem IS NULL AND e.flow='RCL_CMI' THEN 'RCL_CMI_PAYLOAD_MISSING'
+      WHEN s.OrderItem IS NULL THEN 'UNCLASSIFIED_PAYLOAD_GAP'
+      ELSE NULL
+    END AS hold_reason
+  FROM _eligible_all e LEFT JOIN _payload_source s
+    ON s.OrderItem=e.order_item AND SAFE_CAST(s.Period AS INT64)=e.period;
+
+  ASSERT (SELECT COUNT(*) FROM _coverage WHERE hold_reason='UNCLASSIFIED_PAYLOAD_GAP')=0
+    AS 'July eligible rows contain an unclassified 56-column payload gap';
+
+  MERGE `pacific-plating-282708.sap_integration_v3.july_export_hold` t
+  USING (SELECT order_item,period,charge_id,raw_payment_date,hold_reason FROM _coverage
+    WHERE hold_reason IS NOT NULL) s
+  ON t.order_item=s.order_item AND t.period=s.period AND t.charge_id=s.charge_id
+     AND t.hold_reason=s.hold_reason
+  WHEN MATCHED THEN UPDATE SET detected_at=CURRENT_TIMESTAMP()
+  WHEN NOT MATCHED THEN INSERT
+    (order_item,period,charge_id,raw_payment_date,hold_reason,detected_at)
+  VALUES (s.order_item,s.period,s.charge_id,s.raw_payment_date,s.hold_reason,CURRENT_TIMESTAMP());
+
+  CREATE TEMP TABLE _eligible AS
+  SELECT * EXCEPT(is_change_order,hold_reason) FROM _coverage WHERE hold_reason IS NULL;
+
+  ASSERT (SELECT COUNT(*) FROM _eligible)+(SELECT COUNT(*) FROM _coverage WHERE hold_reason IS NOT NULL)
+    =(SELECT COUNT(*) FROM _eligible_all)
+    AS 'July population conservation failed: eligible_all must equal export plus audited hold';
 
   SET duplicate_count = (SELECT COUNT(*) FROM (
     SELECT OrderItem, SAFE_CAST(Period AS INT64), COUNT(*) n
