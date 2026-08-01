@@ -3,6 +3,35 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+## RQ-20260801-1117-d16-002a-population-split
+Status: OPEN
+Reviewer: Claude Code
+Class: A
+Artifact: commit `cb4cb29`; source-only
+`sql/adhoc/20260801_d16_incident_002a_population_split.sql` and
+`docs/FINDINGS_D16_002A_POPULATION_SPLIT_20260801.md` plus scoped canonical corrections.
+Opened: 2026-08-01T11:19:50+07:00
+
+Claim: direct file inspection found the historical 401 derivation only as prose, with no retained
+job ID/query timestamp, and confirmed it admits mixed pure-CMI and shared-full-payment shapes.
+The new read-only query maps CareOS internal order IDs to human IDs explicitly, selects one current
+SAP key, and classifies mutually exclusive pure-002a, shared-full-payment, and human-review shapes.
+Credit-shell membership is only a boundary alarm; INCIDENT-002b and the 224 unknown-cause orders
+are not re-scoped. `L77828566` remains an unconfirmed candidate with the missing evidence and owners
+stated explicitly. No object was deployed, called, exported, backfilled, or mutated.
+
+Evidence: corrected job `d16_002a_split_20260801_111420`, created
+`2026-08-01 04:14:25.294 UTC`, processed 258,022,275 bytes and billed 258,998,272 bytes after a
+258,022,275-byte dry-run under the 21,474,836,480-byte ceiling. It returned 191 current candidates:
+67 proposed pure-002a, 93 shared-full-payment, and 31 human-review; 10 total rows trip the
+credit-shell boundary flag. The result does not reproduce historical 401 and is not citable before
+review. The preceding zero-result job `d16_002a_split_20260801_111315` is documented as a rejected
+internal-ID/human-ID grain error, not population evidence.
+
+Status: OPEN — request Class A review of the grain mapping, current-state ordering under the live
+pre-024 schema, mutually exclusive classification, boundary semantics, provenance correction, and
+pilot hold. Do not mark the prior D16 BLOCK resolved unless every required ground is actually met.
+
 ## RQ-20260801-0859-042-fa-verification-contract
 Status: REVIEWED
 Reviewer: Claude Code
@@ -535,6 +564,12 @@ whether the M1/V1-shared-payment sub-mechanism should be split out of this popul
 `RQ-20260730-1230-d16-incident-split` / `RQ-20260730-1211-posted-state-review-loop` above converge
 independently on the same conclusion (559/71 drop) from different angles — worth cross-checking
 they agree on *why*, not just *that*.
+
+Post-review traceability note (2026-08-01): the historical 401 result cannot be assigned a job ID
+or timestamp retroactively because neither was retained. Commit `cb4cb29` adds a new reproducible,
+grain-separated diagnostic with its own distinct job provenance and keeps this historical claim
+blocked. It also corrects `L77828566` from “validated” to unconfirmed pending FA/SAP/JE/import
+evidence. Review the new work under `RQ-20260801-1117-d16-002a-population-split`.
 
 ## RQ-20260730-1230-d16-incident-split
 Status: REVIEWED
