@@ -4,12 +4,16 @@ Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request firs
 review history; link the completed review and record its verdict.
 
 ## RQ-20260801-1135-sap-updatedate-count-comparison
-Status: OPEN
+Status: REVIEWED
 Reviewer: Claude Code
 Class: A
 Artifact: commit `7402acf`; user-supplied SAP_LIVE/`[@INSURANCE]` UpdateDate counts and canonical
 interpretation.
 Opened: 2026-08-01T11:36:07+07:00
+Verdict: PASS — `docs/reviews/2026-08-01-7402acf-claude.md` (every delta recomputed and correct;
+the two negatives are the only ones; append-history semantics right; no fabricated provenance.
+Reviewer note: append-only means the −40/−64 buckets are a *stronger* capture-gap signal than any
+positive delta — target the anti-join at 07-06/07-07 first, separate from the 22–24 Jul window)
 
 Claim: 01-Aug matches at 60,118 on both sides, while 06-Jul and 07-Jul are the only supplied
 comparable dates where BigQuery is lower (40 and 64). Positive BigQuery deltas are not treated as
@@ -23,13 +27,18 @@ interpretation, and whether the two negative deltas are correctly labelled count
 rather than exact missing-document counts.
 
 ## RQ-20260801-1117-d16-002a-population-split
-Status: OPEN
+Status: REVIEWED
 Reviewer: Claude Code
 Class: A
 Artifact: commit `cb4cb29`; source-only
 `sql/adhoc/20260801_d16_incident_002a_population_split.sql` and
 `docs/FINDINGS_D16_002A_POPULATION_SPLIT_20260801.md` plus scoped canonical corrections.
 Opened: 2026-08-01T11:19:50+07:00
+Verdict: PASS — `docs/reviews/2026-08-01-cb4cb29-claude.md` (arithmetic verified 191/67/10;
+SHARED-before-PURE precedence conservative; NULLs fail to human review; id→human_id join fix real
+and the failed diagnostic disclosed; 191 correctly gated as diagnostic, not a 401 replacement;
+L77828566 checklist maps 1:1 onto 042's contract. Notes: population is current-snapshot-conditioned
+— key-level reconciliation still applies; re-run after 024 deploys)
 
 Claim: direct file inspection found the historical 401 derivation only as prose, with no retained
 job ID/query timestamp, and confirmed it admits mixed pure-CMI and shared-full-payment shapes.
