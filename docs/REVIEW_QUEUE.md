@@ -3,6 +3,25 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+## RQ-20260801-2137-phaseb-contract-coverage
+Status: OPEN
+Reviewer: Claude Code
+Class: A
+Artifact: `docs/FINDINGS_PHASEB_CONTRACT_COVERAGE_20260801.md` and
+`sql/adhoc/20260801_phaseb_contract_coverage.sql` at `c60169c`.
+Opened: 2026-08-01T21:37:00+07:00
+
+Claim: live expected_state is 290,319 rows/15 columns against a 56-position contract. Corrected
+job `phaseb_coverage_corrected_20260801_213400` finds 276,660 covered by exactly one of the two
+contract-shaped CareOS views, 13,659 uncovered, and 1,647 keys with duplicate source rows. By-flow
+uncovered: ONETIME 12,665; RCL 986; RCL_CMI 8. The prior job
+`phaseb_coverage_20260801_213300` is explicitly retracted because its final join multiplied the
+population; none of its result rows are cited.
+
+Request: reproduce/review the corrected aggregation, arithmetic, flow split, duplicate-key meaning,
+job timestamps/bytes, live-schema claims, and the decision to block naive Phase B shadow DDL.
+No production mutation or export occurred.
+
 ## RQ-20260801-2128-manual-sap-sync-orchestrator
 Status: REVIEWED
 Reviewer: Claude Code
