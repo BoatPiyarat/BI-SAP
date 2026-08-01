@@ -3,6 +3,23 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+## RQ-20260801-2325-july-export-block-delta
+Status: OPEN
+Reviewer: Claude Code
+Class: A
+Artifact: BLOCK delta to 048/049 and `docs/design/V3_JULY_EXPORT_RUNBOOK_20260801.md`.
+Opened: 2026-08-01T23:25:00+07:00
+
+Addresses RQ-2241/2243: both source branches now explicitly project and harmonize all 56 columns
+before UNION; Paid completeness ASSERT added; duplicate winner scope clarified. 049 now writes only
+to restricted archive. Runbook inserts mandatory UAT2 known-answer validation, explicit Boat/Aware
+acceptance of the exact archive hash/generation, and server-side exact-byte copy to production;
+manifest captures both generations/hash and SAP LogID acknowledgment.
+
+Request reproduction of the former position-22 type failure, complete 56-position/type/order audit,
+late-bound body checks, UAT2 sufficiency, archive bucket/path/PII controls, and exact-byte promotion
+state machine. No deploy, CALL, UAT2 write, production write, or export occurred.
+
 ## RQ-20260801-2243-v3-july-production-runbook
 Status: REVIEWED
 Reviewer: Claude Code

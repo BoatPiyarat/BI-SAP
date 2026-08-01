@@ -1,10 +1,10 @@
--- Source only / Class A. Production mutation: CALL writes one July-only CSV to RCB_MOTOR and
--- records the exact 56-field row JSON/hash in BigQuery. Never CALL before review + Boat approval.
-CREATE OR REPLACE PROCEDURE `pacific-plating-282708.sap_integration_v3.sp_export_july_payment_to_gcs`()
+-- Source only / Class A. CALL writes one July-only CSV to the restricted archive prefix only.
+-- Exact bytes must pass UAT2, then be copied to production by the reviewed operator runbook.
+CREATE OR REPLACE PROCEDURE `pacific-plating-282708.sap_integration_v3.sp_export_july_payment_to_archive`()
 BEGIN
   DECLARE v_export_run_id STRING DEFAULT CONCAT('V3JULY-', FORMAT_TIMESTAMP('%Y%m%d-%H%M%S',CURRENT_TIMESTAMP()), '-', SUBSTR(GENERATE_UUID(),1,8));
   DECLARE v_file_name STRING;
-  DECLARE v_gcs_uri STRING;
+  DECLARE v_archive_uri STRING;
   DECLARE export_rows INT64;
 
   CALL `pacific-plating-282708.sap_integration_v3.sp_build_july_export_shadow`();
@@ -14,14 +14,15 @@ BEGIN
     WHERE table_name='july_export_ready')=56 AS 'Position contract failure: expected exactly 56 columns';
 
   SET v_file_name=CONCAT('INSURANCE_RCB_01_V3_JULY_PAYMENT_20260731_',v_export_run_id);
-  SET v_gcs_uri=CONCAT('gs://interface-file/RCB_MOTOR/',v_file_name,'_*.csv');
+  SET v_archive_uri=CONCAT('gs://rcb-bronze-zone/sap-interface-archive/2026/07/31/',
+    v_export_run_id,'/',v_file_name,'_*.csv');
 
   INSERT INTO `pacific-plating-282708.sap_integration_v3.export_archive`
-    (export_run_id,order_item,period,charge_id,raw_payment_date,file_name,gcs_uri,delivery_folder,
+    (export_run_id,order_item,period,charge_id,raw_payment_date,file_name,gcs_uri,archive_uri,delivery_folder,
      contract_version,payload_hash,payload_json,run_type,delivery_status,exported_at)
-  SELECT v_export_run_id,e.order_item,e.period,e.charge_id,DATE(pe.charge_time),v_file_name,v_gcs_uri,
+  SELECT v_export_run_id,e.order_item,e.period,e.charge_id,DATE(pe.charge_time),v_file_name,NULL,v_archive_uri,
     'RCB_MOTOR','SAP_INSURANCE_56_V1',TO_HEX(SHA256(TO_JSON_STRING(r))),TO_JSON_STRING(r),
-    'MANUAL_JULY_CLOSE','PREPARED',CURRENT_TIMESTAMP()
+    'MANUAL_JULY_CLOSE','PREPARED_ARCHIVE',CURRENT_TIMESTAMP()
   FROM `pacific-plating-282708.sap_integration_v3.expected_state` e
   JOIN `pacific-plating-282708.sap_integration_v3.stg_payment_events` pe USING(charge_id)
   JOIN `pacific-plating-282708.sap_integration_v3.july_export_ready` r
@@ -44,9 +45,9 @@ BEGIN
       PaymentChannel,ExpectedDate,RefOrder,RefundAmountBeforeFee,RefundAmountAfterFee,BillingAddress,
       BatchRunDate
     FROM `pacific-plating-282708.sap_integration_v3.july_export_ready`
-  """,v_gcs_uri);
+  """,v_archive_uri);
 
   UPDATE `pacific-plating-282708.sap_integration_v3.export_archive`
-  SET delivery_status='DELIVERED',exported_at=CURRENT_TIMESTAMP()
+  SET delivery_status='ARCHIVED_PENDING_UAT2',exported_at=CURRENT_TIMESTAMP()
   WHERE export_run_id=v_export_run_id;
 END;

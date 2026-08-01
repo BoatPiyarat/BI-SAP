@@ -1,6 +1,8 @@
 -- Source only / Class A. Builds a fail-closed July-only 56-column shadow; it does NOT write GCS.
 -- Boat 2026-08-01: raw PaymentDate scope is [2026-07-01, 2026-08-01), never August; delivery
 -- folder is temporarily RCB_MOTOR for all output. Deploy/run/export require separate reviewed gates.
+-- Source-view BatchRunDate is execution-dated and normally tied, so the normalized content hash is
+-- the effective duplicate winner. It is deterministic, not a claim that the chosen row is newest.
 
 CREATE TABLE IF NOT EXISTS `pacific-plating-282708.sap_integration_v3.export_archive` (
   export_run_id STRING,
@@ -10,12 +12,16 @@ CREATE TABLE IF NOT EXISTS `pacific-plating-282708.sap_integration_v3.export_arc
   raw_payment_date DATE,
   file_name STRING,
   gcs_uri STRING,
+  archive_uri STRING,
   delivery_folder STRING,
   contract_version STRING,
   payload_hash STRING,
   payload_json STRING,
   run_type STRING,
   delivery_status STRING,
+  object_generation STRING,
+  file_sha256 STRING,
+  uat2_status STRING,
   exported_at TIMESTAMP,
   sap_log_id STRING,
   sap_result_status STRING,
@@ -23,6 +29,24 @@ CREATE TABLE IF NOT EXISTS `pacific-plating-282708.sap_integration_v3.export_arc
 )
 PARTITION BY DATE(exported_at)
 CLUSTER BY order_item, period, export_run_id;
+
+CREATE TABLE IF NOT EXISTS `pacific-plating-282708.sap_integration_v3.export_file_manifest` (
+  export_run_id STRING,
+  archive_uri STRING,
+  production_uri STRING,
+  archive_generation STRING,
+  production_generation STRING,
+  sha256 STRING,
+  size_bytes INT64,
+  header_column_count INT64,
+  data_row_count INT64,
+  uat2_status STRING,
+  uat2_accepted_by STRING,
+  uat2_accepted_at TIMESTAMP,
+  delivery_status STRING,
+  recorded_at TIMESTAMP
+)
+CLUSTER BY export_run_id, delivery_status;
 
 CREATE OR REPLACE PROCEDURE `pacific-plating-282708.sap_integration_v3.sp_build_july_export_shadow`()
 BEGIN
@@ -61,9 +85,68 @@ BEGIN
         FARM_FINGERPRINT(TO_JSON_STRING(s)) DESC
     ) AS _rn
     FROM (
-      SELECT * FROM `pacific-plating-282708.sap_data_engineer.sap_dashboard_carepay_fully_paid`
+      SELECT
+        CAST(CompanyDB AS STRING) CompanyDB, CAST(OrderID AS STRING) OrderID,
+        CAST(OrderItem AS STRING) OrderItem, CAST(InvoiceNo AS STRING) InvoiceNo,
+        CAST(OrderDate AS STRING) OrderDate, CAST(InsuredID AS STRING) InsuredID,
+        CAST(Title AS STRING) Title, CAST(FirstName AS STRING) FirstName,
+        CAST(LastName AS STRING) LastName, CAST(InsurerCode AS STRING) InsurerCode,
+        CAST(InsuranceGroup AS STRING) InsuranceGroup, CAST(InsuranceType AS STRING) InsuranceType,
+        CAST(InsuranceProduct AS STRING) InsuranceProduct, CAST(ProductType AS STRING) ProductType,
+        CAST(PolicyType AS STRING) PolicyType, CAST(Endorse AS STRING) Endorse,
+        CAST(PolicyDate AS STRING) PolicyDate, CAST(PolicyNo AS STRING) PolicyNo,
+        CAST(EndorsementNo AS STRING) EndorsementNo, CAST(ChassisNo AS STRING) ChassisNo,
+        CAST(LicensePlate AS STRING) LicensePlate, SAFE_CAST(GrossPremium AS FLOAT64) GrossPremium,
+        SAFE_CAST(StampDuty AS FLOAT64) StampDuty, SAFE_CAST(VAT AS FLOAT64) VAT,
+        SAFE_CAST(TotalPremium AS FLOAT64) TotalPremium, SAFE_CAST(WHT AS FLOAT64) WHT,
+        SAFE_CAST(TotalEIR AS FLOAT64) TotalEIR, SAFE_CAST(TotalSBT AS FLOAT64) TotalSBT,
+        SAFE_CAST(ProcessingFee AS FLOAT64) ProcessingFee,
+        SAFE_CAST(ProcessingFeeVat AS FLOAT64) ProcessingFeeVat,
+        SAFE_CAST(ShippingFee AS FLOAT64) ShippingFee,
+        SAFE_CAST(ShippingFeeVat AS FLOAT64) ShippingFeeVat,
+        SAFE_CAST(TotalAmount AS FLOAT64) TotalAmount, SAFE_CAST(Discount AS FLOAT64) Discount,
+        CAST(TransactionStatus AS STRING) TransactionStatus,
+        CAST(SubmissionStatus AS STRING) SubmissionStatus,
+        CAST(ApprovalStatus AS STRING) ApprovalStatus, CAST(PaymentStatus AS STRING) PaymentStatus,
+        SAFE_CAST(ExpectedReceived AS FLOAT64) ExpectedReceived,
+        SAFE_CAST(ActualReceived AS FLOAT64) ActualReceived,
+        SAFE_CAST(InterestThisPeriod AS FLOAT64) InterestThisPeriod,
+        SAFE_CAST(PrincipleThisPeriod AS FLOAT64) PrincipleThisPeriod,
+        SAFE_CAST(InterestEIRThisPeriod AS FLOAT64) InterestEIRThisPeriod,
+        SAFE_CAST(PrincipleEIRThisPeriod AS FLOAT64) PrincipleEIRThisPeriod,
+        CAST(PaymentDate AS STRING) PaymentDate, SAFE_CAST(Period AS INT64) Period,
+        SAFE_CAST(TotalPeriods AS INT64) TotalPeriods, CAST(PendingPayment AS STRING) PendingPayment,
+        CAST(PaymentMethod AS STRING) PaymentMethod, CAST(PaymentChannel AS STRING) PaymentChannel,
+        CAST(ExpectedDate AS STRING) ExpectedDate, CAST(RefOrder AS STRING) RefOrder,
+        SAFE_CAST(RefundAmountBeforeFee AS FLOAT64) RefundAmountBeforeFee,
+        SAFE_CAST(RefundAmountAfterFee AS FLOAT64) RefundAmountAfterFee,
+        CAST(BillingAddress AS STRING) BillingAddress, CAST(BatchRunDate AS STRING) BatchRunDate
+      FROM `pacific-plating-282708.sap_data_engineer.sap_dashboard_carepay_fully_paid`
       UNION ALL
-      SELECT * FROM `pacific-plating-282708.sap_data_engineer.sap_dashboard_carepay_installment`
+      SELECT
+        CAST(CompanyDB AS STRING), CAST(OrderID AS STRING), CAST(OrderItem AS STRING),
+        CAST(InvoiceNo AS STRING), CAST(OrderDate AS STRING), CAST(InsuredID AS STRING),
+        CAST(Title AS STRING), CAST(FirstName AS STRING), CAST(LastName AS STRING),
+        CAST(InsurerCode AS STRING), CAST(InsuranceGroup AS STRING), CAST(InsuranceType AS STRING),
+        CAST(InsuranceProduct AS STRING), CAST(ProductType AS STRING), CAST(PolicyType AS STRING),
+        CAST(Endorse AS STRING), CAST(PolicyDate AS STRING), CAST(PolicyNo AS STRING),
+        CAST(EndorsementNo AS STRING), CAST(ChassisNo AS STRING), CAST(LicensePlate AS STRING),
+        SAFE_CAST(GrossPremium AS FLOAT64), SAFE_CAST(StampDuty AS FLOAT64), SAFE_CAST(VAT AS FLOAT64),
+        SAFE_CAST(TotalPremium AS FLOAT64), SAFE_CAST(WHT AS FLOAT64), SAFE_CAST(TotalEIR AS FLOAT64),
+        SAFE_CAST(TotalSBT AS FLOAT64), SAFE_CAST(ProcessingFee AS FLOAT64),
+        SAFE_CAST(ProcessingFeeVat AS FLOAT64), SAFE_CAST(ShippingFee AS FLOAT64),
+        SAFE_CAST(ShippingFeeVat AS FLOAT64), SAFE_CAST(TotalAmount AS FLOAT64),
+        SAFE_CAST(Discount AS FLOAT64), CAST(TransactionStatus AS STRING),
+        CAST(SubmissionStatus AS STRING), CAST(ApprovalStatus AS STRING), CAST(PaymentStatus AS STRING),
+        SAFE_CAST(ExpectedReceived AS FLOAT64), SAFE_CAST(ActualReceived AS FLOAT64),
+        SAFE_CAST(InterestThisPeriod AS FLOAT64), SAFE_CAST(PrincipleThisPeriod AS FLOAT64),
+        SAFE_CAST(InterestEIRThisPeriod AS FLOAT64), SAFE_CAST(PrincipleEIRThisPeriod AS FLOAT64),
+        CAST(PaymentDate AS STRING), SAFE_CAST(Period AS INT64), SAFE_CAST(TotalPeriods AS INT64),
+        CAST(PendingPayment AS STRING), CAST(PaymentMethod AS STRING), CAST(PaymentChannel AS STRING),
+        CAST(ExpectedDate AS STRING), CAST(RefOrder AS STRING),
+        SAFE_CAST(RefundAmountBeforeFee AS FLOAT64), SAFE_CAST(RefundAmountAfterFee AS FLOAT64),
+        CAST(BillingAddress AS STRING), CAST(BatchRunDate AS STRING)
+      FROM `pacific-plating-282708.sap_data_engineer.sap_dashboard_carepay_installment`
     ) s
   ) WHERE _rn=1;
 
@@ -126,4 +209,8 @@ BEGIN
   ASSERT august_count=0 AS 'August raw PaymentDate leaked into July export scope';
   ASSERT (SELECT COUNT(*) FROM `pacific-plating-282708.sap_integration_v3.INFORMATION_SCHEMA.COLUMNS`
     WHERE table_name='july_export_ready')=56 AS 'SAP interface payload must contain exactly 56 columns';
+  ASSERT (SELECT COUNT(*) FROM `pacific-plating-282708.sap_integration_v3.july_export_ready`
+    WHERE NULLIF(TRIM(InvoiceNo),'') IS NULL OR NULLIF(TRIM(PaymentDate),'') IS NULL
+       OR NULLIF(TRIM(PaymentMethod),'') IS NULL OR NULLIF(TRIM(PaymentChannel),'') IS NULL)=0
+    AS 'Paid completeness failed: InvoiceNo/PaymentDate/PaymentMethod/PaymentChannel must be non-empty';
 END;
