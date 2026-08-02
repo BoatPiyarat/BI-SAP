@@ -9,7 +9,9 @@ Reviewer: Claude Code
 Class: A
 Artifact: commit `03b0381` — delta to `sql/ddl/048_july_export_shadow_and_archive.sql`.
 Opened: 2026-08-02T05:28:35+07:00
-Verdict: PASS — `docs/reviews/2026-08-02-03b0381-claude.md` (multi-reason counting uses DISTINCT
+Verdict: PASS — `docs/reviews/2026-08-02-03b0381-claude.md` incl. addendum covering follow-up
+`4da3ca8` (BatchRunDate gate: defense-in-depth against the RQ-0515 NOTE-2 wrapper leak; verdict
+unchanged). (multi-reason counting uses DISTINCT
 keys in conservation — no double-count; grain consistent via expected_state key-uniqueness; MERGE
 idempotent on the proven pattern; invalid rows double-blocked — NOT EXISTS at materialization plus
 the original zero-error asserts still run on final ready. RQ-0515 NOTE 1 also closed by 393f9e3.
