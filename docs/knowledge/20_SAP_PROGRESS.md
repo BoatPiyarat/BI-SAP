@@ -1,4 +1,10 @@
 # 20_SAP_PROGRESS.md
+**2026-08-02 V3 AUTONOMY UNITS 2–6 DESIGN READY:** source-only contract now fixes identity/grain,
+mutually exclusive conservation, current-SAP delta precedence, magnitude gate, effective-dated
+InsuranceGroup/payment mappings, atomic OPEN/CLOSED rollover, exact-byte delivery, row-level SAP
+ACK, mandatory post-import refresh, and human-delivered completeness. Executable increments remain
+Class A; no production mutation occurred. Unit 1 v2 remains BLOCK UPHELD pending Boat direction.
+
 **2026-08-02 SINGLE DEPLOYER RECONFIRMED:** Boat designated Codex as the only production deployer.
 Claude Code remains source/read-only evidence/Class A reviewer and must hand off an exact reviewed
 commit plus runbook and rollback boundary; it must not deploy/CALL/write GCS/mutate production.

@@ -4,6 +4,15 @@ Append-only — entry ใหม่บนสุด ห้ามลบ/แก้�
 
 ---
 
+## 2026-08-02 — V3 unattended units 2–6 design contract completed
+
+Defined the source-only contract after mirror freshness: current-SAP delta precedence and
+population-magnitude gate; closed effective-dated InsuranceGroup and payment mappings; atomic
+monthly OPEN/CLOSED transition; exact-byte delivery and row-level result states; mandatory second
+SAP refresh; and exact daily record/amount conservation delivered to a human. Linked it from the
+monthly model and handed it to the executable-source lane. No deploy, CALL, IAM, scheduler, or GCS
+mutation occurred.
+
 ## 2026-08-02 — CancelChange and plain-cancel boundaries pinned
 
 Closed the remaining design notes from the Paid/Pending cancel-old gate review. Change-order rows

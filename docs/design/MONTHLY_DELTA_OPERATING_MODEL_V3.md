@@ -5,6 +5,9 @@ Status: **design milestone / Class A where implemented / not deployed**. Boat, 2
 Google Drive milestone:
 `https://docs.google.com/document/d/188igKmt72mCARQFj7W41kuheXl9vxjTLKdIlUsgpTho/edit`
 
+Detailed implementation contract for units 2–6:
+`docs/design/V3_AUTONOMY_UNITS_2_6_DESIGN.md`.
+
 ## Goal
 
 After manual July closing is complete, V3 becomes a reusable nightly delta process. It must send
