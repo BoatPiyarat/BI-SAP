@@ -49,3 +49,13 @@ RULE-21/22 require the old item being cancelled to have a Paid/Pending SAP winne
 require replacement Paid. The 92 therefore need a new old-status gate before cancel shadow work.
 Job `change_order_item_mapping_20260802_110300` remains relevant to the later credit-shell stage:
 no tested CareOS strategy is both unique and complete, so replacement mapping cannot be automatic.
+
+The follow-up source added the old-status gate, but the 92 remain non-citable until it is rerun.
+That rerun must also report the distinct winning `TransactionStatus` inventory: the current source
+accepts `Paid`, `paid`, and `Pending`; any other spelling/case, including a possible lowercase
+`pending`, is deliberately held until evidenced. For the change-order payload the only permitted
+target cancellation literal is `Cancelled (Change order / Rejected)`.
+
+Plain cancellation is out of this diagnostic by construction because its population has no
+`cancelled_change_orders` link. Its future target literal is `Cancelled`, with no replacement map
+or credit-shell transition. Cross-routing between these populations is prohibited.

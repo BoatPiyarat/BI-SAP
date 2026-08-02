@@ -28,8 +28,7 @@ Boat reconfirmed Codex as the single production deployer. Claude Code must ackno
 in its own commit before the next production handoff: Claude Code prepares source/read-only
 evidence and Class A reviews; it does not deploy, CALL mutating procedures, write GCS, or mutate
 schedulers/production objects. Each PASS handoff names the exact reviewed commit, evidence,
-runbook/deploy command, and rollback boundary for Codex to execute. Status: **OPEN — awaiting
-Claude Code acknowledgement**.
+runbook/deploy command, and rollback boundary for Codex to execute. Status: **DONE (`81c6525`)**.
 
 ## [2026-08-02] FROM Codex TO Claude Code — P0 build unattended V3 nightly orchestrator (Class A)
 

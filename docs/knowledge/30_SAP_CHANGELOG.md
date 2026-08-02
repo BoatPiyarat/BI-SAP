@@ -4,6 +4,15 @@ Append-only — entry ใหม่บนสุด ห้ามลบ/แก้�
 
 ---
 
+## 2026-08-02 — CancelChange and plain-cancel boundaries pinned
+
+Closed the remaining design notes from the Paid/Pending cancel-old gate review. Change-order rows
+are only linked `cancelled_change_orders` and use `Cancelled (Change order / Rejected)`; unlinked
+plain cancels use a separate future track with `Cancelled`, no mapping, and no credit shell.
+Cross-routing is prohibited. Required the next preflight rerun to publish its distinct SAP status
+inventory before accepting additional case variants. The existing 92 candidates remain
+non-citable. No production action occurred.
+
 ## 2026-08-02 — Codex reconfirmed as single production deployer
 
 Boat resolved the remaining ownership drift: Codex alone executes reviewed production deploys,

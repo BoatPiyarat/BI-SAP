@@ -2,6 +2,18 @@
 
 Status: **Class A design/evidence; not deployed; no payload or bucket write authorized**.
 
+## Population boundary and SAP status literals
+
+This document covers **change-order only**: a row enters only through a link in
+`careos.cancelled_change_orders`. Its cancel payload must use the exact SAP-success literal
+`Cancelled (Change order / Rejected)`. A linked pair must never be routed to plain cancellation.
+
+Plain cancellation is a separate future track. Its population is
+`stg_order_dim.is_cancelled_effective=TRUE` with no membership in `cancelled_change_orders`. It uses
+the exact target literal `Cancelled`, has no replacement mapping, no replacement semantics, and no
+credit-shell stage. An unlinked cancellation must never enter this change-order/credit-shell state
+machine. Legacy cancel views predate RULE-21/22 and are not readiness evidence for either track.
+
 ## Existing-track inventory
 
 Legacy objects exist for RCB cancel-new/change and RCL cancel, plus RCB/RCL credit-shell views.
@@ -50,7 +62,8 @@ a clue, not authority. Auto-cancel from these inferred matches is prohibited.
 2. `ITEM_MAP_APPROVED`: retain approver, timestamp, method, old/new item, and link provenance.
 3. `OLD_PAID_OR_PENDING_ACK`: every winning old item/period exists in refreshed SAP as Paid/Pending.
 4. `CANCEL_SHADOW_READY`: clone all 56 fields from those winning old SAP rows; require exact
-   `1..TotalPeriods`, preserve InvoiceNo and every field, change only TransactionStatus.
+   `1..TotalPeriods`, preserve InvoiceNo and every field, change only TransactionStatus to the
+   exact literal `Cancelled (Change order / Rejected)`.
 5. `CANCEL_DELIVERED` then `CANCEL_ACK`: never infer ACK from function/file status.
 6. Only after `CANCEL_ACK`, use the approved old→new map to release the replacement into
    `CREDIT_SHELL_PENDING`.
@@ -64,6 +77,8 @@ a clue, not authority. Auto-cancel from these inferred matches is prohibited.
   document and prove that same old item is Paid/Pending. Mapping is required for credit-shell.
 - No cancel/change when the old SAP item has no Paid/Pending winner.
 - No credit-shell payment before cancel ACK.
+- Never cross-route: linked change-order pairs cannot enter plain cancel; unlinked plain cancels
+  cannot enter change-order or credit-shell.
 - INCIDENT-002b and 224 unknown-cause orders remain separate remediation populations.
 - Aware still owns explicit-cancel behavior and accepted CreditShell literals; FA/Boat own batch
   approval. No legacy view is modified by this milestone.

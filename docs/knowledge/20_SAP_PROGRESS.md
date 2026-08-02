@@ -3,7 +3,13 @@
 Claude Code remains source/read-only evidence/Class A reviewer and must hand off an exact reviewed
 commit plus runbook and rollback boundary; it must not deploy/CALL/write GCS/mutate production.
 Canonical rules and ownership tables are aligned. Claude acknowledgement is requested in
-`HANDOFF_QUEUE.md` and remains OPEN until Claude commits it.
+`HANDOFF_QUEUE.md`; **ACK received in `81c6525`**, so the governance handoff is closed.
+
+**2026-08-02 CANCEL TRACK BOUNDARY SOURCE READY:** closed review notes from `89fac7e` by pinning
+change-order status to `Cancelled (Change order / Rejected)`, defining a disjoint plain-cancel
+skeleton with literal `Cancelled`, and prohibiting cross-routing into credit shell. The next
+preflight rerun must publish the distinct SAP status inventory; the prior 92 remain non-citable.
+No query, payload, deploy, CALL, or GCS write occurred.
 
 **2026-08-02 V3 DAILY AUTONOMY AUDIT — NOT READY:** live scheduling and deployed-routine inventory
 show that V3 refreshes state/reconciliation at 21:00 ICT but does not provide one dependency-owned
