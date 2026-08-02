@@ -4,7 +4,7 @@ Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request firs
 review history; link the completed review and record its verdict.
 
 ## RQ-20260802-1230-orchestrator-unit1-source
-Status: OPEN
+Status: REVIEWED
 Reviewer: Codex
 Class: A
 Artifact: `infra/v3_nightly_orchestrator.workflows.yaml` and
@@ -28,6 +28,12 @@ Codex's step. Request: verify connector call shapes/auto-polling semantics (`run
 `pubsub publish`), the fail-closed ordering in `fail_closed` (record → alert → raise, log-write
 swallowed but alert failure not), the cutover double-run hazard handling in the runbook, and the
 explicit non-goals. Deploy requires Codex review PASS + Boat's scoped production gate.
+
+Verdict: **BLOCK** — `docs/reviews/2026-08-02-26a1390-codex.md`. Required fixes: add required
+Cloud Run request body and real execution provenance; prove exactly one matching BigQuery LOAD job
+instead of treating bronze deletion as commitment; require success+watermark+`caught_up` for
+healthy zero; align `pipeline_run_log` status/provenance; and poll mutating BigQuery jobs to a
+terminal state before fail/replay.
 
 ## RQ-20260802-1210-cancel-track-boundaries
 Status: OPEN
