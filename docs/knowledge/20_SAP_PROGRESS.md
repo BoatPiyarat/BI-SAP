@@ -1,4 +1,12 @@
 # 20_SAP_PROGRESS.md
+
+## 2026-08-02 20:04 ICT — V3 automation release gate source prepared
+
+V3 is not ready for unattended cutover: the live workflow ends after Unit 1, the latest Unit 2
+evidence retains 14 event UNKNOWN rows, Unit 3 has no approved registry seed, and generic daily
+Units 5–6 are not implemented. Source-only `052` now records Unit 3 run coverage and new `054`
+persists a fail-closed release gate across Units 1–4. No deploy, CALL, GCS write, scheduler change,
+or V2 pause occurred. See `docs/FINDINGS_V3_AUTOMATION_READINESS_20260802.md`.
 **2026-08-02 UNIT 2 SHADOW SOURCE READY, NOT DEPLOYED:** live profile proved `expected_state` is
 290,258 unique schedule keys while `stg_payment_events` is 1,198,183 unique charges and only
 167,754 expected rows join a charge. Added separate event and schedule classifiers with independent

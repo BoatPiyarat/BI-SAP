@@ -1,4 +1,11 @@
 # 30_SAP_CHANGELOG.md
+
+## 2026-08-02 20:04 ICT — added a machine-enforced V3 automation release boundary
+
+Added a durable Unit 3 evaluation summary and a source-only Units 1–4 release gate. The gate writes
+explicit blocker counts before failing closed, so an absent Unit 3 run cannot look like zero holds
+and Unit 2 UNKNOWN rows cannot silently reach file creation. Recorded that V2 cutover remains
+blocked by mapping evidence and missing generic Units 5–6; no production mutation occurred.
 Append-only — entry ใหม่บนสุด ห้ามลบ/แก้ของเก่า
 (merge จาก SAP_CHANGELOG.md + SAP_CHANGELOG_2026-07-05-network.md เมื่อ 2026-07-16)
 

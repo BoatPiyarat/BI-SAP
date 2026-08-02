@@ -67,6 +67,16 @@ CREATE TABLE IF NOT EXISTS `pacific-plating-282708.sap_integration_v3.v3_unit3_m
 PARTITION BY DATE(computed_at)
 CLUSTER BY pipeline_run_id, hold_code, order_item;
 
+CREATE TABLE IF NOT EXISTS `pacific-plating-282708.sap_integration_v3.v3_unit3_run_summary` (
+  pipeline_run_id STRING NOT NULL,
+  ready_events INT64 NOT NULL,
+  held_events INT64 NOT NULL,
+  releasable_events INT64 NOT NULL,
+  evaluated_at TIMESTAMP NOT NULL
+)
+PARTITION BY DATE(evaluated_at)
+CLUSTER BY pipeline_run_id;
+
 CREATE OR REPLACE PROCEDURE `pacific-plating-282708.sap_integration_v3.sp_build_v3_unit3_mapping_holds`(
   p_pipeline_run_id STRING
 )
@@ -183,4 +193,23 @@ BEGIN
     'Payment source tuple lacks exactly one approved effective SAP-success mapping',
     CURRENT_TIMESTAMP()
   FROM classified WHERE payment_matches!=1;
+
+  DELETE FROM `pacific-plating-282708.sap_integration_v3.v3_unit3_run_summary`
+  WHERE pipeline_run_id=p_pipeline_run_id;
+  INSERT INTO `pacific-plating-282708.sap_integration_v3.v3_unit3_run_summary`
+  WITH ready AS (
+    SELECT COUNT(*) AS ready_events
+    FROM `pacific-plating-282708.sap_integration_v3.v3_unit2_event_shadow`
+    WHERE pipeline_run_id=p_pipeline_run_id AND outcome='READY_CREATE_OR_PAYMENT'
+  ), held AS (
+    SELECT COUNT(DISTINCT TO_JSON_STRING(STRUCT(order_item,period,charge_id))) AS held_events
+    FROM `pacific-plating-282708.sap_integration_v3.v3_unit3_mapping_hold`
+    WHERE pipeline_run_id=p_pipeline_run_id
+  )
+  SELECT p_pipeline_run_id,ready_events,held_events,ready_events-held_events,CURRENT_TIMESTAMP()
+  FROM ready CROSS JOIN held;
+
+  ASSERT (SELECT COUNT(*) FROM `pacific-plating-282708.sap_integration_v3.v3_unit3_run_summary`
+    WHERE pipeline_run_id=p_pipeline_run_id AND releasable_events<0)=0
+    AS 'Unit 3 hold population exceeds Unit 2 READY event population';
 END;
