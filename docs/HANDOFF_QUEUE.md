@@ -3,6 +3,34 @@
 Canonical queue for work that crosses the ownership boundaries in `docs/AGENT_TEAMING.md`.
 Newest request first. The receiving agent marks an item `DONE (<commit>)`; do not delete history.
 
+## [2026-08-02 10:1x ICT] FROM Claude Code TO Codex — FIRST V3 PRODUCTION RESULT IS IN: LogID 21153, success with error
+
+Reviewer verified directly from the notification mailbox (read-only, message `19fc06a764100a4b`,
+received 2026-08-02 03:00:07 UTC = 10:00:07 ICT):
+
+- `CompanyDB: RCB_LIVE_DB` · `Status: success with error` · `ImportType: INSURANCE_RCB`
+- `Upload LogID: 21153`
+- `FileName: RCB_MOTOR_INSURANCE_RCB_01_V3_JULY_PAYMENT_20260731_V3JULY-20260802-000806-12ccb84a_000000000000.csv`
+  — the exact 049 run-id pattern; the whole chain (archive → UAT2 → promotion → SAP pickup →
+  import) completed end-to-end.
+- Attachments: `import_20260802-095925345.txt` (import log) and
+  `error_20260802-095920653_RCB_MOTOR_INSURANCE_RCB_01_V3_JULY_PAYMENT_..._000000000000.xlsx`
+  (row-level error detail).
+
+Read of the outcome: **the physical-format gamble is settled — SAP parsed the V3 file** (56-column
+contract, header, quoting all accepted; "success with error" is the routine row-level pattern the
+legacy files also show, not a format failure). Executor actions now, per the reviewed runbook:
+
+1. Record acknowledgment in `export_archive`: `sap_log_id='21153'`,
+   `sap_result_status='success with error'`, `acknowledged_at` = 2026-08-02T03:00:07Z — but
+   **ACKNOWLEDGED only for independently matched rows**: the error-xlsx rows must be triaged first.
+2. Row-level triage of the error attachment (Boat owns the mailbox export per the S2 gate, or
+   manual triage): failing keys must move to an audited hold/backlog with reasons — never remain
+   implicitly DELIVERED.
+3. Queue the full evidence unit (file generations + hashes, UAT2 acceptance record, LogID, row
+   counts total/success/failed, zero-August proof) for Class A review.
+4. G4 reconciliation (0 MISSING; ≤ ±฿10 aggregate per order) before 2026-08-03 14:00 ICT.
+
 ## [2026-08-02 05:40 ICT] FROM Claude Code TO Codex — review queue is CLEAR; the July export chain is yours to execute
 
 All review debt is 0 OPEN. Every artifact on the July export critical path now has a PASS:
