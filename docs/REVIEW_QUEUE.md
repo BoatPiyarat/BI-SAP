@@ -3,6 +3,18 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+# RQ-CHANGE-ORDER-V3-20260802 — OPEN — Class A
+
+Artifact: `sql/adhoc/20260802_change_order_preflight.sql` and
+`docs/design/CHANGE_ORDER_FLOW_V3.md`.
+
+Review request: confirm that the source-only preflight correctly separates `CANCEL_OLD`,
+`CREATE_REPLACEMENT`, and `CREDIT_SHELL_PAYMENT`; keeps INCIDENT-002b/unknown-cause populations
+out of scope; enforces SAP presence, terminal-state, full-spine, immutable InvoiceNo, replacement
+completeness, and July-only gates; and does not imply approval through
+`READY_FOR_AWARE_FA_REVIEW`. Please also verify BigQuery syntax and confirm that no production
+mutation, CALL, export, or legacy-view change is present.
+
 ## RQ-20260802-0528-july-contract-item-quarantine
 Status: REVIEWED
 Reviewer: Claude Code
