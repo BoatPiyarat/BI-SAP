@@ -335,7 +335,7 @@ verify_healthy_zero:
           - success_count: ${len(success_entries)}
     - gate_signals:
         switch:
-          - condition: ${post_wm == "" or not (post_wm > pre_wm) or success_count != 1}
+          - condition: ${post_wm == "" or not (time.parse(post_wm) > time.parse(pre_wm)) or success_count != 1}
             steps:
               - fail_signals:
                   call: fail_closed
