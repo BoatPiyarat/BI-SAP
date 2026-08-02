@@ -1,4 +1,10 @@
 # 20_SAP_PROGRESS.md
+**2026-08-02 SINGLE DEPLOYER RECONFIRMED:** Boat designated Codex as the only production deployer.
+Claude Code remains source/read-only evidence/Class A reviewer and must hand off an exact reviewed
+commit plus runbook and rollback boundary; it must not deploy/CALL/write GCS/mutate production.
+Canonical rules and ownership tables are aligned. Claude acknowledgement is requested in
+`HANDOFF_QUEUE.md` and remains OPEN until Claude commits it.
+
 **2026-08-02 V3 DAILY AUTONOMY AUDIT — NOT READY:** live scheduling and deployed-routine inventory
 show that V3 refreshes state/reconciliation at 21:00 ICT but does not provide one dependency-owned
 extract→loader→mirror→delta→validate→archive/deliver→SAP-result→post-import refresh→reconcile→email
@@ -97,7 +103,8 @@ See `docs/FINDINGS_EXPORT_PATH_20260731.md`. No legacy object changed.
 `OLD_YEAR_NO_TOUCH` rescue using raw PaymentDate within the open calendar month. Live-source file
 037 now preserves raw PaymentDate before RULE-01 clamping, keeps the exclusion register aligned
 with the expected-state population, and emits `old_year_rescued`. Combined 044→037 dry-run passed
-at a 0-byte lower bound. Await Claude Code review/deploy; G1 and all gap figures remain stale until
+at a 0-byte lower bound. Historical ownership wording is superseded: Claude Code reviews and Codex
+alone deploys; G1 and all gap figures remain stale until
 the procedure is applied and refreshed.
 
 **2026-07-31 SCHEDULER RESOLVED:** changed Cloud Scheduler authentication from OIDC to OAuth while
@@ -221,10 +228,11 @@ scope, and 41 items / THB 720,307.31 in approved 2025/2026+ scope. The intermedi
 419 / THB 5.68M and broad 2,254 / THB 30M figures are superseded. Sources:
 `careos.careos_order_items`, `careos.careos_orders`, `sap_integration_v3.sap_mirror_state`;
 queried 2026-07-29, exact query time not retained, corrected evidence committed 18:46:14 ICT.
-Cost-control lanes are active: Claude Code owns all
-BigQuery queries/investigations/deploys; Codex owns docs and requests numbers through
-`HANDOFF_QUEUE.md`. D2 supersession is held for
-three preflight checks + Aware answer + FA approval; D3 approves Claude Code deploy of 035; D4
+Cost-control lanes are active: Claude Code owns read-only BigQuery queries/investigations and Class
+A review; Codex owns docs and is the single production deployer. Number requests and reviewed
+release handoffs use `HANDOFF_QUEUE.md`. D2 supersession is held for
+three preflight checks + Aware answer + FA approval; D3's old Claude-deployer assignment is
+superseded by Codex-only deployment; D4
 phone stays report-only; D5 requires table/object + timestamp for every number. E1–E3 exclusion
 engine is live and source-backed by `9825e97`; post-filter
 `interface_daily_status` counts at 14:01:28 ICT are ⚠️ PROVISIONAL — UNDER VERIFICATION pending
@@ -256,7 +264,8 @@ deferred it; Claude Code must implement it in the correct layer or return concre
 evidence. Cross-domain follow-ups are in `docs/HANDOFF_QUEUE.md`.
 
 Agent ownership is now documented in `docs/AGENT_TEAMING.md`: separate worktrees, Codex owns
-knowledge docs, Claude Code owns SQL/BigQuery/deployments, and cross-domain requests use the queue.
+knowledge docs and is the single production deployer; Claude Code owns its review artifacts and
+read-only evidence; cross-domain requests use the queue.
 
 ---
 

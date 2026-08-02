@@ -4,6 +4,14 @@ Append-only — entry ใหม่บนสุด ห้ามลบ/แก้�
 
 ---
 
+## 2026-08-02 — Codex reconfirmed as single production deployer
+
+Boat resolved the remaining ownership drift: Codex alone executes reviewed production deploys,
+mutating CALLs, GCS writes, and scheduler/production changes. Claude Code prepares source and
+read-only evidence, reviews Class A units, and hands the exact commit/runbook/rollback boundary to
+Codex. Updated the canonical agent, cost, current-state, and historical-context supersession text;
+queued an explicit Claude Code acknowledgement. No production mutation occurred.
+
 ## 2026-08-02 — V3 unattended-daily boundary made explicit
 
 Audited the deployed schedules/routines against the monthly operating design. V3 currently has an

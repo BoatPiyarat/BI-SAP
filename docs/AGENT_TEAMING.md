@@ -42,7 +42,7 @@ On rejection, fetch + rebase and retry; never force-push.
 |---|---|---|
 | `sql/**`, `docs/knowledge/**`, `docs/design/**`, `docs/FINDINGS_*`, `AGENT_RULES.md`, `CLAUDE.md`, this file | **Codex** | Main implementation and knowledge owner; one batched query plan |
 | `docs/reviews/*-claude.md` and Claude's review commits | **Claude Code** | Commits and pushes its own reviews; Codex reads but never edits these files |
-| Approved deployment | **Claude Code or explicitly assigned operator** | Still requires Boat's deploy authorization; branch ownership does not grant deploy authority |
+| Approved deployment | **Codex only** | Boat decision 2026-08-02; still requires scoped Boat deploy authorization and Class A PASS. Claude Code reviews/hands off but never deploys |
 
 **File-level single-writer principle:** ownership is by file domain, not by branch. Claude Code
 commits its own review files directly; Codex must not wait for or copy them. Both writers rebase
@@ -64,6 +64,10 @@ fixes in `docs/HANDOFF_QUEUE.md`; Codex reads both after fetch/rebase. Codex nev
 review files. Claude Code does not directly edit `docs/knowledge/**`; Codex folds confirmed findings
 into `10_SAP_CONTEXT` / `20_SAP_PROGRESS` / `30_SAP_CHANGELOG`. This keeps evidence attributable
 while allowing two writers on the shared branch.
+
+For every production release, Claude Code's final handoff must identify the reviewed commit,
+verdict, dry-run/evidence, exact deploy command or runbook, and rollback boundary. Codex verifies
+that handoff against the repository and is the only agent that executes the production step.
 
 ## Rule 4 — source must exist before an object goes live
 Any object deployed to BigQuery must have its DDL committed **in the same session** it was deployed.

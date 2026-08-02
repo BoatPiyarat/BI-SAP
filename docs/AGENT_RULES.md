@@ -48,6 +48,12 @@ require constant clarification.
 - **DDL only in `sap_integration_v3`.** Never CREATE/ALTER/DROP in `sap_integration_v2`, `SAP`, or `careos`.
 - **Never write to `gs://interface-file/**`.** That is production; SAP pulls it every 15 minutes. Shadow prefixes only.
 - **DEPLOY GATE:** replacing anything existing consumers read (views, tables, procedures — even inside v3) requires: dry-run evidence + a one-paragraph change summary + explicit human "deploy OK" in that session. Building/testing *new* objects needs no approval.
+- **SINGLE DEPLOYER (Boat, 2026-08-02): Codex only.** Claude Code may prepare source, run
+  read-only verification, and issue Class A review verdicts, but must not deploy, CALL a mutating
+  procedure, write `gs://**`, or mutate a scheduler/production object. After review PASS and Boat's
+  scoped production approval, Claude Code hands the exact reviewed commit and runbook to Codex;
+  Codex executes and records job IDs/results. Any change of deployer requires a newer explicit Boat
+  decision in the conversation and canonical docs before execution.
 - **SAP truth = `sap_integration_v2.SAP_LIVE_FULL`** (use `stg_sap_state` / `sap_mirror_state` when you need one row per (OrderItem, Period)). `raw_sap_live` never existed. The deployed extract path is `gs://rcb-bronze-zone/SAP/production_database/` and control path is `gs://rcb-bronze-zone/SAP/_extract_control/`; the old bucket name found in historical plans was never real.
 - **Repository is not live truth for legacy objects.** For `sap_view.*` and `sap_data_engineer.*`, files under `sql/production/` and `sql/sap_view/` are baseline captures that may drift. Before any claim about live behavior, read the current definition from `INFORMATION_SCHEMA.VIEWS` or `bq show --view`; cite the object and query/show timestamp. A repo-only conclusion must be labelled baseline-only, never live.
 - Never derive status or InvoiceNo from `SAP_LIVE`, `SAP_LIVE_2024`, `SAP_LIVE_2025`, or `SAP_LIVE_2026` directly; those are raw per-year shards unioned by `SAP_LIVE_FULL`.

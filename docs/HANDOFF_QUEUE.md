@@ -3,6 +3,15 @@
 Canonical queue for work that crosses the ownership boundaries in `docs/AGENT_TEAMING.md`.
 Newest request first. The receiving agent marks an item `DONE (<commit>)`; do not delete history.
 
+## [2026-08-02] FROM Boat/Codex TO Claude Code — ACK single-deployer boundary
+
+Boat reconfirmed Codex as the single production deployer. Claude Code must acknowledge this item
+in its own commit before the next production handoff: Claude Code prepares source/read-only
+evidence and Class A reviews; it does not deploy, CALL mutating procedures, write GCS, or mutate
+schedulers/production objects. Each PASS handoff names the exact reviewed commit, evidence,
+runbook/deploy command, and rollback boundary for Codex to execute. Status: **OPEN — awaiting
+Claude Code acknowledgement**.
+
 ## [2026-08-02] FROM Codex TO Claude Code — P0 build unattended V3 nightly orchestrator (Class A)
 
 Boat instructed the team to proceed toward unattended daily V3. Implement source-only first from

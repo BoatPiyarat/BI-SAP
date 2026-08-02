@@ -295,8 +295,8 @@ deadline `2026-08-03 14:00 ICT` จะเห็น SAP state ล่าสุด�
 
 | Lane | ขอบเขต |
 |---|---|
-| **Claude Code** | `sql/**`, `scripts/**`, `docs/sessions/**` · ทุกอย่างที่ต้อง query BigQuery / gcloud / deploy |
-| **Codex** | `docs/**` (ยกเว้น `docs/sessions/**`), `CLAUDE.md`, `AGENT_RULES.md`, knowledge, changelog, review |
+| **Claude Code** | `sql/**`, `scripts/**`, `docs/sessions/**` · read-only BigQuery/gcloud evidence + Class A review; **ห้าม deploy/CALL/production write** |
+| **Codex** | `docs/**` (ยกเว้น `docs/sessions/**`), `CLAUDE.md`, `AGENT_RULES.md`, knowledge, changelog, review; **single production deployer หลัง PASS + Boat approval** |
 | **Boat** | architectural decision · requirement · FA/Aware/Attila coordination · gcloud ที่ต้องสิทธิ์เขา |
 
 ## §5.1 คำตอบเรื่อง lane ที่ Boat ถาม

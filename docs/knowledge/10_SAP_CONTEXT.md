@@ -489,7 +489,8 @@ The current candidate figure, **⚠️ PROVISIONAL 9,625 order_items**, came fro
 approved batch size.
 
 **D3 — DDL 035 deploy approved.** Boat explicitly approved deployment of
-`035_policyno_too_long_validation.sql` in this session. Claude Code owns deploy and verification.
+`035_policyno_too_long_validation.sql` in this session. **Superseded ownership note (Boat,
+2026-08-02): Codex is the single deployer; Claude Code supplies review and read-only verification.**
 Approval is scoped to 035's replacement of `sp_run_validation`; any other existing-consumer
 replacement still follows its own deploy gate.
 

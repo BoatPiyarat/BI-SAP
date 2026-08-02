@@ -111,7 +111,8 @@ GROUP BY 1,2 ORDER BY gib_logical DESC LIMIT 30;
 
 | Lane | เจ้าของ | ต้นทุน | ทำอะไร |
 |---|---|---|---|
-| **EXPENSIVE (BigQuery/deploy)** | **Claude Code** | จ่าย BQ + token สูง | SQL, DDL, deploy, investigation ที่ต้อง query จริง — **ทีละคน ทีละงาน** |
+| **EXPENSIVE (BigQuery/read-only evidence)** | **Claude Code** | จ่าย BQ + token สูง | SQL, DDL source, review, investigation/query จริง — **ทีละคน ทีละงาน; ห้าม deploy** |
+| **PRODUCTION EXECUTION** | **Codex only** | mutation risk | deploy/CALL/GCS write/scheduler mutation เฉพาะหลัง Class A PASS + Boat approval |
 | **CHEAP (docs/text)** | **Codex** | ~0 BQ, token ต่ำ | knowledge/design/changelog/progress/INPUTS_NEEDED/runbook, สรุป session note, ตรวจความสอดคล้องเอกสาร |
 
 กติกาที่เปลี่ยนจากเดิม:
@@ -121,7 +122,8 @@ GROUP BY 1,2 ORDER BY gib_logical DESC LIMIT 30;
 3. **Batch การขอตัวเลข**: Codex เก็บคำถามที่ต้องใช้ข้อมูลไว้ใน queue แล้วให้ Claude Code ตอบทีเดียว
    1 query หลาย metric (ห้ามยิงทีละคำถาม)
 4. **งานสืบสวน = 1 agent เท่านั้น** (เช่น SAP_LIVE bloat) — ห้ามแบ่ง
-5. **Cutover / production write = 1 agent, มีคนเฝ้า** — ไม่มี parallel
+5. **Cutover / production write = Codex เท่านั้น, มีคนเฝ้า** — Claude Code review/handoff;
+   ไม่มี parallel deploy
 6. ก่อนเริ่มทุก session: `git log --oneline -10` + อ่าน `docs/sessions/` วันนี้ → ห้ามทำซ้ำ
 
 ---
