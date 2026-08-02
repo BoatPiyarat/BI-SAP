@@ -33,6 +33,7 @@
 #   scripts/bq_safe_query.sh [--project ID] -f path/to/query.sql
 #   echo "SELECT ..." | scripts/bq_safe_query.sh
 #   scripts/bq_safe_query.sh -f query.sql -- --format=csv --location=asia-southeast1
+#   scripts/bq_safe_query.sh --dry-run-only -f deploy.sql
 #   scripts/bq_safe_query.sh --self-test
 #
 # Anything after a literal `--` is passed straight through to the real `bq query`
@@ -171,12 +172,14 @@ Usage:
   bq_safe_query.sh [--project ID] -f path/to/query.sql
   echo "SELECT ..." | bq_safe_query.sh
   bq_safe_query.sh -f query.sql -- --format=csv
+  bq_safe_query.sh --dry-run-only -f deploy.sql
   bq_safe_query.sh --self-test
 
 Options:
   --project ID       Passed through as --project_id to both dry-run and real bq calls.
   -f, --file PATH    Read the SQL from PATH instead of the trailing argument/stdin.
   --self-test        Run 7 offline parser test cases (no BigQuery calls) and exit.
+  --dry-run-only     Validate and cost-check SQL, then stop before the real query.
   --                 Everything after this is passed through verbatim to the real
                       `bq query` call only (e.g. --format=csv, --location=...).
 
@@ -189,6 +192,7 @@ EOF
 project=""
 query_file=""
 sql=""
+dry_run_only=false
 passthrough_args=()
 
 while [[ $# -gt 0 ]]; do
@@ -196,6 +200,10 @@ while [[ $# -gt 0 ]]; do
     --self-test)
       run_self_test
       exit $?
+      ;;
+    --dry-run-only)
+      dry_run_only=true
+      shift
       ;;
     --project)
       project="${2:-}"
@@ -291,6 +299,11 @@ if (( bytes > THRESHOLD_BYTES )); then
   echo "⚠️  There is no override. Redesign the query (partition filter, narrower date" >&2
   echo "⚠️  range, TABLESAMPLE) and re-run." >&2
   exit 2
+fi
+
+if [[ "$dry_run_only" == true ]]; then
+  echo "Dry-run-only requested: real query was not executed." >&2
+  exit 0
 fi
 
 echo "== bq_safe_query: real run (--maximum_bytes_billed=${MAX_BYTES_BILLED}) ===========" >&2

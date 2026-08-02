@@ -1,5 +1,11 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-02 22:18 ICT — drafted exact-event NEWPAYMENT 56-column shadow
+
+Added source-only 058 for NEWPAYMENT, deliberately separate from blocked CREATE. Registry, period,
+identity, paid-completeness, format, and physical 56-column guards are inside the procedure. No
+DDL was deployed, no procedure was called, and no export/GCS object was created.
+
 ## 2026-08-02 22:04 ICT — fail closed on 159 CREATE Paid source gaps
 
 Added event-identity coverage against the existing ONETIME and RCL 56-column contract sources.

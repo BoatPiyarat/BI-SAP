@@ -56,6 +56,7 @@ not this table, for day-to-day freshness.
 | 055_v3_notification_quarantine.sql | **Source only / Class A.** Quarantines UNKNOWN/mapping-held rows and materializes notification detail with order_item before Unit 5 |
 | 056_seed_nonmotor_insurance_group_exact_matches.sql | **Source only / Class A config mutation.** Effective 2026-08-01 exact Health/Life NonMotor mappings for RCB/RCL; all other live categories remain held |
 | 057_seed_payment_mappings_v2_success.sql | V2/SAP-success non-credit PaymentMethod/PaymentChannel mappings; credit-shell remains held |
+| 058_v3_unit5_newpayment_shadow.sql | **Source only / Class A.** Exact-event 56-column NEWPAYMENT shadow; CREATE remains held on source gaps; no GCS write |
 | 053_v3_unit4_period_state_machine.sql | Explicit OPEN/CLOSED/PLANNED monthly state, atomic close/open, and legacy period-lock compatibility |
 | 047_repoint_nightly_mirror_to_incremental.sql | **Source only / Class A.** Chain 3 cutover definition: changes the nightly mirror call from full 024 to incremental 043 without altering downstream order; includes an exact 024-call rollback definition |
 

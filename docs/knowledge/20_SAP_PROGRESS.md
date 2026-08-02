@@ -1,5 +1,15 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-02 22:18 ICT — Unit 5 NEWPAYMENT 56-column shadow source ready
+
+Source-only 058 builds only the 585 exact-covered NEWPAYMENT events. It keeps the canonical 56
+columns explicit and positional; matches each row by `(OrderItem,Period,InvoiceNo)`; resolves
+PaymentMethod/PaymentChannel and NonMotor InsuranceGroup only through approved registries; applies
+OPEN-period PaymentDate/BatchRunDate rules; and fails closed on source/mapping multiplicity,
+future dates, blank Paid fields, PolicyNo length, date format, or column-count drift. CREATE is not
+included and remains held on its 159 Paid source gaps. The DDL is not deployed or called and has
+not yet been verified against the live 585-row population.
+
 ## 2026-08-02 22:04 ICT — Unit 5 source coverage blocks CREATE, NEWPAYMENT clean
 
 The expanded target has exact source coverage for all 585 NEWPAYMENT rows. CREATE coverage is
