@@ -325,7 +325,7 @@ verify_healthy_zero:
           body:
             resourceNames:
               - '${"projects/" + project}'
-            filter: '${"resource.type=\"cloud_run_job\" AND resource.labels.job_name=\"" + extract_job + "\" AND resource.labels.execution_name=\"" + extract_execution + "\" AND timestamp>=\"" + run_started_at + "\" AND textPayload:\"success:\" AND textPayload:\"0 rows\" AND textPayload:\"caught_up=True\""}'
+            filter: '${"resource.type=\"cloud_run_job\" AND resource.labels.job_name=\"" + extract_job + "\" AND labels.\"run.googleapis.com/execution_name\"=\"" + extract_execution + "\" AND timestamp>=\"" + run_started_at + "\" AND textPayload:\"success:\" AND textPayload:\"0 rows\" AND textPayload:\"caught_up=True\""}'
             orderBy: "timestamp desc"
             pageSize: 2
         result: success_logs
