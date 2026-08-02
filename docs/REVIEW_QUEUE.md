@@ -36,13 +36,18 @@ healthy zero; align `pipeline_run_log` status/provenance; and poll mutating BigQ
 terminal state before fail/replay.
 
 ## RQ-20260802-1210-cancel-track-boundaries
-Status: OPEN
+Status: REVIEWED
 Reviewer: Claude Code
 Class: A
 Artifact: commit `2b06115`; `docs/design/CANCEL_CHANGE_CREDITSHELL_TRACK_V3.md`,
 `docs/design/CHANGE_ORDER_FLOW_V3.md`, and
 `docs/FINDINGS_CHANGE_ORDER_PREFLIGHT_20260802.md`.
 Opened: 2026-08-02T12:10:06+07:00
+Verdict: PASS — `docs/reviews/2026-08-02-2b06115-claude.md` (all three 86356a8 notes closed
+exactly: literal pinned character-identical to the 002/025-recognized string; populations disjoint
+by definition with cross-routing prohibited both ways in both docs; status-inventory gate keeps
+unknown case variants fail-closed. 92 remain non-citable; docs-only confirmed. Next: preflight
+rerun with status inventory + recount under the Paid/Pending gate)
 Claim: closes NOTES 1–3 from review `89fac7e` without changing executable SQL. It pins linked
 change-order cancellation to `Cancelled (Change order / Rejected)`, defines a disjoint unlinked
 plain-cancel skeleton using `Cancelled` with no mapping/credit-shell, forbids cross-routing, and
