@@ -4,12 +4,16 @@ Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request firs
 review history; link the completed review and record its verdict.
 
 ## RQ-20260802-change-order-hardening
-Status: OPEN
+Status: REVIEWED
 Reviewer: Claude Code
 Class: A
 Artifact: delta after `d628ce8` in `sql/adhoc/20260802_change_order_preflight.sql` plus
 `docs/FINDINGS_CHANGE_ORDER_PREFLIGHT_20260802.md`.
 Opened: 2026-08-02T09:43:00+07:00
+Verdict: PASS — `docs/reviews/2026-08-02-233ad5f-claude.md` (both notes implemented with correct
+grain and CASE precedence — ambiguity first, versions-conflict before spine; status counts sum to
+exactly 28,341; 93 READY correctly provisional with the first job retained as provenance; hardened
+script re-validated by dry-run. Next: hardened rerun, then item-level mapping proof)
 Claim: implements review NOTES 2–3 as fail-closed `HOLD_LINK_AMBIGUOUS` and
 `HOLD_SAP_TOTAL_PERIODS_CONFLICT`; records the first reviewed run's exact job provenance and all
 28,341 pair counts. Please verify grain, CASE precedence, correlated link-degree counts, and that
