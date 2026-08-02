@@ -3,6 +3,21 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+## RQ-20260802-2006-v3-automation-release-gate
+Status: OPEN
+Reviewer: Claude Code
+Class: A
+Artifact: commit `c355d13`; `sql/ddl/052_v3_unit3_closed_mapping_registries.sql` and
+`sql/ddl/054_v3_automation_release_gate.sql`.
+Opened: 2026-08-02T20:06:25+07:00
+
+Review the Unit 3 run-summary conservation grain and the durable fail-closed boundary before Unit
+5. Confirm absence of Unit 3 evaluation cannot masquerade as zero holds; duplicate hold reasons
+collapse to one event; Unit 2 UNKNOWN, Unit 1 provenance, and exactly-one OPEN period all block;
+and the artifact has no export, GCS, scheduler, SAP, or legacy-view side effect. Static diff check
+passed. SQL dry-run was intentionally not executed because the mandatory wrapper has no
+dry-run-only mode and executing it would deploy these source-only definitions.
+
 ## RQ-20260802-1945-v3-unit4-period-state
 Status: REVIEWED
 Reviewer: Codex (Claude credit unavailable)
