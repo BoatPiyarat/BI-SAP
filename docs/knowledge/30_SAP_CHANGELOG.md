@@ -1,5 +1,12 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-02 22:42 ICT — locked July month-end PaymentDate exception
+
+Recorded Boat's latest rule: July-2026 payments use `31072026`; August-2026 payments keep their
+actual dates. Updated the NEWPAYMENT shadow source without changing period state, exporting data,
+or writing GCS. Dry-run/deploy stopped on an interactive reauthentication requirement; the live
+procedure remains at the prior revision.
+
 ## 2026-08-02 22:30 ICT — deployed 058 and preserved the OPEN-period stop
 
 Deployed the new Unit 5 identity table/procedure only. The first shadow CALL made no persistent

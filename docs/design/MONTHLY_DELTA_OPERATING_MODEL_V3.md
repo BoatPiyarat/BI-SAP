@@ -25,6 +25,10 @@ Before closing, raw transactions in M keep their real PaymentDate and BatchRunDa
 date within M. At the transition, backlog dated before M+1 is clamped to the first day of M+1;
 transactions originating in M+1 keep their real date. This replaces the temporary July-only scope.
 
+Transition exception locked by Boat on 2026-08-02: July-2026 payment rows use 2026-07-31, while
+August-2026 rows use their actual dates. The generic first-day rollover does not apply to July
+rows in this transition.
+
 The implementation must not infer the open period only from `lock_datetime > CURRENT_TIMESTAMP()`.
 It needs an explicit period status/history so the close/open transition is auditable and cannot
 leave zero or two active periods.

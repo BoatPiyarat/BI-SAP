@@ -115,6 +115,11 @@ Date behavior uses **raw PaymentDate**:
   `period_start(M+1)`; new M+1 events keep their real date;
 - a future-dated event outside OPEN M is held, never backdated silently.
 
+July/August 2026 has a Boat-approved transition override: raw July payments use 2026-07-31 and
+raw August payments keep their real dates. The generic previous-month-to-first-day rule must not
+turn July into 2026-08-01. `payment_date_clamped=TRUE` still records a July raw date changed to its
+month end.
+
 Every derived row stores `source_payment_date`, `effective_payment_date`, `period_id`,
 `payment_date_clamped`, and the period-state version used. No last-day/current-date hardcode.
 

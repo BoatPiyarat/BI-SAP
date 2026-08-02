@@ -4,6 +4,14 @@ Version: 3.0 (consolidated 2026-07-16 จาก SAP_CONTEXT v2.1 + Team Context 
 
 ---
 
+## AUTHORITATIVE ADDENDUM — 2026-08-02 July/August PaymentDate transition
+
+- A payment whose raw PaymentDate is in July 2026 uses `31072026` in the SAP interface.
+- A payment whose raw PaymentDate is in August 2026 keeps its actual August date.
+- For this transition, do not roll July payments to `01082026`. This narrow Boat decision
+  supersedes older generic next-open-month clamping language for July-2026 rows only.
+- Period state remains fail-closed: this date rule does not itself close July or open August.
+
 ## AUTHORITATIVE ADDENDUM — 2026-07-31 scheduler and extract behavior
 
 - `sap-extract-schedule` 401 is **RESOLVED**. Root cause was OIDC ID token sent to the Cloud Run

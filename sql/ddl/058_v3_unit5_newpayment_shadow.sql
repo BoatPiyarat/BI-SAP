@@ -181,7 +181,10 @@ BEGIN
     FORMAT('%.2f',PrincipleThisPeriod) PrincipleThisPeriod,
     FORMAT('%.2f',InterestEIRThisPeriod) InterestEIRThisPeriod,
     FORMAT('%.2f',PrincipleEIRThisPeriod) PrincipleEIRThisPeriod,
-    FORMAT_DATE('%d%m%Y',IF(raw_payment_date<v_period_start,v_period_start,raw_payment_date)) PaymentDate,
+    FORMAT_DATE('%d%m%Y',CASE
+      WHEN raw_payment_date>=DATE '2026-07-01' AND raw_payment_date<DATE '2026-08-01'
+        THEN DATE '2026-07-31'
+      ELSE raw_payment_date END) PaymentDate,
     CAST(period AS STRING) Period,CAST(TotalPeriods AS STRING) TotalPeriods,
     CAST(PendingPayment AS STRING) PendingPayment,CAST(sap_payment_method AS STRING) PaymentMethod,
     CAST(sap_payment_channel AS STRING) PaymentChannel,CAST(ExpectedDate AS STRING) ExpectedDate,

@@ -99,6 +99,10 @@ remain separately auditable.
     whose raw PaymentDate is earlier than the newly open month is clamped to the new month's first
     day; transactions originating in the new month retain their real PaymentDate. BatchRunDate is
     the real run date capped to the open month's last day.
+    **July/August 2026 override (Boat 2026-08-02):** a raw July-2026 payment uses PaymentDate
+    `31072026`, while a raw August-2026 payment keeps its actual August date. For this transition,
+    do not convert July to `01082026`. This narrow override supersedes the generic first-day
+    rollover sentence above for July-2026 rows only.
 27. Every nightly interface ends with `sap-extract-job`, loader completion, SAP mirror refresh,
     and reconciliation. Delivery status alone is not evidence of SAP state.
 28. PaymentMethod and PaymentChannel are closed mappings. Values must come from a reviewed V2

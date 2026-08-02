@@ -1,5 +1,15 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-02 22:42 ICT — July/August PaymentDate transition override
+
+Boat superseded the generic rollover for this transition: raw July-2026 payments use `31072026`;
+raw August-2026 payments keep the actual payment date. Source 058 now implements this narrow
+exception. It does not open August or bypass the OPEN-period guard; the exact close-transition
+timestamps remain required before the 585-row shadow CALL can succeed. The post-edit dry-run was
+not completed because the local `data@rabbit.co.th` credential requires interactive
+reauthentication. This is an auth-state block, not evidence against the SQL or BigQuery capability;
+the revised live procedure was not deployed.
+
 ## 2026-08-02 22:30 ICT — 058 deployed; shadow CALL correctly blocked by July OPEN state
 
 Definitions deployed with job `bqjob_r2312b18d2bd45b07_0000019fc314daed_1` (0 bytes). The shadow
