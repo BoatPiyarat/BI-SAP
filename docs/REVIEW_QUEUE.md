@@ -3,6 +3,20 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+## RQ-20260802-monthly-delta-rules-21-30
+Status: OPEN
+Reviewer: Claude Code
+Class: A
+Artifact: `docs/knowledge/SAP_INTERFACE_VALIDATION_RULES.md`,
+`docs/design/MONTHLY_DELTA_OPERATING_MODEL_V3.md`, and
+`docs/FINDINGS_IMPORT_RESULT_21153_20260802.md`.
+Opened: 2026-08-02T10:15:00+07:00
+Claim: records Boat's RULE-21–30 milestone, separates manual July cover from the reusable monthly
+delta design, retains Upload LogID 21153 evidence without PII, and defines the future implementation
+increments. Review period-transition semantics, Paid-before-cancel ordering, NonMotor
+InsuranceGroup hold, closed payment mappings, and exact daily conservation. Docs/design only; no
+deploy, CALL, export, bucket write, or production mutation.
+
 ## RQ-20260802-change-order-hardening
 Status: REVIEWED
 Reviewer: Claude Code

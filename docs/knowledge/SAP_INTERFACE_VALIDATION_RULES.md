@@ -75,6 +75,39 @@ remain separately auditable.
     amount. The channel semantic is CreditShell with RCB/RCL flow prefix. Live sources contain
     `CreditShell`, `Credit Shell`, and `Credit-Shell`; enforce a reviewed mapping, not a new literal.
 
+## Monthly delta and operational controls (Boat 2026-08-02)
+
+21. A Paid document must be accepted by SAP before its own Cancelled or
+    `Cancelled (Change order / Rejected)` document is eligible. Sequence is a hard gate, not an
+    export-order preference.
+22. Cancel/change is invalid when SAP has neither a Paid nor Pending document for the same
+    `(OrderItem, Period)`. Mirror the winning SAP document and preserve its immutable InvoiceNo;
+    never manufacture a cancel spine from CareOS alone.
+23. For raw transactions on or after 2026-08-01, every NonMotor row is held from bucket delivery
+    until its InsuranceGroup mapping has an explicit approved state. Unknown or merely non-empty
+    InsuranceGroup is not approval. Holds are reported separately and never silently dropped.
+24. The July-only release scope ends after July closing. Normal nightly processing is a delta from
+    the last acknowledged SAP mirror through the current processing time; it is not permanently
+    restricted to 2026-07-01..2026-07-31.
+25. Before a month's configured closing timestamp, a transaction belongs to its own accounting
+    month. BatchRunDate must be inside that same month and no later than both the run date and that
+    month's last calendar day. A July row therefore cannot have BatchRunDate after 2026-07-31; an
+    August row must use a date in 2026-08-01..2026-08-31 until August closes.
+26. At closing, the system must atomically close the current period and open the next. Any backlog
+    whose raw PaymentDate is earlier than the newly open month is clamped to the new month's first
+    day; transactions originating in the new month retain their real PaymentDate. BatchRunDate is
+    the real run date capped to the open month's last day.
+27. Every nightly interface ends with `sap-extract-job`, loader completion, SAP mirror refresh,
+    and reconciliation. Delivery status alone is not evidence of SAP state.
+28. PaymentMethod and PaymentChannel are closed mappings. Values must come from a reviewed V2
+    success mapping or distinct values demonstrably accepted in SAP history. Unknown values and
+    mojibake are held; never truncate, invent, or silently substitute a literal.
+29. Every filtered, held, rejected, and excluded row appears in the daily human-action report with
+    a reason code and auditable key. `EXCLUDED != DELETED` remains binding.
+30. Daily completeness reconciles all CareOS-qualified transactions from rule 1 into mutually
+    exclusive outcomes: acknowledged in SAP, pending acknowledgement, ready to send, held,
+    excluded, or rejected. The counts must conserve exactly and the result is emailed every day.
+
 ## Additional confirmed controls
 
 - E1: OrderDate <=2024 is `YEAR_OUT_OF_SCOPE`; 2025 is cancel-only when already in SAP; >=2026

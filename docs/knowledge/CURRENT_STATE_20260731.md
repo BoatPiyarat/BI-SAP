@@ -378,3 +378,21 @@ deadline `2026-08-03 14:00 ICT` จะเห็น SAP state ล่าสุด�
 - `SAP_LIVE` อยู่ใต้ **append-only hold** — ห้าม clean / dedup / truncate / delete (audit trail)
 - ห้าม deploy พร้อมแก้ — แก้ → วัด → รายงาน → review → deploy
 - ห้ามแตะ vendor-owned component (WireGuard tunnel · SAP pull cadence · SAP import program)
+# MILESTONE 2026-08-02 — reusable monthly delta rules locked (RULE-21–30)
+
+Boat will continue the manual process to cover July closing. Upload LogID 21153 and its partial
+result are retained for post-close tuning; do not auto-retry the July file.
+
+The next V3 operating model is no longer July-only. It requires Paid-before-cancel sequencing,
+proof of SAP Paid/Pending before cancel/change, a fail-closed NonMotor InsuranceGroup gate for raw
+transactions from 2026-08-01 onward, explicit monthly OPEN/CLOSED transitions, post-close backlog
+PaymentDate clamp to the next month's first day, closed PaymentMethod/PaymentChannel mappings,
+post-interface SAP extract/load/mirror refresh, separate human-action reporting, and exact daily
+CareOS-to-SAP conservation emailed every day. Canonical detail is in
+`SAP_INTERFACE_VALIDATION_RULES.md` rules 21–30 and
+`docs/design/MONTHLY_DELTA_OPERATING_MODEL_V3.md`.
+
+This milestone is design authority, not deploy authority. Each SQL/orchestration increment remains
+Class A and requires review plus separate Boat approval.
+
+Drive copy: `https://docs.google.com/document/d/188igKmt72mCARQFj7W41kuheXl9vxjTLKdIlUsgpTho/edit`.
