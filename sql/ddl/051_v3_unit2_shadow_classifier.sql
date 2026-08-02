@@ -149,6 +149,9 @@ BEGIN
       WHEN sap_result_status IN('REJECTED','PARTIAL_REJECT') AND acknowledged_at IS NULL
         THEN 'REJECTED_BY_SAP'
       WHEN matching_docentry IS NOT NULL AND matching_invoice_status='Paid' THEN 'ACKNOWLEDGED'
+      WHEN matching_docentry IS NOT NULL
+       AND matching_invoice_status IN('Cancelled','Cancelled (Change order / Rejected)')
+        THEN 'HELD_VALIDATION'
       WHEN sap_result_status='ACKNOWLEDGED' AND acknowledged_at IS NOT NULL THEN 'ACKNOWLEDGED'
       WHEN delivery_status IN('DELIVERED','PICKED_UP') AND sap_result_status IS NULL THEN 'PENDING_ACK'
       WHEN schedule_sap_status IN('Paid','Cancelled','Cancelled (Change order / Rejected)')
@@ -160,6 +163,9 @@ BEGIN
       WHEN validation_rules IS NOT NULL THEN CONCAT('validations=',validation_rules)
       WHEN invoice_no IS NULL OR order_item IS NULL OR period IS NULL THEN 'event identity incomplete'
       WHEN sap_result_status IN('REJECTED','PARTIAL_REJECT') THEN CONCAT('SAP result=',sap_result_status)
+      WHEN matching_docentry IS NOT NULL
+       AND matching_invoice_status IN('Cancelled','Cancelled (Change order / Rejected)')
+        THEN 'matching LIVE invoice is already Cancelled; do not change'
       WHEN matching_docentry IS NOT NULL THEN 'matching LIVE DocEntry and InvoiceNo found'
       WHEN sap_result_status='ACKNOWLEDGED' THEN 'row result acknowledged'
       WHEN delivery_status IN('DELIVERED','PICKED_UP') THEN 'delivered without terminal row result'
