@@ -1,5 +1,15 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-02 21:39 ICT — Unit 5 file-role and CREATE-spine gate passes
+
+Run `V3NIGHTLY-2026-08-02T09:02:26-b36e1712` has 753 Unit 3 releasable payment events:
+CREATE = 168 events / 167 orders / 63,433,356 satang; NEWPAYMENT = 585 events / 583 orders /
+108,956,913 satang. CREATE expansion produces 939 56-column candidate rows and all 167 order
+items have the exact `1..TotalPeriods` spine; bad-spine count is zero. Evidence job
+`bqjob_r64967cf1c5db4954_0000019fc2ea66f7_1`, 2026-08-02T14:39:30.400Z–14:39:38.906Z,
+processed 201,140,972 bytes and billed 265,289,728 bytes under the 20 GiB ceiling. No durable
+table, payload, export, or GCS write occurred. Next is the explicit 56-column shadow builder.
+
 ## 2026-08-02 21:20 ICT — non-credit payment mappings release 753 events
 
 057 seeded 12 existing V2/SAP-success payment mappings for non-credit contexts. Unit 3 rerun now

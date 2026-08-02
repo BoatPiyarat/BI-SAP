@@ -1,5 +1,13 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-02 21:39 ICT — split Unit 5 CREATE from NEWPAYMENT before payload build
+
+Added a fail-closed population diagnostic that treats Unit 3's releasable count as payment-event
+grain. Actual run evidence split 753 events into 168 CREATE and 585 NEWPAYMENT; CREATE correctly
+expanded to 939 schedule rows with zero malformed `1..TotalPeriods` spines. Also made the mandatory
+query wrapper invoke the Windows `bq.cmd` through `cmd.exe` under Git Bash; offline self-test remains
+7/7. This work created no persistent BigQuery object and wrote no GCS object.
+
 ## 2026-08-02 21:20 ICT — released only reviewed non-credit payment mappings
 
 Seeded 12 existing V2 mappings with SAP-success evidence. The fail-closed rerun released 753 of

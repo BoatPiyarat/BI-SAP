@@ -252,9 +252,21 @@ fi
 
 echo "== bq_safe_query: dry-run =========================================" >&2
 
+run_bq() {
+  if command -v bq >/dev/null 2>&1; then
+    bq "$@"
+  elif command -v bq.cmd >/dev/null 2>&1 && command -v cmd.exe >/dev/null 2>&1; then
+    # Git Bash does not execute .cmd files directly. //c prevents MSYS from rewriting /c.
+    cmd.exe //c bq.cmd "$@"
+  else
+    echo "bq executable not found" >&2
+    return 127
+  fi
+}
+
 # Feed SQL on stdin. Passing a procedure body as one argv value exceeds Windows cmd.exe's
 # command-line limit when Git Bash dispatches to bq.cmd.
-dry_run_json="$(printf '%s' "$sql" | bq query --use_legacy_sql=false --dry_run --format=json "${project_args[@]}" 2>&1)" || {
+dry_run_json="$(printf '%s' "$sql" | run_bq query --use_legacy_sql=false --dry_run --format=json "${project_args[@]}" 2>&1)" || {
   echo "ERROR: dry-run itself failed:" >&2
   echo "$dry_run_json" >&2
   exit 3
@@ -283,6 +295,6 @@ fi
 
 echo "== bq_safe_query: real run (--maximum_bytes_billed=${MAX_BYTES_BILLED}) ===========" >&2
 
-printf '%s' "$sql" | bq query --use_legacy_sql=false "${project_args[@]}" \
+printf '%s' "$sql" | run_bq query --use_legacy_sql=false "${project_args[@]}" \
   --maximum_bytes_billed="${MAX_BYTES_BILLED}" \
   "${passthrough_args[@]}"

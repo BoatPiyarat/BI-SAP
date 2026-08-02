@@ -127,6 +127,15 @@ date/status rules, BU/role split, exact row/key/amount conservation, and zero he
 Create immutable bytes once in a non-production archive, record SHA-256/size/row count/header and
 object generation, then promote those exact bytes. Regeneration after approval is prohibited.
 
+`READY_CREATE_OR_PAYMENT` must be split before payload construction. If an OrderItem has no SAP
+document, its role is `CREATE` and the file package expands from payment-event grain to the exact
+schedule spine `1..TotalPeriods`; Paid rows carry transaction fields and Pending rows retain blank
+InvoiceNo, PaymentDate, PaymentMethod, and PaymentChannel. If the OrderItem already has any SAP
+document, its role is `NEWPAYMENT` and only the releasable payment event is emitted. A missing,
+duplicate, or non-contiguous CREATE spine is a hold. Therefore the Unit 3 releasable event count is
+an input conservation total, not an expected CSV row count. The source diagnostic is
+`sql/adhoc/20260802_unit5_file_role_population_gate.sql`.
+
 Delivery states:
 
 `SHADOW_READY -> ARCHIVED -> DELIVERED -> PICKED_UP -> ACKNOWLEDGED | PARTIAL_REJECT | REJECTED | TIMEOUT`
