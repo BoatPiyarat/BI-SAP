@@ -24,6 +24,11 @@ convention. F5 — mutating CALLs via jobs.insert with deterministic jobId + pol
 terminal state; deadline → cancel + verify post-cancel state; jobComplete=false can no longer
 strand a mutation.
 
+Delta verdict: **BLOCK UPHELD — ESCALATE BOAT** —
+`docs/reviews/2026-08-02-e986699-codex.md`. The generated BigQuery job IDs contain forbidden `:`
+characters from run_id, and cancellation is checked only once rather than polled to terminal state.
+Per the one-round rule, do not start a third agent round without Boat's direction.
+
 Original claim: source-only Cloud Workflows definition for P0 unit 1 per the 2026-08-02 handoff. Anchors on
 executing `sap-extract-job` itself (run.v2, auto-polled) — never a wall clock; pre/post bronze
 census with >1-object hard stops and generation+md5 capture; at-most-one loader trigger with a
