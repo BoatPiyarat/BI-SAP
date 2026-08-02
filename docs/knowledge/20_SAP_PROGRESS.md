@@ -1,4 +1,13 @@
 # 20_SAP_PROGRESS.md
+**2026-08-02 UNIT 1 DEPLOYED; HEALTHY-ZERO PATH PASSED:** workflow
+`v3-nightly-orchestrator` revision `000003-3e1` ran successfully as the default compute SA under
+Boat's explicit exception. Execution `2a65715f-2b87-42f1-a8fa-b1b0976aa04a`, run
+`V3NIGHTLY-2026-08-02T09:02:26-b36e1712`, proved exact-execution healthy zero, watermark advance,
+no loader trigger, both terminal-polled mirror refreshes, and `UNIT1_COMPLETE`. The LOAD/bronze
+path remains unproved because the extractor returned 0 rows; no scheduler cutover occurred. The
+default compute SA's broad roles remain technical debt; replace with `v3-orchestrator@` after an
+IAM admin grants the reviewed least-privilege bindings.
+
 **2026-08-02 V3 AUTONOMY UNITS 2–6 DESIGN READY:** source-only contract now fixes identity/grain,
 mutually exclusive conservation, current-SAP delta precedence, magnitude gate, effective-dated
 InsuranceGroup/payment mappings, atomic OPEN/CLOSED rollover, exact-byte delivery, row-level SAP

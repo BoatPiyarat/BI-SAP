@@ -4,6 +4,22 @@ Append-only — entry ใหม่บนสุด ห้ามลบ/แก้�
 
 ---
 
+## 2026-08-02 — Unit 1 deployed and healthy-zero path passed
+
+Created alert topic `v3-orchestrator-alerts` and enabled alert policy
+`4048444610196129343`; synthetic publish `21359141440891675` appeared in Monitoring. The dedicated
+runtime SA could not receive IAM because `data@rabbit.co.th` lacks both service-account and project
+policy mutation permissions, so Boat explicitly selected the existing default compute SA as a
+temporary exception. Workflow revision `000003-3e1` succeeded in execution
+`2a65715f-2b87-42f1-a8fa-b1b0976aa04a` (run
+`V3NIGHTLY-2026-08-02T09:02:26-b36e1712`). The extractor execution was
+`sap-extract-job-vg5gq`: 0 rows, watermark advanced, `caught_up=True`; loader was not triggered.
+Mirror jobs `...-MIRROR_DOC_REFRESH` and `...-MIRROR_STATE_REFRESH` both reached DONE clean under
+the 20 GiB cap, followed by `UNIT1_COMPLETE`. Two preceding rehearsals failed closed and exposed
+source defects (string timestamp comparison and the live Cloud Run execution label location),
+fixed in `e980219` and `58f6271`. No scheduler cutover was made. A non-zero bronze/LOAD cycle and
+human receipt of the alert still require separate evidence before unattended acceptance.
+
 ## 2026-08-02 — Unit 1 source corrected under scoped Boat review waiver
 
 With Claude credit unavailable, Boat explicitly instructed Codex to execute Unit 1 without waiting
