@@ -82,8 +82,13 @@ BEGIN
     CASE
       WHEN exclusion_rules IS NOT NULL THEN 'EXCLUDED_RULE'
       WHEN validation_rules IS NOT NULL THEN 'HELD_VALIDATION'
+      WHEN is_cancelled_effective
+       AND sap_status IN('Cancelled','Cancelled (Change order / Rejected)') THEN 'ACKNOWLEDGED'
       WHEN is_cancelled_effective AND sap_status IN('Paid','Pending') THEN 'READY_CANCEL_CHANGE'
       WHEN is_cancelled_effective AND sap_status IS NULL THEN 'HELD_VALIDATION'
+      WHEN NOT IFNULL(is_cancelled_effective,FALSE)
+       AND sap_status IN('Cancelled','Cancelled (Change order / Rejected)') THEN 'HELD_VALIDATION'
+      WHEN expected_status='Pending' AND sap_status='Paid' THEN 'HELD_VALIDATION'
       WHEN sap_status IN('Paid','Cancelled','Cancelled (Change order / Rejected)')
        AND expected_invoice_no IS NOT NULL
        AND IFNULL(sap_invoice_no,'')!=IFNULL(expected_invoice_no,'') THEN 'HELD_VALIDATION'
@@ -99,8 +104,16 @@ BEGIN
     CASE
       WHEN exclusion_rules IS NOT NULL THEN CONCAT('rules=',exclusion_rules)
       WHEN validation_rules IS NOT NULL THEN CONCAT('validations=',validation_rules)
+      WHEN is_cancelled_effective
+       AND sap_status IN('Cancelled','Cancelled (Change order / Rejected)')
+        THEN 'cancel/change already acknowledged in SAP'
       WHEN is_cancelled_effective AND sap_status IN('Paid','Pending') THEN 'existing SAP row permits cancel/change'
       WHEN is_cancelled_effective AND sap_status IS NULL THEN 'cancel/change has no existing SAP row'
+      WHEN NOT IFNULL(is_cancelled_effective,FALSE)
+       AND sap_status IN('Cancelled','Cancelled (Change order / Rejected)')
+        THEN 'SAP is cancelled but CareOS cancellation is not effective; human action'
+      WHEN expected_status='Pending' AND sap_status='Paid'
+        THEN 'SAP Paid is ahead of expected Pending; never downgrade automatically'
       WHEN sap_status IN('Paid','Cancelled','Cancelled (Change order / Rejected)')
        AND expected_invoice_no IS NOT NULL AND IFNULL(sap_invoice_no,'')!=IFNULL(expected_invoice_no,'')
         THEN 'immutable InvoiceNo differs; human action'
