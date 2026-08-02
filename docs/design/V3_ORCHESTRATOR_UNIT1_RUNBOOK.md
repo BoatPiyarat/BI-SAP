@@ -16,6 +16,9 @@ refresh as two separately capped BigQuery jobs → `UNIT1_COMPLETE`. Every trans
 1. Create Pub/Sub topic `v3-orchestrator-alerts` + a subscription that reaches a human (email
    push or the existing alerting route). **Test one synthetic message end-to-end and record the
    evidence — an unverified alert channel violates the fail-closed contract.**
+   Reviewed source for the monitoring route is `infra/v3_orchestrator_alert_policy.json`; it alerts
+   on topic publish operations through the two enabled SAP notification channels, including the
+   channel that reaches Boat directly. Do not store channel labels/email addresses in repo.
 2. Service account for the workflow (new, least-privilege):
    `run.jobs.run` (extract), `cloudscheduler.jobs.run` (loader trigger),
    `bigquery.jobs.create` + `bigquery.jobs.get`/`cancel` (terminal polling, F5) + dataset-scoped

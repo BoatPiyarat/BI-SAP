@@ -1,0 +1,40 @@
+{
+  "displayName": "V3 orchestrator human alert",
+  "documentation": {
+    "content": "V3 orchestrator published a fail-closed event. Inspect the workflow execution and pipeline_run_log before any replay.",
+    "mimeType": "text/markdown"
+  },
+  "combiner": "OR",
+  "enabled": true,
+  "notificationChannels": [
+    "projects/pacific-plating-282708/notificationChannels/7978488498537325037",
+    "projects/pacific-plating-282708/notificationChannels/7978488498537326248"
+  ],
+  "conditions": [
+    {
+      "displayName": "Fail-closed Pub/Sub message published",
+      "conditionThreshold": {
+        "filter": "resource.type=\"pubsub_topic\" AND resource.label.topic_id=\"v3-orchestrator-alerts\" AND metric.type=\"pubsub.googleapis.com/topic/send_message_operation_count\"",
+        "aggregations": [
+          {
+            "alignmentPeriod": "60s",
+            "perSeriesAligner": "ALIGN_RATE",
+            "crossSeriesReducer": "REDUCE_SUM"
+          }
+        ],
+        "comparison": "COMPARISON_GT",
+        "thresholdValue": 0,
+        "duration": "0s",
+        "trigger": {
+          "count": 1
+        }
+      }
+    }
+  ],
+  "alertStrategy": {
+    "autoClose": "1800s",
+    "notificationRateLimit": {
+      "period": "300s"
+    }
+  }
+}
