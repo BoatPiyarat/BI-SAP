@@ -3,6 +3,24 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+## RQ-20260802-2206-v3-unit5-source-coverage
+Status: REVIEWED
+Reviewer: Codex (Boat waiver 2026-08-02; continue without Claude Code)
+Class: A
+Artifact: commit `5d497ef`; Unit 5 top-up correction and payload-source coverage diagnostic.
+Opened: 2026-08-02T22:06:16+07:00
+
+This supersedes the earlier interpretation that CREATE payload size equals its 939-row schedule
+spine. One CREATE item-period has two successful events, so the correct target is 940 rows and the
+extra top-up must carry ExpectedReceived=0. Coverage job
+`bqjob_r2c19c6bb74806981_0000019fc3011b2a_1` ran at
+2026-08-02T15:04:18.378Z–15:04:45.511Z, processed 9,263,026,892 bytes and billed
+9,295,626,240 bytes. NEWPAYMENT is exact 585/585; CREATE Pending is exact 772/772, while 159 Paid
+CREATE targets lack an exact source variant.
+
+Verdict: **PASS NEWPAYMENT INPUT / BLOCK CREATE PAYLOAD** — do not fabricate or schedule-dedup the
+159 missing Paid rows. This verdict authorizes source work only, not deploy/export/GCS mutation.
+
 ## RQ-20260802-2141-v3-unit5-file-role-spine-gate
 Status: REVIEWED
 Reviewer: Codex (Boat waiver 2026-08-02; continue without Claude Code)
