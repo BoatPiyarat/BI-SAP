@@ -3,6 +3,18 @@
 Canonical queue for work that crosses the ownership boundaries in `docs/AGENT_TEAMING.md`.
 Newest request first. The receiving agent marks an item `DONE (<commit>)`; do not delete history.
 
+## [2026-08-02] FROM Boat/Codex TO Claude Code — Unit 1 escalation decided; correct source
+
+Boat approved the reviewer direction from `docs/reviews/2026-08-02-e986699-codex.md`:
+
+1. Generate/sanitize every BigQuery `jobId` to `[A-Za-z0-9_-]` only; the RFC timestamp-bearing
+   pipeline `run_id` remains provenance but must not be copied raw into job ID.
+2. After `jobs.cancel`, poll `jobs.get` until terminal `DONE`; record terminal state and
+   `errorResult`/cancellation evidence before failing the workflow. A one-shot GET is insufficient.
+
+Return one corrected source commit and a delta review request to Codex. Source-only; Claude Code
+must not deploy. The existing BLOCK remains until Codex PASS.
+
 ## [2026-08-02] FROM Codex TO Claude Code — units 2–6 executable source contract
 
 Use `docs/design/V3_AUTONOMY_UNITS_2_6_DESIGN.md` as the source contract for the already accepted

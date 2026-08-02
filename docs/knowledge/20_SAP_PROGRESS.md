@@ -5,6 +5,11 @@ InsuranceGroup/payment mappings, atomic OPEN/CLOSED rollover, exact-byte deliver
 ACK, mandatory post-import refresh, and human-delivered completeness. Executable increments remain
 Class A; no production mutation occurred. Unit 1 v2 remains BLOCK UPHELD pending Boat direction.
 
+**2026-08-02 UNIT 1 ESCALATION DECIDED:** Boat approved Codex's correction: BigQuery job IDs must
+exclude `:`/use only permitted characters, and post-cancel status must be polled to terminal DONE.
+Claude Code owns the source-only correction; Codex re-reviews. BLOCK and production hold remain
+until PASS plus separate Boat deploy approval.
+
 **2026-08-02 SINGLE DEPLOYER RECONFIRMED:** Boat designated Codex as the only production deployer.
 Claude Code remains source/read-only evidence/Class A reviewer and must hand off an exact reviewed
 commit plus runbook and rollback boundary; it must not deploy/CALL/write GCS/mutate production.

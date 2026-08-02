@@ -4,6 +4,14 @@ Append-only — entry ใหม่บนสุด ห้ามลบ/แก้�
 
 ---
 
+## 2026-08-02 — Boat decided Unit 1 review escalation
+
+Boat approved both reviewer corrections after the one-round escalation: sanitize BigQuery job IDs
+so RFC timestamp colons never enter `jobId`, and poll asynchronous `jobs.cancel` to terminal DONE
+before the workflow exits/replay becomes eligible. Sent the exact source-only correction to Claude
+Code. The Class A BLOCK remains until Codex delta review; no production authorization or mutation
+occurred.
+
 ## 2026-08-02 — V3 unattended units 2–6 design contract completed
 
 Defined the source-only contract after mirror freshness: current-SAP delta precedence and

@@ -29,6 +29,12 @@ Delta verdict: **BLOCK UPHELD — ESCALATE BOAT** —
 characters from run_id, and cancellation is checked only once rather than polled to terminal state.
 Per the one-round rule, do not start a third agent round without Boat's direction.
 
+Boat decision 2026-08-02: **reviewer correction approved**. Unit 1 source must (a) sanitize or
+generate BigQuery job IDs containing only permitted characters (no `:`), and (b) poll after
+`jobs.cancel` until the BigQuery job reaches terminal `DONE`, recording terminal status/error
+evidence before the workflow exits. This resolves the escalation direction but does not clear the
+BLOCK; corrected source still requires Codex delta review. No deploy is authorized.
+
 Original claim: source-only Cloud Workflows definition for P0 unit 1 per the 2026-08-02 handoff. Anchors on
 executing `sap-extract-job` itself (run.v2, auto-polled) — never a wall clock; pre/post bronze
 census with >1-object hard stops and generation+md5 capture; at-most-one loader trigger with a
