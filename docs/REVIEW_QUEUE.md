@@ -3,6 +3,23 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+## RQ-20260802-2141-v3-unit5-file-role-spine-gate
+Status: REVIEWED
+Reviewer: Codex (Boat waiver 2026-08-02; continue without Claude Code)
+Class: A
+Artifact: commit `5b31c57`; `sql/adhoc/20260802_unit5_file_role_population_gate.sql`.
+Opened: 2026-08-02T21:41:20+07:00
+
+Review the event-to-file grain split, SAP-existence role predicate, exact CREATE schedule spine,
+Unit 3 hold exclusion, and conservation output. Evidence job
+`bqjob_r64967cf1c5db4954_0000019fc2ea66f7_1` ran at
+2026-08-02T14:39:30.400Z–14:39:38.906Z, processed 201,140,972 bytes and billed 265,289,728 bytes.
+It returned 753 releasable events: CREATE 168/167 orders, NEWPAYMENT 585/583 orders; CREATE expands
+to 939 schedule rows with zero bad spines.
+
+Verdict: **PASS FOR UNIT 5 POPULATION INPUT** — this authorizes the explicit 56-column shadow
+builder only. It does not authorize a persistent-object deploy, export, or GCS write.
+
 ## RQ-20260802-2123-v3-payment-mapping-seed
 Status: REVIEWED
 Reviewer: Codex (Boat waiver 2026-08-02; continue without Claude Code)
