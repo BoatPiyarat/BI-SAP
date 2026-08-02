@@ -18,8 +18,14 @@ refresh as two separately capped BigQuery jobs → `UNIT1_COMPLETE`. Every trans
    evidence — an unverified alert channel violates the fail-closed contract.**
 2. Service account for the workflow (new, least-privilege):
    `run.jobs.run` (extract), `cloudscheduler.jobs.run` (loader trigger),
-   `bigquery.jobs.create` + dataset-scoped read/write on `sap_integration_v3`,
-   `storage.objects.list` on `rcb-bronze-zone`, `pubsub.topics.publish` on the alert topic.
+   `bigquery.jobs.create` + `bigquery.jobs.get`/`cancel` (terminal polling, F5) + dataset-scoped
+   read/write on `sap_integration_v3` and read on the region INFORMATION_SCHEMA (F2),
+   `storage.objects.list` + `storage.objects.get` on `rcb-bronze-zone` (control-object media read,
+   F3), `pubsub.topics.publish` on the alert topic.
+2b. **Pin the extract control object name (F3).** The default
+   `SAP/_extract_control/watermark.json` is a placeholder; verify the exact object name and JSON
+   field names (`watermark`, `caught_up`, `rows`) against the deployed extractor source before
+   deploy. A wrong name fails closed on every zero-object night — loud, but wrong.
 3. `gcloud workflows deploy v3-nightly-orchestrator --location=asia-southeast1 \
    --source=infra/v3_nightly_orchestrator.workflows.yaml --service-account=<sa>`.
 
@@ -40,6 +46,8 @@ paused schedulers and pause the workflow trigger — states, not deletions, so r
 - Mirror counts consistent with the loader's outputRows delta.
 - One deliberately induced failure path in a rehearsal (e.g. tiny loader_timeout_seconds) proving
   the FAILED row + alert message + workflow failure all fire.
+- The LOAD-commitment audit row present (job ID + outputRows + badRecords=0 + source match) —
+  bronze deletion alone is never accepted as commitment (F2, the b00af18 lesson).
 
 ## Known boundaries (explicit non-goals of unit 1)
 

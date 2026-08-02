@@ -11,7 +11,20 @@ Artifact: `infra/v3_nightly_orchestrator.workflows.yaml` and
 `docs/design/V3_ORCHESTRATOR_UNIT1_RUNBOOK.md` (new, this commit).
 Opened: 2026-08-02T12:30:00+07:00
 
-Claim: source-only Cloud Workflows definition for P0 unit 1 per the 2026-08-02 handoff. Anchors on
+BLOCK answer (one round, this commit): F1 — `body:{}` + explicit connector timeout added; both
+operation name AND completed Execution resource recorded. F2 — new `verify_load_commitment`
+subworkflow: exactly-one DONE LOAD job into SAP_LIVE in the run window via INFORMATION_SCHEMA,
+then jobs.get for outputRows/badRecords/errorResult/sourceUris matched to the observed bronze
+object; zero/multiple/mismatch/badRecords>0 all fail closed; outputRows lands in rows_out. F3 —
+`HEALTHY_ZERO` now requires reading the extract control object (alt=media, OAuth2) and gating
+caught_up==true AND watermark strictly advanced past the pre-run value; re-entry runs can never
+declare health; control-object name must be pinned at deploy review (runbook 2b). F4 — run-log
+rows now use SUCCESS|FAILED only, counts in rows_out, summary text in error_message per the 025
+convention. F5 — mutating CALLs via jobs.insert with deterministic jobId + poll jobs.get to
+terminal state; deadline → cancel + verify post-cancel state; jobComplete=false can no longer
+strand a mutation.
+
+Original claim: source-only Cloud Workflows definition for P0 unit 1 per the 2026-08-02 handoff. Anchors on
 executing `sap-extract-job` itself (run.v2, auto-polled) — never a wall clock; pre/post bronze
 census with >1-object hard stops and generation+md5 capture; at-most-one loader trigger with a
 polling wait that fails closed on timeout or a second object and never retriggers; mirror doc/state
