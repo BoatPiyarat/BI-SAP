@@ -3,6 +3,24 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+## RQ-20260802-2123-v3-payment-mapping-seed
+Status: REVIEWED
+Reviewer: Codex (Boat waiver 2026-08-02; continue without Claude Code)
+Class: A
+Artifact: commit `9116359`; `sql/ddl/057_seed_payment_mappings_v2_success.sql`.
+Opened: 2026-08-02T21:23:21+07:00
+
+Verify that the seed contains only non-credit mappings already used by V2 and supported by the
+recorded SAP-success evidence; Pending rows must not enter the payment mapping registry, and no
+credit-shell default may be introduced. Runtime evidence: seed job
+`bqjob_r3b616eb0badb2256_0000019fc2d7b990_1`; Unit 3 rerun
+`bqjob_r5ef5a2bfeab12b59_0000019fc2d81cd1_1`; verification
+`bqjob_r37153dd27598434c_0000019fc2d9407b_1` produced 753 releasable and 432 held READY events,
+14 UNKNOWN rows, 446 notification rows, and zero release-gate blockers.
+
+Verdict: **PASS FOR THE DEPLOYED NON-CREDIT SEED** — exact source tuples only; Pending remains
+blank/outside the registry, credit-shell remains held, and no export or GCS write occurred.
+
 ## RQ-20260802-2006-v3-automation-release-gate
 Status: REVIEWED
 Reviewer: Codex (Boat waiver 2026-08-02; continue without Claude Code)
