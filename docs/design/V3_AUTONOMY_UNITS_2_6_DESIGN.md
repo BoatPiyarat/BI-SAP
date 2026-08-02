@@ -136,6 +136,18 @@ duplicate, or non-contiguous CREATE spine is a hold. Therefore the Unit 3 releas
 an input conservation total, not an expected CSV row count. The source diagnostic is
 `sql/adhoc/20260802_unit5_file_role_population_gate.sql`.
 
+CREATE does not collapse a legitimate top-up into its schedule row. The first Paid row for a
+period carries that period's ExpectedReceived; each additional successful event for the same
+`(OrderItem,Period)` is a separate row with ExpectedReceived=0 and its own immutable InvoiceNo and
+ActualReceived. Thus CREATE payload rows equal schedule-spine rows plus `SUM(event_count-1)` over
+multi-event item-periods.
+
+Before materializing 56 columns, each target identity must match exactly one source-contract
+variant. The match is `(OrderItem,Period,InvoiceNo)` for Paid rows and
+`(OrderItem,Period,Pending-with-blank-InvoiceNo)` for Pending rows. Missing and ambiguous variants
+are holds; Unit 5 must not replace them with a schedule-level winner or invent financial fields.
+The coverage query is `sql/adhoc/20260802_unit5_payload_source_coverage.sql`.
+
 Delivery states:
 
 `SHADOW_READY -> ARCHIVED -> DELIVERED -> PICKED_UP -> ACKNOWLEDGED | PARTIAL_REJECT | REJECTED | TIMEOUT`

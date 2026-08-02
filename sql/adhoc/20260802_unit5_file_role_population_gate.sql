@@ -62,7 +62,28 @@ UNION ALL
 SELECT 'RELEASABLE_BY_ROLE',file_role,COUNT(*),COUNT(DISTINCT order_id),SUM(charge_amount)
 FROM _releasable_event GROUP BY file_role
 UNION ALL
+SELECT 'DISTINCT_ORDER_ITEMS_BY_ROLE',file_role,COUNT(DISTINCT order_item),
+  COUNT(DISTINCT order_id),NULL
+FROM _releasable_event GROUP BY file_role
+UNION ALL
+SELECT 'MULTI_EVENT_ITEM_PERIODS',file_role,COUNT(*),COUNT(DISTINCT order_id),
+  SUM(charge_amount)
+FROM (
+  SELECT file_role,order_item,period,ANY_VALUE(order_id) order_id,
+    COUNT(*) event_count,SUM(charge_amount) charge_amount
+  FROM _releasable_event
+  GROUP BY file_role,order_item,period
+  HAVING event_count>1)
+GROUP BY file_role
+UNION ALL
 SELECT 'CREATE_FILE_ROWS','CREATE',COUNT(*),COUNT(DISTINCT order_id),NULL
+FROM _create_spine
+UNION ALL
+SELECT 'CREATE_EXPECTED_PAYLOAD_ROWS','CREATE',
+  (SELECT COUNT(*) FROM _create_spine)+IFNULL((SELECT SUM(event_count-1) FROM (
+    SELECT COUNT(*) event_count FROM _releasable_event
+    WHERE file_role='CREATE' GROUP BY order_item,period HAVING event_count>1)),0),
+  COUNT(DISTINCT order_id),NULL
 FROM _create_spine
 UNION ALL
 SELECT 'CREATE_ORDER_ITEMS_WITH_BAD_SPINE','CREATE',COUNT(*),COUNT(*),NULL

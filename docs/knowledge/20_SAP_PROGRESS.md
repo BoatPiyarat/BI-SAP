@@ -1,14 +1,28 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-02 22:04 ICT — Unit 5 source coverage blocks CREATE, NEWPAYMENT clean
+
+The expanded target has exact source coverage for all 585 NEWPAYMENT rows. CREATE coverage is
+incomplete: RCL Pending 772/772 and ONETIME Paid 9 rows match, but 159 Paid targets are missing
+from the current contract sources (RCL 137 rows / 136 items; ONETIME 22 rows / 22 items). This is
+not a Pending-field problem. CREATE payload generation remains fail-closed; no missing financial
+fields were invented and no partial CREATE file was produced. Evidence job
+`bqjob_r2c19c6bb74806981_0000019fc3011b2a_1`,
+2026-08-02T15:04:18.378Z–15:04:45.511Z, processed 9,263,026,892 bytes and billed
+9,295,626,240 bytes under the 20 GiB ceiling. NEWPAYMENT can proceed to a separate 56-column
+shadow builder while these CREATE Paid-source gaps remain held.
+
 ## 2026-08-02 21:39 ICT — Unit 5 file-role and CREATE-spine gate passes
 
 Run `V3NIGHTLY-2026-08-02T09:02:26-b36e1712` has 753 Unit 3 releasable payment events:
-CREATE = 168 events / 167 orders / 63,433,356 satang; NEWPAYMENT = 585 events / 583 orders /
-108,956,913 satang. CREATE expansion produces 939 56-column candidate rows and all 167 order
-items have the exact `1..TotalPeriods` spine; bad-spine count is zero. Evidence job
-`bqjob_r64967cf1c5db4954_0000019fc2ea66f7_1`, 2026-08-02T14:39:30.400Z–14:39:38.906Z,
-processed 201,140,972 bytes and billed 265,289,728 bytes under the 20 GiB ceiling. No durable
-table, payload, export, or GCS write occurred. Next is the explicit 56-column shadow builder.
+CREATE = 168 events / 167 order items / 63,433,356 satang; NEWPAYMENT = 585 events / 583 order
+items / 108,956,913 satang. CREATE has 939 schedule-spine rows and one item-period has two payment
+events, so the expected payload is 940 rows, not 939: the extra top-up row must remain and carry
+ExpectedReceived=0. All 167 CREATE item spines are exact `1..TotalPeriods`; bad-spine count is zero.
+Latest evidence job `bqjob_r6e4ae6f107408113_0000019fc2fd9712_1`,
+2026-08-02T15:00:27.894Z–15:00:36.945Z, processed 201,157,535 bytes and billed 265,289,728 bytes.
+No durable table, payload, export, or GCS write occurred. Next is the explicit 56-column shadow
+builder.
 
 ## 2026-08-02 21:20 ICT — non-credit payment mappings release 753 events
 

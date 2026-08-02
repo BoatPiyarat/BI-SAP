@@ -5,3 +5,5 @@ Query เฉพาะกิจที่ใช้ซ้ำ (จาก urgent sess
 เก็บไว้เป็นจุดตั้งต้น — เป้าหมายระยะยาวคือแปลงเป็น stored procedures ตาม DATA_PREP_DESIGN
 - `20260802_unit5_file_role_population_gate.sql`: split releasable events into CREATE/NEWPAYMENT
   and fail closed unless each CREATE order item has the exact `1..TotalPeriods` schedule spine.
+- `20260802_unit5_payload_source_coverage.sql`: verify one contract-source variant per expanded
+  CREATE/top-up/Pending row and per NEWPAYMENT event before building the 56-column shadow.

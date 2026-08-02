@@ -1,10 +1,19 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-02 22:04 ICT — fail closed on 159 CREATE Paid source gaps
+
+Added event-identity coverage against the existing ONETIME and RCL 56-column contract sources.
+All 585 NEWPAYMENT and all 772 CREATE Pending rows matched exactly; 159 CREATE Paid rows did not.
+The implementation does not silently fall back to a schedule winner or fabricate payment fields.
+CREATE stays held while NEWPAYMENT remains independently buildable. No payload or GCS write was
+performed.
+
 ## 2026-08-02 21:39 ICT — split Unit 5 CREATE from NEWPAYMENT before payload build
 
 Added a fail-closed population diagnostic that treats Unit 3's releasable count as payment-event
-grain. Actual run evidence split 753 events into 168 CREATE and 585 NEWPAYMENT; CREATE correctly
-expanded to 939 schedule rows with zero malformed `1..TotalPeriods` spines. Also made the mandatory
+grain. Actual run evidence split 753 events into 168 CREATE and 585 NEWPAYMENT. CREATE has 939
+schedule rows plus one legitimate same-period top-up, hence 940 payload rows; zero
+`1..TotalPeriods` spines are malformed. Also made the mandatory
 query wrapper invoke the Windows `bq.cmd` through `cmd.exe` under Git Bash; offline self-test remains
 7/7. This work created no persistent BigQuery object and wrote no GCS object.
 
