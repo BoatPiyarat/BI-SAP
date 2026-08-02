@@ -1,5 +1,14 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-02 20:27 ICT — UNKNOWN quarantine and NonMotor master received
+
+Boat changed Unit 2 release policy: incomplete UNKNOWN rows are skipped/quarantined and listed by
+`order_item`, while other READY rows may continue. Source-only `055` materializes that detail and
+`054` now gates exact notification coverage rather than demanding zero UNKNOWN. Live metadata from
+scheduled query `6914e2e2-0000-2f6b-afc8-c82add6cb068` confirms NonMotor categories
+`Cancer/Home/Health/Life/ERROR`; only Health/Life exactly match the supplied SAP InsuranceGroup
+master. No registry seed, deploy, CALL, scheduler change, or file delivery occurred.
+
 ## 2026-08-02 20:04 ICT — V3 automation release gate source prepared
 
 V3 is not ready for unattended cutover: the live workflow ends after Unit 1, the latest Unit 2

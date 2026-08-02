@@ -35,22 +35,30 @@ BEGIN
   FROM `pacific-plating-282708.sap_integration_v3.v3_unit2_summary`
   WHERE pipeline_run_id=p_pipeline_run_id
   UNION ALL
-  SELECT p_pipeline_run_id,'UNIT2_UNKNOWN',IFNULL(SUM(records),0),
-    'UNKNOWN is a hard stop; every event and schedule needs a reviewed terminal classification',
+  SELECT p_pipeline_run_id,'UNIT2_UNKNOWN_NOTIFICATION_COVERAGE',
+    IF(n.pipeline_run_id IS NULL,1,ABS(u.unknown_rows-n.unknown_rows)),
+    'UNKNOWN rows are quarantined, but every row must be copied to the notification detail with order_item',
     CURRENT_TIMESTAMP()
-  FROM `pacific-plating-282708.sap_integration_v3.v3_unit2_summary`
-  WHERE pipeline_run_id=p_pipeline_run_id AND outcome='HELD_CLASSIFICATION_UNKNOWN'
+  FROM (SELECT IFNULL(SUM(records),0) AS unknown_rows
+    FROM `pacific-plating-282708.sap_integration_v3.v3_unit2_summary`
+    WHERE pipeline_run_id=p_pipeline_run_id AND outcome='HELD_CLASSIFICATION_UNKNOWN') u
+  LEFT JOIN `pacific-plating-282708.sap_integration_v3.v3_notification_run_summary` n
+    ON n.pipeline_run_id=p_pipeline_run_id
   UNION ALL
   SELECT p_pipeline_run_id,'UNIT3_EVALUATED',IF(COUNT(*)=1,0,1),
     'Unit 3 mapping evaluation must produce exactly one run summary',CURRENT_TIMESTAMP()
   FROM `pacific-plating-282708.sap_integration_v3.v3_unit3_run_summary`
   WHERE pipeline_run_id=p_pipeline_run_id
   UNION ALL
-  SELECT p_pipeline_run_id,'UNIT3_MAPPING_HOLDS',IFNULL(MAX(held_events),0),
-    'No READY event may pass to file creation with an unapproved or ambiguous mapping',
+  SELECT p_pipeline_run_id,'UNIT3_MAPPING_HOLD_NOTIFICATION_COVERAGE',
+    IF(n.pipeline_run_id IS NULL,1,ABS(u.held_events-n.mapping_hold_rows)),
+    'Held mapping events are skipped; every hold reason must be copied to notification detail',
     CURRENT_TIMESTAMP()
-  FROM `pacific-plating-282708.sap_integration_v3.v3_unit3_run_summary`
-  WHERE pipeline_run_id=p_pipeline_run_id
+  FROM (SELECT IFNULL(MAX(held_events),0) held_events
+    FROM `pacific-plating-282708.sap_integration_v3.v3_unit3_run_summary`
+    WHERE pipeline_run_id=p_pipeline_run_id) u
+  LEFT JOIN `pacific-plating-282708.sap_integration_v3.v3_notification_run_summary` n
+    ON n.pipeline_run_id=p_pipeline_run_id
   UNION ALL
   SELECT p_pipeline_run_id,'UNIT4_OPEN_PERIOD',ABS(1-COUNTIF(status='OPEN')),
     'Exactly one accounting period must be OPEN',CURRENT_TIMESTAMP()

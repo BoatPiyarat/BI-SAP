@@ -141,9 +141,20 @@ BEGIN
   WHERE pipeline_run_id=p_pipeline_run_id;
 
   INSERT INTO `pacific-plating-282708.sap_integration_v3.v3_unit3_mapping_hold`
-  WITH ready AS (
+  WITH nonmotor_category AS (
+    SELECT human_id,
+      COUNT(DISTINCT product_category) AS category_count,
+      STRING_AGG(DISTINCT IFNULL(product_category,'<NULL>'),',' ORDER BY IFNULL(product_category,'<NULL>'))
+        AS category_values
+    FROM `pacific-plating-282708.analytics_reports.non_motor_report_order_for_accounting`
+    GROUP BY human_id
+  ), ready AS (
     SELECT u.pipeline_run_id,u.order_item,u.order_id,u.period,u.charge_id,u.charge_amount,
-      DATE(p.charge_time) raw_payment_date,u.flow,d.insurance_group_source,
+      DATE(p.charge_time) raw_payment_date,u.flow,
+      IF(d.insurance_group_source='products/car-insurance',d.insurance_group_source,
+        IF(n.category_count=1,n.category_values,
+          CONCAT('__AMBIGUOUS_OR_MISSING__:',IFNULL(n.category_values,'<NULL>'))))
+        AS insurance_group_source,
       p.payment_option,p.payment_method_source,p.payment_channel_source,
       IF(d.insurance_group_source='products/car-insurance','MOTOR','NONMOTOR') product_scope,
       co.current_human_id IS NOT NULL is_credit_shell,
@@ -152,6 +163,7 @@ BEGIN
     JOIN `pacific-plating-282708.sap_integration_v3.stg_payment_events` p USING(charge_id)
     LEFT JOIN `pacific-plating-282708.sap_integration_v3.stg_order_dim` d
       USING(order_item,order_id)
+    LEFT JOIN nonmotor_category n ON n.human_id=u.order_id
     LEFT JOIN (SELECT DISTINCT current_human_id
       FROM `pacific-plating-282708.careos.cancelled_change_orders`) co
       ON co.current_human_id=u.order_id

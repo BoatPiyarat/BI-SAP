@@ -52,7 +52,9 @@ not this table, for day-to-day freshness.
 | 050_v3_onetime_payload_source.sql | V3-owned ONETIME 56-column payload source captured from the verified live contract; not a daily release gate by itself |
 | 051_v3_unit2_shadow_classifier.sql | Unit 2 event/schedule classifier with independent conservation and terminal SAP-state holds |
 | 052_v3_unit3_closed_mapping_registries.sql | **Source only / Class A.** Effective-dated InsuranceGroup/payment registries and fail-closed Unit 3 mapping holds; no seed values included |
-| 054_v3_automation_release_gate.sql | **Source only / Class A.** Durable fail-closed gate between Units 1–4 evaluation and Unit 5 file creation; UNKNOWN/mapping holds/open-period defects block release |
+| 054_v3_automation_release_gate.sql | **Source only / Class A.** Durable fail-closed gate between Units 1–4 and Unit 5; UNKNOWN/mapping holds are skipped only with exact quarantine coverage, while missing evaluation/open-period defects block release |
+| 055_v3_notification_quarantine.sql | **Source only / Class A.** Quarantines UNKNOWN/mapping-held rows and materializes notification detail with order_item before Unit 5 |
+| 056_seed_nonmotor_insurance_group_exact_matches.sql | **Source only / Class A config mutation.** Effective 2026-08-01 exact Health/Life NonMotor mappings for RCB/RCL; all other live categories remain held |
 | 053_v3_unit4_period_state_machine.sql | Explicit OPEN/CLOSED/PLANNED monthly state, atomic close/open, and legacy period-lock compatibility |
 | 047_repoint_nightly_mirror_to_incremental.sql | **Source only / Class A.** Chain 3 cutover definition: changes the nightly mirror call from full 024 to incremental 043 without altering downstream order; includes an exact 024-call rollback definition |
 

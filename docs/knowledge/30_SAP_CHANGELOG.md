@@ -1,5 +1,13 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-02 20:27 ICT — changed UNKNOWN from run-wide stop to auditable quarantine
+
+Recorded Boat's decision to skip incomplete rows while notifying their `order_item`, added a
+source-only quarantine/notification ledger, and changed the automation gate to require exact
+UNKNOWN coverage. Captured the supplied SAP master vocabulary and live NonMotor mapping source;
+ambiguous `Cancer/Home/ERROR` values remain held. Added LIVE import-error families as future
+preventive-validation regression cases. No production mutation.
+
 ## 2026-08-02 20:04 ICT — added a machine-enforced V3 automation release boundary
 
 Added a durable Unit 3 evaluation summary and a source-only Units 1–4 release gate. The gate writes

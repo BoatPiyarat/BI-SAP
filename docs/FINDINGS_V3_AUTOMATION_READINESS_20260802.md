@@ -16,8 +16,11 @@ holds, and exactly one OPEN accounting period. Gate results are durable even whe
 ## Current blockers
 
 1. Unit 2's last evidenced run still had 14 payment-event UNKNOWN rows (`FINDINGS_V3_UNIT2_SHADOW_20260802.md`).
+   Boat decided 2026-08-02 that incomplete rows are quarantined/skipped rather than stopping all
+   READY rows, but each must appear in the human notification with `order_item`.
 2. No approved payment-mapping registry seed exists. NonMotor InsuranceGroup mappings for raw
-   PaymentDate on/after 2026-08-01 also remain fail-closed pending SAP-master evidence.
+   PaymentDate on/after 2026-08-01 now have exact master evidence for `Health` and `Life`; `Cancer`,
+   `Home`, and `ERROR` remain held pending explicit mapping.
 3. July-only `048`/`049` cannot be reused as a daily exporter: they are scoped to July, one folder,
    and deduplicate at schedule grain, which would lose legitimate same-period top-up events.
 4. Row-level SAP-result ingestion, post-import Unit 1 refresh, completeness snapshot, and proven
@@ -29,4 +32,3 @@ Do not pause V2 or enable a recurring V3 delivery scheduler until Units 5–6 ar
 shadow E2E rehearsal proves exact-byte 56-column output, ACK/reject ingestion, second mirror
 refresh, zero conservation residual, and alert delivery. Scheduler mutation remains a separate
 production gate.
-

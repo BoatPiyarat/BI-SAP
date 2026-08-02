@@ -108,6 +108,43 @@ remain separately auditable.
     exclusive outcomes: acknowledged in SAP, pending acknowledgement, ready to send, held,
     excluded, or rejected. The counts must conserve exactly and the result is emailed every day.
 
+## SAP master vocabulary and NonMotor mapping (Boat 2026-08-02)
+
+- `InsuranceGroup` is SAP `nvarchar(50)` and accepts: `Motor`, `Corporate`, `Motorbike`, `Health`,
+  `Personal Accident`, `Life`, `Inter`, `Miscellaneous`, `TA`.
+- `InsuranceType` is SAP `nvarchar(50)`. Motor values are `1`, `2`, `3`, `2+`, `3+`, `พรบ.`;
+  NonMotor values are `Health`, `Life`, `PA`, `Cancer`, `ชดเชยรายได้`, `Saving`, `Marine`, `Travel`.
+- `InsuranceProduct` is SAP `nvarchar(100)` and carries the product name. `PolicyType` is one
+  character: `N` (new) or `R` (renew).
+- Only NonMotor derives InsuranceGroup from scheduled query
+  `6914e2e2-0000-2f6b-afc8-c82add6cb068`. Live metadata read at 2026-08-02 20:27 ICT showed its
+  `product_category` outputs `Cancer`, `Home`, `Health`, `Life`, or `ERROR`. Only exact master
+  matches (`Health`, `Life`) are currently releasable. Hold `Cancer`, `Home`, and `ERROR` until an
+  explicit mapping is approved; never infer that they mean `Miscellaneous`.
+
+## Import-error validation backlog (phase after daily cutover)
+
+These LIVE importer message families are canonical regression cases. Existing equivalent checks
+remain binding; missing checks are source backlog and must not be described as deployed.
+
+| SAP message family | Required preventive rule |
+| --- | --- |
+| date field invalid DDMMYYYY | exactly eight parseable DDMMYYYY characters |
+| ExpectedDate required | non-empty ExpectedDate where the contract requires it |
+| CompanyCode must be RCB | CompanyDB/CompanyCode output exactly `RCB` |
+| FullPayment/InstallmentCancelled/InstallmentRCL not balance | quarantine failed amount/spine conservation |
+| InsuredId required | output `-` for missing source identity |
+| InvoiceNo less than 30 characters | block length greater than 30; never truncate |
+| OrderItem less than 30 characters | block length greater than 30 |
+| PaymentChannel inconsistent/not found/required/account code | closed mapping plus same-order flow consistency |
+| PaymentDate posting period locked | derive effective date from the single OPEN period |
+| PaymentMethod required | Paid rows require an approved closed mapping |
+| Period sequence invalid | exact schedule spine `1..TotalPeriods` |
+| PolicyNo less than 50 characters | block length greater than 50; never truncate |
+| Cancel first period must be Paid before | Paid ACK before cancel/change release |
+| PolicyStatus not found/required | reviewed status literals and status-dependent completeness |
+| TotalEIRAmt not allowed in RCB | RCB TotalEIR validation and balanced calculation |
+
 ## Additional confirmed controls
 
 - E1: OrderDate <=2024 is `YEAR_OUT_OF_SCOPE`; 2025 is cancel-only when already in SAP; >=2026

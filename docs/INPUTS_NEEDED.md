@@ -4,6 +4,13 @@ Created 2026-07-27 per `TASK_V3_GAP_CLOSURE_v2.md` (A0, A5, Housekeeping — "ke
 Nothing here blocks build work that doesn't depend on the specific answer; each item notes what
 IS being done in the meantime.
 
+## NonMotor InsuranceGroup mapping — PARTIAL INPUT 2026-08-02
+
+Boat supplied the SAP InsuranceGroup master and the live scheduled-query source. Exact matches
+`Health -> Health` and `Life -> Life` are usable after registry review. Human mapping is still
+required for scheduled-query outputs `Cancer`, `Home`, and `ERROR`; these values remain held and
+reported. Do not silently map them to `Miscellaneous`.
+
 ## P0 — Aware disposition for July InsurerCode exclusions
 
 Job `p0_insurer_risk_20260731_152353` at `2026-07-31 15:23:55 UTC` found 300 July-PaymentDate
