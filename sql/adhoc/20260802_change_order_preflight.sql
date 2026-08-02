@@ -62,6 +62,8 @@ SELECT
   COUNT(DISTINCT old_order_item) AS sap_order_items,
   COUNT(*) AS sap_rows,
   COUNTIF(TransactionStatus IN ('Cancelled', 'Cancelled (Change order / Rejected)')) AS terminal_rows,
+  COUNTIF(TransactionStatus NOT IN ('Paid', 'paid', 'Pending') OR TransactionStatus IS NULL)
+    AS non_cancellable_status_rows,
   COUNTIF(invoice_no IS NULL AND TransactionStatus IN ('Paid', 'paid')) AS paid_missing_invoice_rows,
   COUNTIF(period IS NULL OR total_periods IS NULL OR period < 1 OR period > total_periods) AS invalid_period_rows,
   COUNTIF(period = 1) AS period1_rows,
@@ -108,6 +110,7 @@ SELECT
   IFNULL(s.sap_order_items, 0) AS sap_old_order_items,
   IFNULL(s.sap_rows, 0) AS sap_old_rows,
   IFNULL(s.terminal_rows, 0) AS sap_terminal_rows,
+  IFNULL(s.non_cancellable_status_rows, 0) AS sap_non_cancellable_status_rows,
   IFNULL(s.paid_missing_invoice_rows, 0) AS sap_paid_missing_invoice_rows,
   IFNULL(s.invalid_period_rows, 0) AS sap_invalid_period_rows,
   IFNULL(s.total_periods_versions, 0) AS sap_total_periods_versions,
@@ -125,6 +128,7 @@ SELECT
     WHEN l.old_link_count > 1 OR l.new_link_count > 1 THEN 'HOLD_LINK_AMBIGUOUS'
     WHEN IFNULL(s.sap_rows, 0) = 0 THEN 'HOLD_OLD_NOT_IN_SAP'
     WHEN s.terminal_rows > 0 THEN 'HOLD_OLD_ALREADY_TERMINAL'
+    WHEN s.non_cancellable_status_rows > 0 THEN 'HOLD_OLD_NOT_PAID_OR_PENDING'
     WHEN s.paid_missing_invoice_rows > 0 THEN 'HOLD_SAP_PAID_INVOICE_MISSING'
     WHEN s.invalid_period_rows > 0 THEN 'HOLD_SAP_PERIOD_INVALID'
     WHEN s.total_periods_versions > 1 THEN 'HOLD_SAP_TOTAL_PERIODS_CONFLICT'

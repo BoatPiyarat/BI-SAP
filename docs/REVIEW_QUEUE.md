@@ -3,6 +3,17 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+## RQ-20260802-cancel-old-status-gate
+Status: OPEN
+Reviewer: Claude Code
+Class: A
+Artifact: delta in `sql/adhoc/20260802_change_order_preflight.sql` and interpretation correction in
+`docs/design/CANCEL_CHANGE_CREDITSHELL_TRACK_V3.md` / change-order finding.
+Opened: 2026-08-02T11:08:00+07:00
+Claim: implements Boat's RULE-21/22 literally: every old SAP winner being cancelled must be
+Paid/Pending; replacement mapping is deferred to credit-shell and does not block cancel cloning.
+Verify CASE precedence, NULL handling, and that the prior 92 remain non-citable until rerun.
+
 ## RQ-20260802-cancel-change-creditshell-track
 Status: REVIEWED
 Reviewer: Claude Code

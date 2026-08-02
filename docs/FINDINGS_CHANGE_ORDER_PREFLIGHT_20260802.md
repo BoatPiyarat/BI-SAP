@@ -45,7 +45,7 @@ The reviewed hardened rerun is job `change_order_preflight_hardened_20260802_103
 missing from expected state; 85 incomplete spine; 5 TotalPeriods conflicts; one Paid InvoiceNo
 missing; one invalid period; and 92 order-level READY.
 
-RULE-21 supersedes the interpretation of READY: those 92 require approved item-level mapping plus
-replacement Paid ACK in SAP. Job `change_order_item_mapping_20260802_110300` proves that no tested
-CareOS field strategy is both unique and complete, so automatic cancellation remains blocked and
-the 92 must not be exported.
+RULE-21/22 require the old item being cancelled to have a Paid/Pending SAP winner. They do not
+require replacement Paid. The 92 therefore need a new old-status gate before cancel shadow work.
+Job `change_order_item_mapping_20260802_110300` remains relevant to the later credit-shell stage:
+no tested CareOS strategy is both unique and complete, so replacement mapping cannot be automatic.

@@ -26,8 +26,9 @@ Execution: `change_order_preflight_hardened_20260802_103000`; query timestamp
 | HOLD_SAP_PERIOD_INVALID | 1 |
 | READY_FOR_AWARE_FA_REVIEW under the old order-level gate | 92 |
 
-The 92 are **not cancel-ready under new RULE-21**. RULE-21 requires proof that the replacement Paid
-for the same item was accepted by SAP, which requires an approved old-item to new-item mapping.
+The 92 are order-level candidates, not yet cancel-ready. RULE-21/22 require every winning old SAP
+row being cancelled to be Paid or Pending. The next preflight revision adds that missing status
+gate. It does **not** require replacement Paid: “its own” means the old SAP item being cancelled.
 
 ## Item-map evidence
 
@@ -47,20 +48,21 @@ a clue, not authority. Auto-cancel from these inferred matches is prohibited.
 
 1. `ITEM_MAP_PENDING`: emit old/new candidates to a human queue; no payload.
 2. `ITEM_MAP_APPROVED`: retain approver, timestamp, method, old/new item, and link provenance.
-3. `REPLACEMENT_PAID_ACK`: the mapped new item/period is Paid in the refreshed SAP mirror.
-4. `CANCEL_SHADOW_READY`: clone all 56 fields from the winning old SAP rows; require exact
+3. `OLD_PAID_OR_PENDING_ACK`: every winning old item/period exists in refreshed SAP as Paid/Pending.
+4. `CANCEL_SHADOW_READY`: clone all 56 fields from those winning old SAP rows; require exact
    `1..TotalPeriods`, preserve InvoiceNo and every field, change only TransactionStatus.
 5. `CANCEL_DELIVERED` then `CANCEL_ACK`: never infer ACK from function/file status.
-6. Only after `CANCEL_ACK`, release the mapped replacement into `CREDIT_SHELL_PENDING`.
+6. Only after `CANCEL_ACK`, use the approved old→new map to release the replacement into
+   `CREDIT_SHELL_PENDING`.
 7. `CREDIT_SHELL_READY`: use approved mapping and SAP-success PaymentMethod/PaymentChannel literals;
    run corrected dedup logic, 56-column validation, amount conservation, and exact delta gate.
 8. `CREDIT_SHELL_ACK` closes the chain; rejects remain human-action outcomes.
 
 ## Hard boundaries
 
-- Cancel construction does not need CareOS item mapping because it clones the old SAP document;
-  cancel **eligibility** does need mapping to prove RULE-21.
-- No cancel/change when the mapped replacement Paid has not been acknowledged in SAP.
+- Cancel construction and eligibility do not need a replacement map: they clone the old SAP
+  document and prove that same old item is Paid/Pending. Mapping is required for credit-shell.
+- No cancel/change when the old SAP item has no Paid/Pending winner.
 - No credit-shell payment before cancel ACK.
 - INCIDENT-002b and 224 unknown-cause orders remain separate remediation populations.
 - Aware still owns explicit-cancel behavior and accepted CreditShell literals; FA/Boat own batch
