@@ -30,11 +30,18 @@ CREATE TABLE IF NOT EXISTS `pacific-plating-282708.sap_integration_v3.stg_paymen
   amount INT64,
   charge_time TIMESTAMP,
   payment_option STRING,
+  payment_method_source STRING,
+  payment_channel_source STRING,
   lead_human_id STRING,
   event_refreshed_at TIMESTAMP
 )
 PARTITION BY DATE(charge_time)
 CLUSTER BY order_item;
+
+ALTER TABLE `pacific-plating-282708.sap_integration_v3.stg_payment_events`
+ADD COLUMN IF NOT EXISTS payment_method_source STRING;
+ALTER TABLE `pacific-plating-282708.sap_integration_v3.stg_payment_events`
+ADD COLUMN IF NOT EXISTS payment_channel_source STRING;
 
 CREATE TABLE IF NOT EXISTS `pacific-plating-282708.sap_integration_v3.sap_payment_qualification_exclusion` (
   charge_id STRING,
@@ -60,7 +67,10 @@ BEGIN
     c.id AS charge_id,
     COALESCE(c.third_party_id, oi.human_id) AS third_party_id,
     c.transaction_id, c.installment_number AS period, c.amount,
-    c.update_time AS charge_time, t.payment_option, t.lead_human_id,
+    c.update_time AS charge_time, t.payment_option,
+    c.payment_method AS payment_method_source,
+    c.service_provider AS payment_channel_source,
+    t.lead_human_id,
     o.id AS order_pk, o.human_id AS order_id, oi.id AS order_item_pk,
     oi.human_id AS order_item, l.id AS lead_pk, l.status AS lead_status,
     ROW_NUMBER() OVER (
@@ -102,7 +112,8 @@ BEGIN
   USING (
     SELECT
       r.charge_id, r.third_party_id, r.transaction_id, r.period, r.amount, r.charge_time,
-      r.payment_option, r.lead_human_id, r.order_id, r.order_item,
+      r.payment_option, r.payment_method_source, r.payment_channel_source,
+      r.lead_human_id, r.order_id, r.order_item,
       CURRENT_TIMESTAMP() AS event_refreshed_at
     FROM _charge_link_raw r
     JOIN _charge_qualification q USING (charge_id)
@@ -118,13 +129,16 @@ BEGIN
     amount = S.amount,
     charge_time = S.charge_time,
     payment_option = S.payment_option,
+    payment_method_source = S.payment_method_source,
+    payment_channel_source = S.payment_channel_source,
     lead_human_id = S.lead_human_id,
     event_refreshed_at = S.event_refreshed_at
   WHEN NOT MATCHED THEN INSERT (
     charge_id, third_party_id, order_item, order_id, transaction_id, period, amount, charge_time,
-    payment_option, lead_human_id, event_refreshed_at
+    payment_option, payment_method_source, payment_channel_source, lead_human_id, event_refreshed_at
   ) VALUES (
     S.charge_id, S.third_party_id, S.order_item, S.order_id, S.transaction_id, S.period, S.amount,
-    S.charge_time, S.payment_option, S.lead_human_id, S.event_refreshed_at
+    S.charge_time, S.payment_option, S.payment_method_source, S.payment_channel_source,
+    S.lead_human_id, S.event_refreshed_at
   );
 END;

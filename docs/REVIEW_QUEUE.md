@@ -3,6 +3,20 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+## RQ-20260802-1928-v3-unit3-closed-mappings
+Status: REVIEWED
+Reviewer: Codex (Claude credit unavailable)
+Class: A
+Artifact: `sql/ddl/011_stg_order_dim.sql`, `sql/ddl/013_stg_payment_events.sql`,
+`sql/ddl/052_v3_unit3_closed_mapping_registries.sql`, and Unit 3 evidence queries.
+Opened: 2026-08-02T19:28:00+07:00
+
+Review raw-field preservation, effective-window overlap guards, approval evidence, mapping-key
+completeness, fail-closed hold behavior, and absence of export/release side effects.
+
+Verdict: **PASS FOR SOURCE / BLOCK DEPLOYMENT AND SEEDING** —
+`docs/reviews/2026-08-02-unit3-registries-codex.md`.
+
 ## RQ-20260802-1708-v3-unit2-shadow-classifier
 Status: REVIEWED
 Reviewer: Codex (Claude credit unavailable; do not deploy until self-review verdict is recorded)

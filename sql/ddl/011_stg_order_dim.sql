@@ -24,6 +24,7 @@ CREATE TABLE IF NOT EXISTS `pacific-plating-282708.sap_integration_v3.stg_order_
   first_name STRING,
   last_name STRING,
   insurer_code STRING,
+  insurance_group_source STRING,
   insurance_type STRING,
   oic_code STRING,
   vehicle_class STRING,
@@ -37,6 +38,9 @@ CREATE TABLE IF NOT EXISTS `pacific-plating-282708.sap_integration_v3.stg_order_
 )
 PARTITION BY DATE(order_update_time)
 CLUSTER BY order_item;
+
+ALTER TABLE `pacific-plating-282708.sap_integration_v3.stg_order_dim`
+ADD COLUMN IF NOT EXISTS insurance_group_source STRING;
 
 CREATE OR REPLACE PROCEDURE `pacific-plating-282708.sap_integration_v3.sp_refresh_stg_order_dim`()
 BEGIN
@@ -62,6 +66,7 @@ BEGIN
       ) AS first_name,
       JSON_VALUE(o.data, '$.policyHolder.lastName') AS last_name,
       oi.insurer AS insurer_code,
+      oi.product AS insurance_group_source,
       oi.motor_item_type AS insurance_type,
       JSON_VALUE(o.data, '$.oicCode') AS oic_code,
       CASE
@@ -104,6 +109,7 @@ BEGIN
     first_name = S.first_name,
     last_name = S.last_name,
     insurer_code = S.insurer_code,
+    insurance_group_source = S.insurance_group_source,
     insurance_type = S.insurance_type,
     oic_code = S.oic_code,
     vehicle_class = S.vehicle_class,
@@ -115,12 +121,14 @@ BEGIN
     order_update_time = S.order_update_time,
     dim_refreshed_at = S.dim_refreshed_at
   WHEN NOT MATCHED THEN INSERT (
-    order_item, order_id, insured_id, title, first_name, last_name, insurer_code, insurance_type,
+    order_item, order_id, insured_id, title, first_name, last_name, insurer_code,
+    insurance_group_source, insurance_type,
     oic_code, vehicle_class, chassis_no, license_plate, gross_premium, billing_address,
     order_create_time, order_update_time, dim_refreshed_at
   ) VALUES (
     S.order_item, S.order_id, S.insured_id, S.title, S.first_name, S.last_name, S.insurer_code,
-    S.insurance_type, S.oic_code, S.vehicle_class, S.chassis_no, S.license_plate, S.gross_premium,
+    S.insurance_group_source, S.insurance_type, S.oic_code, S.vehicle_class, S.chassis_no,
+    S.license_plate, S.gross_premium,
     S.billing_address, S.order_create_time, S.order_update_time, S.dim_refreshed_at
   );
 END;

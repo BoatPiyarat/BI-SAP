@@ -49,6 +49,9 @@ not this table, for day-to-day freshness.
 | 046_exclusion_format_morning_report.sql | **Source only / Class A.** Separates E1-E3 exclusions, F1-F3 validation signals, insurer-code list, and real backlog in the morning report |
 | 048_july_export_shadow_and_archive.sql | **Source only / Class A.** Fail-closed July raw-PaymentDate 56-column shadow plus row-level archive schema; no GCS write |
 | 049_export_july_payment_to_gcs.sql | **Source only / Class A.** July-only explicit 56-column export to restricted archive; UAT2 + exact-byte production promotion are separate mandatory stages |
+| 050_v3_onetime_payload_source.sql | V3-owned ONETIME 56-column payload source captured from the verified live contract; not a daily release gate by itself |
+| 051_v3_unit2_shadow_classifier.sql | Unit 2 event/schedule classifier with independent conservation and terminal SAP-state holds |
+| 052_v3_unit3_closed_mapping_registries.sql | **Source only / Class A.** Effective-dated InsuranceGroup/payment registries and fail-closed Unit 3 mapping holds; no seed values included |
 | 047_repoint_nightly_mirror_to_incremental.sql | **Source only / Class A.** Chain 3 cutover definition: changes the nightly mirror call from full 024 to incremental 043 without altering downstream order; includes an exact 024-call rollback definition |
 
 Every file is a full runnable script (per AGENTS.md: no diffs-as-answer). Apply with:
