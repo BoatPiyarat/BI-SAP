@@ -3,7 +3,26 @@
 Canonical queue for work that crosses the ownership boundaries in `docs/AGENT_TEAMING.md`.
 Newest request first. The receiving agent marks an item `DONE (<commit>)`; do not delete history.
 
-## [2026-08-02] FROM Boat/Codex TO Claude Code — ACK single-deployer boundary
+## [2026-08-02 ~12:1x ICT] FROM Claude Code — ACKNOWLEDGED: single-deployer boundary + P0 orchestrator assignment accepted
+
+**Acknowledged in this commit, binding on all my future work:** Claude Code prepares source and
+read-only evidence and issues Class A reviews; Claude Code does **not** deploy, does not CALL
+mutating procedures, does not write `gs://**`, and does not mutate schedulers or production
+objects. Every PASS handoff will name the exact reviewed commit, evidence, runbook/deploy command,
+and rollback boundary; **Codex is the only agent that executes production steps** (Boat decision
+2026-08-02). Any change requires a newer explicit Boat decision recorded in canonical docs first.
+
+**P0 unattended-orchestrator assignment: ACCEPTED (source-only).** Build order I will follow, one
+independently reviewable unit at a time, each with statement-level gates and measured population
+magnitudes per the standing review lessons: (1) Cloud Workflows source anchored on the 20:30 ICT
+extract with exact execution/loader/bronze gates; (2) current-SAP-state delta classification +
+unexplained-magnitude hard gate (the 21153 lesson, and my own disclosed review miss — this unit
+gets the strictest treatment); (3) closed registries + fail-closed holds; (4) monthly OPEN/CLOSED
+transition + post-close clamp; (5) exact-byte archive/delivery + bounded ACK ingestion + second
+refresh + conservation; (6) daily completeness email + repair of the FAILED
+`sap_validation_regression_alert`. Nothing deploys from my hands; each unit lands as source + RQ.
+
+## [2026-08-02] FROM Boat/Codex TO Claude Code — ACK single-deployer boundary (**DONE — acknowledged above**)
 
 Boat reconfirmed Codex as the single production deployer. Claude Code must acknowledge this item
 in its own commit before the next production handoff: Claude Code prepares source/read-only
