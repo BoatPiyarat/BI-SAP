@@ -5,8 +5,8 @@
 MERGE `pacific-plating-282708.sap_integration_v3.insurance_group_registry` t
 USING (
   SELECT * FROM UNNEST([
-    STRUCT('nonmotor-health-rcb-20260801' mapping_id,'Health' source_insurance_group,
-      'NONMOTOR' product_scope,'RCB' business_unit,'Health' sap_insurance_group),
+    STRUCT('nonmotor-health-rcb-20260801' AS mapping_id,'Health' AS source_insurance_group,
+      'NONMOTOR' AS product_scope,'RCB' AS business_unit,'Health' AS sap_insurance_group),
     STRUCT('nonmotor-health-rcl-20260801','Health','NONMOTOR','RCL','Health'),
     STRUCT('nonmotor-life-rcb-20260801','Life','NONMOTOR','RCB','Life'),
     STRUCT('nonmotor-life-rcl-20260801','Life','NONMOTOR','RCL','Life')

@@ -151,18 +151,19 @@ BEGIN
   ), ready AS (
     SELECT u.pipeline_run_id,u.order_item,u.order_id,u.period,u.charge_id,u.charge_amount,
       DATE(p.charge_time) raw_payment_date,u.flow,
-      IF(d.insurance_group_source='products/car-insurance',d.insurance_group_source,
+      IF(oi.product='products/car-insurance',oi.product,
         IF(n.category_count=1,n.category_values,
           CONCAT('__AMBIGUOUS_OR_MISSING__:',IFNULL(n.category_values,'<NULL>'))))
         AS insurance_group_source,
-      p.payment_option,p.payment_method_source,p.payment_channel_source,
-      IF(d.insurance_group_source='products/car-insurance','MOTOR','NONMOTOR') product_scope,
+      p.payment_option,c.payment_method AS payment_method_source,
+      c.service_provider AS payment_channel_source,
+      IF(oi.product='products/car-insurance','MOTOR','NONMOTOR') product_scope,
       co.current_human_id IS NOT NULL is_credit_shell,
       IF(u.flow='ONETIME','RCB','RCL') business_unit
     FROM `pacific-plating-282708.sap_integration_v3.v3_unit2_event_shadow` u
     JOIN `pacific-plating-282708.sap_integration_v3.stg_payment_events` p USING(charge_id)
-    LEFT JOIN `pacific-plating-282708.sap_integration_v3.stg_order_dim` d
-      USING(order_item,order_id)
+    JOIN `pacific-plating-282708.careos.careos_order_items` oi ON oi.human_id=u.order_item
+    JOIN `pacific-plating-282708.careos.carepay_charges` c ON c.id=u.charge_id
     LEFT JOIN nonmotor_category n ON n.human_id=u.order_id
     LEFT JOIN (SELECT DISTINCT current_human_id
       FROM `pacific-plating-282708.careos.cancelled_change_orders`) co

@@ -1,5 +1,11 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-02 20:51 ICT — deployed Unit 3 quarantine gate and stopped before empty Unit 5
+
+Deployed reviewed Unit 3 registry/quarantine/release definitions and exact Health/Life seed. The
+measured run conserved notification coverage but returned zero releasable events because every
+READY event lacks an approved payment mapping. Stopped before file creation as designed.
+
 ## 2026-08-02 20:27 ICT — changed UNKNOWN from run-wide stop to auditable quarantine
 
 Recorded Boat's decision to skip incomplete rows while notifying their `order_item`, added a

@@ -1,5 +1,12 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-02 20:51 ICT — Unit 3 deployed; Unit 5 blocked by payment registry
+
+052/054/055 deployed and 056 seeded four exact Health/Life mappings. Latest Unit 2 run produced
+1,185 READY events, all held by missing approved payment mappings, hence 0 releasable. UNKNOWN 14
+and mapping-held 1,185 are fully represented by 1,199 notification rows; all release-gate blocker
+counts are zero. No export, GCS write, or scheduler mutation occurred.
+
 ## 2026-08-02 20:27 ICT — UNKNOWN quarantine and NonMotor master received
 
 Boat changed Unit 2 release policy: incomplete UNKNOWN rows are skipped/quarantined and listed by

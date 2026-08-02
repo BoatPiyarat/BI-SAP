@@ -252,7 +252,9 @@ fi
 
 echo "== bq_safe_query: dry-run =========================================" >&2
 
-dry_run_json="$(bq query --use_legacy_sql=false --dry_run --format=json "${project_args[@]}" "$sql" 2>&1)" || {
+# Feed SQL on stdin. Passing a procedure body as one argv value exceeds Windows cmd.exe's
+# command-line limit when Git Bash dispatches to bq.cmd.
+dry_run_json="$(printf '%s' "$sql" | bq query --use_legacy_sql=false --dry_run --format=json "${project_args[@]}" 2>&1)" || {
   echo "ERROR: dry-run itself failed:" >&2
   echo "$dry_run_json" >&2
   exit 3
@@ -281,7 +283,6 @@ fi
 
 echo "== bq_safe_query: real run (--maximum_bytes_billed=${MAX_BYTES_BILLED}) ===========" >&2
 
-exec bq query --use_legacy_sql=false "${project_args[@]}" \
+printf '%s' "$sql" | bq query --use_legacy_sql=false "${project_args[@]}" \
   --maximum_bytes_billed="${MAX_BYTES_BILLED}" \
-  "${passthrough_args[@]}" \
-  "$sql"
+  "${passthrough_args[@]}"
