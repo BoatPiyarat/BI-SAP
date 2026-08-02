@@ -3,16 +3,26 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
-# RQ-CHANGE-ORDER-V3-20260802 — OPEN — Class A
-
-Artifact: `sql/adhoc/20260802_change_order_preflight.sql` and
+## RQ-20260802-0932-change-order-preflight
+Status: REVIEWED
+Reviewer: Claude Code
+Class: A
+Artifact: commit `d628ce8`; `sql/adhoc/20260802_change_order_preflight.sql` and
 `docs/design/CHANGE_ORDER_FLOW_V3.md`.
+Opened: 2026-08-02T09:32:41+07:00
+Verdict: PASS WITH NOTES — `docs/reviews/2026-08-02-d628ce8-claude.md` (all requested confirmations
+hold: lane separation real in the SQL, 002b/224 out of scope, every hard gate implemented and
+verified against the file, READY ≠ approval, zero mutation; full-script dry-run + live-column probe
+clean. NOTE 1 fixed here: the original entry's non-standard header made this Class A request
+invisible to review_status.sh — normalized; keep the parseable schema. NOTES 2–3: add
+HOLD_LINK_AMBIGUOUS for multi-link ids and a TotalPeriods-versions hold, cheap hardening for the
+next iteration)
 
-Review request: confirm that the source-only preflight correctly separates `CANCEL_OLD`,
+Claim (original request): confirm that the source-only preflight correctly separates `CANCEL_OLD`,
 `CREATE_REPLACEMENT`, and `CREDIT_SHELL_PAYMENT`; keeps INCIDENT-002b/unknown-cause populations
 out of scope; enforces SAP presence, terminal-state, full-spine, immutable InvoiceNo, replacement
 completeness, and July-only gates; and does not imply approval through
-`READY_FOR_AWARE_FA_REVIEW`. Please also verify BigQuery syntax and confirm that no production
+`READY_FOR_AWARE_FA_REVIEW`. Also verify BigQuery syntax and confirm that no production
 mutation, CALL, export, or legacy-view change is present.
 
 ## RQ-20260802-0528-july-contract-item-quarantine
