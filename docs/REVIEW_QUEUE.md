@@ -3,6 +3,27 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+## RQ-20260802-1708-v3-unit2-shadow-classifier
+Status: REVIEWED
+Reviewer: Codex (Claude credit unavailable; do not deploy until self-review verdict is recorded)
+Class: A
+Artifact: `sql/ddl/051_v3_unit2_shadow_classifier.sql`,
+`sql/adhoc/20260802_unit2_grain_profile.sql`, and grain correction in
+`docs/design/V3_AUTONOMY_UNITS_2_6_DESIGN.md`.
+Opened: 2026-08-02T17:08:00+07:00
+
+Review the two-population boundary, outcome precedence, immutable InvoiceNo/top-up hold, latest
+archive winner, current-SAP joins, idempotent run replacement, and both record/amount conservation
+assertions. Confirm the artifact remains shadow-only and cannot release a file. Live profile job
+`bqjob_r6d33d86282ab4373_0000019fc1eb98b8_1` at 2026-08-02T10:01:11Z processed 178,696,000 bytes
+(179,306,496 billed; cap 21,474,836,480): expected_state 290,258 rows/keys, qualified events
+1,198,183 rows/keys, and only 167,754 expected rows joined a charge. DDL dry-run passed; no deploy
+or CALL occurred.
+
+Verdict: **PASS FOR SHADOW DEPLOYMENT ONLY** —
+`docs/reviews/2026-08-02-unit2-shadow-codex.md`. File release remains blocked by the measured
+distribution, unknown-outcome and magnitude-threshold gates, plus row-level ACK chronology.
+
 ## RQ-20260802-1230-orchestrator-unit1-source
 Status: REVIEWED
 Reviewer: Codex

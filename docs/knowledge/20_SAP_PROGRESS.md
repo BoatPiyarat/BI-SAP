@@ -1,4 +1,12 @@
 # 20_SAP_PROGRESS.md
+**2026-08-02 UNIT 2 SHADOW SOURCE READY, NOT DEPLOYED:** live profile proved `expected_state` is
+290,258 unique schedule keys while `stg_payment_events` is 1,198,183 unique charges and only
+167,754 expected rows join a charge. Added separate event and schedule classifiers with independent
+conservation equations in 051; Payment top-ups that conflict with immutable LIVE InvoiceNo are
+held, never auto-rewritten. Profile job `bqjob_r6d33d86282ab4373_0000019fc1eb98b8_1`; 178,696,000
+bytes processed / 179,306,496 billed under the 20 GiB cap. DDL dry-run passed. Class A self-review
+RQ-20260802-1708 is OPEN; no deploy/CALL/export occurred.
+
 **2026-08-02 IMPORT ANALYSIS NARROWED TO LIVE ONLY:** Boat instructed Codex to ignore UAT2. The
 authoritative result is `RCB_LIVE_DB` Upload LogID 21153: 15,812 error rows affecting 11,742 orders
 from 30,245 delivered rows. Atomic counts include InvoiceNo immutable 7,990, PolicyStatus duplicate

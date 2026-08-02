@@ -17,6 +17,18 @@ at `pipeline_run_id` and fails closed. A failed unit never releases a later unit
 - File identity: immutable manifest `(pipeline_run_id, file_role, bu, object_generation, sha256)`.
 - SAP result identity: `log_id` plus row-level result sequence/key.
 
+Live-profile correction (2026-08-02): `expected_state` is schedule grain (290,258 rows = 290,258
+distinct `(order_item, period)` keys), and only 167,754 rows join a charge. Pending schedules
+correctly have no charge. `stg_payment_events` separately contains 1,198,183 unique qualified
+charge events. Unit 2 therefore maintains two outputs and two independent conservation equations:
+
+- `PAYMENT_EVENT`: `(order_item, period, charge_id, invoice_no)`; records and amount conserve.
+- `SCHEDULE`: `(order_item, period)`; records conserve; amount is NULL/not applicable.
+
+Never coalesce Pending schedule amount to zero and add it to event money. Never deduplicate multiple
+successful charges in one period out of the event population. Source implementation is
+`sql/ddl/051_v3_unit2_shadow_classifier.sql`.
+
 Every qualified CareOS event must finish the run in exactly one terminal/reportable bucket:
 
 `ACKNOWLEDGED + PENDING_ACK + READY_NOT_DELIVERED + HELD_VALIDATION + EXCLUDED_RULE + REJECTED_BY_SAP`
