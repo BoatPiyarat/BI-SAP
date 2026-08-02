@@ -44,6 +44,8 @@ remain separately auditable.
     `ExpectedReceived` and `ActualReceived` are not part of this rule's mandatory-empty set.
     In the normal installment schedule, ExpectedReceived remains available as the scheduled
     amount. This wording is Boat's corrected item 16 and supersedes the earlier interpretation.
+    Pending has no successful payment transaction and therefore does not enter the closed
+    PaymentMethod/PaymentChannel event-mapping registry.
 14. One `(OrderItem,Period)` may contain multiple payment rows. Rank 1 carries scheduled
     ExpectedReceived; later rows use ExpectedReceived=0. Sum ExpectedReceived equals the period
     expectation. Compare summed ActualReceived at order grain: absolute variance below THB 10 is

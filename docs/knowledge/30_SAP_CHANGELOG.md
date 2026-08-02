@@ -1,5 +1,11 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-02 21:20 ICT — released only reviewed non-credit payment mappings
+
+Seeded 12 existing V2 mappings with SAP-success evidence. The fail-closed rerun released 753 of
+1,185 READY events and retained 432 mapping holds plus 14 UNKNOWN rows in notification detail.
+No credit-shell mapping, export, GCS write, or scheduler mutation occurred.
+
 ## 2026-08-02 20:51 ICT — deployed Unit 3 quarantine gate and stopped before empty Unit 5
 
 Deployed reviewed Unit 3 registry/quarantine/release definitions and exact Health/Life seed. The

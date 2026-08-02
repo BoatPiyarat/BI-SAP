@@ -1,5 +1,12 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-02 21:20 ICT — non-credit payment mappings release 753 events
+
+057 seeded 12 existing V2/SAP-success payment mappings for non-credit contexts. Unit 3 rerun now
+has 1,185 READY, 753 releasable, 432 held, 14 UNKNOWN, and 446 notification rows; every release
+gate blocker is zero. Pending is outside the event mapping registry and keeps blank payment fields.
+Credit-shell/ambiguous contexts remain held. Unit 5 shadow is next; no GCS write occurred.
+
 ## 2026-08-02 20:51 ICT — Unit 3 deployed; Unit 5 blocked by payment registry
 
 052/054/055 deployed and 056 seeded four exact Health/Life mappings. Latest Unit 2 run produced
