@@ -4,6 +4,14 @@ Append-only — entry ใหม่บนสุด ห้ามลบ/แก้�
 
 ---
 
+## 2026-08-02 — UAT2 Upload LogID 17800 captured and reconciled
+
+Captured the SHA-pinned result for the same July RCB payload in `RCB_ISSUE_DB`: 15,790/30,245 rows
+reported errors. PaymentMethod >50 (1,889) and missing PaymentChannel/account code (31) match
+production exactly; period-sequence errors expand from 196 in production to 13,870 in UAT2,
+proving that class depends on target SAP history. Recorded the evidence without OrderIDs or PII.
+No replay, upload, export change, or production mutation occurred.
+
 ## 2026-08-02 — Unit 1 deployed and healthy-zero path passed
 
 Created alert topic `v3-orchestrator-alerts` and enabled alert policy
