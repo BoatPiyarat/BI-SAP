@@ -2,6 +2,22 @@
 Canonical. `CLAUDE.md` and `AGENTS.md` are pointers to this file. Never duplicate rules into them.
 Last updated: 2026-07-30
 
+## Agent skills
+
+### Issue tracker
+
+Issues and PRDs are tracked in GitHub Issues for `BoatPiyarat/BI-SAP`. See
+`docs/agents/issue-tracker.md`.
+
+### Triage labels
+
+Use the default Matt Pocock triage vocabulary. See `docs/agents/triage-labels.md`.
+
+### Domain docs
+
+This is a single-context repository. See `docs/agents/domain.md` for the optional `CONTEXT.md` and
+ADR discovery rules; canonical SAP knowledge remains under `docs/knowledge/` as defined below.
+
 Project: CareOS ⟷ SAP Business One integration | Owner: Boat (BI Manager, RabbitCare)
 GCP project `pacific-plating-282708` | region `asia-southeast1` | auth: data@rabbit.co.th
 
