@@ -120,7 +120,7 @@ main:
               - record_extract:
                   assign:
                     - extract_operation: ${default(map.get(extract_op, "name"), "unknown-operation")}
-                    - extract_execution: ${default(map.get(default(map.get(extract_op, "response"), {}), "name"), "unknown-execution")}
+                    - extract_execution: ${default(map.get(extract_op, ["response", "name"]), "unknown-execution")}
               - record_extract_short:
                   assign:
                     - execution_parts: ${text.split(extract_execution, "/")}
@@ -283,7 +283,7 @@ read_control_object:
             - empty:
                 return: {}
     - parsed:
-        return: ${default(map.get(resp, "body"), {})}
+        return: ${map.get(resp, "body")}
 
 # ----------------------------------------------------------------------
 # F3: healthy-zero gate. The real control object contains last_watermark_utc only.
@@ -331,7 +331,7 @@ verify_healthy_zero:
         result: success_logs
     - log_census:
         assign:
-          - success_entries: ${default(map.get(default(map.get(success_logs, "body"), {}), "entries"), [])}
+          - success_entries: ${default(map.get(success_logs, ["body", "entries"]), [])}
           - success_count: ${len(success_entries)}
     - gate_signals:
         switch:
@@ -409,12 +409,10 @@ verify_load_commitment:
         result: job
     - inspect:
         assign:
-          - status_map: ${default(map.get(job, "status"), {})}
-          - has_error: ${map.get(status_map, "errorResult") != null}
-          - stats: ${default(map.get(default(map.get(job, "statistics"), {}), "load"), {})}
-          - output_rows: ${default(map.get(stats, "outputRows"), "0")}
-          - bad_records: ${default(map.get(stats, "badRecords"), "0")}
-          - src_uris: ${default(map.get(default(map.get(default(map.get(job, "configuration"), {}), "load"), {}), "sourceUris"), [])}
+          - has_error: ${map.get(job, ["status", "errorResult"]) != null}
+          - output_rows: ${default(map.get(job, ["statistics", "load", "outputRows"]), "0")}
+          - bad_records: ${default(map.get(job, ["statistics", "load", "badRecords"]), "0")}
+          - src_uris: ${default(map.get(job, ["configuration", "load", "sourceUris"]), [])}
           - src_join: ${json.encode_to_string(src_uris)}
           - name_matches: ${text.match_regex(src_join, text.replace_all(bronze_object_name, "/", "\\/"))}
     - gate_job:
@@ -585,8 +583,8 @@ run_bq_call:
               result: jstate
           - read_state:
               assign:
-                - final_state: ${default(map.get(default(map.get(jstate, "status"), {}), "state"), "")}
-                - final_error: ${map.get(default(map.get(jstate, "status"), {}), "errorResult")}
+                - final_state: ${default(map.get(jstate, ["status", "state"]), "")}
+                - final_error: ${map.get(jstate, ["status", "errorResult"])}
           - branch:
               switch:
                 - condition: ${final_state == "DONE" and final_error != null}
@@ -647,8 +645,8 @@ run_bq_call:
               result: after_cancel
           - read_after_cancel:
               assign:
-                - cancel_state: ${default(map.get(default(map.get(after_cancel, "status"), {}), "state"), "")}
-                - cancel_error: ${map.get(default(map.get(after_cancel, "status"), {}), "errorResult")}
+                - cancel_state: ${default(map.get(after_cancel, ["status", "state"]), "")}
+                - cancel_error: ${map.get(after_cancel, ["status", "errorResult"])}
           - gate_cancel_terminal:
               switch:
                 - condition: ${cancel_state == "DONE"}
@@ -722,12 +720,19 @@ fail_closed:
             - swallow_log_error:
                 assign:
                   - _: "run-log write failed; alert still proceeds"
+    - prepare_alert:
+        assign:
+          - alert_message:
+              run_id: ${run_id}
+              step: ${step}
+              reason: ${reason}
+          - alert_data: ${base64.encode(json.encode(alert_message))}
     - alert_human:
         call: googleapis.pubsub.v1.projects.topics.publish
         args:
           topic: ${alert_topic}
           body:
             messages:
-              - data: '${base64.encode(text.encode(json.encode_to_string(map.merge({"run_id": run_id, "step": step}, {"reason": reason}))))}'
+              - data: ${alert_data}
     - raise_failure:
         raise: '${"V3 orchestrator failed closed at " + step + ": " + reason}'
