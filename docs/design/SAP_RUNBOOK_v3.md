@@ -2,6 +2,12 @@
 Date: 2026-07-23 | Audience: ทีม BI ทุกคน (ไม่ต้องรู้ประวัติโปรเจกต์ก็ทำตามได้)
 หลัก: ทุกอย่างในนี้ทำได้โดยไม่ต้องแก้ code — ผ่าน parameter + คำสั่งสำเร็จรูป
 
+> **DEPLOYMENT WARNING (verified 2026-08-02):** sections that name `wf-sap-pipeline`,
+> `sap-pipeline-trigger`, `sp_export_delta`, `sp_run_recon('FULL')`, or ADHOC workflow arguments
+> describe the target operating model, not confirmed live objects. Do not execute those commands
+> until live metadata proves the named object exists and its reviewed release is deployed. The
+> currently deployed automation refreshes only part of V3 and is not an unattended delivery loop.
+
 ---
 
 ## 1. เช้านี้เช็คอะไร: "เมื่อคืนวิ่งครบไหม" (2 นาที)
@@ -40,7 +46,7 @@ ORDER BY started_at;
 | 5 | Engine | `CALL sap_integration_v3.sp_build_expected_state('FULL');` |
 | 6 | Validate | `CALL sap_integration_v3.sp_validate('FULL');` → เช็ค `SELECT rule, COUNT(*) FROM sap_validation_error WHERE run_id=@run GROUP BY rule` |
 | 7 | Export | `CALL sap_integration_v3.sp_export_delta('FULL');` |
-| ทั้งเส้น | Workflow เต็ม | `gcloud workflows execute wf-sap-pipeline --location=asia-southeast1` |
+| ทั้งเส้น | Workflow เต็ม | **NOT DEPLOYED/NOT VERIFIED** — target command: `gcloud workflows execute wf-sap-pipeline --location=asia-southeast1` |
 
 กติกาความปลอดภัย:
 - ห้ามข้าม step 6 ไป 7 เด็ดขาด (validation คือกันชนเดียวก่อนไฟล์ถึง SAP)
@@ -51,7 +57,7 @@ ORDER BY started_at;
 
 | อาการ | วินิจฉัย (query/คำสั่ง) | ทางแก้ |
 |---|---|---|
-| **W0** ไม่มี run เมื่อคืนเลย | `gcloud workflows executions list wf-sap-pipeline --limit=3` + เช็ค scheduler `gcloud scheduler jobs describe sap-pipeline-trigger` | ยิง manual ทั้งเส้น (§2 แถวสุดท้าย); ถ้า scheduler PAUSED → resume |
+| **W0** ไม่มี run เมื่อคืนเลย | เมื่อ workflow ถูก deploy แล้ว: `gcloud workflows executions list wf-sap-pipeline --limit=3` + เช็ค scheduler `gcloud scheduler jobs describe sap-pipeline-trigger` | ระหว่างยังไม่ deploy ให้ใช้ reviewed manual-sync runbook; ห้ามยิง target workflow และห้าม resume scheduler โดยไม่มี Boat approval |
 | **E1** Extract FAILED: connection/login | ดู log job: `gcloud logging read 'resource.labels.job_name="sap-extract-job"' --limit=50 --freshness=1d` — หา pyodbc error | VPN/WireGuard ล่ม → เช็ค VM `sap-wireguard-gateway` (restart ได้); login fail → password rotate ไม่ sync → เทียบ Secret Manager กับ SQL Server |
 | **E2** Extract SUCCESS แต่ rows_extracted = 0 ผิดปกติ | `SELECT * FROM sap_extract_control ORDER BY run_timestamp DESC LIMIT 3` — watermark กระโดดไหม | ถ้า watermark ผิด: `UPDATE sap_extract_control` ถอย watermark แล้วรัน extract ใหม่ (idempotent, MERGE by DocEntry) |
 | **V-fail** step validate มี BLOCK จำนวนมาก | `SELECT rule, detail, COUNT(*) FROM sap_validation_error WHERE run_id=@run GROUP BY 1,2 ORDER BY 3 DESC` | แก้ตาม rule; item ที่ fail ไม่ถูก export (ที่เหลือไปต่อปกติ) — ไม่ต้องหยุดทั้งระบบ |

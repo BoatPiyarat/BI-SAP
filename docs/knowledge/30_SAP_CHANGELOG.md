@@ -4,6 +4,17 @@ Append-only — entry ใหม่บนสุด ห้ามลบ/แก้�
 
 ---
 
+## 2026-08-02 — V3 unattended-daily boundary made explicit
+
+Audited the deployed schedules/routines against the monthly operating design. V3 currently has an
+automatic SAP extract and state/reconciliation refresh, but no single owner of extract-to-loader
+dependency, no general daily export/delivery, no automatic row-level SAP acknowledgment, no
+post-import refresh, and no complete human-delivered conservation report. The validation-regression
+scheduled alert is also failed. Updated the monthly model with a 20:30-anchored, two-refresh
+workflow and corrected the runbook so target-only workflow commands cannot be mistaken for live
+operations. Queued the Class A implementation to the SQL/infra lane; no deployment or production
+mutation occurred.
+
 ## 2026-08-01 — Boat's 20 pre-interface rules consolidated; qualification/schedule source tightened
 
 Added the canonical `SAP_INTERFACE_VALIDATION_RULES.md` mapping all 20 operational rules plus

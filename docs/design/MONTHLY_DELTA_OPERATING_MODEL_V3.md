@@ -58,15 +58,39 @@ longer than the SAP contract. Do not repair by truncation because that can map t
 
 ## Nightly completion sequence
 
-1. Refresh CareOS-qualified staging and classify the delta against the latest SAP mirror.
-2. Validate 56-column position, dates, mappings, status completeness, sequencing, and period rules.
-3. Archive exact bytes, deliver only READY rows, and retain manifest provenance.
-4. Ingest import result into row-level acknowledged/rejected states.
-5. Run `sap-extract-job`; wait for loader success; refresh `sap_mirror_doc` and
-   `sap_mirror_state`.
-6. Reconcile all qualified CareOS rows and assert exact conservation.
-7. Email counts, amounts, exclusions/holds/rejects, new mapping values, freshness, job IDs, and
-   missing evidence. Failure to email is an alert failure, not pipeline success.
+The 20:30 ICT SAP extract is the single nightly anchor. One orchestrator owns the dependency chain;
+independent clock schedules are not evidence that the chain completed.
+
+1. Execute `sap-extract-job`, wait for the Cloud Run execution to finish, then wait for the exact
+   bronze generation to be committed by one loader execution and removed from bronze. HTTP status
+   alone is not load evidence.
+2. Refresh `sap_mirror_doc` and `sap_mirror_state`; record the extract execution, loader job ID,
+   source generation, loaded rows, and mirror freshness.
+3. Refresh CareOS-qualified staging and classify the delta against that refreshed SAP mirror.
+4. Validate 56-column position, dates, mappings, status completeness, sequencing, period rules,
+   and population conservation. No READY population may change by an unexplained magnitude.
+5. Archive exact bytes, deliver only READY rows, and retain manifest/hash/generation provenance.
+6. Wait for SAP pickup/import evidence with a bounded timeout. Ingest the import result into
+   row-level acknowledged/rejected states; a file/function status is not a row ACK.
+7. After the SAP import result, execute the SAP extract/load/mirror sequence again so SAP-side
+   outcomes from this delivery are visible before reconciliation.
+8. Reconcile all qualified CareOS rows and assert exact conservation.
+9. Email counts, amounts, exclusions/holds/rejects, new mapping values, freshness, job IDs, and
+   missing evidence. Failure to email or reach a human recipient is an alert failure, not pipeline
+   success.
+
+## Current automation boundary (verified 2026-08-02)
+
+V3 is not yet an unattended daily pipeline. The deployed 21:00 ICT scheduled procedure refreshes
+state/reconciliation objects, but it does not own extract-to-loader dependency, export/delivery,
+SAP-result ingestion, the post-import refresh, or the completeness email. The separate 01:00 ICT
+loader scheduler precedes the 20:30 extract and is not a same-run dependency guarantee. The
+`sap_validation_regression_alert` scheduled query was observed FAILED. Until the Class A increments
+below are implemented and one production cycle proves every checkpoint, manual supervision remains
+required.
+
+No operator or runbook may describe `wf-sap-pipeline`, `sap-pipeline-trigger`, or a general
+`sp_export_delta` as deployed without fresh live metadata evidence.
 
 ## Implementation increments requiring Class A review
 
@@ -77,6 +101,10 @@ longer than the SAP contract. Do not repair by truncation because that can map t
 4. Add approved InsuranceGroup and PaymentMethod/PaymentChannel mapping registries.
 5. Ingest SAP result workbook/log into archive acknowledgement/rejection states.
 6. Add post-delivery extract/load/mirror orchestration and daily completeness email.
+7. Replace independent-clock execution with one low-cost Cloud Workflows state machine anchored at
+   20:30 ICT. Use Cloud Run/BigQuery/Pub/Sub job IDs and bounded polling; do not keep a compute
+   service waiting. Persist every transition in `pipeline_run_log` and fail closed with a human
+   alert on timeout, duplicate loader commitment, missing import evidence, or conservation failure.
 
 No increment may deploy merely because this design is approved as a milestone; SQL and production
 changes retain their separate review and Boat approval gates.

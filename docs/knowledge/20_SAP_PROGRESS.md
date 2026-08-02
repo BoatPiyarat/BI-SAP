@@ -1,4 +1,14 @@
 # 20_SAP_PROGRESS.md
+**2026-08-02 V3 DAILY AUTONOMY AUDIT — NOT READY:** live scheduling and deployed-routine inventory
+show that V3 refreshes state/reconciliation at 21:00 ICT but does not provide one dependency-owned
+extract→loader→mirror→delta→validate→archive/deliver→SAP-result→post-import refresh→reconcile→email
+loop. The loader's separate 01:00 schedule is not a dependency for the 20:30 extract, no general V3
+export workflow is verified live, result ingestion remains manual, and
+`sap_validation_regression_alert` is FAILED. The monthly operating model now defines the exact
+two-refresh orchestration and the runbook labels target-only workflow commands. Class A build is
+queued to Claude Code; manual supervision remains mandatory until one full production cycle proves
+all checkpoints.
+
 **2026-08-01 V3 JULY EXPORT HARD GATE BLOCKED:** Boat authorized one July-only production run and
 prohibited August. No file was written: live metadata has only `sp_refresh_delta_export`, no
 `sp_export_delta`/`sp_manual_export`, no `export_archive`, and 13/15-column state rather than the
