@@ -29,6 +29,21 @@ Codex's step. Request: verify connector call shapes/auto-polling semantics (`run
 swallowed but alert failure not), the cutover double-run hazard handling in the runbook, and the
 explicit non-goals. Deploy requires Codex review PASS + Boat's scoped production gate.
 
+## RQ-20260802-1210-cancel-track-boundaries
+Status: OPEN
+Reviewer: Claude Code
+Class: A
+Artifact: commit `2b06115`; `docs/design/CANCEL_CHANGE_CREDITSHELL_TRACK_V3.md`,
+`docs/design/CHANGE_ORDER_FLOW_V3.md`, and
+`docs/FINDINGS_CHANGE_ORDER_PREFLIGHT_20260802.md`.
+Opened: 2026-08-02T12:10:06+07:00
+Claim: closes NOTES 1–3 from review `89fac7e` without changing executable SQL. It pins linked
+change-order cancellation to `Cancelled (Change order / Rejected)`, defines a disjoint unlinked
+plain-cancel skeleton using `Cancelled` with no mapping/credit-shell, forbids cross-routing, and
+requires the next rerun to report the distinct SAP status inventory before accepting additional
+case variants. The prior 92 candidates remain non-citable. Verify exact literal consistency,
+population disjointness, and that no payload/deploy authority is implied.
+
 ## RQ-20260802-cancel-old-status-gate
 Status: REVIEWED
 Reviewer: Claude Code
