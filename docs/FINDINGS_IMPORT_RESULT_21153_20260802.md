@@ -12,6 +12,8 @@ SAP reported `success with error` for `INSURANCE_RCB` in `RCB_LIVE_DB`.
   truth for this run.
 - Dominant workbook errors: PolicyStatus duplicated 7,623; immutable InvoiceNo 8,021;
   PaymentMethod over 50 characters 1,889; invalid period sequence 196; PaymentChannel not found 31.
+  These are error instances, not mutually exclusive buckets: 17,760 instances occur across 15,843
+  rejected rows because one row may carry more than one error.
 - The 14,402 rows absent from the workbook are only candidate successes until a post-import SAP
   extract/mirror proves them. Outer status and journal references are not row-level proof.
 - Confirmed source defect: the July exporter used export-archive membership but did not classify
@@ -19,6 +21,10 @@ SAP reported `success with error` for `INSURANCE_RCB` in `RCB_LIVE_DB`.
 - Confirmed encoding/mapping defect already present in BigQuery payload: 1,889 PaymentMethod values
   are mojibake (70 characters / 143 bytes) and 31 PaymentChannel values are a mojibake form of the
   Thai `RCB-Transfer-other` mapping. Do not quote raw affected records in repo/docs.
+
+Encoding root-cause owner: **Data Engineering / V3 payload-source owner (Codex implementation,
+Boat approval)**. Rule 28's hold contains the symptom; it does not close the upstream double-encoding
+defect. Trace source Unicode through the V2-derived payload view before any future delivery.
 
 Raw `.xlsx` and `.txt` evidence remains outside the repository. Revisit after July close to ingest
 row outcomes, prove accepted rows from SAP, and tune the reusable delta process.

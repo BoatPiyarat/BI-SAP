@@ -6,6 +6,11 @@
 Verified against repo commit `19c49cf` (branch `p0/stg-sap-state`) + gcloud output 2026-07-31
 **Deadline: July close = 2026-08-03 14:00 ICT**
 
+**RULE-02 superseded/generalized for reusable monthly operation (Boat 2026-08-02):** the historical
+July close artifact keeps `BatchRunDate = last_day(open_period)`. Normal August-and-later nightly
+processing uses the real run date inside the currently open month, capped at that month's last day,
+per RULE-25/26. Do not apply the July-only `last_day` rule to normal nightly runs.
+
 > Tag ทุก claim: `[CONFIRMED]` = มีหลักฐานตรง อ้างได้ · `[OPEN]` = ยังไม่ปิด ห้ามอ้างเป็นข้อสรุป
 > `[RETRACTED]` = เคยเขียนผิด ห้ามใช้ · `[WAITING HUMAN]` = ไม่ใช่งาน agent
 

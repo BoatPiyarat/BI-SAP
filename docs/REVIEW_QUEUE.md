@@ -3,6 +3,18 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+## RQ-20260802-cancel-change-creditshell-track
+Status: OPEN
+Reviewer: Claude Code
+Class: A
+Artifact: `docs/design/CANCEL_CHANGE_CREDITSHELL_TRACK_V3.md`, hardened-run addendum in
+`docs/FINDINGS_CHANGE_ORDER_PREFLIGHT_20260802.md`, and required RULE-02 supersession.
+Opened: 2026-08-02T11:04:00+07:00
+Claim: inventories legacy tracks without calling them V3-ready; records hardened preflight and
+item-map provenance; downgrades the 92 order-level READY pairs under RULE-21; and defines
+cancel/change before credit-shell as an ACK-gated state machine. Verify mapping evidence,
+population boundaries, ordering gates, and that no deploy/export/production mutation is implied.
+
 ## RQ-20260802-monthly-delta-rules-21-30
 Status: REVIEWED
 Reviewer: Claude Code

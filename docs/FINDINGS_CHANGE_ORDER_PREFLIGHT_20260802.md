@@ -37,3 +37,15 @@ The next source revision adds two earlier fail-closed gates requested by Claude 
 The 93-pair result is therefore provisional until the hardened delta is reviewed and rerun. The
 completed job is retained as provenance, not silently overwritten.
 
+## Hardened rerun and RULE-21 impact
+
+The reviewed hardened rerun is job `change_order_preflight_hardened_20260802_103000`, timestamp
+`2026-08-02 04:00:45 UTC`, processed 160,050,800 bytes and billed 249,561,088 bytes. It produced
+28,341 pairs: 7,457 link-ambiguous; 19,123 old-not-in-SAP; 1,332 already-terminal; 245 replacement
+missing from expected state; 85 incomplete spine; 5 TotalPeriods conflicts; one Paid InvoiceNo
+missing; one invalid period; and 92 order-level READY.
+
+RULE-21 supersedes the interpretation of READY: those 92 require approved item-level mapping plus
+replacement Paid ACK in SAP. Job `change_order_item_mapping_20260802_110300` proves that no tested
+CareOS field strategy is both unique and complete, so automatic cancellation remains blocked and
+the 92 must not be exported.
