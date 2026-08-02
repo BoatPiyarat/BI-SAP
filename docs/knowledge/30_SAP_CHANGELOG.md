@@ -1,5 +1,13 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-02 22:30 ICT — deployed 058 and preserved the OPEN-period stop
+
+Deployed the new Unit 5 identity table/procedure only. The first shadow CALL made no persistent
+payload writes because the period guard rejected 585 August-1 events while July remains OPEN.
+Recorded the required human timestamps rather than inferring a close. CREATE diagnosis found 157
+unique legacy source variants whose InvoiceNo differs from V3 and one ambiguous two-event RCL item;
+the ambiguous package stays held. No export/GCS action occurred.
+
 ## 2026-08-02 22:18 ICT — drafted exact-event NEWPAYMENT 56-column shadow
 
 Added source-only 058 for NEWPAYMENT, deliberately separate from blocked CREATE. Registry, period,

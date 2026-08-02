@@ -18,6 +18,11 @@ the wrapper self-test passed 7/7 and the DDL dry-run reported 0 bytes.
 Verdict: **PASS FOR NEW-OBJECT DEPLOY AND SHADOW CALL** — limited to V3 tables/procedure and the
 585-row NEWPAYMENT shadow. No export, GCS write, scheduler change, or CREATE population is allowed.
 
+Runtime update: definitions deployed by
+`bqjob_r2312b18d2bd45b07_0000019fc314daed_1`. CALL
+`bqjob_r727bd567f6867f45_0000019fc315935f_1` correctly stopped at the OPEN-period assertion before
+persistent shadow writes; the verdict does not authorize bypassing that guard.
+
 ## RQ-20260802-2206-v3-unit5-source-coverage
 Status: REVIEWED
 Reviewer: Codex (Boat waiver 2026-08-02; continue without Claude Code)

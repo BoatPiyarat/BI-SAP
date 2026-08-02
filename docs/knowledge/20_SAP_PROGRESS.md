@@ -1,5 +1,20 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-02 22:30 ICT — 058 deployed; shadow CALL correctly blocked by July OPEN state
+
+Definitions deployed with job `bqjob_r2312b18d2bd45b07_0000019fc314daed_1` (0 bytes). The shadow
+CALL `bqjob_r727bd567f6867f45_0000019fc315935f_1` failed before persistent payload/identity writes
+because all 585 NEWPAYMENT rows are dated 2026-08-01 while `sap_period_state` still has July
+`[2026-07-01,2026-08-01)` OPEN. Diagnostic `bqjob_r2ce3dcfb2cef96d9_0000019fc3171b21_1`
+processed 99,616,940 bytes and billed 100,663,296 bytes. The guard must remain; Boat must provide
+the exact July close and August close timestamps before Codex calls the atomic transition.
+
+CREATE source diagnosis also narrowed the former 159 gaps: every key exists. 157 Paid events have
+one unique source variant with a different legacy InvoiceNo; two RCL events on one OrderItem have
+multiple source variants and remain an item-level hold. Job
+`bqjob_r1633152981e7830a_0000019fc318e449_1` processed 9,263,041,477 bytes and billed
+9,295,626,240 bytes. No export or GCS write occurred.
+
 ## 2026-08-02 22:18 ICT — Unit 5 NEWPAYMENT 56-column shadow source ready
 
 Source-only 058 builds only the 585 exact-covered NEWPAYMENT events. It keeps the canonical 56
@@ -7,8 +22,8 @@ columns explicit and positional; matches each row by `(OrderItem,Period,InvoiceN
 PaymentMethod/PaymentChannel and NonMotor InsuranceGroup only through approved registries; applies
 OPEN-period PaymentDate/BatchRunDate rules; and fails closed on source/mapping multiplicity,
 future dates, blank Paid fields, PolicyNo length, date format, or column-count drift. CREATE is not
-included and remains held on its 159 Paid source gaps. The DDL is not deployed or called and has
-not yet been verified against the live 585-row population.
+included. This source milestone was later deployed; its first CALL was blocked by the still-OPEN
+July period as recorded in the newer entry above.
 
 ## 2026-08-02 22:04 ICT — Unit 5 source coverage blocks CREATE, NEWPAYMENT clean
 

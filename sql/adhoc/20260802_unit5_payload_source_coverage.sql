@@ -51,7 +51,9 @@ CREATE TEMP TABLE _coverage AS
 SELECT t.*,
   COUNTIF(s.OrderItem IS NOT NULL) source_variants,
   SUM(IFNULL(s.physical_rows,0)) source_physical_rows,
-  STRING_AGG(DISTINCT s.source_name,',' ORDER BY s.source_name) source_names
+  STRING_AGG(DISTINCT s.source_name,',' ORDER BY s.source_name) source_names,
+  (SELECT COUNT(*) FROM _source_key k
+    WHERE k.OrderItem=t.order_item AND k.period=t.period) same_key_variants
 FROM _target t
 LEFT JOIN _source_key s ON s.OrderItem=t.order_item AND s.period=t.period
   AND ((t.invoice_no IS NOT NULL AND s.invoice_no=t.invoice_no)
@@ -60,7 +62,9 @@ GROUP BY t.order_item,t.order_id,t.period,t.flow,t.expected_status,t.file_role,t
   t.invoice_no,t.event_rank;
 
 SELECT file_role,flow,expected_status,
-  CASE WHEN source_variants=0 THEN 'MISSING_SOURCE'
+  CASE WHEN source_variants=0 AND same_key_variants=0 THEN 'MISSING_KEY'
+       WHEN source_variants=0 AND same_key_variants=1 THEN 'INVOICE_MISMATCH_UNIQUE_SOURCE'
+       WHEN source_variants=0 THEN 'INVOICE_MISMATCH_AMBIGUOUS_SOURCE'
        WHEN source_variants=1 THEN 'EXACT_SOURCE'
        ELSE 'AMBIGUOUS_SOURCE' END coverage,
   COUNT(*) records,COUNT(DISTINCT order_item) order_items,
