@@ -3,6 +3,21 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+## RQ-20260802-2224-v3-unit5-newpayment-shadow
+Status: REVIEWED
+Reviewer: Codex (Boat waiver 2026-08-02; continue without Claude Code)
+Class: A
+Artifact: commit `5d0b8e5`; `sql/ddl/058_v3_unit5_newpayment_shadow.sql`.
+Opened: 2026-08-02T22:24:41+07:00
+
+Review exact event identity, exclusion of blocked CREATE, approved registry joins, OPEN-period date
+behavior, 56-column positional projection, paid/date/PolicyNo guards, and separation of payload
+metadata. `scripts/bq_safe_query.sh --dry-run-only` validated the complete DDL without execution;
+the wrapper self-test passed 7/7 and the DDL dry-run reported 0 bytes.
+
+Verdict: **PASS FOR NEW-OBJECT DEPLOY AND SHADOW CALL** — limited to V3 tables/procedure and the
+585-row NEWPAYMENT shadow. No export, GCS write, scheduler change, or CREATE population is allowed.
+
 ## RQ-20260802-2206-v3-unit5-source-coverage
 Status: REVIEWED
 Reviewer: Codex (Boat waiver 2026-08-02; continue without Claude Code)
