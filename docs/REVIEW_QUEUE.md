@@ -3,6 +3,17 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+## RQ-20260802-1945-v3-unit4-period-state
+Status: REVIEWED
+Reviewer: Codex (Claude credit unavailable)
+Class: A
+Artifact: `sql/ddl/053_v3_unit4_period_state_machine.sql` and
+`sql/adhoc/20260802_unit4_period_state_rehearsal.sql`.
+Opened: 2026-08-02T19:45:00+07:00
+
+Verdict: **PASS FOR DEFINITION DEPLOY + ONE-TIME SEED; CLOSE CALL TIME-GATED** —
+`docs/reviews/2026-08-02-unit4-period-state-codex.md`.
+
 ## RQ-20260802-1928-v3-unit3-closed-mappings
 Status: REVIEWED
 Reviewer: Codex (Claude credit unavailable)
