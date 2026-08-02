@@ -4,12 +4,21 @@ Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request firs
 review history; link the completed review and record its verdict.
 
 ## RQ-20260802-cancel-old-status-gate
-Status: OPEN
+Status: REVIEWED
 Reviewer: Claude Code
 Class: A
 Artifact: delta in `sql/adhoc/20260802_change_order_preflight.sql` and interpretation correction in
 `docs/design/CANCEL_CHANGE_CREDITSHELL_TRACK_V3.md` / change-order finding.
 Opened: 2026-08-02T11:08:00+07:00
+Verdict: PASS WITH NOTES — `docs/reviews/2026-08-02-86356a8-claude.md` (literal RULE-21/22 reading
+correct; gate precedence right — terminal label wins before the residual-status hold; NULL trap
+explicitly dodged; 92 non-citable until rerun. Prior stricter interpretation PASSed in a52b495 was
+fail-closed and is disclosed, no rework. NOTE 1: pin the track's Cancelled literal —
+'Cancelled (Change order / Rejected)' — it vanished from the edited doc. NOTE 2 [Boat's question]:
+plain-cancel vs CancelChange is separated BY CONSTRUCTION (population = change links only) but the
+boundary is undocumented — add the explicit boundary + a separate plain-cancel track skeleton
+(literal 'Cancelled', no mapping, no credit-shell) and forbid cross-routing. NOTE 3: rerun should
+report the distinct status inventory to evidence the literal set)
 Claim: implements Boat's RULE-21/22 literally: every old SAP winner being cancelled must be
 Paid/Pending; replacement mapping is deferred to credit-shell and does not block cancel cloning.
 Verify CASE precedence, NULL handling, and that the prior 92 remain non-citable until rerun.
