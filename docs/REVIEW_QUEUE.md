@@ -4,11 +4,12 @@ Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request firs
 review history; link the completed review and record its verdict.
 
 ## RQ-20260802-2006-v3-automation-release-gate
-Status: OPEN
-Reviewer: Claude Code
+Status: REVIEWED
+Reviewer: Codex (Boat waiver 2026-08-02; continue without Claude Code)
 Class: A
-Artifact: commit `c355d13`; `sql/ddl/052_v3_unit3_closed_mapping_registries.sql` and
-`sql/ddl/054_v3_automation_release_gate.sql`.
+Artifact: commits `c355d13` and `f053b51`; `sql/ddl/052_v3_unit3_closed_mapping_registries.sql`,
+`sql/ddl/054_v3_automation_release_gate.sql`, `sql/ddl/055_v3_notification_quarantine.sql`, and
+`sql/ddl/056_seed_nonmotor_insurance_group_exact_matches.sql`.
 Opened: 2026-08-02T20:06:25+07:00
 
 Review the Unit 3 run-summary conservation grain and the durable fail-closed boundary before Unit
@@ -17,6 +18,9 @@ collapse to one event; Unit 2 UNKNOWN, Unit 1 provenance, and exactly-one OPEN p
 and the artifact has no export, GCS, scheduler, SAP, or legacy-view side effect. Static diff check
 passed. SQL dry-run was intentionally not executed because the mandatory wrapper has no
 dry-run-only mode and executing it would deploy these source-only definitions.
+
+Verdict: **PASS SOURCE / BLOCK DEPLOY UNTIL DRY-RUN AND EXPLICIT DEPLOY GATE** —
+`docs/reviews/2026-08-02-f053b51-codex.md`.
 
 ## RQ-20260802-1945-v3-unit4-period-state
 Status: REVIEWED
