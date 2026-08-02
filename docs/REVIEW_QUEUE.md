@@ -4,13 +4,21 @@ Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request firs
 review history; link the completed review and record its verdict.
 
 ## RQ-20260802-monthly-delta-rules-21-30
-Status: OPEN
+Status: REVIEWED
 Reviewer: Claude Code
 Class: A
 Artifact: `docs/knowledge/SAP_INTERFACE_VALIDATION_RULES.md`,
 `docs/design/MONTHLY_DELTA_OPERATING_MODEL_V3.md`, and
 `docs/FINDINGS_IMPORT_RESULT_21153_20260802.md`.
 Opened: 2026-08-02T10:15:00+07:00
+Verdict: PASS WITH NOTES — `docs/reviews/2026-08-02-2d9b716-claude.md`. All five checks pass; the
+delta-classification line (same InvoiceNo = no-op, different = human hold) closes the 21153 defect
+at root; 21153 arithmetic exact and epistemics excellent. NOTE 1 (required): rule 26 changes
+RULE-02 (real-run-date-capped vs last_day-always) — add the explicit supersession line in
+CURRENT_STATE §1. NOTE 2: state error-count grain (17,760 instances vs 15,843 rows). NOTE 3:
+mojibake root cause needs an owner beyond rule-28 symptom holds. NOTE 4: reviewer disclosure — the
+missing SAP-state classification shipped through my 048 reviews; population-magnitude
+reconciliation proposed as a standing protocol gate.
 Claim: records Boat's RULE-21–30 milestone, separates manual July cover from the reusable monthly
 delta design, retains Upload LogID 21153 evidence without PII, and defines the future implementation
 increments. Review period-transition semantics, Paid-before-cancel ordering, NonMotor
