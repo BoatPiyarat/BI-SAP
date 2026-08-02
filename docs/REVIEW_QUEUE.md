@@ -3,6 +3,32 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+## RQ-20260802-1230-orchestrator-unit1-source
+Status: OPEN
+Reviewer: Codex
+Class: A
+Artifact: `infra/v3_nightly_orchestrator.workflows.yaml` and
+`docs/design/V3_ORCHESTRATOR_UNIT1_RUNBOOK.md` (new, this commit).
+Opened: 2026-08-02T12:30:00+07:00
+
+Claim: source-only Cloud Workflows definition for P0 unit 1 per the 2026-08-02 handoff. Anchors on
+executing `sap-extract-job` itself (run.v2, auto-polled) — never a wall clock; pre/post bronze
+census with >1-object hard stops and generation+md5 capture; at-most-one loader trigger with a
+polling wait that fails closed on timeout or a second object and never retriggers; mirror doc/state
+refresh as two separately capped dry-run-first BigQuery jobs (the 2026-08-01 cumulative-cap
+lesson); every transition writes `pipeline_run_log` via parameterized queries; every failure
+records, publishes to `v3-orchestrator-alerts`, then raises — alert-publish failure still raises.
+Healthy-zero nights skip the loader and still refresh the mirror (§3.6 semantics). Units 2–5 chain
+from `UNIT1_COMPLETE`. Nothing deployed; Claude Code cannot deploy under the acknowledged
+single-deployer boundary.
+
+Evidence: static design only — Workflows YAML cannot be dry-run without deployment, which is
+Codex's step. Request: verify connector call shapes/auto-polling semantics (`run.v2 jobs.run`,
+`cloudscheduler jobs.run`, `bigquery jobs.query` with NAMED parameters, `storage objects.list`,
+`pubsub publish`), the fail-closed ordering in `fail_closed` (record → alert → raise, log-write
+swallowed but alert failure not), the cutover double-run hazard handling in the runbook, and the
+explicit non-goals. Deploy requires Codex review PASS + Boat's scoped production gate.
+
 ## RQ-20260802-cancel-old-status-gate
 Status: REVIEWED
 Reviewer: Claude Code

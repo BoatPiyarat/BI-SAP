@@ -1,0 +1,431 @@
+# v3_nightly_orchestrator.workflows.yaml
+# SOURCE ONLY / Class A. Unit 1 of the unattended V3 nightly orchestrator
+# (docs/design/MONTHLY_DELTA_OPERATING_MODEL_V3.md; HANDOFF 2026-08-02).
+#
+# Scope of unit 1: extract -> exactly-one loader commitment -> bronze-empty gate ->
+# mirror refresh (doc + state). Delta classification and later stages are units 2-5 and
+# are NOT called here; the final step records UNIT1_COMPLETE so downstream units chain
+# explicitly, never by wall clock.
+#
+# Fail-closed contract (RULE-27 / handoff):
+#   - every transition writes pipeline_run_log with run ID, upstream IDs, counts, timestamps;
+#   - any unexpected state (2+ bronze objects, loader timeout, second object mid-wait,
+#     BigQuery job error, alert publish failure) terminates the workflow FAILED after
+#     recording the failure and publishing a human alert;
+#   - if publishing the human alert itself fails, the workflow still fails (raise) -
+#     a silent failure is treated as worse than a loud crash.
+#   - the 20:30 ICT extract is the single anchor: this workflow EXECUTES the extract job
+#     itself (Cloud Run Jobs v2, auto-polled to completion). Independent clock schedules
+#     must be disabled at cutover per the runbook; they are not evidence of chain completion.
+#
+# Deploy/IAM/rollback: docs/design/V3_ORCHESTRATOR_UNIT1_RUNBOOK.md. Codex deploys; Claude Code never.
+
+main:
+  params: [args]
+  steps:
+    - init:
+        assign:
+          - project: "pacific-plating-282708"
+          - region: "asia-southeast1"
+          - extract_job: "sap-extract-job"
+          - loader_scheduler: "auto_load_sap_data_in_bucket_to_bigquery"
+          - bronze_bucket: "rcb-bronze-zone"
+          - bronze_prefix: "SAP/production_database/"
+          - alert_topic: "projects/pacific-plating-282708/topics/v3-orchestrator-alerts"
+          - loader_timeout_seconds: 600
+          - poll_interval_seconds: 15
+          - run_id: '${"V3NIGHTLY-" + text.substring(time.format(sys.now()), 0, 19) + "-" + text.substring(uuid.generate(), 0, 8)}'
+          - extract_execution_name: ""
+          - bronze_generation: ""
+          - bronze_md5: ""
+          - loader_triggered: false
+
+    - log_start:
+        call: write_run_log
+        args:
+          project: ${project}
+          run_id: ${run_id}
+          step: "UNIT1_START"
+          scope: "NIGHTLY:orchestrator"
+          detail: "anchored run started"
+
+    # ------------------------------------------------------------------
+    # STEP 1 - pre-extract bronze gate: >1 pending objects is a hard stop
+    # (same fail-closed semantics as the reviewed manual orchestrator).
+    # ------------------------------------------------------------------
+    - list_bronze_pre:
+        call: googleapis.storage.v1.objects.list
+        args:
+          bucket: ${bronze_bucket}
+          prefix: ${bronze_prefix}
+        result: bronze_pre
+    - count_bronze_pre:
+        assign:
+          - pre_count: ${len(default(map.get(bronze_pre, "items"), []))}
+    - gate_bronze_pre:
+        switch:
+          - condition: ${pre_count > 1}
+            steps:
+              - fail_pre:
+                  call: fail_closed
+                  args:
+                    project: ${project}
+                    run_id: ${run_id}
+                    alert_topic: ${alert_topic}
+                    step: "BRONZE_PRE_GATE"
+                    reason: '${"found " + string(pre_count) + " pending bronze objects; refusing to combine batches"}'
+
+    # ------------------------------------------------------------------
+    # STEP 2 - execute the extract when no batch is pending; skip when exactly
+    # one object already waits (crash-recovery re-entry, never a second batch).
+    # run.v2 jobs.run is auto-polled by the connector until the execution ends;
+    # a failed execution raises and is caught into fail_closed.
+    # ------------------------------------------------------------------
+    - maybe_extract:
+        switch:
+          - condition: ${pre_count == 0}
+            steps:
+              - run_extract:
+                  try:
+                    call: googleapis.run.v2.projects.locations.jobs.run
+                    args:
+                      name: '${"projects/" + project + "/locations/" + region + "/jobs/" + extract_job}'
+                    result: extract_op
+                  except:
+                    as: e
+                    steps:
+                      - fail_extract:
+                          call: fail_closed
+                          args:
+                            project: ${project}
+                            run_id: ${run_id}
+                            alert_topic: ${alert_topic}
+                            step: "EXTRACT"
+                            reason: '${"extract execution failed: " + json.encode_to_string(e)}'
+              - record_extract:
+                  assign:
+                    - extract_execution_name: ${default(map.get(extract_op, "name"), "unknown")}
+              - log_extract:
+                  call: write_run_log
+                  args:
+                    project: ${project}
+                    run_id: ${run_id}
+                    step: "EXTRACT_DONE"
+                    scope: "NIGHTLY:orchestrator"
+                    detail: '${"execution=" + extract_execution_name}'
+          - condition: ${pre_count == 1}
+            steps:
+              - log_skip_extract:
+                  call: write_run_log
+                  args:
+                    project: ${project}
+                    run_id: ${run_id}
+                    step: "EXTRACT_SKIPPED"
+                    scope: "NIGHTLY:orchestrator"
+                    detail: "one pending bronze object; re-entry without a second batch"
+
+    # ------------------------------------------------------------------
+    # STEP 3 - post-extract bronze census. 0 objects = healthy zero-delta night
+    # (extract succeeded with no rows); 1 = trigger loader exactly once; >1 = stop.
+    # Object generation/md5 are recorded before the loader may delete it.
+    # ------------------------------------------------------------------
+    - list_bronze_post:
+        call: googleapis.storage.v1.objects.list
+        args:
+          bucket: ${bronze_bucket}
+          prefix: ${bronze_prefix}
+        result: bronze_post
+    - census_post:
+        assign:
+          - post_items: ${default(map.get(bronze_post, "items"), [])}
+          - post_count: ${len(post_items)}
+    - gate_bronze_post:
+        switch:
+          - condition: ${post_count > 1}
+            steps:
+              - fail_post:
+                  call: fail_closed
+                  args:
+                    project: ${project}
+                    run_id: ${run_id}
+                    alert_topic: ${alert_topic}
+                    step: "BRONZE_POST_GATE"
+                    reason: '${"extract window left " + string(post_count) + " bronze objects; refusing loader trigger"}'
+          - condition: ${post_count == 1}
+            steps:
+              - record_object:
+                  assign:
+                    - bronze_generation: ${string(default(map.get(post_items[0], "generation"), ""))}
+                    - bronze_md5: ${default(map.get(post_items[0], "md5Hash"), "")}
+              - log_object:
+                  call: write_run_log
+                  args:
+                    project: ${project}
+                    run_id: ${run_id}
+                    step: "BRONZE_OBJECT"
+                    scope: "NIGHTLY:orchestrator"
+                    detail: '${"generation=" + bronze_generation + "; md5=" + bronze_md5}'
+              - trigger_loader_once:
+                  call: googleapis.cloudscheduler.v1.projects.locations.jobs.run
+                  args:
+                    name: '${"projects/" + project + "/locations/" + region + "/jobs/" + loader_scheduler}'
+              - mark_loader:
+                  assign:
+                    - loader_triggered: true
+              - wait_for_consumption:
+                  call: wait_bronze_empty
+                  args:
+                    project: ${project}
+                    run_id: ${run_id}
+                    alert_topic: ${alert_topic}
+                    bucket: ${bronze_bucket}
+                    prefix: ${bronze_prefix}
+                    deadline_seconds: ${loader_timeout_seconds}
+                    poll_seconds: ${poll_interval_seconds}
+          - condition: ${post_count == 0}
+            steps:
+              - log_zero:
+                  call: write_run_log
+                  args:
+                    project: ${project}
+                    run_id: ${run_id}
+                    step: "HEALTHY_ZERO"
+                    scope: "NIGHTLY:orchestrator"
+                    detail: "no bronze object; zero-delta night; loader not triggered"
+
+    # ------------------------------------------------------------------
+    # STEP 4 - mirror refresh, strictly after load resolution. Two separate
+    # capped BigQuery jobs (the cumulative-cap lesson from 2026-08-01).
+    # ------------------------------------------------------------------
+    - refresh_mirror_doc:
+        call: run_bq_call
+        args:
+          project: ${project}
+          run_id: ${run_id}
+          alert_topic: ${alert_topic}
+          step: "MIRROR_DOC_REFRESH"
+          statement: "CALL `pacific-plating-282708.sap_integration_v3.sp_refresh_sap_mirror_doc_incremental`('NIGHTLY:orchestrator');"
+    - refresh_mirror_state:
+        call: run_bq_call
+        args:
+          project: ${project}
+          run_id: ${run_id}
+          alert_topic: ${alert_topic}
+          step: "MIRROR_STATE_REFRESH"
+          statement: "CALL `pacific-plating-282708.sap_integration_v3.sp_refresh_sap_mirror_state`('NIGHTLY:orchestrator');"
+
+    - log_complete:
+        call: write_run_log
+        args:
+          project: ${project}
+          run_id: ${run_id}
+          step: "UNIT1_COMPLETE"
+          scope: "NIGHTLY:orchestrator"
+          detail: '${"extract=" + extract_execution_name + "; loader_triggered=" + string(loader_triggered) + "; bronze_generation=" + bronze_generation}'
+    - done:
+        return: ${run_id}
+
+# ----------------------------------------------------------------------
+# Subworkflow: poll bronze prefix until empty or deadline. A second object
+# appearing mid-wait, or the deadline passing with the object still present,
+# fails closed. The loader is NEVER retriggered here.
+# ----------------------------------------------------------------------
+wait_bronze_empty:
+  params: [project, run_id, alert_topic, bucket, prefix, deadline_seconds, poll_seconds]
+  steps:
+    - set_deadline:
+        assign:
+          - deadline: ${sys.now() + deadline_seconds}
+    - poll:
+        steps:
+          - sleep:
+              call: sys.sleep
+              args:
+                seconds: ${poll_seconds}
+          - list_now:
+              call: googleapis.storage.v1.objects.list
+              args:
+                bucket: ${bucket}
+                prefix: ${prefix}
+              result: now
+          - census:
+              assign:
+                - n: ${len(default(map.get(now, "items"), []))}
+          - decide:
+              switch:
+                - condition: ${n > 1}
+                  steps:
+                    - fail_second_object:
+                        call: fail_closed
+                        args:
+                          project: ${project}
+                          run_id: ${run_id}
+                          alert_topic: ${alert_topic}
+                          step: "LOADER_WAIT"
+                          reason: '${"loader window contains " + string(n) + " objects; will not retrigger"}'
+                - condition: ${n == 0}
+                  steps:
+                    - consumed:
+                        call: write_run_log
+                        args:
+                          project: ${project}
+                          run_id: ${run_id}
+                          step: "LOADER_CONSUMED"
+                          scope: "NIGHTLY:orchestrator"
+                          detail: "bronze object deleted by loader"
+                    - out:
+                        return: true
+                - condition: ${sys.now() > deadline}
+                  steps:
+                    - fail_timeout:
+                        call: fail_closed
+                        args:
+                          project: ${project}
+                          run_id: ${run_id}
+                          alert_topic: ${alert_topic}
+                          step: "LOADER_WAIT"
+                          reason: "loader timeout: bronze object still present; do NOT retrigger; inspect Cloud Run logs"
+          - loop:
+              next: poll
+
+# ----------------------------------------------------------------------
+# Subworkflow: capped, dry-run-first BigQuery CALL. Dry-run validates the
+# statement shape cheaply; the real job carries maximumBytesBilled = 20 GiB.
+# Job errors raise -> fail_closed by the caller's try in run_bq_call itself.
+# ----------------------------------------------------------------------
+run_bq_call:
+  params: [project, run_id, alert_topic, step, statement]
+  steps:
+    - dry_run:
+        try:
+          call: googleapis.bigquery.v2.jobs.insert
+          args:
+            projectId: ${project}
+            body:
+              configuration:
+                dryRun: true
+                query:
+                  query: ${statement}
+                  useLegacySql: false
+        except:
+          as: e
+          steps:
+            - fail_dry:
+                call: fail_closed
+                args:
+                  project: ${project}
+                  run_id: ${run_id}
+                  alert_topic: ${alert_topic}
+                  step: '${step + "_DRYRUN"}'
+                  reason: ${json.encode_to_string(e)}
+    - real_run:
+        try:
+          call: googleapis.bigquery.v2.jobs.query
+          args:
+            projectId: ${project}
+            body:
+              query: ${statement}
+              useLegacySql: false
+              location: "asia-southeast1"
+              maximumBytesBilled: "21474836480"
+              timeoutMs: 300000
+        result: job
+        except:
+          as: e
+          steps:
+            - fail_real:
+                call: fail_closed
+                args:
+                  project: ${project}
+                  run_id: ${run_id}
+                  alert_topic: ${alert_topic}
+                  step: ${step}
+                  reason: ${json.encode_to_string(e)}
+    - guard_completion:
+        switch:
+          - condition: ${not default(map.get(job, "jobComplete"), false)}
+            steps:
+              - fail_incomplete:
+                  call: fail_closed
+                  args:
+                    project: ${project}
+                    run_id: ${run_id}
+                    alert_topic: ${alert_topic}
+                    step: ${step}
+                    reason: '${"BigQuery job did not complete within timeoutMs; jobId=" + json.encode_to_string(default(map.get(job, "jobReference"), {}))}'
+    - log_ok:
+        call: write_run_log
+        args:
+          project: ${project}
+          run_id: ${run_id}
+          step: ${step}
+          scope: "NIGHTLY:orchestrator"
+          detail: '${"jobId=" + default(map.get(default(map.get(job, "jobReference"), {}), "jobId"), "unknown")}'
+    - out:
+        return: true
+
+# ----------------------------------------------------------------------
+# Subworkflow: append one audit row to pipeline_run_log via a parameterized
+# query (no string-splicing of detail text into SQL).
+# ----------------------------------------------------------------------
+write_run_log:
+  params: [project, run_id, step, scope, detail]
+  steps:
+    - insert:
+        call: googleapis.bigquery.v2.jobs.query
+        args:
+          projectId: ${project}
+          body:
+            query: "INSERT INTO `pacific-plating-282708.sap_integration_v3.pipeline_run_log` (run_id, run_type, step, scope, rows_in, rows_out, started_at, ended_at, status, error_message) VALUES (@run_id, 'NIGHTLY', @step, @scope, NULL, NULL, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), 'INFO', @detail)"
+            useLegacySql: false
+            location: "asia-southeast1"
+            parameterMode: "NAMED"
+            queryParameters:
+              - name: "run_id"
+                parameterType: { type: "STRING" }
+                parameterValue: { value: ${run_id} }
+              - name: "step"
+                parameterType: { type: "STRING" }
+                parameterValue: { value: ${step} }
+              - name: "scope"
+                parameterType: { type: "STRING" }
+                parameterValue: { value: ${scope} }
+              - name: "detail"
+                parameterType: { type: "STRING" }
+                parameterValue: { value: ${detail} }
+    - out:
+        return: true
+
+# ----------------------------------------------------------------------
+# Subworkflow: fail closed. Order matters - record first, then alert, then raise.
+# If the alert publish fails, the raise still happens (silent success is the
+# only unacceptable outcome). The FAILED row is best-effort inside its own try
+# so a BigQuery outage cannot suppress the alert attempt.
+# ----------------------------------------------------------------------
+fail_closed:
+  params: [project, run_id, alert_topic, step, reason]
+  steps:
+    - record_failed:
+        try:
+          call: write_run_log
+          args:
+            project: ${project}
+            run_id: ${run_id}
+            step: '${step + "_FAILED"}'
+            scope: "NIGHTLY:orchestrator"
+            detail: ${text.substring(reason, 0, 900)}
+        except:
+          as: ignored
+          steps:
+            - swallow_log_error:
+                assign:
+                  - _: "run-log write failed; alert still proceeds"
+    - alert_human:
+        call: googleapis.pubsub.v1.projects.topics.publish
+        args:
+          topic: ${alert_topic}
+          body:
+            messages:
+              - data: ${base64.encode(text.encode(json.encode_to_string(map.merge({"run_id": run_id, "step": step}, {"reason": reason}))))}
+    - raise_failure:
+        raise: '${"V3 orchestrator failed closed at " + step + ": " + reason}'
