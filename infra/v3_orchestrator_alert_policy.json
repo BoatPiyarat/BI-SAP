@@ -32,9 +32,6 @@
     }
   ],
   "alertStrategy": {
-    "autoClose": "1800s",
-    "notificationRateLimit": {
-      "period": "300s"
-    }
+    "autoClose": "1800s"
   }
 }
