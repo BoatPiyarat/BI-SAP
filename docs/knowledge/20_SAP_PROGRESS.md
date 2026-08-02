@@ -10,6 +10,12 @@ exclude `:`/use only permitted characters, and post-cancel status must be polled
 Claude Code owns the source-only correction; Codex re-reviews. BLOCK and production hold remain
 until PASS plus separate Boat deploy approval.
 
+**2026-08-02 UNIT 1 SOURCE SELF-FIXED UNDER BOAT WAIVER:** Boat waived waiting for Claude review
+for this Unit 1 iteration because Claude credit is unavailable and instructed Codex to execute.
+Codex sanitized BigQuery job IDs, made cancellation poll to DONE, pinned the live watermark object
+and real fields, added exact-execution healthy-zero log evidence, and passed local YAML parsing.
+No production object changed yet; alert/IAM/compiler/rehearsal gates still apply.
+
 **2026-08-02 SINGLE DEPLOYER RECONFIRMED:** Boat designated Codex as the only production deployer.
 Claude Code remains source/read-only evidence/Class A reviewer and must hand off an exact reviewed
 commit plus runbook and rollback boundary; it must not deploy/CALL/write GCS/mutate production.

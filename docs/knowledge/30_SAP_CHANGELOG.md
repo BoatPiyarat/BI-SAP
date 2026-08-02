@@ -4,6 +4,14 @@ Append-only — entry ใหม่บนสุด ห้ามลบ/แก้�
 
 ---
 
+## 2026-08-02 — Unit 1 source corrected under scoped Boat review waiver
+
+With Claude credit unavailable, Boat explicitly instructed Codex to execute Unit 1 without waiting
+for Claude review. Codex implemented the approved safe job-ID and terminal cancellation polling
+changes, replaced the fictitious control schema with the live `_watermark_state.json` contract,
+and required the exact execution's healthy-zero success log. Local YAML parsing passed. This is a
+Unit-1-only review exception; production prerequisites and evidence gates remain in force.
+
 ## 2026-08-02 — Boat decided Unit 1 review escalation
 
 Boat approved both reviewer corrections after the one-round escalation: sanitize BigQuery job IDs

@@ -34,9 +34,9 @@ main:
           - loader_scheduler: "auto_load_sap_data_in_bucket_to_bigquery"
           - bronze_bucket: "rcb-bronze-zone"
           - bronze_prefix: "SAP/production_database/"
-          # Control object carries the extractor's own success evidence (watermark + caught_up).
-          # NAME MUST BE PINNED FROM THE EXTRACTOR SOURCE AT DEPLOY REVIEW; placeholder fails closed.
-          - control_object: ${default(map.get(args, "control_object"), "SAP/_extract_control/watermark.json")}
+          # Deployed extractor control object. It contains last_watermark_utc + updated_at only;
+          # caught_up/row-count evidence comes from the exact Cloud Run execution log.
+          - control_object: ${default(map.get(args, "control_object"), "SAP/_extract_control/_watermark_state.json")}
           - alert_topic: "projects/pacific-plating-282708/topics/v3-orchestrator-alerts"
           - loader_timeout_seconds: 600
           - bq_call_timeout_seconds: 1800
@@ -45,6 +45,7 @@ main:
           - run_id: '${"V3NIGHTLY-" + text.substring(time.format(sys.now()), 0, 19) + "-" + text.substring(uuid.generate(), 0, 8)}'
           - extract_operation: ""
           - extract_execution: ""
+          - extract_execution_short: ""
           - bronze_object_name: ""
           - bronze_generation: ""
           - bronze_md5: ""
@@ -120,6 +121,10 @@ main:
                   assign:
                     - extract_operation: ${default(map.get(extract_op, "name"), "unknown-operation")}
                     - extract_execution: ${default(map.get(default(map.get(extract_op, "response"), {}), "name"), "unknown-execution")}
+              - record_extract_short:
+                  assign:
+                    - execution_parts: ${text.split(extract_execution, "/")}
+                    - extract_execution_short: ${execution_parts[len(execution_parts) - 1]}
               - log_extract:
                   call: write_run_log
                   args:
@@ -220,6 +225,9 @@ main:
                     object: ${control_object}
                     pre_watermark: ${pre_watermark}
                     ran_extract: ${pre_count == 0}
+                    extract_job: ${extract_job}
+                    extract_execution: ${extract_execution_short}
+                    run_started_at: ${run_started_at}
 
     # ---------------- mirror refresh (F5: terminal-polled mutating jobs) ----------------
     - refresh_mirror_doc:
@@ -278,12 +286,12 @@ read_control_object:
         return: ${default(map.get(resp, "body"), {})}
 
 # ----------------------------------------------------------------------
-# F3: healthy-zero gate. Requires (a) this run actually executed the extract,
-# (b) control object readable, (c) caught_up == true, (d) watermark advanced
-# strictly past the pre-run value. Anything less fails closed.
+# F3: healthy-zero gate. The real control object contains last_watermark_utc only.
+# Require (a) this run executed the extract, (b) watermark advanced, and (c) the
+# exact Cloud Run execution emitted one success marker containing 0 rows and caught_up=True.
 # ----------------------------------------------------------------------
 verify_healthy_zero:
-  params: [project, run_id, alert_topic, bucket, object, pre_watermark, ran_extract]
+  params: [project, run_id, alert_topic, bucket, object, pre_watermark, ran_extract, extract_job, extract_execution, run_started_at]
   steps:
     - gate_ran:
         switch:
@@ -306,13 +314,28 @@ verify_healthy_zero:
         result: post_watermark
     - extract_fields:
         assign:
-          - pre_wm: ${default(map.get(pre_watermark, "watermark"), "")}
-          - post_wm: ${default(map.get(post_watermark, "watermark"), "")}
-          - caught_up: ${default(map.get(post_watermark, "caught_up"), false)}
-          - reported_rows: ${default(map.get(post_watermark, "rows"), null)}
+          - pre_wm: ${default(map.get(pre_watermark, "last_watermark_utc"), "")}
+          - post_wm: ${default(map.get(post_watermark, "last_watermark_utc"), "")}
+    - read_success_log:
+        call: http.post
+        args:
+          url: "https://logging.googleapis.com/v2/entries:list"
+          auth:
+            type: OAuth2
+          body:
+            resourceNames:
+              - '${"projects/" + project}'
+            filter: '${"resource.type=\"cloud_run_job\" AND resource.labels.job_name=\"" + extract_job + "\" AND resource.labels.execution_name=\"" + extract_execution + "\" AND timestamp>=\"" + run_started_at + "\" AND textPayload:\"success:\" AND textPayload:\"0 rows\" AND textPayload:\"caught_up=True\""}'
+            orderBy: "timestamp desc"
+            pageSize: 2
+        result: success_logs
+    - log_census:
+        assign:
+          - success_entries: ${default(map.get(default(map.get(success_logs, "body"), {}), "entries"), [])}
+          - success_count: ${len(success_entries)}
     - gate_signals:
         switch:
-          - condition: ${post_wm == "" or not caught_up or not (post_wm > pre_wm)}
+          - condition: ${post_wm == "" or not (post_wm > pre_wm) or success_count != 1}
             steps:
               - fail_signals:
                   call: fail_closed
@@ -321,7 +344,7 @@ verify_healthy_zero:
                     run_id: ${run_id}
                     alert_topic: ${alert_topic}
                     step: "HEALTHY_ZERO_GATE"
-                    reason: '${"zero-object night lacks health evidence: caught_up=" + string(caught_up) + "; pre_wm=" + pre_wm + "; post_wm=" + post_wm + " (login-failure shape or unreadable control object)"}'
+                    reason: '${"zero-object night lacks health evidence: success_log_count=" + string(success_count) + "; execution=" + extract_execution + "; pre_wm=" + pre_wm + "; post_wm=" + post_wm + " (login-failure shape or unreadable evidence)"}'
     - log_zero:
         call: write_run_log
         args:
@@ -329,8 +352,8 @@ verify_healthy_zero:
           run_id: ${run_id}
           step: "HEALTHY_ZERO"
           status: "SUCCESS"
-          rows_out: ${reported_rows}
-          detail: '${"caught_up=true; watermark " + pre_wm + " -> " + post_wm + "; loader not triggered"}'
+          rows_out: 0
+          detail: '${"success marker: 0 rows, caught_up=True; execution=" + extract_execution + "; watermark " + pre_wm + " -> " + post_wm + "; loader not triggered"}'
     - out:
         return: true
 
@@ -356,7 +379,7 @@ verify_load_commitment:
             queryParameters:
               - name: "run_started_at"
                 parameterType: { type: "STRING" }
-                parameterValue: { value: ${run_started_at} }
+                parameterValue: { value: '${run_started_at}' }
         result: found
     - census_jobs:
         assign:
@@ -510,6 +533,11 @@ run_bq_call:
                   alert_topic: ${alert_topic}
                   step: '${step + "_DRYRUN"}'
                   reason: ${json.encode_to_string(e)}
+    # BigQuery job IDs permit only letters, digits, underscores, and dashes.
+    # Keep the RFC timestamp-bearing run_id in audit rows, but sanitize it for jobReference.
+    - prepare_job:
+        assign:
+          - job_id: ${text.replace_all_regex(run_id + "-" + step, "[^A-Za-z0-9_-]", "_")}
     - insert_job:
         try:
           call: googleapis.bigquery.v2.jobs.insert
@@ -519,7 +547,7 @@ run_bq_call:
               jobReference:
                 projectId: ${project}
                 location: "asia-southeast1"
-                jobId: '${run_id + "-" + step}'
+                jobId: ${job_id}
               configuration:
                 query:
                   query: ${statement}
@@ -539,7 +567,6 @@ run_bq_call:
                   reason: ${json.encode_to_string(e)}
     - poll_setup:
         assign:
-          - job_id: '${run_id + "-" + step}'
           - deadline: ${sys.now() + timeout_seconds}
           - final_state: ""
           - final_error: null
@@ -600,23 +627,42 @@ run_bq_call:
                             - note_cancel_failed:
                                 assign:
                                   - _: "cancel call failed; still failing closed with job possibly running"
-                    - confirm_cancel:
-                        call: googleapis.bigquery.v2.jobs.get
-                        args:
-                          projectId: ${project}
-                          jobId: ${job_id}
-                          location: "asia-southeast1"
-                        result: after_cancel
-                    - fail_deadline:
+                    - wait_cancel_terminal:
+                        next: poll_cancel
+          - continue_poll:
+              next: poll_job
+    # jobs.cancel returns immediately. Never exit/release replay until jobs.get says DONE.
+    - poll_cancel:
+        steps:
+          - wait_cancel_tick:
+              call: sys.sleep
+              args:
+                seconds: 10
+          - get_after_cancel:
+              call: googleapis.bigquery.v2.jobs.get
+              args:
+                projectId: ${project}
+                jobId: ${job_id}
+                location: "asia-southeast1"
+              result: after_cancel
+          - read_after_cancel:
+              assign:
+                - cancel_state: ${default(map.get(default(map.get(after_cancel, "status"), {}), "state"), "")}
+                - cancel_error: ${map.get(default(map.get(after_cancel, "status"), {}), "errorResult")}
+          - gate_cancel_terminal:
+              switch:
+                - condition: ${cancel_state == "DONE"}
+                  steps:
+                    - fail_cancelled_terminal:
                         call: fail_closed
                         args:
                           project: ${project}
                           run_id: ${run_id}
                           alert_topic: ${alert_topic}
                           step: ${step}
-                          reason: '${"job " + job_id + " exceeded " + string(timeout_seconds) + "s; cancel requested; state after cancel=" + default(map.get(default(map.get(after_cancel, "status"), {}), "state"), "unknown") + " - do not start a second run before this job is confirmed terminal"}'
-          - continue_poll:
-              next: poll_job
+                          reason: '${"job " + job_id + " exceeded " + string(timeout_seconds) + "s; cancellation reached terminal DONE; terminal_error=" + json.encode_to_string(cancel_error)}'
+          - continue_cancel_poll:
+              next: poll_cancel
 
 # ----------------------------------------------------------------------
 # F4: run-log rows use SUCCESS|FAILED and carry counts in rows_out; summary
@@ -637,19 +683,19 @@ write_run_log:
             queryParameters:
               - name: "run_id"
                 parameterType: { type: "STRING" }
-                parameterValue: { value: ${run_id} }
+                parameterValue: { value: '${run_id}' }
               - name: "step"
                 parameterType: { type: "STRING" }
-                parameterValue: { value: ${step} }
+                parameterValue: { value: '${step}' }
               - name: "status"
                 parameterType: { type: "STRING" }
-                parameterValue: { value: ${status} }
+                parameterValue: { value: '${status}' }
               - name: "rows_out"
                 parameterType: { type: "INT64" }
-                parameterValue: { value: ${if(rows_out == null, null, string(rows_out))} }
+                parameterValue: { value: '${if(rows_out == null, null, string(rows_out))}' }
               - name: "detail"
                 parameterType: { type: "STRING" }
-                parameterValue: { value: ${detail} }
+                parameterValue: { value: '${detail}' }
     - out:
         return: true
 
@@ -682,6 +728,6 @@ fail_closed:
           topic: ${alert_topic}
           body:
             messages:
-              - data: ${base64.encode(text.encode(json.encode_to_string(map.merge({"run_id": run_id, "step": step}, {"reason": reason}))))}
+              - data: '${base64.encode(text.encode(json.encode_to_string(map.merge({"run_id": run_id, "step": step}, {"reason": reason}))))}'
     - raise_failure:
         raise: '${"V3 orchestrator failed closed at " + step + ": " + reason}'

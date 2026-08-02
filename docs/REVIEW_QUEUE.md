@@ -35,6 +35,12 @@ generate BigQuery job IDs containing only permitted characters (no `:`), and (b)
 evidence before the workflow exits. This resolves the escalation direction but does not clear the
 BLOCK; corrected source still requires Codex delta review. No deploy is authorized.
 
+Execution override 2026-08-02: Boat instructed Codex to execute without waiting for Claude review
+because Claude credit is unavailable. Codex implemented both approved corrections plus the
+live-evidenced control/log schema and recorded self-verification in
+`docs/reviews/2026-08-02-unit1-codex-self-verification.md`. This is a scoped waiver for Unit 1 only;
+pre-deploy/runtime gates remain mandatory and deployment evidence must be reported separately.
+
 Original claim: source-only Cloud Workflows definition for P0 unit 1 per the 2026-08-02 handoff. Anchors on
 executing `sap-extract-job` itself (run.v2, auto-polled) — never a wall clock; pre/post bronze
 census with >1-object hard stops and generation+md5 capture; at-most-one loader trigger with a

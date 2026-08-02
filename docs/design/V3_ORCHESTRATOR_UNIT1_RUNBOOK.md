@@ -20,12 +20,14 @@ refresh as two separately capped BigQuery jobs → `UNIT1_COMPLETE`. Every trans
    `run.jobs.run` (extract), `cloudscheduler.jobs.run` (loader trigger),
    `bigquery.jobs.create` + `bigquery.jobs.get`/`cancel` (terminal polling, F5) + dataset-scoped
    read/write on `sap_integration_v3` and read on the region INFORMATION_SCHEMA (F2),
-   `storage.objects.list` + `storage.objects.get` on `rcb-bronze-zone` (control-object media read,
-   F3), `pubsub.topics.publish` on the alert topic.
-2b. **Pin the extract control object name (F3).** The default
-   `SAP/_extract_control/watermark.json` is a placeholder; verify the exact object name and JSON
-   field names (`watermark`, `caught_up`, `rows`) against the deployed extractor source before
-   deploy. A wrong name fails closed on every zero-object night — loud, but wrong.
+   `storage.objects.list` + `storage.objects.get` on `rcb-bronze-zone`,
+   `logging.logEntries.list` for exact-execution healthy-zero proof, and
+   `pubsub.topics.publish` on the alert topic.
+2b. **Extract evidence pinned (2026-08-02 read-only verification).** The deployed object is
+   `SAP/_extract_control/_watermark_state.json` with `last_watermark_utc` and `updated_at` only.
+   `caught_up` and row count are emitted in the Cloud Run execution success log. Healthy zero
+   therefore requires watermark advance plus exactly one log marker containing
+   `success: ... 0 rows ... caught_up=True` for the execution started by this workflow.
 3. `gcloud workflows deploy v3-nightly-orchestrator --location=asia-southeast1 \
    --source=infra/v3_nightly_orchestrator.workflows.yaml --service-account=<sa>`.
 
@@ -48,6 +50,8 @@ paused schedulers and pause the workflow trigger — states, not deletions, so r
   the FAILED row + alert message + workflow failure all fire.
 - The LOAD-commitment audit row present (job ID + outputRows + badRecords=0 + source match) —
   bronze deletion alone is never accepted as commitment (F2, the b00af18 lesson).
+- BigQuery mutation job IDs contain no colon/invalid character, and a timeout rehearsal proves
+  `jobs.cancel` is polled until terminal DONE before the workflow emits its failed terminal state.
 
 ## Known boundaries (explicit non-goals of unit 1)
 
