@@ -1,10 +1,17 @@
 # 20_SAP_PROGRESS.md
+**2026-08-02 IMPORT ANALYSIS NARROWED TO LIVE ONLY:** Boat instructed Codex to ignore UAT2. The
+authoritative result is `RCB_LIVE_DB` Upload LogID 21153: 15,812 error rows affecting 11,742 orders
+from 30,245 delivered rows. Atomic counts include InvoiceNo immutable 7,990, PolicyStatus duplicate
+7,623, PaymentMethod >50 1,889, period sequence 196, existing-Cancelled block 37, and
+PaymentChannel mapping/account 31. Atomic counts overlap and must not be summed. Canonical evidence:
+`docs/FINDINGS_LIVE_IMPORT_21153_20260802.md`; the UAT2 finding is marked non-authoritative.
+
 **2026-08-02 UAT2 RESULT 17800 CAPTURED:** the same 30,245-row/56-column July RCB payload produced
 15,790 row errors in `RCB_ISSUE_DB`: 13,870 period sequence, 1,889 PaymentMethod >50, and 31 missing
 PaymentChannel/account-code. The latter two match production exactly and are intrinsic validation
 gaps; the period error volume does not (196 in production) and is environment-state dependent.
-Evidence and SHA-256 provenance are in `docs/FINDINGS_UAT2_IMPORT_17800_20260802.md`. No replay or
-export mutation occurred.
+Evidence is retained only as a superseded audit record and must not be cited or used for design.
+No replay or export mutation occurred.
 
 **2026-08-02 UNIT 1 DEPLOYED; HEALTHY-ZERO PATH PASSED:** workflow
 `v3-nightly-orchestrator` revision `000003-3e1` ran successfully as the default compute SA under

@@ -4,13 +4,22 @@ Append-only — entry ใหม่บนสุด ห้ามลบ/แก้�
 
 ---
 
+## 2026-08-02 — Import-result authority narrowed to LIVE only
+
+Boat instructed Codex to ignore UAT2 and analyze only `RCB_LIVE_DB`. Marked Upload LogID 17800
+non-authoritative and created the canonical SHA-pinned finding for LIVE Upload LogID 21153:
+15,812/30,245 rows have errors across 11,742 orders. Recorded both exclusive templates and atomic
+overlapping rule counts; no UAT2-derived conclusion remains authoritative. No replay, export, GCS,
+or SAP mutation occurred.
+
 ## 2026-08-02 — UAT2 Upload LogID 17800 captured and reconciled
 
 Captured the SHA-pinned result for the same July RCB payload in `RCB_ISSUE_DB`: 15,790/30,245 rows
 reported errors. PaymentMethod >50 (1,889) and missing PaymentChannel/account code (31) match
 production exactly; period-sequence errors expand from 196 in production to 13,870 in UAT2,
 proving that class depends on target SAP history. Recorded the evidence without OrderIDs or PII.
-No replay, upload, export change, or production mutation occurred.
+**Superseded later the same day:** Boat narrowed authority to LIVE-only. This entry is history and
+must not be cited for design. No replay, upload, export change, or production mutation occurred.
 
 ## 2026-08-02 — Unit 1 deployed and healthy-zero path passed
 

@@ -1,6 +1,9 @@
-# UAT2 import result — Upload LogID 17800 (2026-08-02)
+# UAT2 import result — Upload LogID 17800 (2026-08-02) — IGNORE
 
-Status: evidence captured; no replay and no export-logic change from this finding alone.
+Status: **NON-AUTHORITATIVE / DO NOT CITE OR USE FOR DESIGN.** Boat narrowed analysis to LIVE-only
+on 2026-08-02. This file is retained solely as an audit record that the evidence was received; all
+analytical conclusions and proposed controls below are superseded by
+`docs/FINDINGS_LIVE_IMPORT_21153_20260802.md`.
 
 ## Scope and provenance
 
