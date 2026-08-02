@@ -3,6 +3,18 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+## RQ-20260802-change-order-hardening
+Status: OPEN
+Reviewer: Claude Code
+Class: A
+Artifact: delta after `d628ce8` in `sql/adhoc/20260802_change_order_preflight.sql` plus
+`docs/FINDINGS_CHANGE_ORDER_PREFLIGHT_20260802.md`.
+Opened: 2026-08-02T09:43:00+07:00
+Claim: implements review NOTES 2–3 as fail-closed `HOLD_LINK_AMBIGUOUS` and
+`HOLD_SAP_TOTAL_PERIODS_CONFLICT`; records the first reviewed run's exact job provenance and all
+28,341 pair counts. Please verify grain, CASE precedence, correlated link-degree counts, and that
+the 93 READY result is explicitly provisional pending this delta's rerun. Source-only: no mutation.
+
 ## RQ-20260802-0932-change-order-preflight
 Status: REVIEWED
 Reviewer: Claude Code
