@@ -1,6 +1,6 @@
 # V3 Unit 2 shadow findings — 2026-08-02
 
-Status: source correction ready; corrected 051 is **not deployed**. V2 remains active and no cutover occurred.
+Status: corrected 051 deployed and shadow rerun completed. V2 remains active and no cutover occurred.
 
 ## Provenance
 
@@ -26,10 +26,22 @@ state-classification gap, not dropped source data.
 The source correction in 051 adds explicit branches for both shapes. It also holds payment events
 whose exact invoice already exists in SAP as Cancelled, rather than treating them as an unknown route.
 
-## Deployment gate
+## Deployment and rerun evidence
 
-The corrected file validates in BigQuery with a 0-byte DDL dry-run. Production redeployment was not
-performed because the changed artifact requires explicit approval. After approval, redeploy 051 and
-rerun the same pipeline run ID idempotently; verify that schedule UNKNOWN becomes zero and event
-UNKNOWN falls from 179 to 14, with the corresponding rows moving only to ACKNOWLEDGED or
-HELD_VALIDATION.
+- Approved source: `051@e561643`
+- Deploy job: `v3_unit2_051_e561643_deploy_20260802_1748`, DONE, 0 bytes
+- CALL job: `v3_unit2_e561643_call_20260802_1850`, created
+  `2026-08-02T11:50:09.445Z`, DONE, processed 1,436,867,866 bytes and billed
+  1,526,726,656 bytes
+- Verification job: `v3_unit2_e561643_verify_20260802_1852`, DONE, 1,184 bytes processed
+- Hold-reason job: `v3_unit2_e561643_holds_20260802_1854`, DONE
+
+All in-procedure record and amount conservation assertions passed. Schedule UNKNOWN became zero.
+Payment-event UNKNOWN fell from 179 to 14. The rerun found 11,752 payment events whose exact invoice
+already exists in SAP as Cancelled; they are held and must not be exported. The earlier expectation
+of only 165 such moves was incomplete because its diagnostic intentionally inspected only the old
+HELD/UNKNOWN populations and therefore did not inspect rows previously labelled READY.
+
+Current READY populations are 1,185 payment events (1,175 orders; amount 251,592,462 source minor
+units), 2,454 create/payment schedule rows, and 1,271 cancel/change schedule rows. These are shadow
+classifications only. They are not approval to create or deliver an interface file.
