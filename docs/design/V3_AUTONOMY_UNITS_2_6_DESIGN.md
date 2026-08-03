@@ -167,6 +167,12 @@ BigQuery access-controlled columns and sanitized templates in docs/reporting. Ma
 row to ACK or reject evidence; unmatched rows remain `PENDING_ACK`. LogID 21153 is an audit/regression
 fixture and must not be replayed.
 
+The nightly poll is deliberately bounded to message-level Gmail results from the preceding 60
+minutes and production markers `[LIVE]` + `RCB_LIVE_DB`. It must additionally match the exact
+current delivery-manifest filename. UAT2 is excluded; zero matches remains pending; multiple
+distinct LogIDs fail as ambiguous rather than choosing the newest message. This time boundary
+limits stale-result capture but does not replace the exact filename and environment gates.
+
 After a terminal import result, run the complete Unit 1 extract/load/mirror sequence again with a
 new child execution linked to the delivery run. Reconciliation waits for this second mirror. A
 bounded timeout ends as `TIMEOUT/HUMAN_ACTION`, not success.

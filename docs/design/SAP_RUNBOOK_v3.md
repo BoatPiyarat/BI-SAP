@@ -124,19 +124,30 @@ text is in attachments. Do not parse the body as the error log.
 
 ### Import-result email (has LogID)
 
-1. Apps Script finds an unprocessed SAP result email and reads metadata from the message:
+1. Poll a bounded production-only window. At each run, search message-level results from the last
+   60 minutes using label `notification SAP upload`, sender `rcare_sap_b1@rabbitcare.com`, and
+   subject marker `[LIVE]`. Then require body `CompanyDB: RCB_LIVE_DB`; reject UAT2/
+   `RCB_ISSUE_DB` even if it shares a thread or filename. Do not use a calendar-day search for the
+   nightly ACK because it can bind an old result to the current delivery.
+2. Match the body `FileName` byte-for-byte to the filename/generation recorded by the current
+   production delivery manifest. Zero matches remains `PENDING_ACK`; more than one distinct LogID
+   is `AMBIGUOUS_ACK` and alerts a human. Never select “latest” to hide ambiguity.
+3. Apps Script reads metadata from the one matched message:
    `log_id`, `file_name`, `status`, `import_type`, `company_db`, `email_date`.
-2. Call `getAttachments()`. Save TXT/XLSX attachments under
+4. Call `getAttachments()`. Save TXT/XLSX attachments under
    `gs://rcb-bronze-zone/sap_import_logs/<LogID>/`, preserving the original attachment names.
-3. Upsert one header row into `sap_integration_v3.sap_import_result`, logically keyed by `log_id`:
+5. Upsert one header row into `sap_integration_v3.sap_import_result`, logically keyed by `log_id`:
    `log_id`, `file_name`, `status`, `import_type`, `company_db`, `email_date`, `txt_gcs_uri`,
    `xlsx_gcs_uri`, `ingested_at`.
-4. Parse the TXT in a second stage into child table `sap_integration_v3.sap_import_error_detail`
+6. Parse the TXT in a second stage into child table `sap_integration_v3.sap_import_error_detail`
    at `(log_id, detail_seq)` grain:
    `error_class` (`STRUCTURAL` or `ROW_LEVEL`), `error_message`, and nullable `row_ref`.
    Structural errors apply to the whole file; row-level errors identify the affected row when
    the attachment provides a reference.
-5. Only after GCS save + BigQuery upsert succeeds, apply Gmail label `ingested`. The label is the
+7. A header `success` is terminal only when the TXT attachment is present and parseable. Persist
+   JE/reconciliation references as evidence; continue with post-import extract/load/mirror and
+   row-level reconciliation before declaring the pipeline run complete.
+8. Only after GCS save + BigQuery upsert succeeds, apply Gmail label `ingested`. The label is the
    duplicate guard for future Apps Script runs; the `log_id` key remains the database idempotency
    guard.
 
