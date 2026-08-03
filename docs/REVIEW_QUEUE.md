@@ -3,6 +3,27 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+## RQ-20260803-1125-complete-insurance-group-master
+Status: REVIEWED
+Reviewer: Codex (Boat supplied the authoritative SAP master and authorized mapped August rows)
+Class: A
+Artifact: `sql/ddl/056_seed_nonmotor_insurance_group_exact_matches.sql`.
+Opened: 2026-08-03T11:25:00+07:00
+
+Review exact case-sensitive mapping only, preservation of the existing Health/Life identifiers,
+RCB/RCL coverage, and continued fail-closed handling of unknown/ERROR/missing/ambiguous values.
+Actual August diagnostic job `job_5HvoTxEjMt3ErEBdWo4WPY3zFqHV` found only Health: 3 events,
+3 order_items, 3 orders, 542,165 satang; all three already resolve exactly once through the
+approved registry. Dry-run estimate was 53,262,581 bytes and actual processing 38,714,761 bytes.
+
+Seed dry-run `codex_dry_056_master_20260803_125408_999` ran at
+`2026-08-03T05:54:09.0140196Z`–`05:54:09.8573373Z`, processed 116 bytes against the
+21,474,836,480-byte ceiling.
+
+Verdict: **PASS FOR EXACT-MASTER SEED DEPLOY** — seed configuration only. This does not itself
+authorize a period transition, payload CALL, export, or GCS delivery; unknown values must remain
+held and retain order_item in daily completeness notification detail.
+
 ## RQ-20260802-2224-v3-unit5-newpayment-shadow
 Status: REVIEWED
 Reviewer: Codex (Boat waiver 2026-08-02; continue without Claude Code)

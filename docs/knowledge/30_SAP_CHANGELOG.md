@@ -1,5 +1,14 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-03 11:25 ICT — expanded exact InsuranceGroup seed to complete SAP master
+
+Expanded source 056 from Health/Life to the complete Boat-supplied SAP master for both RCB and RCL.
+No fuzzy/default mapping was introduced; unknown values remain held and visible by order_item.
+The latest August population currently contains only 3 Health events, all already mapped. This
+source change did not transition a period, build a payload, export, or write GCS.
+The expanded seed dry-run subsequently passed at 116 bytes; no production mutation occurred in
+the dry-run itself.
+
 ## 2026-08-03 10:59 ICT — recorded authoritative close timestamps
 
 Recorded Boat's exact July close (`2026-08-03T07:00:00Z`) and August close

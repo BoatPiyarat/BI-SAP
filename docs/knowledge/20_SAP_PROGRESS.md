@@ -1,5 +1,22 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-03 11:25 ICT — complete SAP InsuranceGroup master accepted
+
+Boat supplied the authoritative master literals Cancer, Corporate, Health, Home, Inter, Life,
+Miscellaneous, Motor, Motorbike, Personal Accident, and TA with their SAP business-unit codes.
+Source 056 now seeds exact case-sensitive NonMotor mappings for both RCB and RCL while preserving
+the already-live Health/Life mapping identities. Anything outside the list—including ERROR,
+missing, or ambiguous source values—remains `HOLD_INSURANCE_GROUP_MAPPING` and is copied to daily
+completeness detail with `order_item`.
+
+Guarded read-only job `job_5HvoTxEjMt3ErEBdWo4WPY3zFqHV` evaluated the latest August run
+`V3NIGHTLY-2026-08-02T09:02:26-b36e1712`: only Health appeared, with 3 events / 3 order_items /
+3 orders / 542,165 satang, and all 3 already matched the approved registry. Dry-run estimate was
+53,262,581 bytes; actual processing was 38,714,761 bytes. Mapping is therefore not a hold for this
+current August population; all other release, period, validation, and delivery gates still apply.
+The expanded seed dry-run subsequently passed at 116 bytes; deployment evidence is recorded
+separately after the source commit/push boundary.
+
 ## 2026-08-03 10:59 ICT — Boat fixed the July/August transition timestamps
 
 Boat confirmed July closing at `2026-08-03 14:00:00 Asia/Bangkok`
