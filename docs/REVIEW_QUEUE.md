@@ -3,6 +3,21 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+## RQ-20260803-1412-unit5-balance-quarantine
+Status: REVIEWED
+Reviewer: Codex (Boat authorized incomplete rows to be skipped and named in daily notification)
+Class: A
+Artifact: `sql/ddl/059_v3_unit5_balance_hold.sql`.
+Opened: 2026-08-03T14:11:00+07:00
+
+Runtime diagnostic `job_VbDxm3XbVdwPSnzQqXBtcvk_NJz5` found 585 item-periods, no multirow,
+negative, or near-double cases. Exactly one exceeds the established +/- THB 10 reconciliation
+tolerance: `L78570443-V1` period 2, expected 2,126.27, actual 1,481.06, difference -645.21.
+
+Verdict: **PASS SOURCE FOR DRY-RUN/DEPLOY/CALL** — quarantine only; it must conserve
+candidate=delivery+hold, retain 56 columns, and copy every hold to notification detail with
+order_item. It does not authorize export or GCS delivery until runtime verification passes.
+
 ## RQ-20260803-1125-complete-insurance-group-master
 Status: REVIEWED
 Reviewer: Codex (Boat supplied the authoritative SAP master and authorized mapped August rows)
