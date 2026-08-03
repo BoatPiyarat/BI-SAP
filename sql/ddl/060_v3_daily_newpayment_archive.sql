@@ -32,8 +32,13 @@ BEGIN
     JOIN `pacific-plating-282708.sap_integration_v3.v3_unit5_newpayment_delivery_ready` p
       ON p.OrderItem=i.order_item AND SAFE_CAST(p.Period AS INT64)=i.period
      AND p.InvoiceNo=i.invoice_no
-    WHERE i.pipeline_run_id=p_pipeline_run_id AND i.file_role='NEWPAYMENT')=v_rows
-    AS 'Delivery-ready rows do not conserve against this run identity';
+    WHERE i.pipeline_run_id=p_pipeline_run_id AND i.file_role='NEWPAYMENT')=
+    (SELECT COUNT(*) FROM `pacific-plating-282708.sap_integration_v3.v3_unit5_payload_identity` i
+      WHERE pipeline_run_id=p_pipeline_run_id AND file_role='NEWPAYMENT'
+        AND NOT EXISTS (SELECT 1
+          FROM `pacific-plating-282708.sap_integration_v3.v3_unit5_balance_hold` h
+          WHERE h.pipeline_run_id=p_pipeline_run_id AND h.order_item=i.order_item))
+    AS 'Released payment identities do not exist in the expanded delivery spine';
   ASSERT (SELECT COUNT(*)
     FROM `pacific-plating-282708.sap_integration_v3.v3_unit5_newpayment_delivery_ready`
     WHERE SAFE.PARSE_DATE('%d%m%Y',PaymentDate) IS NULL
@@ -76,7 +81,13 @@ BEGIN
   WHERE i.pipeline_run_id=p_pipeline_run_id AND i.file_role='NEWPAYMENT';
 
   ASSERT (SELECT COUNT(*) FROM `pacific-plating-282708.sap_integration_v3.export_archive`
-    WHERE export_run_id=v_export_run_id)=v_rows AS 'Archive ledger row conservation failed';
+    WHERE export_run_id=v_export_run_id)=
+    (SELECT COUNT(*) FROM `pacific-plating-282708.sap_integration_v3.v3_unit5_payload_identity` i
+      WHERE pipeline_run_id=p_pipeline_run_id AND file_role='NEWPAYMENT'
+        AND NOT EXISTS (SELECT 1
+          FROM `pacific-plating-282708.sap_integration_v3.v3_unit5_balance_hold` h
+          WHERE h.pipeline_run_id=p_pipeline_run_id AND h.order_item=i.order_item))
+    AS 'Event-grain archive ledger conservation failed';
 
   EXECUTE IMMEDIATE FORMAT("""
     EXPORT DATA OPTIONS(uri='%s',format='CSV',overwrite=false,header=true)

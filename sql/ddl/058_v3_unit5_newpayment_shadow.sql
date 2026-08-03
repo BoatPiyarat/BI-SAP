@@ -79,7 +79,7 @@ BEGIN
     SAFE_CAST(RefundAmountAfterFee AS FLOAT64) RefundAmountAfterFee,
     CAST(BillingAddress AS STRING) BillingAddress,CAST(BatchRunDate AS STRING) BatchRunDate
   FROM `pacific-plating-282708.sap_integration_v3.vw_onetime_payload_source`
-  WHERE EXISTS (SELECT 1 FROM _target t WHERE t.order_item=OrderItem)
+  WHERE EXISTS (SELECT 1 FROM _target t WHERE t.order_item=OrderItem AND t.flow='ONETIME')
   UNION ALL
   SELECT CAST(CompanyDB AS STRING),CAST(OrderID AS STRING),CAST(OrderItem AS STRING),
     CAST(InvoiceNo AS STRING),CAST(OrderDate AS STRING),CAST(InsuredID AS STRING),CAST(Title AS STRING),
@@ -102,7 +102,7 @@ BEGIN
     CAST(ExpectedDate AS STRING),CAST(RefOrder AS STRING),SAFE_CAST(RefundAmountBeforeFee AS FLOAT64),
     SAFE_CAST(RefundAmountAfterFee AS FLOAT64),CAST(BillingAddress AS STRING),CAST(BatchRunDate AS STRING)
   FROM `pacific-plating-282708.sap_data_engineer.sap_dashboard_carepay_installment`
-  WHERE EXISTS (SELECT 1 FROM _target t WHERE t.order_item=OrderItem);
+  WHERE EXISTS (SELECT 1 FROM _target t WHERE t.order_item=OrderItem AND t.flow!='ONETIME');
 
   CREATE TEMP TABLE _context AS
   WITH category AS (
@@ -157,7 +157,7 @@ BEGIN
     WHERE product_scope='NONMOTOR' AND NULLIF(TRIM(resolved_insurance_group),'') IS NULL)=0
     AS 'Released NonMotor row lacks its approved InsuranceGroup value';
 
-  CREATE TEMP TABLE _candidate AS SELECT
+  CREATE TEMP TABLE _candidate_target AS SELECT
     CAST(CompanyDB AS STRING) CompanyDB,CAST(order_id AS STRING) OrderID,
     CAST(order_item AS STRING) OrderItem,CAST(invoice_no AS STRING) InvoiceNo,
     CAST(OrderDate AS STRING) OrderDate,COALESCE(NULLIF(TRIM(InsuredID),''),'-') InsuredID,
@@ -193,16 +193,63 @@ BEGIN
     FORMAT_DATE('%d%m%Y',v_batch_date) BatchRunDate
   FROM _resolved;
 
+  -- SAP validates RCL sequence at the complete order-item spine, not at payment-event grain.
+  -- Preserve every non-target period from the proven source contract and replace only the exact
+  -- target period/invoice row with the newly resolved Paid event. One event is not one file row.
+  CREATE TEMP TABLE _candidate AS
+  SELECT * FROM _candidate_target
+  UNION ALL
+  SELECT CAST(s.CompanyDB AS STRING),CAST(s.OrderID AS STRING),CAST(s.OrderItem AS STRING),
+    CAST(IFNULL(s.InvoiceNo,'') AS STRING),CAST(s.OrderDate AS STRING),
+    COALESCE(NULLIF(TRIM(s.InsuredID),''),'-'),CAST(s.Title AS STRING),CAST(s.FirstName AS STRING),
+    CAST(s.LastName AS STRING),CAST(s.InsurerCode AS STRING),CAST(s.InsuranceGroup AS STRING),
+    CAST(s.InsuranceType AS STRING),CAST(s.InsuranceProduct AS STRING),CAST(s.ProductType AS STRING),
+    CAST(s.PolicyType AS STRING),CAST(s.Endorse AS STRING),CAST(s.PolicyDate AS STRING),
+    CAST(s.PolicyNo AS STRING),CAST(s.EndorsementNo AS STRING),CAST(s.ChassisNo AS STRING),
+    CAST(s.LicensePlate AS STRING),FORMAT('%.2f',s.GrossPremium),FORMAT('%.2f',s.StampDuty),
+    FORMAT('%.2f',s.VAT),FORMAT('%.2f',s.TotalPremium),FORMAT('%.2f',s.WHT),
+    FORMAT('%.2f',s.TotalEIR),FORMAT('%.2f',s.TotalSBT),FORMAT('%.2f',s.ProcessingFee),
+    FORMAT('%.2f',s.ProcessingFeeVat),FORMAT('%.2f',s.ShippingFee),
+    FORMAT('%.2f',s.ShippingFeeVat),FORMAT('%.2f',s.TotalAmount),FORMAT('%.2f',s.Discount),
+    CAST(s.TransactionStatus AS STRING),CAST(s.SubmissionStatus AS STRING),
+    CAST(s.ApprovalStatus AS STRING),CAST(s.PaymentStatus AS STRING),
+    FORMAT('%.2f',s.ExpectedReceived),FORMAT('%.2f',s.ActualReceived),
+    FORMAT('%.2f',s.InterestThisPeriod),FORMAT('%.2f',s.PrincipleThisPeriod),
+    FORMAT('%.2f',s.InterestEIRThisPeriod),FORMAT('%.2f',s.PrincipleEIRThisPeriod),
+    CAST(IFNULL(s.PaymentDate,'') AS STRING),CAST(s.Period AS STRING),CAST(s.TotalPeriods AS STRING),
+    CAST(s.PendingPayment AS STRING),CAST(IFNULL(s.PaymentMethod,'') AS STRING),
+    CAST(IFNULL(s.PaymentChannel,'') AS STRING),CAST(s.ExpectedDate AS STRING),
+    CAST(s.RefOrder AS STRING),FORMAT('%.2f',s.RefundAmountBeforeFee),
+    FORMAT('%.2f',s.RefundAmountAfterFee),CAST(s.BillingAddress AS STRING),
+    FORMAT_DATE('%d%m%Y',v_batch_date)
+  FROM _source s
+  WHERE EXISTS (SELECT 1 FROM _target t WHERE t.order_item=s.OrderItem)
+    AND NOT EXISTS (SELECT 1 FROM _candidate_target t
+      WHERE t.OrderItem=s.OrderItem AND SAFE_CAST(t.Period AS INT64)=s.Period);
+
+  ASSERT (SELECT COUNT(*) FROM (
+    SELECT OrderItem,COUNT(DISTINCT SAFE_CAST(Period AS INT64)) period_n,
+      MAX(SAFE_CAST(TotalPeriods AS INT64)) total_n
+    FROM _candidate GROUP BY OrderItem HAVING period_n!=total_n))=0
+    AS 'NEWPAYMENT full period spine is incomplete';
+  ASSERT (SELECT COUNT(*) FROM (
+    SELECT OrderItem,Period,IFNULL(InvoiceNo,''),COUNT(*) n FROM _candidate
+    GROUP BY 1,2,3 HAVING n!=1))=0 AS 'NEWPAYMENT full period spine has duplicate identities';
+
   ASSERT (SELECT COUNT(*) FROM _candidate WHERE LENGTH(PolicyNo)>50)=0
     AS 'POLICYNO_TOO_LONG in NEWPAYMENT candidate';
-  ASSERT (SELECT COUNT(*) FROM _candidate WHERE NULLIF(TRIM(InvoiceNo),'') IS NULL
+  ASSERT (SELECT COUNT(*) FROM _candidate WHERE TransactionStatus='Paid'
+    AND (NULLIF(TRIM(InvoiceNo),'') IS NULL
     OR NULLIF(TRIM(PaymentDate),'') IS NULL OR NULLIF(TRIM(PaymentMethod),'') IS NULL
-    OR NULLIF(TRIM(PaymentChannel),'') IS NULL)=0 AS 'Paid completeness failed';
+    OR NULLIF(TRIM(PaymentChannel),'') IS NULL))=0 AS 'Paid completeness failed';
   ASSERT (SELECT COUNT(*) FROM (
     SELECT OrderItem,date_value FROM _candidate
-    UNPIVOT(date_value FOR date_column IN (OrderDate,PolicyDate,PaymentDate,ExpectedDate,BatchRunDate))
+    UNPIVOT(date_value FOR date_column IN (OrderDate,PolicyDate,ExpectedDate,BatchRunDate))
     WHERE LENGTH(IFNULL(date_value,''))!=8
        OR SAFE.PARSE_DATE('%d%m%Y',date_value) IS NULL))=0 AS 'DATE_FORMAT_INVALID';
+  ASSERT (SELECT COUNT(*) FROM _candidate WHERE NULLIF(PaymentDate,'') IS NOT NULL
+    AND (LENGTH(PaymentDate)!=8 OR SAFE.PARSE_DATE('%d%m%Y',PaymentDate) IS NULL))=0
+    AS 'PAYMENT_DATE_FORMAT_INVALID';
 
   CREATE OR REPLACE TABLE `pacific-plating-282708.sap_integration_v3.v3_unit5_newpayment_ready` AS
   SELECT * FROM _candidate;
@@ -214,6 +261,6 @@ BEGIN
   INSERT INTO `pacific-plating-282708.sap_integration_v3.v3_unit5_payload_identity`
   SELECT p_pipeline_run_id,'NEWPAYMENT',r.order_item,r.period,r.charge_id,r.invoice_no,
     TO_HEX(SHA256(TO_JSON_STRING(c))),CURRENT_TIMESTAMP()
-  FROM _resolved r JOIN _candidate c
+  FROM _resolved r JOIN _candidate_target c
     ON c.OrderItem=r.order_item AND SAFE_CAST(c.Period AS INT64)=r.period AND c.InvoiceNo=r.invoice_no;
 END;

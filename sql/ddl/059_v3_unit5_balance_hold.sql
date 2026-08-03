@@ -27,7 +27,12 @@ BEGIN
     AS 'Unit 5 balance quarantine requires pipeline_run_id';
   ASSERT (SELECT COUNT(*) FROM `pacific-plating-282708.sap_integration_v3.v3_unit5_payload_identity`
     WHERE pipeline_run_id=p_pipeline_run_id AND file_role='NEWPAYMENT')=
-    (SELECT COUNT(*) FROM `pacific-plating-282708.sap_integration_v3.v3_unit5_newpayment_ready`)
+    (SELECT COUNT(*) FROM `pacific-plating-282708.sap_integration_v3.v3_unit5_newpayment_ready` p
+      WHERE EXISTS (SELECT 1
+        FROM `pacific-plating-282708.sap_integration_v3.v3_unit5_payload_identity` i
+        WHERE i.pipeline_run_id=p_pipeline_run_id AND i.file_role='NEWPAYMENT'
+          AND i.order_item=p.OrderItem AND i.period=SAFE_CAST(p.Period AS INT64)
+          AND i.invoice_no=p.InvoiceNo))
     AS 'Unit 5 balance quarantine requires exact candidate-to-identity conservation';
 
   DELETE FROM `pacific-plating-282708.sap_integration_v3.v3_unit5_balance_hold`
@@ -74,14 +79,26 @@ BEGIN
   FROM `pacific-plating-282708.sap_integration_v3.v3_unit5_newpayment_ready` p
   WHERE NOT EXISTS (
     SELECT 1 FROM `pacific-plating-282708.sap_integration_v3.v3_unit5_balance_hold` h
-    WHERE h.pipeline_run_id=p_pipeline_run_id AND h.order_item=p.OrderItem
-      AND h.period=SAFE_CAST(p.Period AS INT64) AND h.invoice_no=p.InvoiceNo);
+    WHERE h.pipeline_run_id=p_pipeline_run_id AND h.order_item=p.OrderItem);
 
-  ASSERT (SELECT COUNT(*) FROM `pacific-plating-282708.sap_integration_v3.v3_unit5_newpayment_ready`)=
-    (SELECT COUNT(*) FROM `pacific-plating-282708.sap_integration_v3.v3_unit5_newpayment_delivery_ready`)+
-    (SELECT COUNT(*) FROM `pacific-plating-282708.sap_integration_v3.v3_unit5_balance_hold`
-      WHERE pipeline_run_id=p_pipeline_run_id)
-    AS 'Unit 5 balance quarantine conservation failed';
+  ASSERT (SELECT COUNT(*) FROM (
+    SELECT OrderItem,COUNT(DISTINCT SAFE_CAST(Period AS INT64)) period_n,
+      MAX(SAFE_CAST(TotalPeriods AS INT64)) total_n
+    FROM `pacific-plating-282708.sap_integration_v3.v3_unit5_newpayment_delivery_ready`
+    GROUP BY OrderItem HAVING period_n!=total_n))=0
+    AS 'Delivery-ready RCL item has an incomplete period spine';
+  ASSERT (SELECT COUNT(*) FROM `pacific-plating-282708.sap_integration_v3.v3_unit5_payload_identity`
+    WHERE pipeline_run_id=p_pipeline_run_id AND file_role='NEWPAYMENT'
+      AND order_item NOT IN (SELECT DISTINCT order_item
+        FROM `pacific-plating-282708.sap_integration_v3.v3_unit5_balance_hold`
+        WHERE pipeline_run_id=p_pipeline_run_id))=
+    (SELECT COUNT(*) FROM `pacific-plating-282708.sap_integration_v3.v3_unit5_payload_identity` i
+      WHERE i.pipeline_run_id=p_pipeline_run_id AND i.file_role='NEWPAYMENT'
+        AND EXISTS (SELECT 1
+          FROM `pacific-plating-282708.sap_integration_v3.v3_unit5_newpayment_delivery_ready` d
+          WHERE d.OrderItem=i.order_item AND SAFE_CAST(d.Period AS INT64)=i.period
+            AND d.InvoiceNo=i.invoice_no))
+    AS 'Released event identities do not conserve against expanded delivery spine';
   ASSERT (SELECT COUNT(*) FROM `pacific-plating-282708.sap_integration_v3.INFORMATION_SCHEMA.COLUMNS`
     WHERE table_name='v3_unit5_newpayment_delivery_ready')=56
     AS 'Delivery-ready NEWPAYMENT must retain exactly 56 columns';

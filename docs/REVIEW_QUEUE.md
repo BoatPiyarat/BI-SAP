@@ -3,6 +3,26 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+## RQ-20260803-1818-unit5-full-period-spine
+Status: REVIEWED
+Reviewer: Codex self-review under Boat's technical-gate authority
+Class: A
+Artifact: `sql/ddl/058_v3_unit5_newpayment_shadow.sql`, `059_v3_unit5_balance_hold.sql`,
+`060_v3_daily_newpayment_archive.sql`, and `062_v3_mark_exact_delivery.sql`.
+Opened: 2026-08-03T18:18:00+07:00
+
+LIVE 21178 rejected 584/584 event rows because the file omitted the complete RCL period spine.
+Exact-population diagnostic `codex_diag_21178_spine_20260803_181630_267` found 582 item identities,
+4,016 source rows, 582/582 complete spines, and zero null/duplicate period identities. Review event
+identity versus file-row grain separation, whole-item quarantine, full-spine conservation, and
+manifest data-row count. Dry-runs at 2026-08-03T11:18:40Z–11:18:41Z passed at 0 bytes.
+
+Verdict: **PASS FOR PROCEDURE DEFINITION DEPLOY; CALL/ARCHIVE/DELIVERY REMAIN CLOSED.** Definition
+deploy jobs: `codex_deploy_058_v3_unit5_newpayment_shadow_20260803_181859_838`,
+`codex_deploy_059_v3_unit5_balance_hold_20260803_181903_330`,
+`codex_deploy_060_v3_daily_newpayment_archive_20260803_181906_710`, and
+`codex_deploy_062_v3_mark_exact_delivery_20260803_181910_116`; all DONE, error null, 0/0 bytes.
+
 ## RQ-20260803-1550-unit6-exact-copy-workflow
 Status: REVIEWED
 Reviewer: Codex self-review under Boat's technical-gate authority

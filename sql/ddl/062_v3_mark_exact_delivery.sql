@@ -15,6 +15,7 @@ CREATE OR REPLACE PROCEDURE `pacific-plating-282708.sap_integration_v3.sp_mark_v
 BEGIN
   DECLARE v_identity_rows INT64;
   DECLARE v_archive_rows INT64;
+  DECLARE v_file_rows INT64;
 
   ASSERT NULLIF(TRIM(p_pipeline_run_id),'') IS NOT NULL AS 'pipeline_run_id is required';
   ASSERT NULLIF(TRIM(p_export_run_id),'') IS NOT NULL AS 'export_run_id is required';
@@ -30,12 +31,17 @@ BEGIN
   ASSERT NULLIF(TRIM(p_crc32c),'') IS NOT NULL AS 'matching CRC32C evidence is required';
 
   SET v_identity_rows=(SELECT COUNT(*)
-    FROM `pacific-plating-282708.sap_integration_v3.v3_unit5_payload_identity`
-    WHERE pipeline_run_id=p_pipeline_run_id AND file_role='NEWPAYMENT');
+    FROM `pacific-plating-282708.sap_integration_v3.v3_unit5_payload_identity` i
+    WHERE pipeline_run_id=p_pipeline_run_id AND file_role='NEWPAYMENT'
+      AND NOT EXISTS (SELECT 1
+        FROM `pacific-plating-282708.sap_integration_v3.v3_unit5_balance_hold` h
+        WHERE h.pipeline_run_id=p_pipeline_run_id AND h.order_item=i.order_item));
   SET v_archive_rows=(SELECT COUNT(*)
     FROM `pacific-plating-282708.sap_integration_v3.export_archive`
     WHERE export_run_id=p_export_run_id
       AND delivery_status='ARCHIVED_PENDING_OBJECT_METADATA');
+  SET v_file_rows=(SELECT COUNT(*)
+    FROM `pacific-plating-282708.sap_integration_v3.v3_unit5_newpayment_delivery_ready`);
 
   ASSERT v_identity_rows>0 AS 'delivery cannot be marked for a zero-row run';
   ASSERT v_archive_rows=v_identity_rows
@@ -62,7 +68,7 @@ BEGIN
      size_bytes,header_column_count,data_row_count,uat2_status,delivery_status,recorded_at)
   VALUES
     (p_export_run_id,p_archive_uri,p_production_uri,p_archive_generation,p_production_generation,
-     NULL,p_size_bytes,56,v_archive_rows,NULL,'DELIVERED',CURRENT_TIMESTAMP());
+     NULL,p_size_bytes,56,v_file_rows,NULL,'DELIVERED',CURRENT_TIMESTAMP());
 
   -- DELIVERED is only GCS evidence. PICKED_UP/ACKNOWLEDGED remain untouched until independent
   -- SAP result or refreshed mirror evidence is ingested.
