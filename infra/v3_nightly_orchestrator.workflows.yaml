@@ -258,6 +258,18 @@ main:
           status: "SUCCESS"
           rows_out: null
           detail: '${"extract_execution=" + extract_execution + "; loader_triggered=" + string(loader_triggered) + "; bronze=" + bronze_object_name + "@" + bronze_generation}'
+    # Units 2-5 share this exact run_id. The SQL wrapper evaluates notification and release gates
+    # every night, treats zero delivery rows as a healthy no-file outcome, and writes archive only.
+    # Exact-generation production promotion and SAP ACK remain Unit 6 gates.
+    - run_units_2_5:
+        call: run_bq_call
+        args:
+          project: ${project}
+          run_id: ${run_id}
+          alert_topic: ${alert_topic}
+          step: "UNITS_2_5_ARCHIVE"
+          statement: '${"CALL `pacific-plating-282708.sap_integration_v3.sp_run_v3_units2_5`(\u0027" + run_id + "\u0027);"}'
+          timeout_seconds: ${bq_call_timeout_seconds}
     - done:
         return: ${run_id}
 

@@ -26,8 +26,9 @@ BEGIN
   ASSERT NULLIF(TRIM(p_pipeline_run_id),'') IS NOT NULL
     AS 'Unit 5 balance quarantine requires pipeline_run_id';
   ASSERT (SELECT COUNT(*) FROM `pacific-plating-282708.sap_integration_v3.v3_unit5_payload_identity`
-    WHERE pipeline_run_id=p_pipeline_run_id AND file_role='NEWPAYMENT')>0
-    AS 'Unit 5 balance quarantine requires NEWPAYMENT payload identity for the same run';
+    WHERE pipeline_run_id=p_pipeline_run_id AND file_role='NEWPAYMENT')=
+    (SELECT COUNT(*) FROM `pacific-plating-282708.sap_integration_v3.v3_unit5_newpayment_ready`)
+    AS 'Unit 5 balance quarantine requires exact candidate-to-identity conservation';
 
   DELETE FROM `pacific-plating-282708.sap_integration_v3.v3_unit5_balance_hold`
   WHERE pipeline_run_id=p_pipeline_run_id;
