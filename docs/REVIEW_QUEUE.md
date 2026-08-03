@@ -27,6 +27,11 @@ Runtime update: commit `1d58e82`; deploy `codex_deploy_060_20260803_142802_289`;
 `b0a3d4ba5bc951fd92ea57efa8d1e964c29f41c96ef186f532bb9e34f380e777`, 376,245 bytes,
 584 rows, 56 ordered columns. **PASS ARCHIVE; production exact-byte copy awaits explicit gate.**
 
+Production update: Boat approved the exact generation/row-count/destination. Create-only copy
+produced generation `1785743970202194`, size 376,245, CRC32C `C/wY+w==`; guarded job
+`codex_mark_delivered_20260803_150004_321` marked 584 rows and one manifest DELIVERED. First exact
+Gmail search found no result; SAP pickup/ACK remains OPEN and must not be inferred from delivery.
+
 ## RQ-20260803-1412-unit5-balance-quarantine
 Status: REVIEWED
 Reviewer: Codex (Boat authorized incomplete rows to be skipped and named in daily notification)

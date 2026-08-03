@@ -1,5 +1,18 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-03 15:00 ICT — August 584-row file delivered create-only; awaiting SAP pickup
+
+Boat explicitly approved exact-byte production copy of archive generation `1785742123427933`.
+The first copy command failed before writing because `gcloud` prohibits combining
+`--no-clobber` and `--if-generation-match=0`; self-review retained the stronger create-only
+generation precondition and retried without weakening safety. The destination object is
+`gs://interface-file/RCB_MOTOR/RCB_MOTOR_INSURANCE_RCB_06_V3_DAILY_NEWPAYMENT_20260803_`
+`V3DAILY-20260803-072831-38902dd9_000000000000.csv`, generation `1785743970202194`, size
+376,245 bytes, CRC32C `C/wY+w==`, exactly matching the archive size/CRC. Guarded job
+`codex_mark_delivered_20260803_150004_321` persisted all 584 ledger rows and the manifest as
+DELIVERED. Exact-filename Gmail search in label `notification SAP upload` returned no message on
+the first check, so the state remains DELIVERED—not PICKED_UP or ACKNOWLEDGED.
+
 ## 2026-08-03 14:32 ICT — August daily archive verified; production copy awaits exact approval
 
 Generic exporter source 060 was committed/pushed as `1d58e82`, deployed by

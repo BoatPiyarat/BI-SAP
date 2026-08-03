@@ -1,5 +1,12 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-03 15:00 ICT — delivered exact August archive generation to RCB_MOTOR
+
+After Boat's explicit approval, copied the verified archive object to production using destination
+generation=0 (create-only). Destination generation is `1785743970202194`; size and CRC match the
+archive. Persisted 584 DELIVERED ledger rows and the file manifest. No exact-filename SAP result
+email was present on the first check, so no pickup/import acknowledgment was inferred.
+
 ## 2026-08-03 14:32 ICT — generated and verified August archive; delivery gated
 
 Deployed/called generic archive exporter 060 for the 584-row delivery-ready NEWPAYMENT payload.
