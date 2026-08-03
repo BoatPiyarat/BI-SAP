@@ -156,6 +156,11 @@ BEGIN
   ASSERT (SELECT COUNT(*) FROM _resolved
     WHERE product_scope='NONMOTOR' AND NULLIF(TRIM(resolved_insurance_group),'') IS NULL)=0
     AS 'Released NonMotor row lacks its approved InsuranceGroup value';
+  ASSERT (SELECT COUNT(*) FROM _resolved
+    WHERE flow='ONETIME' AND REGEXP_CONTAINS(
+      UPPER(CONCAT(IFNULL(sap_payment_method,''),'|',IFNULL(sap_payment_channel,''))),
+      r'(^|\|)RCL'))=0
+    AS 'ONETIME row resolved to an RCL payment mapping';
 
   CREATE TEMP TABLE _candidate_target AS SELECT
     CAST(CompanyDB AS STRING) CompanyDB,CAST(order_id AS STRING) OrderID,

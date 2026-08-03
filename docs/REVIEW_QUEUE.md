@@ -8,7 +8,8 @@ Status: OPEN
 Reviewer: Claude Code
 Class: A
 Artifact: `docs/FINDINGS_RCB_ONETIME_CHANGE_ORDER_MISROUTED_RCL_20260803.md` and
-`sql/adhoc/20260803_l80482368_rcb_creditshell_misroute.sql`.
+`sql/adhoc/20260803_l80482368_rcb_creditshell_misroute.sql`, plus the preventive delta in
+`sql/ddl/058_v3_unit5_newpayment_shadow.sql`.
 Opened: 2026-08-03T19:18:00+07:00
 
 Review the live/repo drift statements, known-case trace, posted-state population grain, and the
@@ -16,6 +17,14 @@ flow-aware future-order proposal. Verify that the 9-order count is limited to FU
 orders with 1/1 current source state and a valid SAP DocEntry whose latest M1 payment mapping is
 RCL Credit Shell. Confirm this remains separate from INCIDENT-002a, INCIDENT-002b, and the 224
 unknown-cause orders. No deploy or correction is requested.
+
+Delta added after diagnosis: review the fail-closed assertion that rejects any resolved
+`flow='ONETIME'` row whose approved PaymentMethod or PaymentChannel begins with `RCL`. Confirm the
+check executes after registry resolution and before candidate materialization. Definition deploy
+remains prohibited pending review and separate Boat approval. Source dry-run at
+`2026-08-03T12:43:20.923Z` passed at 0 bytes. Read-only registry evidence job
+`codex_onetime_rcl_mapping_guard_20260803_124344` found 0 currently approved violating mappings
+(dry-run/processed 1,256 bytes; billed 10,485,760 bytes).
 
 ## RQ-20260803-1818-unit5-full-period-spine
 Status: REVIEWED
