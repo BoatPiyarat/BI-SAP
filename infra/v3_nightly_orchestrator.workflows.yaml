@@ -50,6 +50,9 @@ main:
           - bronze_generation: ""
           - bronze_md5: ""
           - loader_triggered: false
+          # Incident 21178: keep production delivery disabled until Unit 5 emits the complete
+          # RCL period spine (all periods through TotalPeriods), not only the paid event row.
+          - delivery_enabled: false
           - pre_watermark: {}
 
     - log_start:
@@ -270,17 +273,21 @@ main:
           step: "UNITS_2_5_ARCHIVE"
           statement: '${"CALL `pacific-plating-282708.sap_integration_v3.sp_run_v3_units2_5`(\u0027" + run_id + "\u0027);"}'
           timeout_seconds: ${bq_call_timeout_seconds}
-    - promote_exact_archive:
-        call: promote_daily_archive
-        args:
-          project: ${project}
-          run_id: ${run_id}
-          alert_topic: ${alert_topic}
-        result: delivery
-    - maybe_mark_delivered:
+    - maybe_promote_exact_archive:
         switch:
-          - condition: ${delivery.has_delivery}
+          - condition: ${delivery_enabled}
             steps:
+              - promote_exact_archive:
+                  call: promote_daily_archive
+                  args:
+                    project: ${project}
+                    run_id: ${run_id}
+                    alert_topic: ${alert_topic}
+                  result: delivery
+              - gate_delivery_rows:
+                  switch:
+                    - condition: ${not delivery.has_delivery}
+                      next: done
               - build_delivery_statement:
                   assign:
                     - delivery_call_head: '${"CALL `pacific-plating-282708.sap_integration_v3.sp_mark_v3_exact_delivery`(\u0027" + run_id + "\u0027,\u0027" + delivery.export_run_id + "\u0027,\u0027" + delivery.archive_uri + "\u0027,\u0027" + delivery.archive_generation + "\u0027,"}'
