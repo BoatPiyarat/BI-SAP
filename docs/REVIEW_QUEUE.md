@@ -3,6 +3,19 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+## RQ-20260803-1535-unit6-exact-delivery-ledger
+Status: OPEN
+Reviewer: Codex self-review under Boat's technical-gate authority
+Class: A
+Artifact: `sql/ddl/062_v3_mark_exact_delivery.sql`.
+Opened: 2026-08-03T15:35:00+07:00
+
+Review same-run identity conservation, approved archive/production prefixes, mandatory source and
+destination generation evidence, non-empty size and CRC evidence, replay refusal, exact ledger
+row update, and the explicit boundary that `DELIVERED` is not SAP pickup or acknowledgement.
+This procedure performs no GCS copy and must only be called after the orchestrator's create-only
+copy and source/destination metadata equality gate succeeds.
+
 ## RQ-20260803-1515-units2-5-nightly-chain
 Status: REVIEWED
 Reviewer: Codex (Boat authorized self-review/fix/continue for technical gates)
