@@ -7,6 +7,12 @@ The 584-row daily NEWPAYMENT file was delivered exactly, but SAP LIVE LogID 2117
 rejection, not partial success. Ledger rows and the single manifest were therefore changed from
 DELIVERED to REJECTED by job `codex_mark_21178_rejected_20260803_171858_533`.
 
+The delivered basename also violated the interface contract: it began
+`RCB_MOTOR_INSURANCE_RCB_...`. `RCB_MOTOR` is the bucket folder, not part of the filename; the
+basename must always begin `INSURANCE_RCB_`. This is independently confirmed and fixed in 060.
+Although SAP parsed the file and returned row-level period errors, the filename defect must not be
+treated as harmless or repeated.
+
 Direct mirror diagnosis (`codex_diag_21178_20260803_171508_581`) found all 584 target periods and
 their predecessors already present in SAP; none of the order items was absent. A period-level
 sample also showed a valid existing 1..8 spine with the target period Pending. The defect is the

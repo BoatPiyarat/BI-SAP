@@ -52,7 +52,9 @@ BEGIN
         'ARCHIVED_PENDING_DELIVERY','DELIVERED','PICKED_UP','ACKNOWLEDGED'))=0
     AS 'A current-run identity already has an active archive/delivery record; refusing replay';
 
-  SET v_file_name=CONCAT('RCB_MOTOR_INSURANCE_RCB_06_V3_DAILY_NEWPAYMENT_',
+  -- BU belongs only in the GCS folder (RCB_MOTOR/). SAP's basename contract always starts
+  -- INSURANCE_RCB_; prefixing RCB_MOTOR_ changes the interface filename contract.
+  SET v_file_name=CONCAT('INSURANCE_RCB_06_V3_DAILY_NEWPAYMENT_',
     FORMAT_DATE('%Y%m%d',CURRENT_DATE('Asia/Bangkok')),'_',v_export_run_id);
   SET v_archive_uri=CONCAT('gs://rcb-bronze-zone/sap-interface-archive/',
     FORMAT_DATE('%Y/%m/%d',CURRENT_DATE('Asia/Bangkok')),'/',v_export_run_id,'/',
