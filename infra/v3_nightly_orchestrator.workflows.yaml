@@ -270,8 +270,140 @@ main:
           step: "UNITS_2_5_ARCHIVE"
           statement: '${"CALL `pacific-plating-282708.sap_integration_v3.sp_run_v3_units2_5`(\u0027" + run_id + "\u0027);"}'
           timeout_seconds: ${bq_call_timeout_seconds}
+    - promote_exact_archive:
+        call: promote_daily_archive
+        args:
+          project: ${project}
+          run_id: ${run_id}
+          alert_topic: ${alert_topic}
+        result: delivery
+    - maybe_mark_delivered:
+        switch:
+          - condition: ${delivery.has_delivery}
+            steps:
+              - persist_delivery:
+                  call: run_bq_call
+                  args:
+                    project: ${project}
+                    run_id: ${run_id}
+                    alert_topic: ${alert_topic}
+                    step: "UNIT6_DELIVERED"
+                    statement: '${"CALL `pacific-plating-282708.sap_integration_v3.sp_mark_v3_exact_delivery`(\u0027" + run_id + "\u0027,\u0027" + delivery.export_run_id + "\u0027,\u0027" + delivery.archive_uri + "\u0027,\u0027" + delivery.archive_generation + "\u0027,\u0027" + delivery.production_uri + "\u0027,\u0027" + delivery.production_generation + "\u0027," + string(delivery.size_bytes) + ",\u0027" + delivery.crc32c + "\u0027);"}'
+                    timeout_seconds: ${bq_call_timeout_seconds}
     - done:
         return: ${run_id}
+
+# Exact-generation production promotion. Zero archive rows is a healthy no-file night. Any
+# ambiguous ledger/object or copy mismatch fails closed before DELIVERED is persisted.
+promote_daily_archive:
+  params: [project, run_id, alert_topic]
+  steps:
+    - find_archive:
+        call: googleapis.bigquery.v2.jobs.query
+        args:
+          projectId: ${project}
+          body:
+            query: "WITH x AS (SELECT DISTINCT a.export_run_id,a.archive_uri,a.file_name FROM `pacific-plating-282708.sap_integration_v3.export_archive` a JOIN `pacific-plating-282708.sap_integration_v3.v3_unit5_payload_identity` i USING(order_item,period,charge_id) WHERE i.pipeline_run_id=@run_id AND i.file_role='NEWPAYMENT' AND a.delivery_status='ARCHIVED_PENDING_OBJECT_METADATA') SELECT TO_JSON_STRING(STRUCT(export_run_id,archive_uri,file_name)) FROM x"
+            useLegacySql: false
+            location: "asia-southeast1"
+            maximumBytesBilled: "21474836480"
+            parameterMode: "NAMED"
+            queryParameters:
+              - name: "run_id"
+                parameterType: { type: "STRING" }
+                parameterValue: { value: '${run_id}' }
+        result: archive_query
+    - archive_census:
+        assign:
+          - archive_rows: ${default(map.get(archive_query, "rows"), [])}
+          - archive_count: ${len(archive_rows)}
+    - no_archive:
+        switch:
+          - condition: ${archive_count == 0}
+            return:
+              has_delivery: false
+          - condition: ${archive_count != 1}
+            steps:
+              - fail_archive_count:
+                  call: fail_closed
+                  args:
+                    project: ${project}
+                    run_id: ${run_id}
+                    alert_topic: ${alert_topic}
+                    step: "UNIT6_ARCHIVE_LEDGER"
+                    reason: '${"expected zero or one archive manifest; found " + string(archive_count)}'
+    - decode_archive:
+        assign:
+          - archive_info: ${json.decode(archive_rows[0].f[0].v)}
+    - derive_prefix:
+        assign:
+          - archive_object_prefix: ${text.replace_all(text.replace_all(archive_info.archive_uri, "gs://rcb-bronze-zone/", ""), "*.csv", "")}
+    - list_archive:
+        call: googleapis.storage.v1.objects.list
+        args:
+          bucket: "rcb-bronze-zone"
+          prefix: ${archive_object_prefix}
+        result: archive_objects
+    - object_census:
+        assign:
+          - objects: ${default(map.get(archive_objects, "items"), [])}
+          - object_count: ${len(objects)}
+    - gate_object:
+        switch:
+          - condition: ${object_count != 1}
+            steps:
+              - fail_object_count:
+                  call: fail_closed
+                  args:
+                    project: ${project}
+                    run_id: ${run_id}
+                    alert_topic: ${alert_topic}
+                    step: "UNIT6_ARCHIVE_OBJECT"
+                    reason: '${"expected exactly one archive object; found " + string(object_count)}'
+    - source_metadata:
+        assign:
+          - source_name: ${objects[0].name}
+          - source_generation: ${string(objects[0].generation)}
+          - source_size: ${int(objects[0].size)}
+          - source_crc: ${objects[0].crc32c}
+          - name_parts: ${text.split(objects[0].name, "/")}
+          - destination_name: '${"RCB_MOTOR/" + name_parts[len(name_parts) - 1]}'
+          - production_uri: '${"gs://interface-file/" + destination_name}'
+    - copy_create_only:
+        call: http.post
+        args:
+          url: '${"https://storage.googleapis.com/storage/v1/b/rcb-bronze-zone/o/" + text.url_encode(source_name) + "/rewriteTo/b/interface-file/o/" + text.url_encode(destination_name) + "?sourceGeneration=" + source_generation + "&ifGenerationMatch=0"}'
+          auth:
+            type: OAuth2
+        result: copied
+    - inspect_copy:
+        assign:
+          - copy_done: ${default(map.get(copied.body, "done"), false)}
+          - dest_generation: ${string(default(map.get(copied.body, ["resource", "generation"]), ""))}
+          - dest_size: ${int(default(map.get(copied.body, ["resource", "size"]), "0"))}
+          - dest_crc: ${default(map.get(copied.body, ["resource", "crc32c"]), "")}
+    - gate_copy:
+        switch:
+          - condition: ${not copy_done or dest_generation == "" or source_size != dest_size or source_crc != dest_crc}
+            steps:
+              - fail_copy:
+                  call: fail_closed
+                  args:
+                    project: ${project}
+                    run_id: ${run_id}
+                    alert_topic: ${alert_topic}
+                    step: "UNIT6_EXACT_COPY"
+                    reason: '${"copy evidence mismatch; done=" + string(copy_done) + "; source_size=" + string(source_size) + "; dest_size=" + string(dest_size) + "; source_crc=" + source_crc + "; dest_crc=" + dest_crc}'
+    - output:
+        return:
+          has_delivery: true
+          export_run_id: ${archive_info.export_run_id}
+          archive_uri: '${"gs://rcb-bronze-zone/" + source_name}'
+          archive_generation: ${source_generation}
+          production_uri: ${production_uri}
+          production_generation: ${dest_generation}
+          size_bytes: ${dest_size}
+          crc32c: ${dest_crc}
 
 # ----------------------------------------------------------------------
 # F3 support: read the extract control object content (alt=media) with the

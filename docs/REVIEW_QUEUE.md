@@ -3,6 +3,20 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+## RQ-20260803-1550-unit6-exact-copy-workflow
+Status: REVIEWED
+Reviewer: Codex self-review under Boat's technical-gate authority
+Class: A
+Artifact: `infra/v3_nightly_orchestrator.workflows.yaml`.
+Opened: 2026-08-03T15:50:00+07:00
+
+Review zero-payload healthy return, same-run archive discovery, exactly-one object gate, pinned
+source generation, create-only destination precondition, source/destination size+CRC equality,
+and ordering of GCS copy before the deployed 062 ledger CALL. Static YAML parse PASS. Verdict:
+**PASS SOURCE FOR WORKFLOW REVISION DEPLOY ONLY**. A deployed revision must be syntax-validated by
+Cloud Workflows. Do not activate its recurring scheduler until a controlled execution proves both
+the zero-payload path and a nonzero exact-copy path. DELIVERED remains distinct from SAP ACK.
+
 ## RQ-20260803-1535-unit6-exact-delivery-ledger
 Status: REVIEWED
 Reviewer: Codex self-review under Boat's technical-gate authority
