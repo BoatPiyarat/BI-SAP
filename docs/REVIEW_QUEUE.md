@@ -3,6 +3,20 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+## RQ-20260803-1918-rcb-onetime-change-order-rcl-label
+Status: OPEN
+Reviewer: Claude Code
+Class: A
+Artifact: `docs/FINDINGS_RCB_ONETIME_CHANGE_ORDER_MISROUTED_RCL_20260803.md` and
+`sql/adhoc/20260803_l80482368_rcb_creditshell_misroute.sql`.
+Opened: 2026-08-03T19:18:00+07:00
+
+Review the live/repo drift statements, known-case trace, posted-state population grain, and the
+flow-aware future-order proposal. Verify that the 9-order count is limited to FULL_PAYMENT change
+orders with 1/1 current source state and a valid SAP DocEntry whose latest M1 payment mapping is
+RCL Credit Shell. Confirm this remains separate from INCIDENT-002a, INCIDENT-002b, and the 224
+unknown-cause orders. No deploy or correction is requested.
+
 ## RQ-20260803-1818-unit5-full-period-spine
 Status: REVIEWED
 Reviewer: Codex self-review under Boat's technical-gate authority
