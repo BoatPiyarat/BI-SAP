@@ -569,7 +569,12 @@ verify_load_commitment:
           - bad_records: ${default(map.get(job, ["statistics", "load", "badRecords"]), "0")}
           - src_uris: ${default(map.get(job, ["configuration", "load", "sourceUris"]), [])}
           - src_join: ${json.encode_to_string(src_uris)}
-          - name_matches: ${text.match_regex(src_join, text.replace_all(bronze_object_name, "/", "\\/"))}
+          # The deployed loader streams bytes with a BigQuery media upload, so its LOAD job has
+          # no sourceUris. URI-mode must match the exact object; MEDIA_UPLOAD-mode is bound by the
+          # exactly-one run window, destination table, recorded bronze generation, and clean
+          # terminal LOAD evidence above.
+          - source_mode: ${if(len(src_uris) == 0, "MEDIA_UPLOAD", "URI")}
+          - name_matches: ${if(len(src_uris) == 0, true, text.match_regex(src_join, text.replace_all(bronze_object_name, "/", "\\/")))}
     - gate_job:
         switch:
           - condition: ${has_error or bad_records != "0" or not name_matches}
@@ -590,7 +595,7 @@ verify_load_commitment:
           step: "LOAD_COMMITMENT"
           status: "SUCCESS"
           rows_out: ${int(output_rows)}
-          detail: '${"jobId=" + load_job_id + "; outputRows=" + output_rows + "; badRecords=" + bad_records + "; source=" + bronze_object_name + "@" + bronze_generation}'
+          detail: '${"jobId=" + load_job_id + "; outputRows=" + output_rows + "; badRecords=" + bad_records + "; sourceMode=" + source_mode + "; source=" + bronze_object_name + "@" + bronze_generation}'
     - out:
         return: true
 
