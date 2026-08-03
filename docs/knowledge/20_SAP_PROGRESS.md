@@ -1,5 +1,17 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-03 10:59 ICT — Boat fixed the July/August transition timestamps
+
+Boat confirmed July closing at `2026-08-03 14:00:00 Asia/Bangkok`
+(`2026-08-03T07:00:00Z`) and August closing at `2026-09-01 14:00:00 Asia/Bangkok`
+(`2026-09-01T07:00:00Z`). Read-only period-state job
+`job_ZPMOPdFDS_Odc5XE5uKv_IePQIB7` (89 bytes) confirmed July is `OPEN`, August is `PLANNED`, and
+the stored July `closing_at` matches the confirmed value. At `2026-08-03T03:59:21Z` the close gate
+had not been reached, so no transition CALL was attempted. At or after the gate, call
+`sp_close_open_period(DATE '2026-07-01', TIMESTAMP '2026-08-03 07:00:00+00',
+TIMESTAMP '2026-09-01 07:00:00+00', 'data@rabbit.co.th')`, verify exactly one August OPEN period,
+then CALL 058 and verify the shadow before any export or GCS write.
+
 ## 2026-08-03 10:45 ICT — revised 058 deployed; population CALL remains gated
 
 After `bq` 2.0.92 continued to reject its legacy credential cache, the authenticated `gcloud`

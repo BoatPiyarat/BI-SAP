@@ -1,5 +1,12 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-03 10:59 ICT — recorded authoritative close timestamps
+
+Recorded Boat's exact July close (`2026-08-03T07:00:00Z`) and August close
+(`2026-09-01T07:00:00Z`). The current state is July `OPEN` and August `PLANNED`; the July stored
+timestamp matches. The gate was still in the future when checked, so no early transition, CALL,
+payload write, export, or GCS write occurred.
+
 ## 2026-08-03 10:45 ICT — deployed July/August PaymentDate revision of 058
 
 Dry-ran the complete 058 DDL through the BigQuery Jobs API using the authenticated `gcloud`
