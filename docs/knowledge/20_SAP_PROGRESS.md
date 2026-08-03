@@ -1,5 +1,17 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-03 19:53 ICT — SAP import 21183 succeeded; reconciliation remains open
+
+The production-only bounded mailbox check matched exactly one result for the current manifest:
+`RCB_LIVE_DB` Upload LogID `21183`, status `success`, received
+`2026-08-03T19:45:16+07:00`. The TXT attachment supplied SAP accounting references
+`RCL-JE-InstallmentRCL` 260810010/260810011 and reconciliation number 99337. This confirms SAP
+returned terminal import success for the delivered file; it does not prove row-level mirror
+reconciliation or complete the pipeline run. The runbook now limits nightly result polling to the
+preceding 60 minutes, production markers, and an exact current-manifest filename match. Class-A
+review `RQ-20260803-1953-live-import-21183-bounded-ingestion` is OPEN. No post-import extract,
+mirror refresh, deploy, procedure CALL, GCS write, Gmail mutation, or scheduler change occurred.
+
 ## 2026-08-03 15:00 ICT — August 584-row file delivered create-only; awaiting SAP pickup
 
 Boat explicitly approved exact-byte production copy of archive generation `1785742123427933`.

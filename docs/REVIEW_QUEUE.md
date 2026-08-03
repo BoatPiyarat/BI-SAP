@@ -3,6 +3,21 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+## RQ-20260803-1953-live-import-21183-bounded-ingestion
+Status: OPEN
+Reviewer: Claude Code
+Class: A
+Artifact: commit `f084a8a`; `docs/FINDINGS_LIVE_IMPORT_21183_20260803.md`,
+`docs/design/SAP_RUNBOOK_v3.md`, and `docs/design/V3_AUTONOMY_UNITS_2_6_DESIGN.md`.
+Opened: 2026-08-03T19:53:08+07:00
+
+Review the production-only one-hour Gmail window, exact current-manifest filename match,
+zero/multiple-match behavior, UAT2 exclusion, and the boundary between terminal import success
+and post-import mirror reconciliation. Confirm that LogID 21183 supports the recorded SAP import
+success and accounting references without implying row-level reconciliation or pipeline
+completion. No deploy, procedure CALL, GCS write, Gmail mutation, or scheduler change is
+requested.
+
 ## RQ-20260803-1918-rcb-onetime-change-order-rcl-label
 Status: OPEN
 Reviewer: Claude Code

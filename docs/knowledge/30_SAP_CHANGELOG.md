@@ -1,5 +1,13 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-03 19:53 ICT — recorded bounded LIVE import success for LogID 21183
+
+Recorded the exact production result for the current August delivery: Upload LogID 21183 returned
+`success` with SAP accounting references. Tightened the result-ingestion contract to a 60-minute
+production-only window plus exact current-manifest filename matching, with zero matches remaining
+pending and multiple LogIDs failing ambiguous. Opened Class-A review; post-import extract/mirror
+reconciliation remains separate and no production mutation occurred.
+
 ## 2026-08-03 15:00 ICT — delivered exact August archive generation to RCB_MOTOR
 
 After Boat's explicit approval, copied the verified archive object to production using destination
