@@ -3,6 +3,24 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+## RQ-20260803-1425-daily-newpayment-archive
+Status: REVIEWED
+Reviewer: Codex (Boat authorized continuation toward unattended V3 and August mapped delivery)
+Class: A
+Artifact: `sql/ddl/060_v3_daily_newpayment_archive.sql`.
+Opened: 2026-08-03T14:25:00+07:00
+
+Review generic OPEN-period date gates, exact run identity, replay refusal, 56-column explicit
+position, archive-ledger conservation, and archive-only GCS scope. Production interface delivery
+must remain a separate exact-generation copy after object metadata/hash/row/header verification.
+
+Initial dry-run `codex_dry_060_20260803_142448_870` processed 0 bytes. Self-review added explicit
+`SAFE.PARSE_DATE IS NULL` rejection so the exporter cannot rely only on upstream validation;
+post-fix dry-run `codex_dry_060_final_20260803_142552_307` also processed 0 bytes.
+
+Verdict: **PASS SOURCE FOR DEPLOY AND ONE ARCHIVE CALL** — archive prefix only. GCS production
+delivery and scheduler activation remain separate gates.
+
 ## RQ-20260803-1412-unit5-balance-quarantine
 Status: REVIEWED
 Reviewer: Codex (Boat authorized incomplete rows to be skipped and named in daily notification)
