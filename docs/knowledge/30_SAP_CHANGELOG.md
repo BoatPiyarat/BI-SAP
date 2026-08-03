@@ -1,5 +1,11 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-03 12:57 ICT — deployed complete exact InsuranceGroup registry seed
+
+Deployed source commit `87f8bd6`. The seed completed successfully and verification confirmed
+22 active mappings (11 groups × RCB/RCL) with zero overlap. No period, payload, export, or GCS
+mutation was part of this step.
+
 ## 2026-08-03 11:25 ICT — expanded exact InsuranceGroup seed to complete SAP master
 
 Expanded source 056 from Health/Life to the complete Boat-supplied SAP master for both RCB and RCL.
