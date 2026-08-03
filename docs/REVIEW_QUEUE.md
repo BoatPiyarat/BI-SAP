@@ -3,6 +3,22 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+## RQ-20260803-2112-unit2-population-magnitude-gate
+Status: OPEN
+Reviewer: Claude Code
+Class: A
+Artifact: commit `8bea466`; `sql/ddl/063_v3_unit2_population_magnitude_gate.sql`,
+`sql/ddl/061_v3_units2_5_nightly_wrapper.sql`, and
+`sql/adhoc/20260803_unit2_magnitude_decision_fixture.sql`.
+Opened: 2026-08-03T21:12:42+07:00
+
+Review the event/schedule distribution grain, last-successful baseline selection, active approved
+configuration requirement, absolute-and-percentage decision semantics, zero-baseline behavior,
+conservation assertions, and placement before Unit 3. Confirm missing config/baseline cannot
+release Unit 5. The safe-query parser self-test passed 7/7; BigQuery dry-runs are BLOCKED on the
+installed `bq` 2.0.92 unattended reauthentication failure and must pass before any deploy. No
+configuration seed, deploy, CALL, export, GCS write, or scheduler mutation is requested.
+
 ## RQ-20260803-1953-live-import-21183-bounded-ingestion
 Status: OPEN
 Reviewer: Claude Code

@@ -1,5 +1,17 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-03 21:12 ICT — Unit 2 population-magnitude gate source ready; dry-run blocked
+
+Source commit `8bea466` adds configured comparison of Unit 2 event/schedule distributions by
+outcome, flow, RCB/RCL business unit, expected status, records, orders, and satang amount. It
+selects only a prior magnitude-PASS run whose Units 2–5 wrapper also completed successfully, and
+the wrapper now calls the gate before Unit 3. Missing approved configuration, missing baseline,
+conservation failure, or a threshold breach fails closed. No threshold values were seeded.
+The wrapper parser self-test passed 7/7. Both BigQuery dry-run attempts stopped before evaluation
+because local `bq` 2.0.92 requires unattended reauthentication; therefore SQL validation remains
+BLOCKED and Class-A review `RQ-20260803-2112-unit2-population-magnitude-gate` is OPEN. No deploy,
+CALL, export, GCS write, or scheduler mutation occurred.
+
 ## 2026-08-03 19:53 ICT — SAP import 21183 succeeded; reconciliation remains open
 
 The production-only bounded mailbox check matched exactly one result for the current manifest:

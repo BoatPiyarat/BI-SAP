@@ -1,5 +1,13 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-03 21:12 ICT — added source-only Unit 2 magnitude release gate
+
+Added a persistent Unit 2 distribution and configured prior-success comparison before Unit 3.
+Ordinary cells breach only when both approved absolute and percentage limits are exceeded; absent
+configuration/baseline and conservation failures block independently. Added literal decision
+fixtures and wired the existing Units 2–5 wrapper to stop before mapping/payload work. No threshold
+seed or production mutation occurred; BigQuery dry-run remains blocked by local CLI reauthentication.
+
 ## 2026-08-03 19:53 ICT — recorded bounded LIVE import success for LogID 21183
 
 Recorded the exact production result for the current August delivery: Upload LogID 21183 returned
