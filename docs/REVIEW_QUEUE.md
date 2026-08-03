@@ -4,7 +4,7 @@ Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request firs
 review history; link the completed review and record its verdict.
 
 ## RQ-20260803-1535-unit6-exact-delivery-ledger
-Status: OPEN
+Status: REVIEWED
 Reviewer: Codex self-review under Boat's technical-gate authority
 Class: A
 Artifact: `sql/ddl/062_v3_mark_exact_delivery.sql`.
@@ -15,6 +15,13 @@ destination generation evidence, non-empty size and CRC evidence, replay refusal
 row update, and the explicit boundary that `DELIVERED` is not SAP pickup or acknowledgement.
 This procedure performs no GCS copy and must only be called after the orchestrator's create-only
 copy and source/destination metadata equality gate succeeds.
+
+Self-review verdict: **PASS FOR PROCEDURE DEPLOY ONLY**. Live schemas contain every referenced
+column. REST dry-run at `2026-08-03T08:45:58.5966105Z` returned error null and 0 processed bytes
+(BigQuery dry-run creates no persistent job, so job ID is null). Deploy job
+`codex_deploy_062_20260803_154635_317` reached DONE with error null and 0/0 processed/billed bytes.
+No CALL was made. Workflow copy, runtime parameters, SAP ACK, and scheduler activation remain
+separate Class A gates.
 
 ## RQ-20260803-1515-units2-5-nightly-chain
 Status: REVIEWED

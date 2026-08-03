@@ -1798,3 +1798,13 @@ Unit 1. Live Scheduler inventory confirms there is still no recurring workflow t
 describe V3 as fully unattended yet: exact-generation production promotion, independently
 evidenced SAP ACK/reject ingestion, second mirror/reconciliation, and a human-delivered daily
 completeness result remain Unit 6 gates.
+
+## 2026-08-03 15:46 ICT — Unit 6 exact-delivery ledger gate deployed
+
+Added `sp_mark_v3_exact_delivery`, which can mark a run DELIVERED only after a separate
+create-only GCS copy supplies archive/production generations, non-empty size, and matching CRC
+evidence. It conserves the archive ledger against the same pipeline-run identity and refuses
+replayed export runs or destination URIs. REST dry-run at `2026-08-03T08:45:58.5966105Z` was clean
+at 0 bytes; deploy job `codex_deploy_062_20260803_154635_317` completed DONE, error null, 0/0
+processed/billed. No procedure CALL, GCS copy, or scheduler mutation occurred. `DELIVERED` remains
+strictly distinct from SAP pickup and acknowledgement.
