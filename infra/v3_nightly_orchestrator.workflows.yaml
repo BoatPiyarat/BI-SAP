@@ -281,6 +281,10 @@ main:
         switch:
           - condition: ${delivery.has_delivery}
             steps:
+              - build_delivery_statement:
+                  assign:
+                    - delivery_call_head: '${"CALL `pacific-plating-282708.sap_integration_v3.sp_mark_v3_exact_delivery`(\u0027" + run_id + "\u0027,\u0027" + delivery.export_run_id + "\u0027,\u0027" + delivery.archive_uri + "\u0027,\u0027" + delivery.archive_generation + "\u0027,"}'
+                    - delivery_call_tail: '${"\u0027" + delivery.production_uri + "\u0027,\u0027" + delivery.production_generation + "\u0027," + string(delivery.size_bytes) + ",\u0027" + delivery.crc32c + "\u0027);"}'
               - persist_delivery:
                   call: run_bq_call
                   args:
@@ -288,7 +292,7 @@ main:
                     run_id: ${run_id}
                     alert_topic: ${alert_topic}
                     step: "UNIT6_DELIVERED"
-                    statement: '${"CALL `pacific-plating-282708.sap_integration_v3.sp_mark_v3_exact_delivery`(\u0027" + run_id + "\u0027,\u0027" + delivery.export_run_id + "\u0027,\u0027" + delivery.archive_uri + "\u0027,\u0027" + delivery.archive_generation + "\u0027,\u0027" + delivery.production_uri + "\u0027,\u0027" + delivery.production_generation + "\u0027," + string(delivery.size_bytes) + ",\u0027" + delivery.crc32c + "\u0027);"}'
+                    statement: '${delivery_call_head + delivery_call_tail}'
                     timeout_seconds: ${bq_call_timeout_seconds}
     - done:
         return: ${run_id}
