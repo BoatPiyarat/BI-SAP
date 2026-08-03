@@ -18,6 +18,11 @@ Verdict: **PASS SOURCE FOR DRY-RUN/DEPLOY/CALL** — quarantine only; it must co
 candidate=delivery+hold, retain 56 columns, and copy every hold to notification detail with
 order_item. It does not authorize export or GCS delivery until runtime verification passes.
 
+Runtime update: commit `b477ea7`; deploy `codex_deploy_059_20260803_141225_942`; CALL
+`codex_call_059_aug_20260803_141300_945`; verification `job_V3vA3db2MCZGzZkooqY34ArIrOOb`.
+Result: 585 candidates = 584 delivery + 1 hold/notification, 56 columns, zero remaining balance
+mismatches. **PASS RUNTIME; export remains a separate Class A unit.**
+
 ## RQ-20260803-1125-complete-insurance-group-master
 Status: REVIEWED
 Reviewer: Codex (Boat supplied the authoritative SAP master and authorized mapped August rows)

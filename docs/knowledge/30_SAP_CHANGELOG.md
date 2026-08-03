@@ -1,5 +1,13 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-03 14:14 ICT — opened August and built validated NEWPAYMENT delivery shadow
+
+Closed July/opened August atomically, refreshed mapping/notification/release gates, built the
+585-row NEWPAYMENT shadow, then quarantined the sole >THB10 item-period receipt mismatch. Final
+verified state is 584 delivery-ready rows plus one named hold (`L78570443-V1`), all 56 columns,
+PaymentDate `01082026`, BatchRunDate `03082026`, and no remaining balance mismatch. No export or
+GCS write occurred; July-only 049 remains untouched.
+
 ## 2026-08-03 12:57 ICT — deployed complete exact InsuranceGroup registry seed
 
 Deployed source commit `87f8bd6`. The seed completed successfully and verification confirmed

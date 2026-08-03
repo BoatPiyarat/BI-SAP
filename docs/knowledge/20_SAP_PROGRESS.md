@@ -1,5 +1,28 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-03 14:14 ICT — August OPEN; NEWPAYMENT shadow and balance quarantine complete
+
+Atomic transition job `codex_close_july_open_aug_20260803_140307_290` completed `DONE`, error null,
+processed/billed 474/94,371,840 bytes. Verification `job_Y8SDxt4eakhideiv71JaFwRxyDcd`
+confirmed July CLOSED, August OPEN with `closing_at=2026-09-01T07:00:00Z`, September PLANNED,
+exactly one OPEN period, and exactly one active legacy lock.
+
+After refreshing Unit 3, notification, and release gate with job
+`codex_unit3_after_aug_20260803_140525_154`, verification
+`job_WhvXfQrr7X4JVkh_NcNYkTOKnk-G` showed 753 releasable events, 432 payment-mapping holds,
+14 classification unknown rows, 446 notification rows, and zero automation blockers. Unit 5 job
+`codex_call_058_aug_20260803_140650_374` then completed `DONE`, error null, producing 585 rows and
+585 identities with 56 columns, zero duplicate identities, valid dates, PaymentDate `01082026`,
+and BatchRunDate `03082026`.
+
+Per-item diagnostic `job_VbDxm3XbVdwPSnzQqXBtcvk_NJz5` found one material balance mismatch:
+`L78570443-V1` period 2, expected 2,126.27 versus actual 1,481.06. Source 059 was committed as
+`b477ea7`, deployed by `codex_deploy_059_20260803_141225_942`, and called by
+`codex_call_059_aug_20260803_141300_945`. Verification `job_V3vA3db2MCZGzZkooqY34ArIrOOb`
+confirmed 585 candidates = 584 delivery-ready + 1 hold/notification, 56 columns, and zero
+remaining balance mismatches. No export or GCS write occurred. July-only 049 must not be reused;
+the next production unit is a generic archive-first exporter for the 584-row table.
+
 ## 2026-08-03 12:57 ICT — complete InsuranceGroup master deployed and verified
 
 Seed job `codex_deploy_056_master_20260803_125546_884` reached `DONE` with error null, processed
