@@ -57,6 +57,11 @@ not this table, for day-to-day freshness.
 | 056_seed_nonmotor_insurance_group_exact_matches.sql | **Source only / Class A config mutation.** Effective 2026-08-01 exact Health/Life NonMotor mappings for RCB/RCL; all other live categories remain held |
 | 057_seed_payment_mappings_v2_success.sql | V2/SAP-success non-credit PaymentMethod/PaymentChannel mappings; credit-shell remains held |
 | 058_v3_unit5_newpayment_shadow.sql | **Source only / Class A.** Exact-event 56-column NEWPAYMENT shadow; CREATE remains held on source gaps; no GCS write |
+| 059_v3_unit5_balance_hold.sql | Unit 5 item-level balance quarantine and delivery-ready conservation |
+| 060_v3_daily_newpayment_archive.sql | Immutable daily NEWPAYMENT archive exporter |
+| 061_v3_units2_5_nightly_wrapper.sql | Ordered Units 2–5 wrapper; now invokes the magnitude gate before Unit 3 |
+| 062_v3_mark_exact_delivery.sql | Exact-generation delivery ledger gate |
+| 063_v3_unit2_population_magnitude_gate.sql | **Source only / Class A.** Approved-config prior-run distribution gate; no threshold seed |
 | 053_v3_unit4_period_state_machine.sql | Explicit OPEN/CLOSED/PLANNED monthly state, atomic close/open, and legacy period-lock compatibility |
 | 047_repoint_nightly_mirror_to_incremental.sql | **Source only / Class A.** Chain 3 cutover definition: changes the nightly mirror call from full 024 to incremental 043 without altering downstream order; includes an exact 024-call rollback definition |
 

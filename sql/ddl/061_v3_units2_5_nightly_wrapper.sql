@@ -13,6 +13,8 @@ BEGIN
     AS 'Units 2-5 wrapper requires exactly one successful UNIT1_COMPLETE for the same run';
 
   CALL `pacific-plating-282708.sap_integration_v3.sp_build_v3_unit2_shadow`(p_pipeline_run_id);
+  CALL `pacific-plating-282708.sap_integration_v3.sp_evaluate_v3_unit2_magnitude`(
+    p_pipeline_run_id);
   CALL `pacific-plating-282708.sap_integration_v3.sp_build_v3_unit3_mapping_holds`(p_pipeline_run_id);
   CALL `pacific-plating-282708.sap_integration_v3.sp_build_v3_notification_quarantine`(p_pipeline_run_id);
   CALL `pacific-plating-282708.sap_integration_v3.sp_evaluate_v3_automation_gate`(p_pipeline_run_id);
