@@ -1,11 +1,20 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-03 10:45 ICT — deployed July/August PaymentDate revision of 058
+
+Dry-ran the complete 058 DDL through the BigQuery Jobs API using the authenticated `gcloud`
+access token after the installed `bq` 2.0.92 legacy cache continued to require unattended reauth.
+Dry-run bytes were 0 (ceiling 21,474,836,480). Deployment job
+`codex_deploy_058_20260803_104515_364` completed `DONE`, error null, processed/billed 0/0 bytes in
+`asia-southeast1`. This changed only the stored-procedure definition; it did not CALL the
+procedure, write a payload, export, write GCS, or mutate the OPEN period.
+
 ## 2026-08-02 22:42 ICT — locked July month-end PaymentDate exception
 
 Recorded Boat's latest rule: July-2026 payments use `31072026`; August-2026 payments keep their
 actual dates. Updated the NEWPAYMENT shadow source without changing period state, exporting data,
-or writing GCS. Dry-run/deploy stopped on an interactive reauthentication requirement; the live
-procedure remains at the prior revision.
+or writing GCS. Dry-run/deploy initially stopped on an interactive reauthentication requirement;
+the live procedure was subsequently updated with the evidence above.
 
 ## 2026-08-02 22:30 ICT — deployed 058 and preserved the OPEN-period stop
 

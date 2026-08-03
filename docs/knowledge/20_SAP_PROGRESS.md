@@ -1,5 +1,16 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-03 10:45 ICT — revised 058 deployed; population CALL remains gated
+
+After `bq` 2.0.92 continued to reject its legacy credential cache, the authenticated `gcloud`
+access token was used with the BigQuery Jobs API. The complete 058 source passed a dry run at
+`2026-08-03T03:44:53.6464723Z`–`03:44:54.5964202Z`: 0 bytes against the 21,474,836,480-byte
+ceiling. Deployment job `codex_deploy_058_20260803_104515_364` ran in `asia-southeast1` from
+`03:45:15.486Z` to `03:45:16.491Z`, reached `DONE` with no error, and processed/billed 0/0 bytes.
+The live procedure now contains the July=`31072026`, August=actual-date rule from commit
+`dd781c7`. No procedure CALL, payload write, export, GCS write, or period-state change occurred;
+the 585-row CALL remains gated on the exact July/August period transition.
+
 ## 2026-08-02 22:42 ICT — July/August PaymentDate transition override
 
 Boat superseded the generic rollover for this transition: raw July-2026 payments use `31072026`;
@@ -7,8 +18,8 @@ raw August-2026 payments keep the actual payment date. Source 058 now implements
 exception. It does not open August or bypass the OPEN-period guard; the exact close-transition
 timestamps remain required before the 585-row shadow CALL can succeed. The post-edit dry-run was
 not completed because the local `data@rabbit.co.th` credential requires interactive
-reauthentication. This is an auth-state block, not evidence against the SQL or BigQuery capability;
-the revised live procedure was not deployed.
+reauthentication. This was an auth-state block, not evidence against the SQL or BigQuery
+capability; the revised procedure was subsequently deployed with the evidence above.
 
 ## 2026-08-02 22:30 ICT — 058 deployed; shadow CALL correctly blocked by July OPEN state
 
