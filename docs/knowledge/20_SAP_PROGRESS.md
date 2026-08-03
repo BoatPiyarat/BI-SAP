@@ -1787,3 +1787,14 @@ without that design work.
 1. Orchestration: Cloud Workflows? 2. InvoiceNo standard (raw id + rank prefix) — บัญชี ack
 3. ProcessingFee 100/103.3 (RCL) vs 100/107 (onetime) — ตัวไหนถูกต่อ flow ไหน (เจอ discrepancy ใหม่)
 4. Backfill scope 5. EDC channel matrix 6. Parallel-run กี่วัน (เสนอ 5)
+## 2026-08-03 15:11 ICT — nightly Units 2–5 deployed; recurring trigger correctly remains closed
+
+Deployed zero-safe Unit 5 (`codex_redeploy_059_zero_safe_20260803_151034_495`) and the ordered
+Units 2–5 wrapper (`codex_deploy_061_20260803_151058_757`); both jobs completed without an error.
+`v3-nightly-orchestrator` revision `000004-2ca` is ACTIVE as the default compute service account,
+updated at `2026-08-03T08:11:17.761770459Z`. The workflow now runs the same-run Unit 2 classifier,
+Unit 3 mapping/notification/release gates, Unit 5 balance quarantine, and archive creation after
+Unit 1. Live Scheduler inventory confirms there is still no recurring workflow trigger. Do not
+describe V3 as fully unattended yet: exact-generation production promotion, independently
+evidenced SAP ACK/reject ingestion, second mirror/reconciliation, and a human-delivered daily
+completeness result remain Unit 6 gates.

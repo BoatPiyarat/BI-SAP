@@ -26,6 +26,13 @@ Evidence: YAML parser PASS; final 059 dry-run
 Verdict: **PASS SOURCE FOR 059/061 DEPLOY AND WORKFLOW REVISION DEPLOY** — scheduler trigger remains
 disabled/unmodified; production promotion and SAP ACK are not part of this revision.
 
+Runtime update: 059 deploy `codex_redeploy_059_zero_safe_20260803_151034_495` and 061 deploy
+`codex_deploy_061_20260803_151058_757` both reached DONE without error. Workflow revision
+`000004-2ca` became ACTIVE at `2026-08-03T08:11:17.761770459Z` using
+`919786098205-compute@developer.gserviceaccount.com`. A live Cloud Scheduler inventory found no
+trigger for `v3-nightly-orchestrator`; this is intentional until Unit 6 exact-generation
+production promotion, bounded ACK/reconciliation, and human-delivered completeness are closed.
+
 ## RQ-20260803-1425-daily-newpayment-archive
 Status: REVIEWED
 Reviewer: Codex (Boat authorized continuation toward unattended V3 and August mapped delivery)
