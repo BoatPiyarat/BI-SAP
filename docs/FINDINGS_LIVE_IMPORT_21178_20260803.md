@@ -36,3 +36,11 @@ removed its entire item spine. The released payload contains 3,857 rows across 5
 `codex_call_060_full_spine_archive_20260803_183256_706` wrote one 2,377,414-byte object with the
 correct `INSURANCE_RCB_` basename and 558 event-grain ledger rows. Production delivery remains off;
 this archive has not been sent to SAP.
+
+Boat subsequently approved the exact archive generation `1785756790727257`. A create-only copy
+landed at `gs://interface-file/RCB_MOTOR/INSURANCE_RCB_06_V3_DAILY_NEWPAYMENT_20260803_`
+`V3DAILY-20260803-113257-55042e7c_000000000000.csv` as generation `1785758420548483`; source and
+destination both have size 2,377,414 and CRC32C `j5rn6Q==`. Job
+`codex_mark_delivered_full_spine_20260803_190048_508` persisted the 558 event rows and manifest as
+DELIVERED. SAP pickup/result/row ACK remain unknown and must be established from the exact LIVE
+result; do not replay while waiting.
