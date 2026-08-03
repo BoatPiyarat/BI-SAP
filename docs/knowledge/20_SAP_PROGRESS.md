@@ -1,5 +1,18 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-03 14:32 ICT — August daily archive verified; production copy awaits exact approval
+
+Generic exporter source 060 was committed/pushed as `1d58e82`, deployed by
+`codex_deploy_060_20260803_142802_289`, and called by
+`codex_call_060_archive_20260803_142831_277` after a 0-byte dry run. It wrote exactly one archive
+object for export run `V3DAILY-20260803-072831-38902dd9`: generation `1785742123427933`, size
+376,245 bytes, SHA-256 `b0a3d4ba5bc951fd92ea57efa8d1e964c29f41c96ef186f532bb9e34f380e777`,
+584 data rows, and 56 headers in exact contract order. PaymentDate is only `01082026` and
+BatchRunDate only `03082026`. The temporary validation copy was held outside OneDrive and deleted.
+Manifest job `codex_manifest_aug_20260803_143211_116` completed successfully. The production
+create-only copy to `gs://interface-file/RCB_MOTOR/` was not executed because the action gate
+requires current explicit approval naming this exact August payload and destination.
+
 ## 2026-08-03 14:14 ICT — August OPEN; NEWPAYMENT shadow and balance quarantine complete
 
 Atomic transition job `codex_close_july_open_aug_20260803_140307_290` completed `DONE`, error null,

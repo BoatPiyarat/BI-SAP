@@ -21,6 +21,12 @@ post-fix dry-run `codex_dry_060_final_20260803_142552_307` also processed 0 byte
 Verdict: **PASS SOURCE FOR DEPLOY AND ONE ARCHIVE CALL** — archive prefix only. GCS production
 delivery and scheduler activation remain separate gates.
 
+Runtime update: commit `1d58e82`; deploy `codex_deploy_060_20260803_142802_289`; archive CALL
+`codex_call_060_archive_20260803_142831_277`; manifest
+`codex_manifest_aug_20260803_143211_116`. Archive generation `1785742123427933`, SHA-256
+`b0a3d4ba5bc951fd92ea57efa8d1e964c29f41c96ef186f532bb9e34f380e777`, 376,245 bytes,
+584 rows, 56 ordered columns. **PASS ARCHIVE; production exact-byte copy awaits explicit gate.**
+
 ## RQ-20260803-1412-unit5-balance-quarantine
 Status: REVIEWED
 Reviewer: Codex (Boat authorized incomplete rows to be skipped and named in daily notification)

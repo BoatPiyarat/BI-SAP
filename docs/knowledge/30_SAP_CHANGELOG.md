@@ -1,5 +1,12 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-03 14:32 ICT — generated and verified August archive; delivery gated
+
+Deployed/called generic archive exporter 060 for the 584-row delivery-ready NEWPAYMENT payload.
+Verified one immutable archive generation, exact SHA-256/size, 56-column order, 584 parsed rows,
+and August-only dates, then persisted the manifest. No production interface object was written:
+the exact-byte copy gate requires explicit approval for this payload and `RCB_MOTOR` destination.
+
 ## 2026-08-03 14:14 ICT — opened August and built validated NEWPAYMENT delivery shadow
 
 Closed July/opened August atomically, refreshed mapping/notification/release gates, built the
