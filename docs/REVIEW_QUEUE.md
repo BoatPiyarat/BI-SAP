@@ -23,6 +23,14 @@ deploy jobs: `codex_deploy_058_v3_unit5_newpayment_shadow_20260803_181859_838`,
 `codex_deploy_060_v3_daily_newpayment_archive_20260803_181906_710`, and
 `codex_deploy_062_v3_mark_exact_delivery_20260803_181910_116`; all DONE, error null, 0/0 bytes.
 
+Runtime update: first controlled wrapper run correctly exposed two stale event-grain assertions.
+059 was narrowed to target identities and rebuilt by `codex_call_059_full_spine_20260803_183036_095`.
+060 now permits preserved historical PaymentDates while enforcing OPEN-period BatchRunDate and
+OPEN-period dates on target events only. Verification: 559 targets, 1 held event, 3,857 file rows,
+555 items, 56 columns, zero incomplete/duplicate spines. Archive-only job
+`codex_call_060_full_spine_archive_20260803_183256_706` produced one correctly named 2,377,414-byte
+object and 558 event ledger rows. **PASS ARCHIVE; production promotion remains CLOSED.**
+
 ## RQ-20260803-1550-unit6-exact-copy-workflow
 Status: REVIEWED
 Reviewer: Codex self-review under Boat's technical-gate authority

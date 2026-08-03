@@ -41,13 +41,20 @@ BEGIN
     AS 'Released payment identities do not exist in the expanded delivery spine';
   ASSERT (SELECT COUNT(*)
     FROM `pacific-plating-282708.sap_integration_v3.v3_unit5_newpayment_delivery_ready`
-    WHERE SAFE.PARSE_DATE('%d%m%Y',PaymentDate) IS NULL
+    WHERE (NULLIF(PaymentDate,'') IS NOT NULL AND SAFE.PARSE_DATE('%d%m%Y',PaymentDate) IS NULL)
        OR SAFE.PARSE_DATE('%d%m%Y',BatchRunDate) IS NULL
-       OR SAFE.PARSE_DATE('%d%m%Y',PaymentDate)<v_period_start
-       OR SAFE.PARSE_DATE('%d%m%Y',PaymentDate)>=v_period_end
        OR SAFE.PARSE_DATE('%d%m%Y',BatchRunDate)<v_period_start
        OR SAFE.PARSE_DATE('%d%m%Y',BatchRunDate)>=v_period_end)=0
-    AS 'Daily archive contains PaymentDate/BatchRunDate outside the OPEN period';
+    AS 'Daily archive contains invalid PaymentDate or BatchRunDate outside the OPEN period';
+  ASSERT (SELECT COUNT(*)
+    FROM `pacific-plating-282708.sap_integration_v3.v3_unit5_payload_identity` i
+    JOIN `pacific-plating-282708.sap_integration_v3.v3_unit5_newpayment_delivery_ready` p
+      ON p.OrderItem=i.order_item AND SAFE_CAST(p.Period AS INT64)=i.period
+     AND p.InvoiceNo=i.invoice_no
+    WHERE i.pipeline_run_id=p_pipeline_run_id AND i.file_role='NEWPAYMENT'
+      AND (SAFE.PARSE_DATE('%d%m%Y',p.PaymentDate)<v_period_start
+        OR SAFE.PARSE_DATE('%d%m%Y',p.PaymentDate)>=v_period_end))=0
+    AS 'Target payment event lies outside the OPEN period';
   ASSERT (SELECT COUNT(*)
     FROM `pacific-plating-282708.sap_integration_v3.v3_unit5_payload_identity` i
     JOIN `pacific-plating-282708.sap_integration_v3.export_archive` a

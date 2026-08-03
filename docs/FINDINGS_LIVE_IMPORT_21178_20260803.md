@@ -26,3 +26,13 @@ Required correction: build each affected RCL NEWPAYMENT payload from the complet
 row(s). Re-run balance, identity, 56-position, and sequence-conservation gates against expanded
 payload rows. Do not retry the rejected file. Workflow revision `000006-c04` sets production
 delivery off by default until this correction passes a controlled test.
+
+## Controlled correction evidence
+
+Run `V3NIGHTLY-2026-08-03T11:24:27-437934f3` produced 559 target events; one balance-held event
+removed its entire item spine. The released payload contains 3,857 rows across 555 items, exactly
+56 columns, with zero incomplete spines and zero duplicate `(OrderItem,Period,InvoiceNo)` identities
+(`codex_verify_full_spine_20260803_183123_559`). Archive-only CALL
+`codex_call_060_full_spine_archive_20260803_183256_706` wrote one 2,377,414-byte object with the
+correct `INSURANCE_RCB_` basename and 558 event-grain ledger rows. Production delivery remains off;
+this archive has not been sent to SAP.

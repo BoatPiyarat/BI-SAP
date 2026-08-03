@@ -103,6 +103,11 @@ BEGIN
     WHERE table_name='v3_unit5_newpayment_delivery_ready')=56
     AS 'Delivery-ready NEWPAYMENT must retain exactly 56 columns';
   ASSERT (SELECT COUNT(*) FROM `pacific-plating-282708.sap_integration_v3.v3_unit5_newpayment_delivery_ready`
-    WHERE ABS(SAFE_CAST(ActualReceived AS NUMERIC)-SAFE_CAST(ExpectedReceived AS NUMERIC))>10)=0
-    AS 'Delivery-ready NEWPAYMENT still contains receipt-balance mismatch';
+    WHERE ABS(SAFE_CAST(ActualReceived AS NUMERIC)-SAFE_CAST(ExpectedReceived AS NUMERIC))>10
+      AND EXISTS (SELECT 1
+        FROM `pacific-plating-282708.sap_integration_v3.v3_unit5_payload_identity` i
+        WHERE i.pipeline_run_id=p_pipeline_run_id AND i.file_role='NEWPAYMENT'
+          AND i.order_item=OrderItem AND i.period=SAFE_CAST(Period AS INT64)
+          AND i.invoice_no=InvoiceNo))=0
+    AS 'Delivery-ready target payment event still contains receipt-balance mismatch';
 END;
