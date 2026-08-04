@@ -1,5 +1,15 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-04 12:45 ICT — Unit 5/manual exact period-range checks hardened
+
+Closed Claude's shared DDL 058/059/069 period-spine hardening note. Each assertion now requires one
+consistent `TotalPeriods`, first period 1, last period equal to `TotalPeriods`, and distinct-period
+count equal to `TotalPeriods`; therefore `{1,2,4}` with total 3 and inconsistent total values both
+fail. All three complete DDL files and the literal fixture passed dry-run-only at 0 bytes. Fixture
+job `bqjob_r2c8f415bf45ee23d_0000019fcb4df22b_1` executed at 0-byte estimate and passed all three
+assertions. No procedure definition, payload table, archive, GCS object, or production path was
+mutated.
+
 ## 2026-08-04 12:42 ICT — excluded-audit deploy sequence documented
 
 Closed Claude's DDL 032/037 deployment note in the runbook and human-input checklist. DDL 032's

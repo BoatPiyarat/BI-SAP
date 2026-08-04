@@ -1,5 +1,13 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-04 12:45 ICT — Unit 5/manual exact period-range checks hardened
+
+- Hardened DDL 058/059/069 from cardinality-only spine checks to exact `1..TotalPeriods` bounds
+  with one consistent total value.
+- Added a literal fixture proving healthy contiguous, same-cardinality gapped, and
+  inconsistent-total cases; job `bqjob_r2c8f415bf45ee23d_0000019fcb4df22b_1` passed all asserts.
+- All complete DDL/fixture dry runs estimated 0 bytes; no production state changed.
+
 ## 2026-08-04 12:42 ICT — excluded-audit deploy sequence documented
 
 - Documented that DDL 032 is a no-op against the existing table and cannot be cited as migration

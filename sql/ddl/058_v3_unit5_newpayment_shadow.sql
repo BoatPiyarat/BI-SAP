@@ -234,8 +234,11 @@ BEGIN
 
   ASSERT (SELECT COUNT(*) FROM (
     SELECT OrderItem,COUNT(DISTINCT SAFE_CAST(Period AS INT64)) period_n,
+      MIN(SAFE_CAST(Period AS INT64)) first_period,MAX(SAFE_CAST(Period AS INT64)) last_period,
+      COUNT(DISTINCT SAFE_CAST(TotalPeriods AS INT64)) total_value_n,
       MAX(SAFE_CAST(TotalPeriods AS INT64)) total_n
-    FROM _candidate GROUP BY OrderItem HAVING period_n!=total_n))=0
+    FROM _candidate GROUP BY OrderItem
+    HAVING total_value_n!=1 OR first_period!=1 OR last_period!=total_n OR period_n!=total_n))=0
     AS 'NEWPAYMENT full period spine is incomplete';
   ASSERT (SELECT COUNT(*) FROM (
     SELECT OrderItem,Period,IFNULL(InvoiceNo,''),COUNT(*) n FROM _candidate

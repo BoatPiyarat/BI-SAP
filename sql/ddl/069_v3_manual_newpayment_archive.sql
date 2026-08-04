@@ -68,9 +68,11 @@ BEGIN
     AS 'Manual NEWPAYMENT archive requires exactly 56 columns';
   ASSERT (SELECT COUNT(*) FROM (
     SELECT OrderItem,COUNT(DISTINCT SAFE_CAST(Period AS INT64)) period_n,
-      MIN(SAFE_CAST(Period AS INT64)) first_period,MAX(SAFE_CAST(TotalPeriods AS INT64)) total_n
+      MIN(SAFE_CAST(Period AS INT64)) first_period,MAX(SAFE_CAST(Period AS INT64)) last_period,
+      COUNT(DISTINCT SAFE_CAST(TotalPeriods AS INT64)) total_value_n,
+      MAX(SAFE_CAST(TotalPeriods AS INT64)) total_n
     FROM _selected_payload GROUP BY OrderItem
-    HAVING first_period!=1 OR period_n!=total_n))=0
+    HAVING total_value_n!=1 OR first_period!=1 OR last_period!=total_n OR period_n!=total_n))=0
     AS 'Manual export scope contains an incomplete item period spine';
   ASSERT (SELECT COUNT(*) FROM _selected_payload
     WHERE LENGTH(PolicyNo)>50
