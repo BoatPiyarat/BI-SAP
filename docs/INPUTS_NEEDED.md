@@ -226,6 +226,14 @@ later" pattern (1,898 false positives) - fixed to compare timing directly (now 7
 
 ## Boat — email alerts go to data@rabbit.co.th, not you directly
 
+### Validation-regression thresholds — source ready, approval needed
+
+DDL 068 replaces the obsolete global `>60` heuristic with per-check day-over-day record and order
+increases. Boat must approve the maximum increase for each active validation `check_name` before
+the v2 checker can run. No historical count was silently adopted as a threshold. After reviewed
+deployment, acceptance still requires one synthetic breach reaching a human recipient and one
+healthy run producing no alert.
+
 Confirmed 2026-07-27: every BQDTS `enableFailureEmail` alert (dead-man's-switch/missed-extract,
 column-contract guard, validation-regression) is owned by `data@rabbit.co.th`
 (`ownerInfo.email` on the transfer config) - that's where the failure emails go, not

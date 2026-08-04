@@ -1,5 +1,17 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-04 12:09 ICT — validation-regression alert repair source ready
+
+Read-only BQDTS metadata shows `sap_validation_regression_alert`
+(`6a67073f-0000-2621-a014-3c286d3f1e8e`) is operational but intentionally FAILED on its latest
+2026-08-03 14:10 UTC run: the obsolete hardcoded check raised at 222 rows
+(`MASTER_PAYMENTDATE_LOCKED=167`, `POLICYNO_TOO_LONG=28`, `MASTER_INSURER_UNKNOWN=27`) against a
+historical ~22–24 baseline. Source-only DDL 068 replaces that total heuristic with immutable
+per-check daily history and effective-dated approved record/order increase limits, with no seed.
+New checks compare against zero; missing/overlapping config fails closed. Full DDL and literal
+six-case healthy/failing fixture passed dry-run-only at 0 bytes. No deploy, snapshot/check CALL,
+transfer-config mutation, or human alert delivery occurred.
+
 ## 2026-08-04 12:06 ICT — Unit 6 completeness snapshot source ready
 
 Source-only DDL 067 adds immutable normalized run, metric, and evidence tables plus a snapshot

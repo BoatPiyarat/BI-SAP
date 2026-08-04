@@ -1,5 +1,14 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-04 12:09 ICT — validation-regression alert repair source ready
+
+- Confirmed from live BQDTS metadata that the alert schedule runs but repeatedly raises from its
+  obsolete hardcoded total threshold; latest inspected run was 2026-08-03 14:10 UTC with 222 rows.
+- Added source-only DDL 068 with immutable per-check history and human-approved day-over-day
+  record/order thresholds, deliberately without seeds.
+- Complete DDL and six-case decision fixture passed dry-run-only at 0 bytes. No live procedure,
+  schedule, configuration, or delivery channel changed.
+
 ## 2026-08-04 12:06 ICT — Unit 6 completeness snapshot source ready
 
 - Added source-only DDL 067 with immutable normalized run, metric, and evidence snapshots.
