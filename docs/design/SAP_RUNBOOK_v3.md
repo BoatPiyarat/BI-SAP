@@ -154,6 +154,13 @@ text is in attachments. Do not parse the body as the error log.
    duplicate guard for future Apps Script runs; the `log_id` key remains the database idempotency
    guard.
 
+The Apps Script trigger interval must be strictly shorter than the 60-minute message lookback.
+Every successful poll must persist a heartbeat timestamp. An independent monitor must alert a
+human before 60 minutes elapses without a successful heartbeat; otherwise the next bounded search
+could miss a result permanently and leave the manifest at `PENDING_ACK`. Trigger creation,
+heartbeat storage, monitor delivery, and one deliberate poll-gap test are all deployment
+acceptance gates, not assumptions supplied by the SQL contract.
+
 ### File-pickup email (`DOWNLOAD_GCS_FILE`, no LogID)
 
 Never insert this email into `sap_import_result`. Store it separately in

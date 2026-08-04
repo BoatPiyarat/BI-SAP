@@ -1,5 +1,14 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-04 12:48 ICT — SAP-result poll-gap contract documented
+
+Closed the cadence note from `docs/reviews/2026-08-03-f084a8a-claude.md`. The future attachment
+writer must poll more frequently than its 60-minute lookback, persist successful-poll heartbeats,
+and independently alert a human before a 60-minute heartbeat gap can cause a permanently missed
+result/stranded `PENDING_ACK`. Trigger, heartbeat, monitor delivery, and deliberate poll-gap test
+are explicit deployment gates. No Apps Script, trigger, Gmail label, heartbeat, or alert was
+created.
+
 ## 2026-08-04 12:47 ICT — stale SAP-result/manual-export handoffs reconciled
 
 The handoff queue no longer says attachment-first SQL or manual-export source is absent. It now

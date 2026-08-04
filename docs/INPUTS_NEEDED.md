@@ -251,6 +251,11 @@ that inbox to yours, (c) tell me and I can look into whether the transfer config
 recreated under different ownership (would need to be done under the right identity, not
 something I can just reassign).
 
+For the future Gmail attachment-ingestion writer, Boat must approve an Apps Script trigger
+interval strictly shorter than its 60-minute lookback and the human channel for an independent
+no-successful-poll heartbeat alert. The writer cannot be accepted until a deliberate poll-gap test
+reaches that channel; see runbook §5b.
+
 ## Boat — 2 new findings from return-triage (2026-07-29), both outside sap_integration_v3
 
 1. **`SAP_LIVE` bloat**: 151,024 → 6,858,653 rows in 3 days (distinct DocEntry only 106,873→122,169).

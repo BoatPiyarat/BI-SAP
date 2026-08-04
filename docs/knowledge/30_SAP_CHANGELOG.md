@@ -1,5 +1,13 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-04 12:48 ICT — SAP-result poll-gap contract documented
+
+- Required the future Gmail attachment writer's trigger interval to be shorter than its 60-minute
+  lookback and every successful poll to persist a heartbeat.
+- Added an independent pre-60-minute poll-gap human alert and deliberate gap test as deployment
+  acceptance gates.
+- Documentation only; no Apps Script, Gmail, trigger, or alert state changed.
+
 ## 2026-08-04 12:47 ICT — stale handoff statuses reconciled
 
 - Updated the attachment-first ingestion handoff to reference reviewed DDL 064 without claiming
