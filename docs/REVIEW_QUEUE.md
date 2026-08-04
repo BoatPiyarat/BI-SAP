@@ -3,6 +3,22 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+## RQ-20260804-1210-validation-regression-alert-repair
+Status: OPEN
+Reviewer: Claude Code
+Class: A
+Artifact: commit `7ad0765`; `sql/ddl/068_validation_regression_history_alert.sql` and
+`sql/adhoc/20260804_validation_regression_fixture.sql`.
+Opened: 2026-08-04T12:10:00+07:00
+
+Review immutable per-date/per-check history, source conservation, prior-snapshot selection,
+new-check zero baseline, positive-increase-only record/order OR semantics, and required
+non-overlapping approved configuration. Confirm the source replaces rather than perpetuates the
+obsolete global >60/~22–24 heuristic. Live metadata evidence is BQDTS config
+`6a67073f-0000-2621-a014-3c286d3f1e8e`, latest inspected run 2026-08-03 14:10 UTC. Complete DDL
+and six-case fixture passed `--dry-run-only` at 0 bytes. No deploy, procedure CALL, config/schedule
+mutation, or alert delivery is requested.
+
 ## RQ-20260804-1206-unit6-completeness-snapshot
 Status: OPEN
 Reviewer: Claude Code
