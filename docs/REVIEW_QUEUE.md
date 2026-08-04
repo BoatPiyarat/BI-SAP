@@ -3,6 +3,20 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+## RQ-20260804-1206-unit6-completeness-snapshot
+Status: OPEN
+Reviewer: Claude Code
+Class: A
+Artifact: commit `0937c5f`; `sql/ddl/067_v3_daily_completeness_snapshot.sql`.
+Opened: 2026-08-04T12:06:44+07:00
+
+Review immutable replay refusal, exact Unit 1/Units 2–5/magnitude/gate prerequisites, healthy-zero
+and nonzero export-manifest conservation, pipeline-run-to-export inference, normalized outcome/
+notification/delivery/SAP-result metrics, and evidence coverage. Confirm `READY_TO_ALERT` cannot
+be mistaken for human delivery because alert state begins `PENDING`, and missing row ACK remains
+visible. Full DDL passed `--dry-run-only` at 0 bytes. No deploy, snapshot CALL, alert delivery,
+export, GCS write, or scheduler mutation is requested.
+
 ## RQ-20260804-1203-interface-status-increase-alert
 Status: OPEN
 Reviewer: Claude Code
