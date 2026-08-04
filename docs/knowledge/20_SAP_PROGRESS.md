@@ -1,5 +1,13 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-04 12:42 ICT — excluded-audit deploy sequence documented
+
+Closed Claude's DDL 032/037 deployment note in the runbook and human-input checklist. DDL 032's
+`CREATE TABLE IF NOT EXISTS` cannot migrate the existing live table; the enrichment becomes live
+only after reviewed DDL 037 definition deployment, separately approved mutating CALL, and
+post-CALL schema plus exclusion-distribution verification. No deployment, CALL, table replacement,
+or data mutation occurred.
+
 ## 2026-08-04 12:40 ICT — validation new-check onboarding documented
 
 Closed Claude's DDL 068 onboarding note in the runbook: a new validation check first snapshots its

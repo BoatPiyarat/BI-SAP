@@ -1,5 +1,13 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-04 12:42 ICT — excluded-audit deploy sequence documented
+
+- Documented that DDL 032 is a no-op against the existing table and cannot be cited as migration
+  evidence.
+- Required reviewed DDL 037 deployment, separately approved CALL, and post-CALL schema/distribution
+  checks before the audit enrichment can be described as live.
+- Documentation only; no production state changed.
+
 ## 2026-08-04 12:40 ICT — validation new-check onboarding documented
 
 - Added the DDL 068 new-check onboarding sequence to the runbook and linked it from human inputs.

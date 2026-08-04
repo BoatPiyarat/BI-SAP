@@ -33,6 +33,9 @@ charge exists) and processing `date_basis` on every `sap_excluded_records` row, 
 existing `_rules` temp table. Exclusion predicates and `expected_state` output are unchanged.
 Both complete files passed dry-run-only validation at 0 bytes. Deployment still requires Class-A
 review and separate approval.
+DDL 032 alone cannot add these columns to the existing table. The actual schema migration occurs
+only when the reviewed DDL 037 procedure is deployed and later CALLed with separate mutation
+approval; verify the columns and exclusion distributions as specified in runbook §7.
 
 ## RESOLVED 2026-07-31 — scheduler 401; run.invoker downgraded to P3 hygiene
 

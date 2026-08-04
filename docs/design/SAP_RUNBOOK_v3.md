@@ -195,6 +195,20 @@ check in the scheduled v2 regression checker:
 1. ลง `30_SAP_CHANGELOG.md` (append-only) — เกิดอะไร แก้ยังไง
 2. เคสใหม่ที่ runbook ไม่มี → เพิ่มแถวในตาราง §3 ทันที (เอกสารนี้โตจาก incident จริงเท่านั้น)
 3. ถ้า root cause = pipeline bug → เปิด INCIDENT ใน SAP_INCIDENT_LOG ตาม template เดิม
+
+### Exclusion audit schema deployment
+
+For the DDL 032/037 `amount` and `date_basis` enrichment, applying DDL 032 alone does not migrate
+the already-existing `sap_excluded_records`: its `CREATE TABLE IF NOT EXISTS` is intentionally a
+no-op when the table exists. The live schema changes only after all of these separate gates:
+
+1. Deploy the reviewed DDL 037 `sp_refresh_expected_state` procedure definition.
+2. Obtain explicit approval for a mutating CALL and execute it through the normal Unit 1 path.
+3. Verify `INFORMATION_SCHEMA.COLUMNS` contains `amount` and `date_basis`, then verify the CALL's
+   exclusion conservation/distributions before describing the enrichment as live.
+
+Do not run DDL 032 and report the columns deployed without the successful DDL 037 CALL evidence.
+
 The same outer/inner rule applies to the SAP mirror loader: HTTP 503 does not mean BigQuery did not
 load. Check the destination LOAD job, `statistics.load.outputRows`, and whether the bronze object
 was deleted. This joins the existing two ambiguity rules: function status ≠ export success, and
