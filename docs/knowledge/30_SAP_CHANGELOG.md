@@ -1,5 +1,14 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-04 11:14 ICT — excluded-record audit enrichment source ready
+
+- Added `amount` in satang and processing `date_basis` to the canonical
+  `sap_excluded_records` schema and every write in the current expected-state refresh procedure.
+- Reused fields already present in `_rules`; exclusion behavior and expected-state output remain
+  unchanged.
+- Safe-query parser self-test passed 7/7 and complete DDLs 032/037 passed dry-run-only validation
+  at 0 bytes. No production object was changed.
+
 ## 2026-08-04 11:00 ICT — Unit 6 result-ingestion storage contract started
 
 - Added source-only DDL 064 with non-destructive SAP result header, attachment-detail, and

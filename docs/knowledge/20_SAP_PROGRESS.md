@@ -1,5 +1,15 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-04 11:14 ICT — excluded-record amount/date audit source ready
+
+Current procedure source 037 and canonical base schema 032 now retain `amount` (the existing
+`_rules.charge_amount`, in satang and nullable for no-charge rows) and processing `date_basis` on
+every exclusion record. All five current exclusion writes populate both fields. No exclusion
+predicate, rule code, reason, expected-state column, or expected-state filter changed. The
+safe-query parser self-test passed 7/7 and both complete DDL files passed `--dry-run-only` at
+0 bytes. No deploy, procedure CALL, table replacement, export, GCS write, or scheduler mutation
+occurred.
+
 ## 2026-08-04 11:00 ICT — Unit 6 attachment-ingestion storage contract started
 
 Source-only 064 adds non-destructive `_v3` tables for one SAP import header per LogID, attachment

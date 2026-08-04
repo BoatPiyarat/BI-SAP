@@ -8,6 +8,8 @@
 --   * 2026-08-01: E1 tiering supersedes RULE-09 rescue: OrderDate <=2024 is untouched,
 --     2025 is cancel-only when already in SAP, and >=2026 follows normal processing.
 --     Processing date_basis remains GREATEST(OrderDate, PolicyDate); it is not the tier field.
+--   * 2026-08-04: every sap_excluded_records row retains charge_amount as amount (satang)
+--     and the processing date_basis for audit/reporting; exclusion predicates are unchanged.
 --
 -- Historical blast-radius evidence for the 2026-07-29 NULL-safe change:
 -- Verified directly against live `expected_state` (pre-fix):
@@ -169,13 +171,14 @@ BEGIN
   CREATE OR REPLACE TABLE `pacific-plating-282708.sap_integration_v3.sap_excluded_records`
   CLUSTER BY rule_code
   AS
-  SELECT order_item, period, 'DATE_BASIS_MISSING' AS rule_code,
+  SELECT order_item, period, charge_amount AS amount, date_basis,
+    'DATE_BASIS_MISSING' AS rule_code,
     'OrderDate is NULL; E1 tier cannot be determined' AS reason, CURRENT_TIMESTAMP() AS detected_at
   FROM _rules WHERE order_date IS NULL;
 
   INSERT INTO `pacific-plating-282708.sap_integration_v3.sap_excluded_records`
-    (order_item, period, rule_code, reason, detected_at)
-  SELECT order_item, period, 'YEAR_OUT_OF_SCOPE',
+    (order_item, period, amount, date_basis, rule_code, reason, detected_at)
+  SELECT order_item, period, charge_amount, date_basis, 'YEAR_OUT_OF_SCOPE',
     CONCAT('OrderDate year ', CAST(order_year AS STRING), ' <= ', CAST(year_no_touch_max AS STRING),
       '; untouched: no interface, backlog, or recovery'),
     CURRENT_TIMESTAMP()
@@ -183,8 +186,8 @@ BEGIN
   WHERE order_year <= year_no_touch_max;
 
   INSERT INTO `pacific-plating-282708.sap_integration_v3.sap_excluded_records`
-    (order_item, period, rule_code, reason, detected_at)
-  SELECT order_item, period, 'YEAR_2025_NON_CANCEL_EXCLUDED',
+    (order_item, period, amount, date_basis, rule_code, reason, detected_at)
+  SELECT order_item, period, charge_amount, date_basis, 'YEAR_2025_NON_CANCEL_EXCLUDED',
     CONCAT('OrderDate year 2025 excluded: cancel-only requires already_in_sap=TRUE and ',
       'is_cancelled_effective=TRUE; actual already_in_sap=', CAST(already_in_sap AS STRING),
       ', is_cancelled_effective=', CAST(IFNULL(is_cancelled_effective, FALSE) AS STRING)),
@@ -194,14 +197,14 @@ BEGIN
     AND NOT (already_in_sap AND IFNULL(is_cancelled_effective, FALSE));
 
   INSERT INTO `pacific-plating-282708.sap_integration_v3.sap_excluded_records`
-    (order_item, period, rule_code, reason, detected_at)
-  SELECT order_item, period, 'TEST_CUSTOMER',
+    (order_item, period, amount, date_basis, rule_code, reason, detected_at)
+  SELECT order_item, period, charge_amount, date_basis, 'TEST_CUSTOMER',
     'LOWER(TRIM(FirstName or LastName)) exactly matches test or test div', CURRENT_TIMESTAMP()
   FROM _rules WHERE is_test_name;
 
   INSERT INTO `pacific-plating-282708.sap_integration_v3.sap_excluded_records`
-    (order_item, period, rule_code, reason, detected_at)
-  SELECT order_item, period, 'INSURER_NOT_IN_MASTER',
+    (order_item, period, amount, date_basis, rule_code, reason, detected_at)
+  SELECT order_item, period, charge_amount, date_basis, 'INSURER_NOT_IN_MASTER',
     CONCAT('insurer_code=', IFNULL(insurer_code_plain, '<NULL>'),
       ' not found in SAP_LIVE_FULL valid-DocEntry master'), CURRENT_TIMESTAMP()
   FROM _rules WHERE insurer_not_in_master;

@@ -26,10 +26,13 @@ exception: `OLD_YEAR_NO_TOUCH` does not remove a row whose raw PaymentDate falls
 calendar month. For July the exact window is `[2026-07-01, 2026-08-01)`; `lock_datetime` does not
 extend it. No other exclusion rule inherits this exception.
 
-## DEFERRED until after 2026-08-03 — enrich excluded-record audit
+## SOURCE READY 2026-08-04 — enrich excluded-record audit
 
-Add amount and date_basis to `sap_excluded_records`, sourced from the existing `_rules` temp table.
-This improves EXCLUDED ≠ DELETED observability but is not on the close critical path.
+Source DDL 032/037 now retains `amount` (successful charge amount in satang; nullable where no
+charge exists) and processing `date_basis` on every `sap_excluded_records` row, sourced from the
+existing `_rules` temp table. Exclusion predicates and `expected_state` output are unchanged.
+Both complete files passed dry-run-only validation at 0 bytes. Deployment still requires Class-A
+review and separate approval.
 
 ## RESOLVED 2026-07-31 — scheduler 401; run.invoker downgraded to P3 hygiene
 

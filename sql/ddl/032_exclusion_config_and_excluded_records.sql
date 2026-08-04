@@ -11,6 +11,8 @@
 CREATE TABLE IF NOT EXISTS `pacific-plating-282708.sap_integration_v3.sap_excluded_records` (
   order_item STRING,
   period INT64,
+  amount INT64 OPTIONS(description = 'Successful charge amount in satang; NULL for rows without a charge'),
+  date_basis DATE OPTIONS(description = 'Processing basis GREATEST(OrderDate, PolicyDate), not the E1 year-tier field'),
   rule_code STRING,
   reason STRING,
   detected_at TIMESTAMP
