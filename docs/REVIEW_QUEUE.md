@@ -3,6 +3,21 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+## RQ-20260804-1203-interface-status-increase-alert
+Status: OPEN
+Reviewer: Claude Code
+Class: A
+Artifact: commit `3c32cf3`; `sql/ddl/066_interface_status_history_increase_alert.sql` and
+`sql/adhoc/20260804_interface_status_increase_fixture.sql`.
+Opened: 2026-08-04T12:03:54+07:00
+
+Review immutable one-snapshot-per-date behavior, source row conservation, prior-snapshot
+selection, missing-status-as-zero semantics, positive-increase-only decisions, record/order OR
+threshold behavior, and exactly-one effective approved config per monitored status. Confirm no
+provisional population was seeded as a threshold. The complete DDL and literal five-case fixture
+passed `--dry-run-only` at 0 bytes. No deploy, snapshot/check CALL, threshold mutation, alert
+delivery, export, GCS write, or scheduler change is requested.
+
 ## RQ-20260804-1201-extract-scheduler-health-view
 Status: OPEN
 Reviewer: Claude Code
