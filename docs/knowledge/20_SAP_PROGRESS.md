@@ -1,5 +1,14 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-04 12:40 ICT — validation new-check onboarding documented
+
+Closed Claude's DDL 068 onboarding note in the runbook: a new validation check first snapshots its
+real backlog, then receives explicit Boat-approved record/order thresholds and non-overlapping
+effective dates. Silent day-zero history seeds are prohibited; exceptional seeding requires
+documented provenance and Class A approval. Transfer-config cutover still requires a delivered
+synthetic breach and a healthy no-alert test. No config, history, procedure, schedule, or alert
+was mutated.
+
 ## 2026-08-04 12:39 ICT — Unit 6 stale-export attribution note closed
 
 Claude review `docs/reviews/2026-08-04-0937c5f-claude.md` identified that the completeness

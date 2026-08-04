@@ -1,5 +1,12 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-04 12:40 ICT — validation new-check onboarding documented
+
+- Added the DDL 068 new-check onboarding sequence to the runbook and linked it from human inputs.
+- Required first-snapshot inspection, explicit approved thresholds, no silent history seed, and
+  breach/healthy delivery tests before live transfer-config cutover.
+- Documentation only; no production state changed.
+
 ## 2026-08-04 12:39 ICT — Unit 6 stale-export attribution note closed
 
 - Added exact `payload_hash` equality to DDL 067's pipeline-identity/archive inference.

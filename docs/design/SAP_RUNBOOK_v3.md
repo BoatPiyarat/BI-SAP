@@ -164,6 +164,22 @@ that row import succeeded. Deduplicate with a deterministic key from message ide
 Until the revised tables and Apps Script are deployed, attachment ingestion is pending; manual
 copying of body snippets is not an acceptable substitute for row-level error evidence.
 
+## 5c. Onboard a new validation check into the regression alert
+
+DDL 068 compares a `check_name` absent from the prior snapshot against zero. Before enabling a new
+check in the scheduled v2 regression checker:
+
+1. Run the normal daily snapshot first and inspect the new check's record/order backlog.
+2. Boat explicitly approves its initial `max_record_increase` and `max_order_increase`; record
+   `approved_by`, `approved_at`, and a non-overlapping effective range in
+   `validation_regression_alert_config`.
+3. Do not silently seed history to suppress a first-day alert. If a day-zero seed is exceptionally
+   required, document its source and obtain the same Class A production approval as other config
+   mutations.
+4. Test one synthetic breach reaching a human recipient and one healthy no-alert run before
+   revising the live transfer config from the legacy checker to
+   `sp_check_validation_regression_v2`.
+
 ## 6. Escalation & ownership
 
 | เรื่อง | ติดต่อ |

@@ -233,6 +233,9 @@ increases. Boat must approve the maximum increase for each active validation `ch
 the v2 checker can run. No historical count was silently adopted as a threshold. After reviewed
 deployment, acceptance still requires one synthetic breach reaching a human recipient and one
 healthy run producing no alert.
+For a newly introduced `check_name`, the first comparison is against zero: inspect its first
+snapshot before threshold approval. The full onboarding sequence is canonical in
+`docs/design/SAP_RUNBOOK_v3.md` §5c; no day-zero history may be silently seeded.
 
 Confirmed 2026-07-27: every BQDTS `enableFailureEmail` alert (dead-man's-switch/missed-extract,
 column-contract guard, validation-regression) is owned by `data@rabbit.co.th`
