@@ -3,6 +3,20 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+## RQ-20260804-1201-extract-scheduler-health-view
+Status: OPEN
+Reviewer: Claude Code
+Class: A
+Artifact: commit `d8303e8`; `sql/ddl/065_vw_dash_extract_scheduler_health.sql`.
+Opened: 2026-08-04T12:01:17+07:00
+
+Review latest-run selection, 26-hour staleness behavior, same-run healthy-zero/LOAD evidence,
+failed/incomplete states, and the explicit distinction between orchestrator execution health and
+unverified scheduler-trigger provenance. Confirm a manual workflow run cannot be represented as
+proved scheduler success and the empty/dead `sap_extract_control` table is not reused. Parser
+self-test passed 7/7 and the complete DDL passed `--dry-run-only` at 0 bytes. No deploy, scheduler
+mutation, procedure CALL, export, or GCS write is requested.
+
 ## RQ-20260804-1114-excluded-record-audit-enrichment
 Status: OPEN
 Reviewer: Claude Code
