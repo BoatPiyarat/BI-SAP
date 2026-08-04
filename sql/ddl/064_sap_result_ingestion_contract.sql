@@ -66,3 +66,6 @@ OPTIONS (
 -- consumer is deployed, its release gate must assert all three logical-key duplicate counts are 0.
 -- A header status is terminal only when company_db='RCB_LIVE_DB', attachment_parse_status='PARSED',
 -- the TXT URI is present, and the exact file_name matches one current delivery manifest.
+-- Even when all of those header conditions pass, the header is file-level evidence only and is
+-- NOT row-level ACK. Each exported identity remains PENDING_ACK until attachment detail and the
+-- mandatory post-import SAP mirror refresh independently reconcile that exact immutable identity.
