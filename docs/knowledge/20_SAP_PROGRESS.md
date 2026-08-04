@@ -1,5 +1,16 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-05 01:00 ICT — Unit 6 required review notes corrected; delta review open
+
+The two pre-deploy notes on the SAP-result Apps Script runtime are corrected in `2cd1c28`: the
+Gmail search now excludes already `ingested` messages, ambiguous acknowledgement candidates fail
+closed when the candidate group is not exactly one message (even if every candidate shares a
+LogID), and OAuth is limited to `bigquery` plus `devstorage.read_write` rather than
+`cloud-platform`. Node syntax and whitespace validation passed. Class A delta review
+`RQ-20260805-0100-unit6-sap-result-ingestion-required-notes` is open for precisely those changes;
+the source remains undeployed and no Gmail, GCS, BigQuery, scheduler, or SAP production state has
+changed.
+
 ## 2026-08-04 22:3x ICT — Unit 6 ingestion runtime PASS with 2 required pre-deploy notes
 
 Reviewed DDL 070 and `workflows/sap_result_ingestion.*` (`1e949e7`) against all seven checklist

@@ -3,6 +3,19 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+## RQ-20260805-0100-unit6-sap-result-ingestion-required-notes
+Status: OPEN
+Reviewer: Claude Code
+Class: A
+Artifact: commit `2cd1c28`; delta in `workflows/sap_result_ingestion.gs` and Apps Script manifest.
+Opened: 2026-08-05T01:00:08+07:00
+
+Delta review for the two required notes in `docs/reviews/2026-08-04-1e949e7-claude.md`: confirm
+the Gmail query excludes `ingested`, a same-LogID duplicate candidate set fails closed through
+`group.length !== 1`, and the broad `cloud-platform` scope is replaced only by `bigquery` and
+`devstorage.read_write`. Node syntax validation passed. No deployment, trigger, Gmail, GCS,
+BigQuery, scheduler, or production-object mutation is requested.
+
 ## RQ-20260804-2128-unit6-sap-result-ingestion-runtime
 Status: REVIEWED
 Reviewer: Claude Code

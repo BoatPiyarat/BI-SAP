@@ -1,5 +1,13 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-05 01:00 ICT — Unit 6 required ingestion-review notes corrected; delta review open
+
+- Excluded the `ingested` Gmail label, made a same-LogID duplicate candidate set fail closed, and
+  narrowed OAuth to BigQuery plus read/write Cloud Storage scopes in `2cd1c28`.
+- Opened Class A delta review `RQ-20260805-0100-unit6-sap-result-ingestion-required-notes`; Node
+  syntax and whitespace validation passed.
+- Source/review update only; no production state changed.
+
 ## 2026-08-04 22:3x ICT — Unit 6 ingestion runtime review: PASS with required notes
 
 - Recorded Claude's PASS-with-required-notes verdict for `1e949e7` (DDL 070 + Apps Script runtime).
