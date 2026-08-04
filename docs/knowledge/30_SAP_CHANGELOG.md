@@ -1,5 +1,13 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-04 12:06 ICT — Unit 6 completeness snapshot source ready
+
+- Added source-only DDL 067 with immutable normalized run, metric, and evidence snapshots.
+- Required exact upstream success, magnitude PASS, zero release blockers, and zero-or-one
+  export/manifest conservation before `READY_TO_ALERT`.
+- Kept human delivery independently `PENDING`. Full DDL passed dry-run-only at 0 bytes; nothing
+  was deployed, called, delivered, or scheduled.
+
 ## 2026-08-04 12:03 ICT — interface-status increase alert source ready
 
 - Added source-only DDL 066 with immutable daily status snapshots and record/order conservation.

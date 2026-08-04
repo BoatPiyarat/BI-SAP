@@ -1,5 +1,16 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-04 12:06 ICT — Unit 6 completeness snapshot source ready
+
+Source-only DDL 067 adds immutable normalized run, metric, and evidence tables plus a snapshot
+builder. A snapshot requires exact Unit 1 and Units 2–5 success, magnitude PASS, zero automation
+blockers, one notification summary, and `export_run_count=manifest_count` with a maximum of one;
+therefore healthy zero is 0=0 and a nonzero run requires its exact manifest. It records Unit 2
+outcomes, notification holds, delivery/SAP-result states, pipeline evidence, magnitude baseline,
+automation gates, and manifest generations/counts. `READY_TO_ALERT` is distinct from
+`alert_delivery_status='PENDING'`; no human delivery is inferred. Full DDL passed dry-run-only at
+0 bytes. No deploy, snapshot CALL, alert, export, GCS write, or scheduler mutation occurred.
+
 ## 2026-08-04 12:03 ICT — interface-status history/increase alert source ready
 
 Source-only DDL 066 adds immutable one-snapshot-per-ICT-date status counts, source-row
