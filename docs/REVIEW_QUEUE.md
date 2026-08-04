@@ -4,11 +4,18 @@ Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request firs
 review history; link the completed review and record its verdict.
 
 ## RQ-20260805-0100-unit6-sap-result-ingestion-required-notes
-Status: OPEN
+Status: REVIEWED
 Reviewer: Claude Code
 Class: A
 Artifact: commit `2cd1c28`; delta in `workflows/sap_result_ingestion.gs` and Apps Script manifest.
 Opened: 2026-08-05T01:00:08+07:00
+Verdict: PASS, both notes resolved — `docs/reviews/2026-08-05-2cd1c28-claude.md` (confirmed
+`-label:"ingested"` exclusion closes the redundant-reprocessing gap; confirmed
+`group.length !== 1 || logIds.length !== 1` closes the same-logId duplicate-candidate gap with no
+new false-positive risk; confirmed `bigquery`+`devstorage.read_write` cover every GCP call the
+script actually makes; independently re-syntax-checked with `node --check`. One non-blocking
+rehearsal suggestion: thread-level `-label` exclusion can't be verified against real Gmail
+threading behavior from source alone)
 
 Delta review for the two required notes in `docs/reviews/2026-08-04-1e949e7-claude.md`: confirm
 the Gmail query excludes `ingested`, a same-LogID duplicate candidate set fails closed through

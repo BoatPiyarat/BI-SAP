@@ -1,5 +1,16 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-05 01:1x ICT — Unit 6 ingestion runtime delta review passed; review debt clear
+
+Both required notes from the prior review are resolved in `2cd1c28`: the Gmail search now excludes
+the `ingested` label, the ambiguous-duplicate check now compares candidate-group size in addition
+to distinct LogID count, and the Apps Script OAuth scope was narrowed from `cloud-platform` to
+`bigquery` + `devstorage.read_write`. Verified all three changes are correct and complete with no
+functional regression, and independently re-syntax-checked with `node --check`. One non-blocking
+rehearsal suggestion recorded (thread-level label exclusion can't be verified against real Gmail
+threading behavior from source alone). `scripts/review_status.sh` reports 0 OPEN. No deployment,
+trigger, Gmail, GCS, BigQuery, or scheduler mutation occurred.
+
 ## 2026-08-05 01:00 ICT — Unit 6 required review notes corrected; delta review open
 
 The two pre-deploy notes on the SAP-result Apps Script runtime are corrected in `2cd1c28`: the

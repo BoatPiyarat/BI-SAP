@@ -1,5 +1,11 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-05 01:1x ICT — Unit 6 delta review passed; review debt clear
+
+- Recorded Claude's PASS verdict for `2cd1c28`, closing both required notes from the prior review.
+- Updated `RQ-20260805-0100-...` from OPEN to REVIEWED/PASS; review debt is 0 OPEN.
+- Review/status update only; no production state changed.
+
 ## 2026-08-05 01:00 ICT — Unit 6 required ingestion-review notes corrected; delta review open
 
 - Excluded the `ingested` Gmail label, made a same-LogID duplicate candidate set fail closed, and
