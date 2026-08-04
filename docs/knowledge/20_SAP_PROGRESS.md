@@ -5,16 +5,16 @@
 With Boat's explicit approval, the guarded manual SAP sync completed one extract, exactly one
 loader consumption, and all V3 refresh steps through incremental mirror, reconciliation, expected
 state, validation, delta, and daily status. The following target identity check then stopped on a
-material evidence mismatch: the SAP-result finding for LogID `21183` names
+material evidence mismatch. Boat confirmed that the SAP-result finding's
 `RCB_MOTOR_INSURANCE_RCB_06_V3_DAILY_NEWPAYMENT_20260803_V3DAILY-20260803-113257-55042e7c_000000000000.csv`
-and says 584 rows, but the delivered `export_archive` entry for run
-`V3DAILY-20260803-113257-55042e7c` is named
-`INSURANCE_RCB_06_V3_DAILY_NEWPAYMENT_20260803_V3DAILY-20260803-113257-55042e7c` and has 558
-distinct identities. The separate 584-row `RCB_MOTOR...072831-38902dd9` entry is marked REJECTED.
-Therefore no archive row can yet be independently associated with LogID 21183; do not mark rows
-ACKNOWLEDGED or claim row-level/conservation PASS. The reconciliation needs Boat/Aware evidence
-that resolves the exact filename and 26-identity/row difference. No delivery, archive update,
-Gmail mutation, or corrective SAP action occurred.
+name is the delivery-time SAP-interface rename of the delivered `export_archive` entry for run
+`V3DAILY-20260803-113257-55042e7c`, named
+`INSURANCE_RCB_06_V3_DAILY_NEWPAYMENT_20260803_V3DAILY-20260803-113257-55042e7c`. This resolves
+the filename provenance, but the SAP-result evidence says 584 rows while that delivered ledger
+entry has 558 distinct identities. The separate 584-row `RCB_MOTOR...072831-38902dd9` entry is
+marked REJECTED. Do not mark rows ACKNOWLEDGED or claim row-level/conservation PASS until Boat/Aware
+accounts for the 26-identity/row difference. No archive update, Gmail mutation, or corrective SAP
+action occurred.
 
 ## 2026-08-04 15:46 ICT — three review-note deltas passed; review debt clear
 

@@ -4,18 +4,18 @@ Created 2026-07-27 per `TASK_V3_GAP_CLOSURE_v2.md` (A0, A5, Housekeeping — "ke
 Nothing here blocks build work that doesn't depend on the specific answer; each item notes what
 IS being done in the meantime.
 
-## P0 — resolve the LogID 21183 archive/identity mismatch before acknowledgement
+## P0 — resolve the LogID 21183 identity-count mismatch before acknowledgement
 
-The approved 2026-08-04 post-import extract/load/mirror/reconciliation completed, but the evidence
-cannot be joined safely. SAP LogID `21183` names a 584-row
-`RCB_MOTOR_INSURANCE_RCB_06_V3_DAILY_NEWPAYMENT_20260803_V3DAILY-20260803-113257-55042e7c_000000000000.csv`,
-while the DELIVERED archive-ledger entry for run `V3DAILY-20260803-113257-55042e7c` is
-`INSURANCE_RCB_06_V3_DAILY_NEWPAYMENT_20260803_V3DAILY-20260803-113257-55042e7c` with 558 distinct
-identities. The separate 584-row `RCB_MOTOR...072831-38902dd9` archive entry is REJECTED.
+The approved 2026-08-04 post-import extract/load/mirror/reconciliation completed. Boat confirmed
+that SAP LogID `21183`'s 584-row `RCB_MOTOR_INSURANCE_RCB_06_V3_DAILY_NEWPAYMENT_20260803_`
+`V3DAILY-20260803-113257-55042e7c_000000000000.csv` name is the SAP-interface rename of the
+DELIVERED archive-ledger file `INSURANCE_RCB_06_V3_DAILY_NEWPAYMENT_20260803_`
+`V3DAILY-20260803-113257-55042e7c`. The ledger has 558 distinct identities. The separate 584-row
+`RCB_MOTOR...072831-38902dd9` archive entry is REJECTED.
 
-**Ask:** Boat/Aware must identify which physical file SAP imported and account for the 26-identity
-difference before any `export_archive` rows are marked ACKNOWLEDGED or the import is called
-row-level reconciled. Preserve both ledger entries; do not overwrite or infer a mapping.
+**Ask:** Boat/Aware must account for the 26-identity difference before any `export_archive` rows
+are marked ACKNOWLEDGED or the import is called row-level reconciled. Preserve the original archive
+name and its SAP-interface rename as paired provenance; do not overwrite either identity.
 
 ## NonMotor InsuranceGroup master — Live SAP confirmation 2026-08-04
 

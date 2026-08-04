@@ -4,9 +4,10 @@
 
 - Ran one guarded SAP extract, exactly one loader consumption, then the full V3 staging, mirror,
   reconciliation, expected-state, validation, delta, and daily-status refresh sequence.
-- Found an evidence mismatch: LogID 21183's stated 584-row `RCB_MOTOR...113257...` filename does
-  not match its run's 558-identity DELIVERED `INSURANCE_RCB...113257...` archive row; the separate
-  584-row `RCB_MOTOR...072831...` row is REJECTED.
+- Boat confirmed the `INSURANCE_RCB...113257...` archive name is renamed to
+  `RCB_MOTOR_INSURANCE_RCB...113257..._000000000000.csv` for the SAP interface. The remaining hold
+  is the 584 SAP-result rows versus 558 delivered identities; the separate 584-row
+  `RCB_MOTOR...072831...` archive row is REJECTED.
 - Recorded a fail-closed human-input gate. No archive acknowledgment, delivery, Gmail mutation, or
   corrective SAP action occurred. Also recorded Boat's Live SAP NonMotor master confirmation;
   `Cancer -> Cancer` and `Home -> Home` are now confirmed, while `ERROR` remains held.
