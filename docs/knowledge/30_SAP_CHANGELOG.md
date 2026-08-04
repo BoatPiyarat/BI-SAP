@@ -1,5 +1,11 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-04 12:51 ICT — review-debt digest boundary confirmed
+
+- Confirmed the parser exists locally but the morning digest implementation is external.
+- Updated the handoff to prevent a hardcoded/stale repo count and require external failure
+  visibility. No external automation changed.
+
 ## 2026-08-04 12:50 ICT — stale security-finding handoff closed
 
 - Verified the sanitized security finding already exists and the paired bucket correction is

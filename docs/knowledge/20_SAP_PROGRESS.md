@@ -1,5 +1,13 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-04 12:51 ICT — review-debt digest ownership boundary confirmed
+
+Repository scan found the working machine source `scripts/review_status.sh` but no morning-digest
+implementation. The 07:00 digest is an external RemoteTrigger/cloud routine, so no repo code can
+integrate the line without that owner/system. The handoff now prohibits hardcoded counts and
+requires the external integration to expose parser/execution failure. No trigger, digest, email,
+or external routine changed.
+
 ## 2026-08-04 12:50 ICT — stale security-finding handoff closed
 
 Verified that `docs/SECURITY_FINDING_20260730.md` already exists, contains no credential value or
