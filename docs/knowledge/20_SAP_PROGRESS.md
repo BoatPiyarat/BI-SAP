@@ -1,5 +1,14 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-04 12:50 ICT — stale security-finding handoff closed
+
+Verified that `docs/SECURITY_FINDING_20260730.md` already exists, contains no credential value or
+fragment, and accurately separates closed SAP DB rotation/verified `secretKeyRef` from open
+archive/history/access and legacy SMTP hygiene. The paired bucket correction was already marked
+closed. Updated the stale handoff from “file does not exist”/OPEN to DONE; remediation ownership
+remains Boat/DevOps. No secret-bearing file was read and no credential, IAM, archive, or runtime
+state changed.
+
 ## 2026-08-04 12:48 ICT — SAP-result poll-gap contract documented
 
 Closed the cadence note from `docs/reviews/2026-08-03-f084a8a-claude.md`. The future attachment

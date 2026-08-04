@@ -1,5 +1,12 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-04 12:50 ICT — stale security-finding handoff closed
+
+- Verified the sanitized security finding already exists and the paired bucket correction is
+  already closed.
+- Reconciled the obsolete handoff claim without opening credential-bearing helpers or changing
+  security/runtime state.
+
 ## 2026-08-04 12:48 ICT — SAP-result poll-gap contract documented
 
 - Required the future Gmail attachment writer's trigger interval to be shorter than its 60-minute
