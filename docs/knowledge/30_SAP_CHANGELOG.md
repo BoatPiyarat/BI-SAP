@@ -1,5 +1,13 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-04 21:28 ICT — Unit 6 attachment-ingestion runtime source ready
+
+- Added Apps Script source for strict production-result polling, exact persisted SAP-filename
+  matching, idempotent attachment storage, BigQuery evidence upserts, and Gmail labeling only after
+  persistence.
+- Added DDL 070's durable heartbeat and exact SAP-facing delivery-manifest contract, plus a
+  deployment/rehearsal checklist. Node syntax validation passed; no runtime state changed.
+
 ## 2026-08-04 22:1x ICT — two review-note deltas passed
 
 - Recorded Claude PASS verdicts for the manual-sync empty-bronze-prefix fix (`dc13a10`) and the

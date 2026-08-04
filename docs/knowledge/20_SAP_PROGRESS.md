@@ -1,5 +1,16 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-04 21:28 ICT — Unit 6 Apps Script ingestion source and exact SAP-filename manifest contract ready
+
+Source-only Unit 6 increment adds a Gmail attachment ingestor, Apps Script OAuth manifest, deployment
+contract, and DDL 070 for a durable poll heartbeat plus exact SAP-facing delivery manifest. It accepts
+only `[LIVE]`/`RCB_LIVE_DB` messages inside a 60-minute window, matches the email filename only to a
+persisted `sap_delivery_manifest_v3.sap_file_name`, saves a single TXT/optional XLSX idempotently,
+MERGEs restricted header/detail evidence, and labels Gmail only after persistence. It has a separate
+pre-60-minute heartbeat monitor. The exact manifest avoids inferring the SAP name from the archive
+basename, as LogID 21183 proved they can differ. Node syntax validation passed. No Apps Script,
+trigger, Gmail, GCS, BigQuery, scheduler, or production object changed.
+
 ## 2026-08-04 22:1x ICT — two review-note deltas passed; review debt clear
 
 Claude returned PASS for both open Class A reviews: the manual-sync empty-bronze-prefix PowerShell
