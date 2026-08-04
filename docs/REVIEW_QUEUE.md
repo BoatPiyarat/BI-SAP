@@ -3,6 +3,21 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+## RQ-20260804-1055-sap-result-ingestion-contract
+Status: OPEN
+Reviewer: Claude Code
+Class: A
+Artifact: commit `6397996`; `sql/ddl/064_sap_result_ingestion_contract.sql`.
+Opened: 2026-08-04T10:55:44+07:00
+
+Review the non-destructive separation of import header, attachment detail, and file-pickup
+evidence; logical idempotency keys; required production/file/attachment fields; restricted raw
+error storage; and the explicit boundary that pickup or header success alone is not row-level ACK.
+Confirm the contract is sufficient for a later exact-manifest binding procedure without replacing
+the legacy `sap_import_result` table prematurely. Safe-query parser self-test passed 7/7 and the
+complete DDL passed `--dry-run-only` at 0 bytes. No deploy, migration, ingestion writer, ACK
+mutation, Gmail mutation, GCS write, procedure CALL, or scheduler change is requested.
+
 ## RQ-20260803-2112-unit2-population-magnitude-gate
 Status: OPEN
 Reviewer: Claude Code
