@@ -31,8 +31,8 @@ function pollSapResultMailbox() {
     Object.keys(byRun).forEach((runId) => {
       const group = byRun[runId];
       const logIds = [...new Set(group.map((c) => c.logId))];
-      if (logIds.length !== 1) {
-        throw new Error(`AMBIGUOUS_ACK run=${runId} log_ids=${logIds.join(',')}`);
+      if (group.length !== 1 || logIds.length !== 1) {
+        throw new Error(`AMBIGUOUS_ACK run=${runId} candidates=${group.length} log_ids=${logIds.join(',')}`);
       }
       persistCandidate_(config, group[0]);
       group[0].message.getThread().addLabel(getOrCreateLabel_(SAP_RESULT.INGESTED_LABEL));
@@ -63,7 +63,7 @@ function checkSapResultIngestionHeartbeat() {
 
 function findCandidates_(now) {
   const cutoff = new Date(now.getTime() - SAP_RESULT.LOOKBACK_MS);
-  const query = `label:"${SAP_RESULT.LABEL}" from:${SAP_RESULT.SENDER} subject:"[LIVE]" newer_than:1h`;
+  const query = `label:"${SAP_RESULT.LABEL}" -label:"${SAP_RESULT.INGESTED_LABEL}" from:${SAP_RESULT.SENDER} subject:"[LIVE]" newer_than:1h`;
   const candidates = [];
   GmailApp.search(query).forEach((thread) => thread.getMessages().forEach((message) => {
     if (message.getDate() < cutoff || !isExpectedSender_(message.getFrom())) return;
