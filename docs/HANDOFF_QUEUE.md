@@ -383,8 +383,10 @@ Why: SAP email evidence dated 2026-07-27 confirms files with the wrong name are 
 download before import. Manual exports not recorded in `export_archive` also leave reconciliation
 without provenance and can bypass duplicate protection. Return a dry-run/column-order test,
 shadow-path sample, rollback plan, and proposed call signature before requesting deploy approval.
-Status: OPEN — `export_archive` prerequisite absent per `08dc0f7`; SQL source/design not started;
-no deploy authorized
+Status: SOURCE READY — DDL 069 at `62fa5e0` uses the existing DDL 048 `export_archive`,
+explicit OrderItem/OrderID scope, archive-only output, and `run_type='MANUAL'`; dry-run-only
+passed at 0 bytes. Class A review `RQ-20260804-1215-safe-manual-newpayment-archive` and deploy gate
+remain open; no procedure CALL, GCS write, or production delivery is authorized.
 
 ## [2026-07-29 17:47 ICT] FROM Codex TO Claude Code
 Request: Run and report regression checks 0A/0B for the post-exclusion
