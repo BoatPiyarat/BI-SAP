@@ -62,6 +62,7 @@ not this table, for day-to-day freshness.
 | 061_v3_units2_5_nightly_wrapper.sql | Ordered Units 2–5 wrapper; now invokes the magnitude gate before Unit 3 |
 | 062_v3_mark_exact_delivery.sql | Exact-generation delivery ledger gate |
 | 063_v3_unit2_population_magnitude_gate.sql | **Source only / Class A.** Approved-config prior-run distribution gate; no threshold seed |
+| 064_sap_result_ingestion_contract.sql | **Source only / Class A.** Non-destructive attachment-first SAP result header, detail, and pickup evidence contract |
 | 053_v3_unit4_period_state_machine.sql | Explicit OPEN/CLOSED/PLANNED monthly state, atomic close/open, and legacy period-lock compatibility |
 | 047_repoint_nightly_mirror_to_incremental.sql | **Source only / Class A.** Chain 3 cutover definition: changes the nightly mirror call from full 024 to incremental 043 without altering downstream order; includes an exact 024-call rollback definition |
 

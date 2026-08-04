@@ -19,6 +19,10 @@ release Unit 5. The safe-query parser self-test passed 7/7; BigQuery dry-runs ar
 installed `bq` 2.0.92 unattended reauthentication failure and must pass before any deploy. No
 configuration seed, deploy, CALL, export, GCS write, or scheduler mutation is requested.
 
+Validation update 2026-08-04 10:53 ICT: reauthentication is complete; the parser self-test passed
+7/7 and all three review artifacts passed `--dry-run-only` at 0 bytes. No SQL was executed. Review
+and deployment/configuration gates remain unchanged.
+
 ## RQ-20260803-1953-live-import-21183-bounded-ingestion
 Status: OPEN
 Reviewer: Claude Code

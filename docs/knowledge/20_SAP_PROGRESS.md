@@ -1,5 +1,23 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-04 11:00 ICT — Unit 6 attachment-ingestion storage contract started
+
+Source-only 064 adds non-destructive `_v3` tables for one SAP import header per LogID, attachment
+detail at `(log_id,detail_seq)`, and no-LogID file-pickup evidence. It keeps raw SAP error messages
+in a restricted BigQuery-only column and explicitly separates pickup from import success. The
+complete file passed the mandatory safe-query `--dry-run-only` gate at 0 bytes. It does not replace
+the obsolete live `sap_import_result` table and includes no ingestion writer, ACK mutation,
+post-import reconciliation, deploy, CALL, Gmail mutation, GCS write, or scheduler change.
+
+## 2026-08-04 10:53 ICT — Unit 2 population-magnitude gate dry-run blocker cleared
+
+After `bq` reauthentication, the mandatory safe-query parser self-test passed 7/7. Source files
+`063_v3_unit2_population_magnitude_gate.sql`, `061_v3_units2_5_nightly_wrapper.sql`, and
+`20260803_unit2_magnitude_decision_fixture.sql` each passed `--dry-run-only` at 0 bytes. No SQL was
+executed. Class-A review `RQ-20260803-2112-unit2-population-magnitude-gate` remains OPEN with
+Claude Code; no configuration seed, deploy, CALL, export, GCS write, or scheduler mutation is
+authorized.
+
 ## 2026-08-03 21:12 ICT — Unit 2 population-magnitude gate source ready; dry-run blocked
 
 Source commit `8bea466` adds configured comparison of Unit 2 event/schedule distributions by

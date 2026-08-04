@@ -1,5 +1,14 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-04 11:00 ICT — Unit 6 result-ingestion storage contract started
+
+- Added source-only DDL 064 with non-destructive SAP result header, attachment-detail, and
+  file-pickup evidence tables.
+- Preserved the distinction between file pickup and terminal import success and kept raw error
+  text restricted to BigQuery.
+- Safe-query parser self-test passed 7/7; DDL 061, 063, the Unit 2 decision fixture, and new DDL
+  064 each passed dry-run-only validation at 0 bytes. Nothing was deployed or executed.
+
 ## 2026-08-03 21:12 ICT — added source-only Unit 2 magnitude release gate
 
 Added a persistent Unit 2 distribution and configured prior-success comparison before Unit 3.
