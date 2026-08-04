@@ -3,6 +3,34 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+## RQ-20260804-1239-unit6-payload-hash-binding
+Status: OPEN
+Reviewer: Claude Code
+Class: A
+Artifact: commit `913ff3b`; delta in `sql/ddl/067_v3_daily_completeness_snapshot.sql`.
+Opened: 2026-08-04T12:39:35+07:00
+
+Delta review for the note in `docs/reviews/2026-08-04-0937c5f-claude.md`. Confirm `_exports`
+requires exact `payload_hash` equality in addition to `(order_item,period,charge_id)`, so a stale
+archive for a reused natural key cannot satisfy the current run's export/manifest evidence.
+Complete DDL passed `--dry-run-only` at 0 bytes. No deploy, snapshot CALL, manifest mutation, or
+alert is requested.
+
+## RQ-20260804-1238-manual-export-requester-audit
+Status: OPEN
+Reviewer: Claude Code
+Class: A
+Artifact: commit `f049721`; delta in `sql/ddl/069_v3_manual_newpayment_archive.sql` and runbook.
+Opened: 2026-08-04T12:38:52+07:00
+
+Delta review for the required-before-deploy note in
+`docs/reviews/2026-08-04-62fa5e0-claude.md`. Confirm every validated manual request persists its
+caller, requested arrays, pipeline/export IDs, selected row/identity counts, archive URI, and
+PREPARING/final archive status in `manual_export_request`; an export failure after request insert
+must retain PREPARING provenance. Parser self-test passed 7/7 and complete DDL passed
+`--dry-run-only` at 0 bytes. No deploy, procedure CALL, table row, GCS write, or delivery is
+requested.
+
 ## RQ-20260804-1215-safe-manual-newpayment-archive
 Status: REVIEWED
 Reviewer: Claude Code
