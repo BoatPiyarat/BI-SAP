@@ -1,5 +1,13 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-04 12:03 ICT — interface-status increase alert source ready
+
+- Added source-only DDL 066 with immutable daily status snapshots and record/order conservation.
+- Added effective-dated human-approved thresholds for `MISSING` and `STATUS_CONFLICT`, deliberately
+  without seed values, plus a fail-closed day-over-day increase checker.
+- Complete DDL and literal five-case decision fixture passed dry-run-only at 0 bytes. Nothing was
+  deployed, called, or scheduled.
+
 ## 2026-08-04 12:00 ICT — scheduler-health dashboard source ready
 
 - Added source-only DDL 065 for the latest V3 orchestrator extract execution, with explicit

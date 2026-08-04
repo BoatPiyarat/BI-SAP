@@ -1,5 +1,15 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-04 12:03 ICT — interface-status history/increase alert source ready
+
+Source-only DDL 066 adds immutable one-snapshot-per-ICT-date status counts, source-row
+conservation, and a day-over-day checker for `MISSING` and `STATUS_CONFLICT`. It compares both
+records and distinct orders, ignores decreases/threshold equality, and alerts when either positive
+increase exceeds its active approved limit. Effective-dated config is required exactly once per
+monitored status and is intentionally unseeded; no provisional historical count became a
+threshold. The complete DDL and literal five-case fixture each passed dry-run-only at 0 bytes. No
+deploy, snapshot CALL, threshold mutation, alert delivery, or scheduler change occurred.
+
 ## 2026-08-04 12:00 ICT — extract scheduler-health dashboard source ready
 
 Source-only DDL 065 defines `vw_dash_extract_scheduler_health` from durable

@@ -212,9 +212,10 @@ decreases in line with D1 acceptance:** after E1–E3
 filtering, the 2026-07-29 14:01:28 ICT snapshot is MISSING 576 and STATUS_CONFLICT 34,758
 (Return Triage's 340,051/59,501 snapshot was pre-filter). Only wired an alert for `PAID_AFTER_CANCEL`
 (rare, 7 rows today, always actionable) and staleness (no fresh row by late morning). Real
-MISSING/STATUS_CONFLICT alerting needs a day-over-day baseline comparison (a small history table
-snapshotting counts nightly, alert on meaningful *increase* not absolute presence) - not built,
-flagging as a real gap rather than shipping a guaranteed-to-be-ignored daily alarm.
+Source DDL 066 now provides an immutable daily history snapshot and increase-based checker for
+MISSING/STATUS_CONFLICT. It intentionally contains no threshold seed. Boat must approve the
+maximum day-over-day record and order increases for both statuses before the checker can run;
+missing or duplicated active configuration fails closed.
 
 Also unverified and worth your review: the exact classification logic for STATUS_CONFLICT and
 PAID_AFTER_CANCEL (see the judgment calls documented at the top of `030_interface_daily_status.sql`)

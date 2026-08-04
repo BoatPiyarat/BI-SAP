@@ -64,6 +64,7 @@ not this table, for day-to-day freshness.
 | 063_v3_unit2_population_magnitude_gate.sql | **Source only / Class A.** Approved-config prior-run distribution gate; no threshold seed |
 | 064_sap_result_ingestion_contract.sql | **Source only / Class A.** Non-destructive attachment-first SAP result header, detail, and pickup evidence contract |
 | 065_vw_dash_extract_scheduler_health.sql | **Source only / Class A.** Fail-closed orchestrator execution-health widget; scheduler trigger provenance remains explicit/unverified |
+| 066_interface_status_history_increase_alert.sql | **Source only / Class A.** Immutable daily status snapshots and approved-config day-over-day increase alert; no threshold seed |
 | 053_v3_unit4_period_state_machine.sql | Explicit OPEN/CLOSED/PLANNED monthly state, atomic close/open, and legacy period-lock compatibility |
 | 047_repoint_nightly_mirror_to_incremental.sql | **Source only / Class A.** Chain 3 cutover definition: changes the nightly mirror call from full 024 to incremental 043 without altering downstream order; includes an exact 024-call rollback definition |
 
