@@ -1,5 +1,14 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-04 22:3x ICT — Unit 6 ingestion runtime review: PASS with required notes
+
+- Recorded Claude's PASS-with-required-notes verdict for `1e949e7` (DDL 070 + Apps Script runtime).
+- Two fixes required before deploy: exclude the `ingested` Gmail label from the search query (plus
+  strengthen the ambiguous-duplicate check to compare candidate-group size, not just distinct
+  `logId` count), and narrow the OAuth scope from `cloud-platform` to `bigquery` +
+  `devstorage.read_write`.
+- Review/status update only; no production state changed.
+
 ## 2026-08-04 21:28 ICT — Unit 6 attachment-ingestion runtime source ready
 
 - Added Apps Script source for strict production-result polling, exact persisted SAP-filename

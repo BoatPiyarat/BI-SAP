@@ -4,11 +4,21 @@ Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request firs
 review history; link the completed review and record its verdict.
 
 ## RQ-20260804-2128-unit6-sap-result-ingestion-runtime
-Status: OPEN
+Status: REVIEWED
 Reviewer: Claude Code
 Class: A
 Artifact: commit `1e949e7`; DDL 070 and `workflows/sap_result_ingestion.*`.
 Opened: 2026-08-04T21:28:58+07:00
+Verdict: PASS WITH REQUIRED NOTES — `docs/reviews/2026-08-04-1e949e7-claude.md` (2 required before
+deploy: (1) Gmail search never excludes the `ingested` label, so every ingested message is
+rediscovered every poll cycle for up to ~4 cycles — idempotent writes mean no data-safety impact,
+but it also means the `AMBIGUOUS_ACK` check's `logIds.length !== 1` alone can't catch a same-logId
+duplicate candidate set silently dropping one; needs `-label:"ingested"` plus a `group.length`
+guard; (2) `appsscript.json` requests the broad `cloud-platform` OAuth scope, contradicting this
+same commit's own deployment doc asking for narrowly scoped access — needs `bigquery` +
+`devstorage.read_write` instead. 3 non-blocking notes recorded. Independently syntax-checked the
+`.gs` file with `node --check`, confirming the commit's own claim; traced all seven checklist items
+in the review request against the actual control flow line-by-line)
 
 Review strict `[LIVE]`/`RCB_LIVE_DB`/60-minute Gmail filtering; exact persisted SAP-facing manifest
 matching (never archive-basename inference); ambiguous-LogID and attachment-shape fail-closed paths;

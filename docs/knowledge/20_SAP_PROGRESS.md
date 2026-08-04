@@ -1,5 +1,20 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-04 22:3x ICT — Unit 6 ingestion runtime PASS with 2 required pre-deploy notes
+
+Reviewed DDL 070 and `workflows/sap_result_ingestion.*` (`1e949e7`) against all seven checklist
+items in the review request; traced control flow line-by-line and independently syntax-checked the
+Apps Script with `node --check`. Both required notes are real but non-catastrophic: (1) the Gmail
+search never excludes the `ingested` label, so already-processed messages are rediscovered on every
+poll cycle for up to ~4 cycles — idempotent GCS/BigQuery writes mean no data-safety impact, but it
+also weakens the `AMBIGUOUS_ACK` duplicate check, which only compares distinct `logId` values and
+never checks candidate-group size; (2) the Apps Script requests the broad `cloud-platform` OAuth
+scope, contradicting the same commit's own deployment doc, which asks for narrowly scoped access —
+should be `bigquery` + `devstorage.read_write` instead. Everything else in the checklist (exact
+manifest matching, ambiguous-manifest/attachment-shape fail-closed paths, create-only GCS, MERGE
+idempotency, label-after-write ordering, 55-minute independent heartbeat) verified correct. No
+Apps Script, trigger, Gmail, GCS, or BigQuery production object was deployed or mutated.
+
 ## 2026-08-04 21:28 ICT — Unit 6 Apps Script ingestion source and exact SAP-filename manifest contract ready
 
 Source-only Unit 6 increment adds a Gmail attachment ingestor, Apps Script OAuth manifest, deployment
