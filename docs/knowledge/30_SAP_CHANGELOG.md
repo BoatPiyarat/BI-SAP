@@ -1,5 +1,14 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-04 12:14 ICT — safe manual NEWPAYMENT archive source ready
+
+- Added source-only DDL 069 for explicit OrderItem/OrderID-scoped RCB_MOTOR NEWPAYMENT export.
+- Preserved complete item spines and the canonical explicit 56-column order, rejected unsupported
+  contracts and active replays, and conserved each payment identity to `export_archive` as MANUAL.
+- Restricted output to the archive prefix with a contract-compliant `INSURANCE_RCB_` basename.
+  Parser self-test passed 7/7 and full DDL passed dry-run-only at 0 bytes; nothing was deployed,
+  called, archived, delivered, or sent to SAP.
+
 ## 2026-08-04 12:09 ICT — validation-regression alert repair source ready
 
 - Confirmed from live BQDTS metadata that the alert schedule runs but repeatedly raises from its

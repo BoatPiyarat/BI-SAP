@@ -1,5 +1,17 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-04 12:14 ICT — safe manual NEWPAYMENT archive source ready
+
+Source-only DDL 069 defines the requested `sp_manual_export` replacement with explicit OrderItem
+and/or OrderID scope. It fails closed unless the contract is the currently proven
+`RCB_MOTOR`/`NEWPAYMENT`, requires a current pipeline identity, complete item-period spines,
+56-column/date/PolicyNo/InvoiceNo validity, and refuses an active archived/delivered replay.
+The filename starts `INSURANCE_RCB_` without repeating the BU; output is restricted to the manual
+archive prefix and every target payment identity is conserved in `export_archive` with
+`run_type='MANUAL'`. It cannot write the production interface prefix. Parser self-test passed 7/7
+and the full DDL passed dry-run-only at 0 bytes. No deploy, procedure CALL, archive object, ledger
+write, production delivery, or SAP mutation occurred.
+
 ## 2026-08-04 12:09 ICT — validation-regression alert repair source ready
 
 Read-only BQDTS metadata shows `sap_validation_regression_alert`

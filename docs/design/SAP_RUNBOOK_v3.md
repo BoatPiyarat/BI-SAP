@@ -104,10 +104,11 @@ SLA ที่บอก FA ได้: ส่ง list → ไฟล์พร้อ
 5. ทางที่ปลอดภัยและต้นทุนต่ำกว่าเมื่อพร้อมใช้งาน: เรียก `sp_manual_export` ให้ทำ scope,
    validation, naming, export และ archive แทนการประกอบ export มือ.
 
-**Current blocker (evidence `08dc0f7`, 2026-07-29): `export_archive` ยังไม่มีอยู่จริง.**
-ห้ามทำ emergency manual export รอบใหม่จน Claude Code สร้าง archive control และเส้นทางบันทึก
-`run_type='MANUAL'` ที่ทดสอบแล้ว. `sp_manual_export` เป็นงาน SQL-domain ที่มอบหมายผ่าน
-`docs/HANDOFF_QUEUE.md`; เมื่อสร้างและผ่าน deploy gate แล้ว ให้ใช้ procedure นี้แทน export มือ.
+**Current blocker (updated 2026-08-04):** `export_archive` มี source prerequisite แล้ว และ DDL 069
+มี source-only `sp_manual_export` สำหรับ `RCB_MOTOR`/`NEWPAYMENT` ที่เขียน archive ก่อนเท่านั้น
+แต่ procedure ยังรอ Class A review และ deploy gate. ห้ามทำ emergency manual export รอบใหม่หรือ
+เขียน production path จน source นี้ผ่าน review, deploy และ exact-generation delivery approval.
+หลัง deploy ให้ใช้ procedure นี้แทนการประกอบ export มือ; BU/role อื่นยังไม่รองรับและต้อง fail closed.
 
 ## 5. Template ตอบ FA (กรณี item ติด validation)
 
