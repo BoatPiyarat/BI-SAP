@@ -1,5 +1,12 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-04 15:46 ICT — three review-note deltas passed
+
+- Recorded Claude PASS verdicts for contiguous spines (`d0eff7e`), payload-hash export binding
+  (`913ff3b`), and manual requester audit persistence (`f049721`).
+- Updated the manual-export handoff from DELTAS OPEN to DELTAS PASSED; review debt is 0 OPEN.
+- Review/status update only; no production state changed.
+
 ## 2026-08-04 12:51 ICT — review-debt digest boundary confirmed
 
 - Confirmed the parser exists locally but the morning digest implementation is external.

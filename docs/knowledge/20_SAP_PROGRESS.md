@@ -1,5 +1,14 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-04 15:46 ICT — three review-note deltas passed; review debt clear
+
+Claude returned PASS for all three deltas: exact contiguous `1..TotalPeriods` proof across DDL
+058/059/069 (`d0eff7e`), Unit 6 natural-key plus `payload_hash` export binding (`913ff3b`), and
+persisted manual requester/scope/PREPARING provenance (`f049721`). The prior notes are resolved and
+`scripts/review_status.sh` reports 0 OPEN. Claude's nullable archive-hash and rejected-attempt-log
+observations are explicitly non-blocking/forward-looking; all current archive writers populate the
+hash. No deployment, procedure CALL, table/GCS mutation, delivery, or alert occurred.
+
 ## 2026-08-04 12:51 ICT — review-debt digest ownership boundary confirmed
 
 Repository scan found the working machine source `scripts/review_status.sh` but no morning-digest
