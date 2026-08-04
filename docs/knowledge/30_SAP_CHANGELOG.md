@@ -1,5 +1,16 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-04 20:35 ICT — approved post-import refresh completed; LogID 21183 reconciliation held
+
+- Ran one guarded SAP extract, exactly one loader consumption, then the full V3 staging, mirror,
+  reconciliation, expected-state, validation, delta, and daily-status refresh sequence.
+- Found an evidence mismatch: LogID 21183's stated 584-row `RCB_MOTOR...113257...` filename does
+  not match its run's 558-identity DELIVERED `INSURANCE_RCB...113257...` archive row; the separate
+  584-row `RCB_MOTOR...072831...` row is REJECTED.
+- Recorded a fail-closed human-input gate. No archive acknowledgment, delivery, Gmail mutation, or
+  corrective SAP action occurred. Also recorded Boat's Live SAP NonMotor master confirmation;
+  `Cancer -> Cancer` and `Home -> Home` are now confirmed, while `ERROR` remains held.
+
 ## 2026-08-04 15:46 ICT — three review-note deltas passed
 
 - Recorded Claude PASS verdicts for contiguous spines (`d0eff7e`), payload-hash export binding

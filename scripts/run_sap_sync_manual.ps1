@@ -26,7 +26,17 @@ function Invoke-Checked {
 }
 
 function Get-BronzeObjects {
-  $output = & gsutil ls $bronzePath 2>$null
+  # gsutil exits 1 when a prefix is empty; that is a valid pre-extract state.
+  # Do not let PowerShell promote that native exit to a terminating error before
+  # the explicit 0/1 handling below.
+  $savedErrorActionPreference = $ErrorActionPreference
+  try {
+    $ErrorActionPreference = 'Continue'
+    $output = & gsutil ls $bronzePath 2>$null
+  }
+  finally {
+    $ErrorActionPreference = $savedErrorActionPreference
+  }
   if ($LASTEXITCODE -notin 0, 1) {
     throw "Unable to inspect $bronzePath (exit $LASTEXITCODE)"
   }
@@ -54,7 +64,7 @@ function Invoke-V3Procedure {
   }
 }
 
-$objects = Get-BronzeObjects
+$objects = @(Get-BronzeObjects)
 if ($objects.Count -gt 1) {
   throw "Found $($objects.Count) pending bronze objects. Stop to avoid combining/reloading batches."
 }
@@ -63,7 +73,7 @@ if ($objects.Count -eq 0) {
   Invoke-Checked 'Execute SAP extract and wait' {
     & gcloud run jobs execute $extractJob --region $region --project $projectId --wait
   }
-  $objects = Get-BronzeObjects
+  $objects = @(Get-BronzeObjects)
 }
 else {
   Write-Host 'One pending bronze object already exists; skip extract to avoid a duplicate batch.'
@@ -81,7 +91,7 @@ if ($objects.Count -eq 1) {
   $deadline = (Get-Date).AddSeconds($LoaderTimeoutSeconds)
   do {
     Start-Sleep -Seconds 5
-    $objects = Get-BronzeObjects
+    $objects = @(Get-BronzeObjects)
     if ($objects.Count -gt 1) {
       throw "Loader window contains $($objects.Count) objects. Stop; do not trigger again."
     }
