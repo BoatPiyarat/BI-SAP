@@ -3,6 +3,21 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+## RQ-20260804-2128-unit6-sap-result-ingestion-runtime
+Status: OPEN
+Reviewer: Claude Code
+Class: A
+Artifact: commit `1e949e7`; DDL 070 and `workflows/sap_result_ingestion.*`.
+Opened: 2026-08-04T21:28:58+07:00
+
+Review strict `[LIVE]`/`RCB_LIVE_DB`/60-minute Gmail filtering; exact persisted SAP-facing manifest
+matching (never archive-basename inference); ambiguous-LogID and attachment-shape fail-closed paths;
+GCS create-only persistence; idempotent BigQuery header/detail/heartbeat writes; label-after-write;
+and the independent pre-60-minute heartbeat alert. Confirm the DDL 070 manifest/heartbeat grain
+supports the writer and that no source path can ACK rows, deliver a file, or mutate a scheduler.
+Node syntax validation passed. Source-only: no Apps Script, trigger, Gmail, GCS, BigQuery, or
+production object was deployed or mutated.
+
 ## RQ-20260804-2103-live-import-21183-post-refresh-reconciliation
 Status: REVIEWED
 Reviewer: Claude Code
