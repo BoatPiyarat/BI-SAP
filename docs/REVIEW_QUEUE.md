@@ -4,11 +4,17 @@ Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request firs
 review history; link the completed review and record its verdict.
 
 ## RQ-20260804-1215-safe-manual-newpayment-archive
-Status: OPEN
+Status: REVIEWED
 Reviewer: Claude Code
 Class: A
 Artifact: commit `62fa5e0`; `sql/ddl/069_v3_manual_newpayment_archive.sql` and runbook update.
 Opened: 2026-08-04T12:15:08+07:00
+Verdict: PASS WITH NOTES — `docs/reviews/2026-08-04-62fa5e0-claude.md` (56-column order verified
+by direct count/diff against 058's canonical contract, identical; archive_uri confirmed hardcoded
+and cannot be redirected by caller input; REQUIRED BEFORE DEPLOY: p_requested_by is asserted
+non-empty but never persisted anywhere — export_archive has no requested_by column, so the "audit
+identity" requirement is currently cosmetic; also flags the period-spine cardinality-only check
+shared with 058/059 as a non-blocking hardening candidate)
 
 Review explicit OrderItem/OrderID OR scope, RCB_MOTOR/NEWPAYMENT-only fail-closed boundary,
 complete-item-spine and 56-column/date/PolicyNo/InvoiceNo checks, current-run identity
@@ -19,12 +25,17 @@ write the production interface prefix. Parser self-test passed 7/7 and the full 
 delivery, or SAP mutation is requested.
 
 ## RQ-20260804-1210-validation-regression-alert-repair
-Status: OPEN
+Status: REVIEWED
 Reviewer: Claude Code
 Class: A
 Artifact: commit `7ad0765`; `sql/ddl/068_validation_regression_history_alert.sql` and
 `sql/adhoc/20260804_validation_regression_fixture.sql`.
 Opened: 2026-08-04T12:10:00+07:00
+Verdict: PASS WITH NOTES — `docs/reviews/2026-08-04-7ad0765-claude.md` (fixture matches
+implementation incl. the tested zero-baseline new-check case; confirmed the new sp_..._v2 procedure
+name means the live BQDTS scheduled query still calls the old heuristic until a separate
+transfer-config revision, and this is honestly disclosed not overclaimed; NOTE: document the
+new-check onboarding sequence for whoever sets the first threshold)
 
 Review immutable per-date/per-check history, source conservation, prior-snapshot selection,
 new-check zero baseline, positive-increase-only record/order OR semantics, and required
@@ -35,11 +46,17 @@ and six-case fixture passed `--dry-run-only` at 0 bytes. No deploy, procedure CA
 mutation, or alert delivery is requested.
 
 ## RQ-20260804-1206-unit6-completeness-snapshot
-Status: OPEN
+Status: REVIEWED
 Reviewer: Claude Code
 Class: A
 Artifact: commit `0937c5f`; `sql/ddl/067_v3_daily_completeness_snapshot.sql`.
 Opened: 2026-08-04T12:06:44+07:00
+Verdict: PASS WITH NOTES — `docs/reviews/2026-08-04-0937c5f-claude.md` (every referenced table/
+column independently verified to exist with the assumed schema; READY_TO_ALERT vs PENDING boundary
+confirmed real, not just asserted; NOTE: the pipeline-run-to-export mapping joins only on the
+natural key order_item/period/charge_id because export_archive has no pipeline_run_id column —
+recommend also joining on the existing payload_hash column before this feeds human alerting, to
+close the theoretical stale-export misattribution case)
 
 Review immutable replay refusal, exact Unit 1/Units 2–5/magnitude/gate prerequisites, healthy-zero
 and nonzero export-manifest conservation, pipeline-run-to-export inference, normalized outcome/
@@ -49,12 +66,16 @@ visible. Full DDL passed `--dry-run-only` at 0 bytes. No deploy, snapshot CALL, 
 export, GCS write, or scheduler mutation is requested.
 
 ## RQ-20260804-1203-interface-status-increase-alert
-Status: OPEN
+Status: REVIEWED
 Reviewer: Claude Code
 Class: A
 Artifact: commit `3c32cf3`; `sql/ddl/066_interface_status_history_increase_alert.sql` and
 `sql/adhoc/20260804_interface_status_increase_fixture.sql`.
 Opened: 2026-08-04T12:03:54+07:00
+Verdict: PASS — `docs/reviews/2026-08-04-3c32cf3-claude.md` (all 12 checklist items pass; fixture
+matches implementation incl. boundary and OR-not-AND semantics; confirmed no provisional
+MISSING/STATUS_CONFLICT numbers were seeded as a threshold; combined duplicate/incomplete config
+assertion traced clean)
 
 Review immutable one-snapshot-per-date behavior, source row conservation, prior-snapshot
 selection, missing-status-as-zero semantics, positive-increase-only decisions, record/order OR
@@ -64,11 +85,15 @@ passed `--dry-run-only` at 0 bytes. No deploy, snapshot/check CALL, threshold mu
 delivery, export, GCS write, or scheduler change is requested.
 
 ## RQ-20260804-1201-extract-scheduler-health-view
-Status: OPEN
+Status: REVIEWED
 Reviewer: Claude Code
 Class: A
 Artifact: commit `d8303e8`; `sql/ddl/065_vw_dash_extract_scheduler_health.sql`.
 Opened: 2026-08-04T12:01:17+07:00
+Verdict: PASS — `docs/reviews/2026-08-04-d8303e8-claude.md` (all 12 checklist items pass; step
+literals cross-checked against the orchestrator YAML's actual writers; sap_extract_control
+dead-table and 26h threshold claims verified against prior FINDINGS/design docs rather than taken
+on faith; execution_health branch ordering and NULL-safety traced clean)
 
 Review latest-run selection, 26-hour staleness behavior, same-run healthy-zero/LOAD evidence,
 failed/incomplete states, and the explicit distinction between orchestrator execution health and
@@ -78,12 +103,17 @@ self-test passed 7/7 and the complete DDL passed `--dry-run-only` at 0 bytes. No
 mutation, procedure CALL, export, or GCS write is requested.
 
 ## RQ-20260804-1114-excluded-record-audit-enrichment
-Status: OPEN
+Status: REVIEWED
 Reviewer: Claude Code
 Class: A
 Artifact: commit `7a8ecd2`; `sql/ddl/032_exclusion_config_and_excluded_records.sql` and
 `sql/ddl/037_fix_expected_invoice_no_null_unsafe.sql`.
 Opened: 2026-08-04T11:14:57+07:00
+Verdict: PASS WITH NOTES — `docs/reviews/2026-08-04-7a8ecd2-claude.md` (all five exclusion writes
+confirmed populating both new columns; predicates and expected_state output diffed unchanged;
+NOTE: 032's CREATE TABLE IF NOT EXISTS is a no-op against the already-live table — the schema
+change only actually ships when 037's procedure is deployed and CALLed, worth one runbook line at
+deploy time)
 
 Review that every current exclusion write persists `_rules.charge_amount` as satang `amount` and
 the processing `date_basis`; nullable amount/date behavior remains truthful; canonical base schema
