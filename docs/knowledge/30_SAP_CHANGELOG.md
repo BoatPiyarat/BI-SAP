@@ -1,5 +1,12 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-04 12:47 ICT — stale handoff statuses reconciled
+
+- Updated the attachment-first ingestion handoff to reference reviewed DDL 064 without claiming
+  its still-missing integration/runtime layer.
+- Updated manual export to reference its passed base review and open requester/spine deltas.
+- Documentation only; all deployment and external-write gates remain closed.
+
 ## 2026-08-04 12:45 ICT — Unit 5/manual exact period-range checks hardened
 
 - Hardened DDL 058/059/069 from cardinality-only spine checks to exact `1..TotalPeriods` bounds

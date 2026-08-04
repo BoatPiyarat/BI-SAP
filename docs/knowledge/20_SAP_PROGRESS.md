@@ -1,5 +1,12 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-04 12:47 ICT — stale SAP-result/manual-export handoffs reconciled
+
+The handoff queue no longer says attachment-first SQL or manual-export source is absent. It now
+links reviewed DDL 064 while keeping the ingestion writer/Gmail/GCS/migration runtime scope OPEN,
+and links DDL 069's passed base review plus its requester/spine delta reviews while keeping every
+deploy/CALL/delivery gate closed. Documentation reconciliation only; no production state changed.
+
 ## 2026-08-04 12:45 ICT — Unit 5/manual exact period-range checks hardened
 
 Closed Claude's shared DDL 058/059/069 period-spine hardening note. Each assertion now requires one
