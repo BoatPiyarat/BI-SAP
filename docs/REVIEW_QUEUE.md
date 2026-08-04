@@ -4,11 +4,15 @@ Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request firs
 review history; link the completed review and record its verdict.
 
 ## RQ-20260804-1055-sap-result-ingestion-contract
-Status: OPEN
+Status: REVIEWED
 Reviewer: Claude Code
 Class: A
 Artifact: commit `6397996`; `sql/ddl/064_sap_result_ingestion_contract.sql`.
 Opened: 2026-08-04T10:55:44+07:00
+Verdict: PASS WITH NOTES — `docs/reviews/2026-08-04-6397996-claude.md` (grain/keys/scope/labelling
+all pass; correctly discloses non-replacement of legacy sap_import_result; NOTE: state the
+header-terminal-is-not-row-level-ACK boundary explicitly in this file's own comments, not only in
+the sibling runbook, before it becomes input to the future exact-manifest binding procedure)
 
 Review the non-destructive separation of import header, attachment detail, and file-pickup
 evidence; logical idempotency keys; required production/file/attachment fields; restricted raw
@@ -19,13 +23,19 @@ complete DDL passed `--dry-run-only` at 0 bytes. No deploy, migration, ingestion
 mutation, Gmail mutation, GCS write, procedure CALL, or scheduler change is requested.
 
 ## RQ-20260803-2112-unit2-population-magnitude-gate
-Status: OPEN
+Status: REVIEWED
 Reviewer: Claude Code
 Class: A
 Artifact: commit `8bea466`; `sql/ddl/063_v3_unit2_population_magnitude_gate.sql`,
 `sql/ddl/061_v3_units2_5_nightly_wrapper.sql`, and
 `sql/adhoc/20260803_unit2_magnitude_decision_fixture.sql`.
 Opened: 2026-08-03T21:12:42+07:00
+Verdict: PASS — `docs/reviews/2026-08-03-8bea466-claude.md` (all 12 checklist items pass; fixture
+matches implementation exactly incl. zero-baseline floor and AND-not-OR semantics; confirmed via
+cross-file trace that the `UNITS_2_5_ARCHIVE` baseline dependency is genuinely written by the
+orchestrator workflow around the wrapper CALL and only logs SUCCESS when the magnitude gate itself
+doesn't breach, so a breached run cannot poison the baseline history; self-test 7/7 reconfirmed
+offline)
 
 Review the event/schedule distribution grain, last-successful baseline selection, active approved
 configuration requirement, absolute-and-percentage decision semantics, zero-baseline behavior,
@@ -39,12 +49,17 @@ Validation update 2026-08-04 10:53 ICT: reauthentication is complete; the parser
 and deployment/configuration gates remain unchanged.
 
 ## RQ-20260803-1953-live-import-21183-bounded-ingestion
-Status: OPEN
+Status: REVIEWED
 Reviewer: Claude Code
 Class: A
 Artifact: commit `f084a8a`; `docs/FINDINGS_LIVE_IMPORT_21183_20260803.md`,
 `docs/design/SAP_RUNBOOK_v3.md`, and `docs/design/V3_AUTONOMY_UNITS_2_6_DESIGN.md`.
 Opened: 2026-08-03T19:53:08+07:00
+Verdict: PASS WITH NOTES — `docs/reviews/2026-08-03-f084a8a-claude.md` (header/row-level boundary
+correctly drawn and correctly labelled; environment gate consistent with existing rules; NOTE:
+document the Apps Script trigger cadence — the 60-minute lookback only guarantees coverage if polls
+run more often than that, and no alert path is described for a poll gap leaving a result stuck at
+PENDING_ACK)
 
 Review the production-only one-hour Gmail window, exact current-manifest filename match,
 zero/multiple-match behavior, UAT2 exclusion, and the boundary between terminal import success
@@ -54,13 +69,17 @@ completion. No deploy, procedure CALL, GCS write, Gmail mutation, or scheduler c
 requested.
 
 ## RQ-20260803-1918-rcb-onetime-change-order-rcl-label
-Status: OPEN
+Status: REVIEWED
 Reviewer: Claude Code
 Class: A
 Artifact: `docs/FINDINGS_RCB_ONETIME_CHANGE_ORDER_MISROUTED_RCL_20260803.md` and
 `sql/adhoc/20260803_l80482368_rcb_creditshell_misroute.sql`, plus the preventive delta in
 `sql/ddl/058_v3_unit5_newpayment_shadow.sql`.
 Opened: 2026-08-03T19:18:00+07:00
+Verdict: PASS — `docs/reviews/2026-08-03-cb88dc2-claude.md` (all 12 checklist items pass; one
+non-blocking note on join scope reuse risk if the diagnostic query is ever repurposed for a
+multi-period population; assertion placement confirmed after registry resolution and before
+candidate materialization; registry-guard job shows zero live violations today)
 
 Review the live/repo drift statements, known-case trace, posted-state population grain, and the
 flow-aware future-order proposal. Verify that the 9-order count is limited to FULL_PAYMENT change
