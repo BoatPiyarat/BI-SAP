@@ -3,6 +3,20 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+## RQ-20260804-2040-manual-sync-empty-bronze-prefix
+Status: OPEN
+Reviewer: Claude Code
+Class: A
+Artifact: commit `dc13a10`; `scripts/run_sap_sync_manual.ps1`.
+Opened: 2026-08-04T20:40:43+07:00
+
+Review Windows PowerShell handling of the normal empty-bronze-prefix state: `gsutil ls` exit 1 must
+remain a valid empty result, failures other than 0/1 must still stop, and every caller must receive
+an array so strict-mode `.Count` is safe. The corrected runner was used once under Boat's explicit
+2026-08-04 production approval: it completed exactly one extract, one loader consumption, and the
+existing V3 refresh sequence. Review the source change and the stated operational boundary; no
+additional execution, delivery, archive acknowledgement, or scheduler mutation is requested.
+
 ## RQ-20260804-1245-contiguous-period-spines
 Status: REVIEWED
 Reviewer: Claude Code
