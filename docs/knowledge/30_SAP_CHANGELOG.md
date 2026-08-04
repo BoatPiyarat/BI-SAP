@@ -1,5 +1,12 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-04 12:39 ICT — Unit 6 stale-export attribution note closed
+
+- Added exact `payload_hash` equality to DDL 067's pipeline-identity/archive inference.
+- This prevents an archive from an earlier run with the same natural event key from satisfying the
+  current run's export/manifest completeness evidence.
+- Full DDL passed dry-run-only at 0 bytes; nothing was deployed, called, mutated, or alerted.
+
 ## 2026-08-04 12:38 ICT — manual-export requester audit review note closed
 
 - Added `manual_export_request` to DDL 069 and persist requester, requested scope, run IDs,

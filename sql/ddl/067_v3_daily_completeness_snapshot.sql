@@ -95,7 +95,8 @@ BEGIN
   FROM `pacific-plating-282708.sap_integration_v3.v3_unit5_payload_identity` i
   JOIN `pacific-plating-282708.sap_integration_v3.export_archive` a
     USING (order_item, period, charge_id)
-  WHERE i.pipeline_run_id = p_pipeline_run_id;
+  WHERE i.pipeline_run_id = p_pipeline_run_id
+    AND i.payload_hash = a.payload_hash;
 
   SET v_export_runs = (SELECT COUNT(*) FROM _exports);
   SET v_manifests = (SELECT COUNT(*)

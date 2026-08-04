@@ -1,5 +1,14 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-04 12:39 ICT — Unit 6 stale-export attribution note closed
+
+Claude review `docs/reviews/2026-08-04-0937c5f-claude.md` identified that the completeness
+snapshot inferred an export run only from `(order_item, period, charge_id)`. DDL 067 now also
+requires exact `payload_hash` equality between the current pipeline identity and archive row.
+An earlier archive for a reused natural key can no longer be attributed to the current run or its
+human-alert evidence. Full DDL passed dry-run-only at 0 bytes. No deploy, snapshot CALL, manifest
+mutation, or alert occurred.
+
 ## 2026-08-04 12:38 ICT — manual-export requester audit review note closed
 
 Claude review `docs/reviews/2026-08-04-62fa5e0-claude.md` passed DDL 069 with one required
