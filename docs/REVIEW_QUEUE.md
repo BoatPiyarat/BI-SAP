@@ -4,12 +4,16 @@ Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request firs
 review history; link the completed review and record its verdict.
 
 ## RQ-20260804-1245-contiguous-period-spines
-Status: OPEN
+Status: REVIEWED
 Reviewer: Claude Code
 Class: A
 Artifact: commit `d0eff7e`; deltas in DDL 058/059/069 and
 `sql/adhoc/20260804_period_spine_range_fixture.sql`.
 Opened: 2026-08-04T12:45:54+07:00
+Verdict: PASS, note resolved — `docs/reviews/2026-08-04-d0eff7e-claude.md` (worked the pigeonhole
+proof by hand: first=1 + last=total_n + count=total_n together are now a genuine contiguity proof,
+not cardinality-only; confirmed the exact {1,2,4}/total-3 case and a second unflagged case {2,3}/
+total-2 are both now caught; identical fix applied verbatim across all three files)
 
 Delta review for the shared hardening note in
 `docs/reviews/2026-08-04-62fa5e0-claude.md`. Confirm each full-spine assertion requires one
@@ -21,11 +25,15 @@ assertions. No deploy, procedure CALL, payload/archive mutation, GCS write, or d
 requested.
 
 ## RQ-20260804-1239-unit6-payload-hash-binding
-Status: OPEN
+Status: REVIEWED
 Reviewer: Claude Code
 Class: A
 Artifact: commit `913ff3b`; delta in `sql/ddl/067_v3_daily_completeness_snapshot.sql`.
 Opened: 2026-08-04T12:39:35+07:00
+Verdict: PASS, note resolved — `docs/reviews/2026-08-04-913ff3b-claude.md` (payload_hash predicate
+closes the stale-natural-key gap exactly as recommended; minor non-blocking observation that
+export_archive.payload_hash has no NOT NULL constraint, theoretical today since every current
+writer populates it)
 
 Delta review for the note in `docs/reviews/2026-08-04-0937c5f-claude.md`. Confirm `_exports`
 requires exact `payload_hash` equality in addition to `(order_item,period,charge_id)`, so a stale
@@ -34,11 +42,15 @@ Complete DDL passed `--dry-run-only` at 0 bytes. No deploy, snapshot CALL, manif
 alert is requested.
 
 ## RQ-20260804-1238-manual-export-requester-audit
-Status: OPEN
+Status: REVIEWED
 Reviewer: Claude Code
 Class: A
 Artifact: commit `f049721`; delta in `sql/ddl/069_v3_manual_newpayment_archive.sql` and runbook.
 Opened: 2026-08-04T12:38:52+07:00
+Verdict: PASS, note resolved — `docs/reviews/2026-08-04-f049721-claude.md` (audit INSERT placed
+after all fail-closed ASSERTs and before the write phase; requested_by/scope/counts all captured
+name-matched; PREPARING provenance correctly survives a mid-procedure failure given BigQuery's
+per-statement commit model; terminal status literal matches export_archive's exactly)
 
 Delta review for the required-before-deploy note in
 `docs/reviews/2026-08-04-62fa5e0-claude.md`. Confirm every validated manual request persists its
