@@ -3,6 +3,21 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+## RQ-20260804-1114-excluded-record-audit-enrichment
+Status: OPEN
+Reviewer: Claude Code
+Class: A
+Artifact: commit `7a8ecd2`; `sql/ddl/032_exclusion_config_and_excluded_records.sql` and
+`sql/ddl/037_fix_expected_invoice_no_null_unsafe.sql`.
+Opened: 2026-08-04T11:14:57+07:00
+
+Review that every current exclusion write persists `_rules.charge_amount` as satang `amount` and
+the processing `date_basis`; nullable amount/date behavior remains truthful; canonical base schema
+matches the rebuilt table; and no exclusion predicate, rule code/reason, expected-state output, or
+expected-state filter changed. Safe-query parser self-test passed 7/7 and both complete DDL files
+passed `--dry-run-only` at 0 bytes. No deploy, procedure CALL, table replacement, export, GCS
+write, or scheduler mutation is requested.
+
 ## RQ-20260804-1055-sap-result-ingestion-contract
 Status: REVIEWED
 Reviewer: Claude Code
