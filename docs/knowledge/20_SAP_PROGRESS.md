@@ -1,5 +1,17 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-04 22:1x ICT — two review-note deltas passed; review debt clear
+
+Claude returned PASS for both open Class A reviews: the manual-sync empty-bronze-prefix PowerShell
+fix (`dc13a10`) and the LogID 21183 post-refresh reconciliation (`3a74168`). The PowerShell fix was
+confirmed against the real Windows PowerShell 5.1 mechanism it targets (redirected native-command
+stderr becomes a terminating error under `$ErrorActionPreference='Stop'`, independent of exit code)
+and no other call site in the file carries the same latent bug. The 21183 reconciliation was
+independently re-verified with a fresh BigQuery query (558/558 delivered identities matched
+`sap_mirror_state` as Paid, zero missing) and confirmed no ACK-related field was written, so it does
+not overclaim attachment-level acknowledgement. `scripts/review_status.sh` reports 0 OPEN. No
+deployment, procedure CALL, GCS write, Gmail mutation, or corrective SAP action occurred.
+
 ## 2026-08-04 20:35 ICT — LogID 21183 post-import mirror reconciliation passed; attachment-ingestion runtime remains open
 
 With Boat's explicit approval, the guarded manual SAP sync completed one extract, exactly one

@@ -4,11 +4,16 @@ Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request firs
 review history; link the completed review and record its verdict.
 
 ## RQ-20260804-2103-live-import-21183-post-refresh-reconciliation
-Status: OPEN
+Status: REVIEWED
 Reviewer: Claude Code
 Class: A
 Artifact: commit `3a74168`; `docs/FINDINGS_LIVE_IMPORT_21183_20260803.md` and evidence updates.
 Opened: 2026-08-04T21:03:48+07:00
+Verdict: PASS — `docs/reviews/2026-08-04-3a74168-claude.md` (cross-checked the 584-row run against
+`FINDINGS_LIVE_IMPORT_21178_20260803.md` and confirmed it is LogID 21178, not a 21183 discrepancy;
+independently re-ran the export_archive/sap_mirror_state reconciliation as a fresh query —
+558/558 delivered, 0 missing, 558 Paid; confirmed `sap_log_id`/`sap_result_status`/`acknowledged_at`
+are still NULL for this run, so the ACK-scope wording does not overclaim)
 
 Review the corrected LogID 21183 conclusion. The supplied TXT confirms exact renamed filename,
 terminal success, JE references, and reconciliation no., but no row count or row-level detail.
@@ -20,11 +25,18 @@ does not overclaim attachment-level ACK. No deployment, acknowledgement mutation
 change, or corrective SAP action is requested.
 
 ## RQ-20260804-2040-manual-sync-empty-bronze-prefix
-Status: OPEN
+Status: REVIEWED
 Reviewer: Claude Code
 Class: A
 Artifact: commit `dc13a10`; `scripts/run_sap_sync_manual.ps1`.
 Opened: 2026-08-04T20:40:43+07:00
+Verdict: PASS — `docs/reviews/2026-08-04-dc13a10-claude.md` (confirmed the Windows PowerShell 5.1
+mechanism: redirecting a native command's stderr under `$ErrorActionPreference='Stop'` promotes
+each stderr line to a terminating error regardless of exit code, which is exactly what made the
+empty-prefix case unreachable before this fix; the `Continue` override is scoped to only the one
+redirected call and the `$LASTEXITCODE -notin 0,1` guard still stands; checked no other native call
+in the file redirects stderr, so no other call site carries the same latent bug; `@(...)` wrapping
+is the standard fix for PowerShell's single-object pipeline collapse)
 
 Review Windows PowerShell handling of the normal empty-bronze-prefix state: `gsutil ls` exit 1 must
 remain a valid empty result, failures other than 0/1 must still stop, and every caller must receive
