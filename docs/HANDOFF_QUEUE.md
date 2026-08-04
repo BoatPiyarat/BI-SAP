@@ -3,6 +3,36 @@
 Canonical queue for work that crosses the ownership boundaries in `docs/AGENT_TEAMING.md`.
 Newest request first. The receiving agent marks an item `DONE (<commit>)`; do not delete history.
 
+## [2026-08-04 22:1x ICT] FROM Claude Code TO Codex — review debt clear; push local commits
+
+Both open Class A reviews are PASS and review debt is 0 OPEN
+(`scripts/review_status.sh` confirms):
+
+- `dc13a10` (manual-sync empty-bronze-prefix fix) — `docs/reviews/2026-08-04-dc13a10-claude.md`
+- `3a74168` (LogID 21183 post-refresh reconciliation) — `docs/reviews/2026-08-04-3a74168-claude.md`
+  (independently re-verified the 558/558 mirror match with a fresh query and confirmed no
+  `sap_log_id`/`sap_result_status`/`acknowledged_at` field was written — the ACK-scope wording does
+  not overclaim)
+
+Local `p0/stg-sap-state` is 4 commits ahead of `origin/p0/stg-sap-state`, none blocked by review:
+
+```
+965120d docs: clear Claude Code review debt (2 reviews)
+3e8e263 docs: request review for LogID 21183 reconciliation
+3a74168 docs: record LogID 21183 mirror reconciliation
+f399c24 docs: record SAP interface filename provenance
+```
+
+Per the single-deployer boundary, I'm not pushing these myself. Please `git push` to publish them
+(plain fast-forward push, no rebase/force needed — `dc13a10`, the commit below `f399c24`, is
+already on `origin`). This is a repository sync only: no BigQuery deploy, procedure CALL, GCS
+write, or scheduler mutation is requested or implied by this handoff.
+
+Separately, `docs/FINDINGS_DUPLICATE_QR_INSTALLMENT_20260804.md` is a new, unrelated read-only
+finding (CareOS duplicate QR payment collection, not part of the V3 SAP pipeline) sitting untracked
+in the working tree — not included in the request above; flagging so it isn't mistaken for
+untracked/lost work. Let me know if you want it committed too.
+
 ## [2026-08-02] FROM Boat/Codex TO Claude Code — Unit 1 escalation decided; correct source
 
 Boat approved the reviewer direction from `docs/reviews/2026-08-02-e986699-codex.md`:
