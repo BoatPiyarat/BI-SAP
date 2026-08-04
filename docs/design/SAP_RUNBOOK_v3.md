@@ -109,6 +109,8 @@ SLA ที่บอก FA ได้: ส่ง list → ไฟล์พร้อ
 แต่ procedure ยังรอ Class A review และ deploy gate. ห้ามทำ emergency manual export รอบใหม่หรือ
 เขียน production path จน source นี้ผ่าน review, deploy และ exact-generation delivery approval.
 หลัง deploy ให้ใช้ procedure นี้แทนการประกอบ export มือ; BU/role อื่นยังไม่รองรับและต้อง fail closed.
+ทุกครั้งต้องส่ง `p_requested_by` เป็นตัวตนผู้ขอจริง; procedure จะเก็บ requester, scope, counts,
+archive URI และสถานะไว้ใน `manual_export_request` แม้ archive attempt ค้างที่ PREPARING.
 
 ## 5. Template ตอบ FA (กรณี item ติด validation)
 

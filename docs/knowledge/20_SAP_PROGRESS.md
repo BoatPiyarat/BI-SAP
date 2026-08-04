@@ -1,5 +1,15 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-04 12:38 ICT — manual-export requester audit review note closed
+
+Claude review `docs/reviews/2026-08-04-62fa5e0-claude.md` passed DDL 069 with one required
+pre-deploy note: `p_requested_by` was validated but discarded. The source now creates an immutable
+request-level audit row containing requester, input scope, pipeline/export IDs, selected
+payload/identity counts, archive URI, and PREPARING/final archive state. A failed archive attempt
+therefore retains PREPARING evidence instead of losing caller provenance. Parser self-test passed
+7/7 and the complete DDL passed dry-run-only at 0 bytes. No deploy, procedure CALL, table row,
+archive object, or production write occurred.
+
 ## 2026-08-04 12:14 ICT — safe manual NEWPAYMENT archive source ready
 
 Source-only DDL 069 defines the requested `sp_manual_export` replacement with explicit OrderItem

@@ -67,7 +67,7 @@ not this table, for day-to-day freshness.
 | 066_interface_status_history_increase_alert.sql | **Source only / Class A.** Immutable daily status snapshots and approved-config day-over-day increase alert; no threshold seed |
 | 067_v3_daily_completeness_snapshot.sql | **Source only / Class A.** Immutable normalized Unit 6 run/metric/evidence snapshot; human alert delivery remains independently pending |
 | 068_validation_regression_history_alert.sql | **Source only / Class A.** Per-check immutable history and approved day-over-day regression thresholds; replaces obsolete total-count heuristic |
-| 069_v3_manual_newpayment_archive.sql | **Source only / Class A.** Explicit-scope, archive-only `sp_manual_export` for proven RCB_MOTOR NEWPAYMENT; unsupported contracts and replays fail closed |
+| 069_v3_manual_newpayment_archive.sql | **Source only / Class A.** Explicit-scope, archive-only `sp_manual_export` for proven RCB_MOTOR NEWPAYMENT; persists requester/scope audit, while unsupported contracts and replays fail closed |
 | 053_v3_unit4_period_state_machine.sql | Explicit OPEN/CLOSED/PLANNED monthly state, atomic close/open, and legacy period-lock compatibility |
 | 047_repoint_nightly_mirror_to_incremental.sql | **Source only / Class A.** Chain 3 cutover definition: changes the nightly mirror call from full 024 to incremental 043 without altering downstream order; includes an exact 024-call rollback definition |
 

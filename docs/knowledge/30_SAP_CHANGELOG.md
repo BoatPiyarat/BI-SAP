@@ -1,5 +1,13 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-04 12:38 ICT — manual-export requester audit review note closed
+
+- Added `manual_export_request` to DDL 069 and persist requester, requested scope, run IDs,
+  selected counts, archive URI, timestamps, and request state around every manual archive attempt.
+- This closes Claude's required-before-deploy note that `p_requested_by` was previously cosmetic.
+- Parser self-test passed 7/7 and complete DDL passed dry-run-only at 0 bytes; nothing was deployed,
+  called, archived, or delivered.
+
 ## 2026-08-04 12:14 ICT — safe manual NEWPAYMENT archive source ready
 
 - Added source-only DDL 069 for explicit OrderItem/OrderID-scoped RCB_MOTOR NEWPAYMENT export.

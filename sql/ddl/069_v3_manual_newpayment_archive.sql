@@ -3,6 +3,25 @@
 -- This procedure never writes the production interface prefix; exact-generation delivery remains
 -- a separate reviewed and approved operation.
 
+CREATE TABLE IF NOT EXISTS
+  `pacific-plating-282708.sap_integration_v3.manual_export_request` (
+    export_run_id STRING NOT NULL,
+    pipeline_run_id STRING NOT NULL,
+    business_unit STRING NOT NULL,
+    file_role STRING NOT NULL,
+    requested_order_items ARRAY<STRING>,
+    requested_order_ids ARRAY<STRING>,
+    requested_by STRING NOT NULL,
+    selected_payload_rows INT64 NOT NULL,
+    selected_identity_rows INT64 NOT NULL,
+    archive_uri STRING NOT NULL,
+    request_status STRING NOT NULL,
+    requested_at TIMESTAMP NOT NULL,
+    completed_at TIMESTAMP
+  )
+PARTITION BY DATE(requested_at)
+CLUSTER BY export_run_id, pipeline_run_id, request_status;
+
 CREATE OR REPLACE PROCEDURE `pacific-plating-282708.sap_integration_v3.sp_manual_export`(
   p_pipeline_run_id STRING,
   p_business_unit STRING,
@@ -97,6 +116,15 @@ BEGIN
     FORMAT_DATE('%Y/%m/%d',CURRENT_DATE('Asia/Bangkok')),'/',v_export_run_id,'/',
     v_file_name,'_*.csv');
 
+  INSERT INTO `pacific-plating-282708.sap_integration_v3.manual_export_request`
+    (export_run_id,pipeline_run_id,business_unit,file_role,requested_order_items,
+     requested_order_ids,requested_by,selected_payload_rows,selected_identity_rows,archive_uri,
+     request_status,requested_at)
+  VALUES (v_export_run_id,p_pipeline_run_id,'RCB_MOTOR','NEWPAYMENT',
+    IFNULL(p_order_items,ARRAY<STRING>[]),IFNULL(p_order_ids,ARRAY<STRING>[]),TRIM(p_requested_by),
+    (SELECT COUNT(*) FROM _selected_payload),v_identity_rows,v_archive_uri,'PREPARING',
+    CURRENT_TIMESTAMP());
+
   INSERT INTO `pacific-plating-282708.sap_integration_v3.export_archive`
     (export_run_id,order_item,period,charge_id,raw_payment_date,file_name,gcs_uri,archive_uri,
      delivery_folder,contract_version,payload_hash,payload_json,run_type,delivery_status,exported_at)
@@ -130,5 +158,9 @@ BEGIN
 
   UPDATE `pacific-plating-282708.sap_integration_v3.export_archive`
   SET delivery_status='ARCHIVED_PENDING_OBJECT_METADATA',exported_at=CURRENT_TIMESTAMP()
+  WHERE export_run_id=v_export_run_id;
+
+  UPDATE `pacific-plating-282708.sap_integration_v3.manual_export_request`
+  SET request_status='ARCHIVED_PENDING_OBJECT_METADATA',completed_at=CURRENT_TIMESTAMP()
   WHERE export_run_id=v_export_run_id;
 END;
