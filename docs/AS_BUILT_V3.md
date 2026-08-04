@@ -59,11 +59,13 @@ up automatically). Noted, not acted on here.
 | `vw_dash_export_pipeline_health` | `006_dashboard_views.sql` | ❌ same | CHANGELOG 07-25 |
 | `vw_dash_freshness` | `006_dashboard_views.sql` | ❌ same | CHANGELOG 07-25, **but see gap below** |
 
-**Documented-but-not-built gap**: `SAP_DASHBOARD_DESIGN_v1.md` Page 4 was corrected 2026-07-27 to
+**Source-ready, not deployed (2026-08-04)**: `SAP_DASHBOARD_DESIGN_v1.md` Page 4 was corrected 2026-07-27 to
 add an "extract-scheduler health" widget (the `sap-extract-schedule` 401 failure would've been
-invisible on the old design). The design doc now describes this widget; **no corresponding
-`vw_dash_extract_scheduler_health` view exists yet** — this is a real, open PHASE A/build item, not
-yet done. Tracked here so it isn't lost between the design fix and an actual build.
+invisible on the old design). Source DDL 065 now defines
+`vw_dash_extract_scheduler_health` from durable V3 workflow evidence. Because BigQuery cannot
+read Cloud Scheduler/Logging directly and `sap_extract_control` is confirmed empty/dead, it keeps
+the trigger itself `UNVERIFIED_TRIGGER` instead of letting a manual execution masquerade as
+scheduler proof. Deployment remains a separate reviewed gate.
 
 ## Routines (procedures/functions)
 
@@ -91,8 +93,8 @@ yet done. Tracked here so it isn't lost between the design fix and an actual bui
   remain in the core pipeline as of this inventory (the `stg_sap_state` collapse today closed the
   last one: `sp_refresh_sap_state` used to be the nightly-scheduled writer, now retired in favor of
   `sap_mirror_doc`/`sap_mirror_state`).
-- One real gap surfaced by this inventory: the extract-scheduler-health dashboard widget is
-  designed but not built (`vw_dash_extract_scheduler_health` doesn't exist) — candidate for PHASE A.
+- Extract-scheduler-health widget source is ready in DDL 065; deployment and durable scheduler
+  trigger provenance remain open.
 - 7 one-off audit tables from prior backfills are intentionally unscheduled and undocumented beyond
   their originating changelog entry — acceptable, flagged for an eventual retention decision only.
 - V3 still writes **no interface file** — every object above feeds `expected_state`/`delta_export`

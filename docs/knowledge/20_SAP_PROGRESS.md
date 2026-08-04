@@ -1,5 +1,16 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-04 12:00 ICT — extract scheduler-health dashboard source ready
+
+Source-only DDL 065 defines `vw_dash_extract_scheduler_health` from durable
+`pipeline_run_log` evidence for the latest `NIGHTLY:orchestrator` execution. It fails closed for
+missing, stale, failed/incomplete, or internally incomplete evidence and requires either an exact
+healthy-zero proof or LOAD commitment before returning FRESH. BigQuery cannot read Cloud
+Scheduler/Logging directly and the historical `sap_extract_control` table is confirmed empty, so
+the view deliberately reports `scheduler_trigger_status='UNVERIFIED_TRIGGER'`; a manual workflow
+run cannot be claimed as scheduler proof. Parser self-test passed 7/7 and the full DDL passed
+dry-run-only at 0 bytes. No deploy or scheduler mutation occurred.
+
 ## 2026-08-04 11:14 ICT — excluded-record amount/date audit source ready
 
 Current procedure source 037 and canonical base schema 032 now retain `amount` (the existing

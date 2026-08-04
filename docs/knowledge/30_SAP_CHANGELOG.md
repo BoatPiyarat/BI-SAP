@@ -1,5 +1,14 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-04 12:00 ICT — scheduler-health dashboard source ready
+
+- Added source-only DDL 065 for the latest V3 orchestrator extract execution, with explicit
+  missing/stale/failure/incomplete states and inner healthy-zero/LOAD evidence.
+- Kept scheduler trigger provenance `UNVERIFIED_TRIGGER` because the durable BigQuery log does not
+  distinguish manual from scheduled workflow starts.
+- Parser self-test passed 7/7 and the complete DDL passed dry-run-only at 0 bytes. Nothing was
+  deployed and no scheduler was changed.
+
 ## 2026-08-04 11:14 ICT — excluded-record audit enrichment source ready
 
 - Added `amount` in satang and processing `date_basis` to the canonical
