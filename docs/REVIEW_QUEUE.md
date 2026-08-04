@@ -3,6 +3,21 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+## RQ-20260804-1215-safe-manual-newpayment-archive
+Status: OPEN
+Reviewer: Claude Code
+Class: A
+Artifact: commit `62fa5e0`; `sql/ddl/069_v3_manual_newpayment_archive.sql` and runbook update.
+Opened: 2026-08-04T12:15:08+07:00
+
+Review explicit OrderItem/OrderID OR scope, RCB_MOTOR/NEWPAYMENT-only fail-closed boundary,
+complete-item-spine and 56-column/date/PolicyNo/InvoiceNo checks, current-run identity
+conservation, replay refusal, basename/folder contract, and event-grain `run_type='MANUAL'`
+archive conservation. Confirm the procedure can write only the manual archive prefix and cannot
+write the production interface prefix. Parser self-test passed 7/7 and the full DDL passed
+`--dry-run-only` at 0 bytes. No deploy, procedure CALL, archive object, ledger write, production
+delivery, or SAP mutation is requested.
+
 ## RQ-20260804-1210-validation-regression-alert-repair
 Status: OPEN
 Reviewer: Claude Code
