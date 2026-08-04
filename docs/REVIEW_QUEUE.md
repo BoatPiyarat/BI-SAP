@@ -3,6 +3,23 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+## RQ-20260804-1245-contiguous-period-spines
+Status: OPEN
+Reviewer: Claude Code
+Class: A
+Artifact: commit `d0eff7e`; deltas in DDL 058/059/069 and
+`sql/adhoc/20260804_period_spine_range_fixture.sql`.
+Opened: 2026-08-04T12:45:54+07:00
+
+Delta review for the shared hardening note in
+`docs/reviews/2026-08-04-62fa5e0-claude.md`. Confirm each full-spine assertion requires one
+consistent `TotalPeriods`, lower bound 1, upper bound exactly `TotalPeriods`, and exact distinct
+period count, closing the `{1,2,4}`/total-3 gap. All three DDLs and the fixture passed
+`--dry-run-only` at 0 bytes; literal fixture job
+`bqjob_r2c8f415bf45ee23d_0000019fcb4df22b_1` passed healthy, gapped, and inconsistent-total
+assertions. No deploy, procedure CALL, payload/archive mutation, GCS write, or delivery is
+requested.
+
 ## RQ-20260804-1239-unit6-payload-hash-binding
 Status: OPEN
 Reviewer: Claude Code
