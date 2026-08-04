@@ -1,20 +1,21 @@
 # 20_SAP_PROGRESS.md
 
-## 2026-08-04 20:35 ICT — post-import refresh completed; 21183 ledger identity mismatch blocks reconciliation closure
+## 2026-08-04 20:35 ICT — LogID 21183 post-import mirror reconciliation passed; attachment-ingestion runtime remains open
 
 With Boat's explicit approval, the guarded manual SAP sync completed one extract, exactly one
 loader consumption, and all V3 refresh steps through incremental mirror, reconciliation, expected
-state, validation, delta, and daily status. The following target identity check then stopped on a
-material evidence mismatch. Boat confirmed that the SAP-result finding's
+state, validation, delta, and daily status. Boat confirmed that the SAP-result finding's
 `RCB_MOTOR_INSURANCE_RCB_06_V3_DAILY_NEWPAYMENT_20260803_V3DAILY-20260803-113257-55042e7c_000000000000.csv`
 name is the delivery-time SAP-interface rename of the delivered `export_archive` entry for run
 `V3DAILY-20260803-113257-55042e7c`, named
-`INSURANCE_RCB_06_V3_DAILY_NEWPAYMENT_20260803_V3DAILY-20260803-113257-55042e7c`. This resolves
-the filename provenance, but the SAP-result evidence says 584 rows while that delivered ledger
-entry has 558 distinct identities. The separate 584-row `RCB_MOTOR...072831-38902dd9` entry is
-marked REJECTED. Do not mark rows ACKNOWLEDGED or claim row-level/conservation PASS until Boat/Aware
-accounts for the 26-identity/row difference. No archive update, Gmail mutation, or corrective SAP
-action occurred.
+`INSURANCE_RCB_06_V3_DAILY_NEWPAYMENT_20260803_V3DAILY-20260803-113257-55042e7c`. The supplied
+TXT log contains no row count; its 584-row predecessor (`...072831-38902dd9`) is the separately
+REJECTED LogID 21178 run and is not a 21183 discrepancy. The exact delivered run has 558 distinct
+identities, all 558 independently matched refreshed `sap_mirror_state` rows with
+`TransactionStatus='Paid'`, and zero missing identities (read-only job estimated 73,208,397 bytes).
+Evidence recorded 2026-08-04T21:03:24+07:00. This is a successful mirror/conservation result for the 558 delivered identities. Automatic
+ACKNOWLEDGED mutation remains correctly unavailable until the Unit 6 attachment-ingestion runtime
+persists row-level detail. No archive update, Gmail mutation, or corrective SAP action occurred.
 
 ## 2026-08-04 15:46 ICT — three review-note deltas passed; review debt clear
 

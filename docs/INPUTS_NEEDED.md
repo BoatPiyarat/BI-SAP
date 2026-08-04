@@ -4,18 +4,20 @@ Created 2026-07-27 per `TASK_V3_GAP_CLOSURE_v2.md` (A0, A5, Housekeeping — "ke
 Nothing here blocks build work that doesn't depend on the specific answer; each item notes what
 IS being done in the meantime.
 
-## P0 — resolve the LogID 21183 identity-count mismatch before acknowledgement
+## RESOLVED 2026-08-04 — LogID 21183 filename provenance and mirror reconciliation
 
 The approved 2026-08-04 post-import extract/load/mirror/reconciliation completed. Boat confirmed
-that SAP LogID `21183`'s 584-row `RCB_MOTOR_INSURANCE_RCB_06_V3_DAILY_NEWPAYMENT_20260803_`
+that SAP LogID `21183`'s `RCB_MOTOR_INSURANCE_RCB_06_V3_DAILY_NEWPAYMENT_20260803_`
 `V3DAILY-20260803-113257-55042e7c_000000000000.csv` name is the SAP-interface rename of the
 DELIVERED archive-ledger file `INSURANCE_RCB_06_V3_DAILY_NEWPAYMENT_20260803_`
-`V3DAILY-20260803-113257-55042e7c`. The ledger has 558 distinct identities. The separate 584-row
-`RCB_MOTOR...072831-38902dd9` archive entry is REJECTED.
+`V3DAILY-20260803-113257-55042e7c`. The TXT log has no row count. The ledger has 558 distinct
+identities, all of which match refreshed SAP mirror rows with `TransactionStatus='Paid'`; zero are
+missing. The separate 584-row `RCB_MOTOR...072831-38902dd9` entry belongs to the earlier REJECTED
+LogID 21178 run.
 
-**Ask:** Boat/Aware must account for the 26-identity difference before any `export_archive` rows
-are marked ACKNOWLEDGED or the import is called row-level reconciled. Preserve the original archive
-name and its SAP-interface rename as paired provenance; do not overwrite either identity.
+The remaining implementation gap is only the Unit 6 attachment-ingestion runtime for persisted
+row-level attachment detail and automatic acknowledgement. Preserve the original archive name and
+its SAP-interface rename as paired provenance; do not overwrite either identity.
 
 ## NonMotor InsuranceGroup master — Live SAP confirmation 2026-08-04
 

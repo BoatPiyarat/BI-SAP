@@ -30,3 +30,12 @@ separate step; the outer email status does not replace that check.
 
 Raw email/attachment content remains outside the repository. No Gmail label was changed.
 
+## Post-import mirror reconciliation — 2026-08-04
+
+Boat confirmed the SAP-interface filename is a delivery-time rename of archive run
+`V3DAILY-20260803-113257-55042e7c`, whose original archive basename begins `INSURANCE_RCB_`.
+The supplied TXT log has no row count. A post-import extract/load/mirror refresh followed by a
+read-only exact-identity check found 558 delivered archive identities, all 558 present in
+`sap_mirror_state` with `TransactionStatus='Paid'`, and zero missing. The query estimated
+73,208,397 bytes; evidence recorded 2026-08-04T21:03:24+07:00. This proves the refreshed SAP-mirror outcome for the delivered identities; it
+does not replace the future persisted attachment-detail/ACK ingestion requirement.
