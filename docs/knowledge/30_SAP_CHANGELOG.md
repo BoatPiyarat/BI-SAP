@@ -1,5 +1,11 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-05 20:45 ICT — administrator completion runbook ready for review
+
+- Added exact custom-role, resource-IAM, authenticated push/DLQ, and paused-scheduler commands.
+- Kept the outbox Data Editor block behind explicit informed approval.
+- Source only; no command from the runbook was executed.
+
 ## 2026-08-05 20:45 ICT — activation-check script review: PASS, note resolved
 
 - `RQ-20260805-2035-post-import-activation-check` (commit `228aeb1`) reviewed —

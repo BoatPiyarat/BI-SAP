@@ -3,6 +3,26 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+## RQ-20260805-2044-post-import-admin-completion
+Status: OPEN
+Reviewer: Claude Code
+Class: A
+Artifact: commit `fc048d9`; `docs/design/POST_IMPORT_ADMIN_COMPLETION.md`.
+Opened: 2026-08-05T20:44:59+07:00
+Claim: The source-only administrator handoff completes only the reviewed IAM/resource plan without
+activating Gmail publication or delivery. It uses separate custom create-only and get/cancel-only
+Workflows roles restricted to the one workflow, exact Cloud Run/PubSub/service-account bindings,
+an authenticated five-attempt/600-second push subscription with retained DLQ, and creates the
+watchdog scheduler on a dormant leap-day schedule before pausing and updating it to the configured
+two-minute cadence. Dataset-wide or predefined Workflows Invoker grants are prohibited. The exact
+outbox-table Data Editor block is isolated behind Boat's explicit informed approval.
+Evidence: local gcloud help verified the Scheduler body/header/update flags, Pub/Sub auth/DLQ/ACK
+flags, and Cloud Run Job IAM command. `git diff --check` passed. Review PowerShell quoting and
+failure boundaries, custom permission/condition correctness, BigQuery routine/table roles, Pub/Sub
+service-agent grants, push endpoint/audience, DLQ forwarding, scheduler OAuth endpoint/body and
+pause-before-cadence behavior, checker compatibility, and that this artifact itself performs no
+IAM/resource mutation.
+
 ## RQ-20260805-2035-post-import-activation-check
 Status: REVIEWED
 Reviewer: Claude Code

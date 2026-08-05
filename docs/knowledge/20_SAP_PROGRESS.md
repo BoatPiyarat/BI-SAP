@@ -11,6 +11,14 @@ binding rather than that specific role. Also adds `allAuthenticatedUsers` reject
 watchdog-scheduler cadence/target/OAuth validation. Independently re-ran the corrected script live
 — identical safety/readiness results. This closes the post-import increment's last open item.
 
+## 2026-08-05 20:45 ICT — exact administrator completion runbook ready
+
+Added a source-only command handoff for the remaining custom Workflows roles, exact resource IAM,
+authenticated push/DLQ subscription, and paused watchdog scheduler. It forbids broader substitute
+roles and isolates the direct-outbox Data Editor block behind Boat's explicit informed approval.
+Nothing in the runbook was executed; Class-A review is OPEN as
+`RQ-20260805-2044-post-import-admin-completion`.
+
 ## 2026-08-05 20:45 ICT — activation-check script: PASS, required note resolved
 
 `RQ-20260805-2035-post-import-activation-check` (commit `228aeb1`) reviewed —
