@@ -1,5 +1,14 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-05 21:55 ICT — owner-supplied Apps Script ID staging helper ready
+
+Added a local-only helper that requires the exact Script ID, refuses repository/non-empty output
+directories, verifies the closed seven-scope manifest, and stages `Code.gs`, `appsscript.json`, and
+`.clasp.json` without login/push/deploy/property/trigger actions. PowerShell parsing, manifest JSON
+parsing, and `git diff --check` passed. The temporary-directory execution test was not run because
+the tool account rejected temporary create/remove at its usage limit; that runtime path remains
+explicitly unverified pending review. No Script ID was supplied or inferred.
+
 ## 2026-08-05 21:51 ICT — Apps Script two-name contract locally executable
 
 Added a Node VM test that loads the real Apps Script source without Gmail/GCP globals and passes 18

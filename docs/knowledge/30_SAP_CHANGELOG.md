@@ -1,5 +1,14 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-05 21:55 ICT — add non-pushing Apps Script staging helper
+
+- Added `prepare_sap_result_apps_script.ps1` to validate the exact manifest and stage clasp names
+  outside the repository only after an owner supplies a Script ID.
+- The helper refuses non-empty destinations and reports push/OAuth as false; it never invokes
+  clasp. Parser/JSON/diff checks passed.
+- Temporary staging execution was unavailable due to the tool account usage limit and is not
+  claimed as tested. No Script ID, OAuth, Gmail, trigger, push, or deployment action occurred.
+
 ## 2026-08-05 21:51 ICT — make Apps Script name binding locally testable
 
 - Added a Node VM test for exact LogID 21183 metadata/sender parsing, TXT detail parsing,

@@ -16,6 +16,20 @@ The test uses no Gmail, GCP, Script ID, OAuth token, or network call. It exercis
 production-basename non-match, duplicate-manifest refusal, persist/publish/label ordering,
 zero-manifest no-label behavior, and ambiguity alert/failure behavior.
 
+After the Apps Script owner supplies the exact Script ID, prepare a clasp-compatible directory
+outside the repository:
+
+```powershell
+.\scripts\prepare_sap_result_apps_script.ps1 `
+  -ScriptId '<owner-supplied-script-id>' `
+  -OutputDirectory (Join-Path $env:TEMP 'sap-result-ingestion-clasp')
+```
+
+The helper refuses a destination inside this repository or a non-empty destination. It validates
+the exact reviewed OAuth-scope set, stages `Code.gs`, renames the manifest to `appsscript.json`,
+and writes `.clasp.json`. It does not install clasp, authenticate, push, deploy, set properties,
+or create triggers. Inspect all three staged files before the mailbox owner runs any clasp command.
+
 Before deployment, deploy reviewed DDL 064 and 070, grant the script principal narrowly scoped Gmail,
 BigQuery, and `gs://rcb-bronze-zone/sap_import_logs/` access, and set Script Properties:
 
