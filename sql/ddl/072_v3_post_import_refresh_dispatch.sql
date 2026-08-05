@@ -54,7 +54,7 @@ BEGIN
     WHERE log_id=p_log_id AND claim_token=p_claim_token)=1
     AS 'execution bind must reference exactly one claimed LogID/token';
   ASSERT REGEXP_CONTAINS(p_workflow_execution_name,
-    r'^projects/[a-z][a-z0-9-]{4,28}[a-z0-9]/locations/[a-z0-9-]+/workflows/[A-Za-z0-9_-]+/executions/[A-Za-z0-9_-]+$')
+    r'^projects/([a-z][a-z0-9-]{4,28}[a-z0-9]|[0-9]{6,20})/locations/[a-z0-9-]+/workflows/[A-Za-z0-9_-]+/executions/[A-Za-z0-9_-]+$')
     AS 'workflow_execution_name must be a complete Workflows execution resource name';
   ASSERT (SELECT COUNT(*)
     FROM `pacific-plating-282708.sap_integration_v3.v3_post_import_refresh_outbox`

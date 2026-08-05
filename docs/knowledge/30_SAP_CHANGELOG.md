@@ -1,5 +1,11 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-05 20:57 ICT — corrected canonical workflow execution-name binding
+
+- Switched workflow self-binding to `GOOGLE_CLOUD_PROJECT_NUMBER`.
+- Expanded DDL 072 validation to accept canonical numeric project numbers as well as project IDs.
+- DDL dry-run passed at 0 bytes; source only, no workflow deploy or execution.
+
 ## 2026-08-05 20:55 ICT — CRITICAL finding: DDL 072 execution-name regex vs. real resource format
 
 - `RQ-20260805-2044-post-import-admin-completion` (commit `fc048d9`) reviewed: PASS on the runbook

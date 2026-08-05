@@ -1,5 +1,15 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-05 20:57 ICT — canonical Workflows execution-name binding correction
+
+The administrator-runbook review found that live Workflows execution names use numeric project
+numbers while DDL 072 accepted only project-ID syntax. Official Workflows documentation exposes
+separate `GOOGLE_CLOUD_PROJECT_ID` and `GOOGLE_CLOUD_PROJECT_NUMBER` variables, so the existing
+ID-form construction was not proven broken, but it was non-canonical and ambiguous. The workflow
+now constructs the execution name with `GOOGLE_CLOUD_PROJECT_NUMBER`; DDL 072 accepts either a
+valid project ID or a 6–20 digit project number. Mandatory DDL dry-run passed at 0 bytes; no deploy
+or execution occurred.
+
 ## 2026-08-05 20:55 ICT — CRITICAL: DDL 072 execution-name regex likely rejects every real bind
 
 Reviewing `RQ-20260805-2044-post-import-admin-completion`

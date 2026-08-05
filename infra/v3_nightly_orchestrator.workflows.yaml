@@ -62,7 +62,7 @@ main:
           - post_import_log_id: ${default(map.get(args, "post_import_log_id"), "")}
           - post_import_claim_token: ${default(map.get(args, "post_import_claim_token"), "")}
           - post_import_mode: ${post_import_log_id != "" or post_import_claim_token != ""}
-          - workflow_execution_name: '${"projects/" + sys.get_env("GOOGLE_CLOUD_PROJECT_ID") + "/locations/" + sys.get_env("GOOGLE_CLOUD_LOCATION") + "/workflows/" + sys.get_env("GOOGLE_CLOUD_WORKFLOW_ID") + "/executions/" + sys.get_env("GOOGLE_CLOUD_WORKFLOW_EXECUTION_ID")}'
+          - workflow_execution_name: '${"projects/" + sys.get_env("GOOGLE_CLOUD_PROJECT_NUMBER") + "/locations/" + sys.get_env("GOOGLE_CLOUD_LOCATION") + "/workflows/" + sys.get_env("GOOGLE_CLOUD_WORKFLOW_ID") + "/executions/" + sys.get_env("GOOGLE_CLOUD_WORKFLOW_EXECUTION_ID")}'
           - pre_watermark: {}
 
     - maybe_bind_post_import_execution:
