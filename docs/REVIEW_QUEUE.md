@@ -25,22 +25,26 @@ missing values, and that this belongs on the unattended completion checklist.
 Status: OPEN
 Reviewer: Claude Code
 Class: A
-Artifact: commit `b1e3508`;
+Artifact: commit `b1e3508`, terminal-result ordering correction `a6bc76e`;
 `docs/FINDINGS_DAILY_COMPLETENESS_RUNTIME_GAP_20260805.md`.
 Opened: 2026-08-05T22:05:17+07:00
 Claim: Canonical live inventory and reviewed source prove the daily completeness snapshot/report
 path is not operational: DDL 067 is source-only/not live, workflow/wrapper contain no snapshot
 call, and the review-passed Apps Script has no deployment/properties/trigger or approved distinct
-primary/fallback recipients. The checklist now places snapshot creation after the final zero-file
-or exact delivered-manifest outcome and keeps it separate from post-import activation.
+primary/fallback recipients. Exact DDL inspection shows a nonzero snapshot immediately after
+delivery would immutably freeze `SAP_RESULT=PENDING_ACK`: healthy zero may snapshot after Units
+2–5, but nonzero must wait for terminal DDL 073 reconciliation with no residual and bind back to
+the original outbound pipeline run. It remains separate from post-import activation.
 Evidence: `AS_BUILT_V3.md`, DDL README, DDL 067, workflow/wrapper zero-reference grep, reviewed
 dispatcher source, deployment contract, and reviews `44ade18`/`d85aa20` were traced;
 `git diff --check` passed. No live recheck was made under the local GCP tool usage limit. No DDL,
 CALL, Apps Script, OAuth, trigger, email, BigQuery, workflow, scheduler, GCS, or SAP mutation
-occurred. Review inventory/source interpretation, snapshot ordering relative to zero/delivery
-manifest, distinction from post-import runtime, shared-vs-separate Apps Script packaging caveat,
-human input completeness, rehearsal cases, and whether an existing live path already satisfies
-any claimed gap.
+occurred. Review inventory/source interpretation; DDL 067's manifest/SAP-result semantics;
+healthy-zero vs terminal nonzero ordering; feasibility and exactness of original outbound
+pipeline-run binding from the export identities; residual HUMAN_ACTION treatment; distinction
+from post-import runtime; shared-vs-separate Apps Script packaging caveat; human input
+completeness; rehearsal cases; and whether an existing live path already satisfies any claimed
+gap.
 
 ## RQ-20260805-2202-monthly-cutoff-automation-gap
 Status: OPEN
