@@ -1,13 +1,13 @@
 # 30_SAP_CHANGELOG.md
 
-## 2026-08-05 20:45 ICT — activation-check script review: PASS WITH REQUIRED NOTE
+## 2026-08-05 20:45 ICT — activation-check script review: PASS, note resolved
 
 - `RQ-20260805-2035-post-import-activation-check` (commit `228aeb1`) reviewed —
   `docs/reviews/2026-08-05-228aeb1-claude.md`.
 - Independently re-ran the script against the live project: identical safety/readiness results.
 - Required note corrected in `aae4e01`: validate exact push topic/endpoint/OIDC/audience,
   DLQ/attempt/ACK settings, invoker binding, and paused watchdog schedule/target/OAuth identity.
-- Corrective delta parsed and reran live with unchanged safe/current blockers; delta review open.
+- Corrective delta parsed, reran live with unchanged safe/current blockers, and reviewed PASS.
 - Read-only only; no workflow, job, subscription, schedule, delivery, or SAP action occurred.
 
 ## 2026-08-05 20:38 ICT — inert runtime deployment review PASSED

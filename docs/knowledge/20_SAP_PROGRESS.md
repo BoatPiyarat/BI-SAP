@@ -1,6 +1,17 @@
 # 20_SAP_PROGRESS.md
 
-## 2026-08-05 20:45 ICT — activation-check script: PASS WITH REQUIRED NOTE
+## 2026-08-05 20:50 ICT — activation-check delta resolves required note; PASS
+
+`RQ-20260805-2035-post-import-activation-check` delta `aae4e01` reviewed —
+`docs/reviews/2026-08-05-aae4e01-claude.md`. The push-subscription readiness check now validates
+the actual topic, push endpoint, OIDC service account and audience, DLQ topic/attempt count, and
+ack deadline — not just the subscription's name. The delta also independently fixes a same-class
+bug the base review missed: the `run.invoker` check previously matched membership in *any* IAM
+binding rather than that specific role. Also adds `allAuthenticatedUsers` rejection and full
+watchdog-scheduler cadence/target/OAuth validation. Independently re-ran the corrected script live
+— identical safety/readiness results. This closes the post-import increment's last open item.
+
+## 2026-08-05 20:45 ICT — activation-check script: PASS, required note resolved
 
 `RQ-20260805-2035-post-import-activation-check` (commit `228aeb1`) reviewed —
 `docs/reviews/2026-08-05-228aeb1-claude.md`. Confirmed the script is genuinely read-only (every
@@ -8,10 +19,10 @@
 separates safety failures from rehearsal-readiness blockers. Independently re-ran the script
 against the live project: identical `safety_passed=true`, `rehearsal_ready=false`, and the same
 three readiness blockers reported in the commit. The review required exact push endpoint/OIDC
-validation before relying on the checker alone. Corrective delta `aae4e01` adds that check plus the
+validation before relying on the checker alone. Corrective delta `aae4e01` added that check plus the
 exact input topic, audience, DLQ/attempt count, ACK deadline, invoker binding, paused watchdog
 schedule/target/OAuth identity, and rejection of `allAuthenticatedUsers`. Parse and live rerun
-passed; the request remains OPEN only for review of this delta.
+passed; Claude reviewed the delta PASS and the required note is resolved.
 
 ## 2026-08-05 20:38 ICT — inert runtime deployment PASS; Apps Script owner input exposed
 
