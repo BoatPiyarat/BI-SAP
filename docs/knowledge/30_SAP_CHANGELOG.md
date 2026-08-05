@@ -1,5 +1,11 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-05 12:0x ICT — completeness-dispatch batch-isolation delta: PASS
+
+- Recorded Claude's PASS verdict for `d85aa20`, note resolved.
+- `RQ-20260805-1147-...` updated from OPEN to REVIEWED; review debt is 0 OPEN.
+- Review/status update only; no production state changed.
+
 ## 2026-08-05 11:46 ICT — completeness-dispatch batch-isolation note corrected
 
 - Added per-run exception isolation so every pending completeness snapshot is attempted even when

@@ -1,5 +1,15 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-05 12:0x ICT — completeness-dispatch batch-isolation delta PASSED; review debt clear
+
+Confirmed `d85aa20`'s per-run try/catch is inside the `forEach` callback, so one pipeline run's
+delivery failure can no longer abort the batch; the sanitized aggregate throw correctly fires only
+after every pending run has been attempted. Read the complete current file end-to-end and confirmed
+`deliverV3DailyCompletenessReport_`'s `ALERT_FAILED`-before-fallback ordering and distinct-recipient
+enforcement are byte-for-byte unchanged — the fix is precisely scoped to the dispatch loop.
+Independently re-verified with `node --check`. `scripts/review_status.sh` reports 0 OPEN. No
+trigger, email, BigQuery mutation, deployment, GCS, scheduler, or SAP action occurred.
+
 ## 2026-08-05 11:46 ICT — completeness-dispatch batch-isolation note corrected; delta review pending
 
 The dispatcher now catches each pending pipeline run's delivery failure, continues attempting every
