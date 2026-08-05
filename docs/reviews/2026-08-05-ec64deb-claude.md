@@ -60,7 +60,11 @@ Verdict: **PASS**
   triggered, or executed by this review. A stray local `__pycache__/main.cpython-312.pyc` in the
   working tree is untracked (confirmed via `git ls-files`), not part of the commit.
 - **Evidence independently re-verified**: `python -m py_compile infra/post_import_dispatcher/main.py`
-  passes; `git diff --check ec64deb^ ec64deb` passes (no trailing whitespace). Cross-checked the
+  passes; `git diff --check ec64deb^ ec64deb` passes (no trailing whitespace). A later commit
+  (`fd56e28`) added `infra/post_import_dispatcher/test_main.py` (5 tests: event normalization,
+  deterministic lowercase-hex claim token, unsafe-filename rejection, non-terminal-status
+  rejection, naive-datetime rejection) — independently ran `python -m unittest test_main -v` after
+  installing the package's own declared Flask dependency: all 5 pass. Cross-checked the
   workflow YAML's positional field reads against DDL 072's actual `SELECT` column order —
   `bind_post_import` reads `rows[0].f[1..3]` for `execution_name/export_run_id/sap_file_name`,
   matching `sp_bind_v3_post_import_execution`'s `SELECT request_status, workflow_execution_name,
