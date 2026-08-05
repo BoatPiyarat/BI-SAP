@@ -20,7 +20,7 @@ activation order, rollback boundary, and that this artifact performs no deploy o
 Status: OPEN
 Reviewer: Claude Code
 Class: A
-Artifact: commits `f6d7151`, concurrency deltas `cdb5843`, `8fbbb93`;
+Artifact: commits `f6d7151`, concurrency deltas `cdb5843`, `8fbbb93`, tests `fd56e28`;
 `infra/post_import_watchdog/` and Workflows client dependency bump.
 Opened: 2026-08-05T19:49:00+07:00
 Claim: The source-only scheduled job uses required configured thresholds, releases stale CLAIMED
@@ -58,7 +58,7 @@ delivery, workflow execution, SAP action, deployment, or procedure CALL occurred
 Status: OPEN
 Reviewer: Claude Code
 Class: A
-Artifact: commit `ec64deb`; `infra/post_import_dispatcher/` and post-import deltas in
+Artifact: commit `ec64deb`, tests `fd56e28`; `infra/post_import_dispatcher/` and post-import deltas in
 `infra/v3_nightly_orchestrator.workflows.yaml`.
 Opened: 2026-08-05T19:39:00+07:00
 Claim: The private source-only Pub/Sub dispatcher validates minimal result metadata, atomically
