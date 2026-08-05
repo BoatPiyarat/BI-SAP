@@ -1,5 +1,14 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-05 09:46 ICT — Unit 6 daily completeness delivery source ready
+
+- Added source-only Apps Script dispatcher and deployment/rehearsal contract for pending immutable
+  V3 completeness snapshots.
+- Primary mail success is the only route to `DELIVERED`; primary failure persists `ALERT_FAILED`
+  before a distinct fallback recipient is attempted.
+- Node syntax and whitespace validation passed; no deployment, trigger, email, or production state
+  changed.
+
 ## 2026-08-05 09:42 ICT — exact delivery-manifest conservation note corrected
 
 - Added bidirectional identity-set checks between the claimed pipeline payload and archive rows,

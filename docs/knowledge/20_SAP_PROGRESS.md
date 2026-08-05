@@ -1,5 +1,15 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-05 09:46 ICT — Unit 6 daily completeness delivery source ready
+
+New Apps Script source dispatches every immutable `READY_TO_ALERT`/`PENDING` completeness snapshot
+to a configured primary recipient, then records `DELIVERED` only after `MailApp` succeeds. A primary
+send failure first persists `ALERT_FAILED` and then attempts a required, distinct fallback recipient;
+fallback failure raises rather than claiming success. The body contains only run-level state and
+normalized metrics, not CSV/SAP raw data. Node syntax and whitespace validation passed. Deployment
+still requires Boat-approved, proven primary/fallback recipients, Class A review, trigger approval,
+and a success/failure rehearsal; no production state changed.
+
 ## 2026-08-05 09:42 ICT — exact delivery-manifest conservation note corrected; delta review pending
 
 The delivery-manifest review found that equal counts across `p_pipeline_run_id` and
