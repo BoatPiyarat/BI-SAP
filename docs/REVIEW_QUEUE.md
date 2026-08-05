@@ -3,6 +3,21 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+## RQ-20260805-2113-post-import-human-inputs
+Status: OPEN
+Reviewer: Claude Code
+Class: B
+Artifact: commit `bb2e957`; `docs/INPUTS_NEEDED.md`.
+Opened: 2026-08-05T21:13:24+07:00
+Claim: The canonical human-input list now states the exact residual permission decision Boat must
+make and the administrator-owned GCP actions required before rehearsal readiness, without implying
+that broad project approval authorizes direct outbox DML or that the current account can perform
+the IAM changes.
+Evidence: content references the already reviewed administrator-completion runbook and the live
+activation checker's exact three blockers. Review documentation accuracy, service-account/table
+scope, honest residual-risk wording, authorized-routine alternative, and absence of new authority
+or executable mutation.
+
 ## RQ-20260805-2112-machine-failing-rehearsal-verifier
 Status: OPEN
 Reviewer: Claude Code
