@@ -1,5 +1,13 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-05 09:42 ICT — exact delivery-manifest conservation note corrected
+
+- Added bidirectional identity-set checks between the claimed pipeline payload and archive rows,
+  binding `(order_item, period, charge_id, payload_hash)` and excluding balance-held identities.
+- This closes the review finding that equal counts for independently supplied run IDs could accept
+  different row sets; delta review is required before deployment.
+- Source-only change; no production state changed.
+
 ## 2026-08-05 10:0x ICT — DDL 062 reviewed: PASS with required conservation note
 
 - Recorded Claude's PASS-with-required-note verdict for `7d4866a`.

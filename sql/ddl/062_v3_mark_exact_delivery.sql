@@ -17,6 +17,8 @@ CREATE OR REPLACE PROCEDURE `pacific-plating-282708.sap_integration_v3.sp_mark_v
 BEGIN
   DECLARE v_identity_rows INT64;
   DECLARE v_archive_rows INT64;
+  DECLARE v_identity_unmatched INT64;
+  DECLARE v_archive_unmatched INT64;
 
   ASSERT NULLIF(TRIM(p_pipeline_run_id),'') IS NOT NULL AS 'pipeline_run_id is required';
   ASSERT NULLIF(TRIM(p_export_run_id),'') IS NOT NULL AS 'export_run_id is required';
@@ -47,9 +49,35 @@ BEGIN
     FROM `pacific-plating-282708.sap_integration_v3.export_archive`
     WHERE export_run_id=p_export_run_id
       AND delivery_status='ARCHIVED_PENDING_OBJECT_METADATA');
+  SET v_identity_unmatched=(SELECT COUNT(*)
+    FROM `pacific-plating-282708.sap_integration_v3.v3_unit5_payload_identity` i
+    WHERE i.pipeline_run_id=p_pipeline_run_id AND i.file_role='NEWPAYMENT'
+      AND NOT EXISTS (SELECT 1
+        FROM `pacific-plating-282708.sap_integration_v3.v3_unit5_balance_hold` h
+        WHERE h.pipeline_run_id=p_pipeline_run_id AND h.order_item=i.order_item)
+      AND NOT EXISTS (SELECT 1
+        FROM `pacific-plating-282708.sap_integration_v3.export_archive` a
+        WHERE a.export_run_id=p_export_run_id
+          AND a.delivery_status='ARCHIVED_PENDING_OBJECT_METADATA'
+          AND a.order_item=i.order_item AND a.period=i.period AND a.charge_id=i.charge_id
+          AND a.payload_hash=i.payload_hash));
+  SET v_archive_unmatched=(SELECT COUNT(*)
+    FROM `pacific-plating-282708.sap_integration_v3.export_archive` a
+    WHERE a.export_run_id=p_export_run_id
+      AND a.delivery_status='ARCHIVED_PENDING_OBJECT_METADATA'
+      AND NOT EXISTS (SELECT 1
+        FROM `pacific-plating-282708.sap_integration_v3.v3_unit5_payload_identity` i
+        WHERE i.pipeline_run_id=p_pipeline_run_id AND i.file_role='NEWPAYMENT'
+          AND i.order_item=a.order_item AND i.period=a.period AND i.charge_id=a.charge_id
+          AND i.payload_hash=a.payload_hash
+          AND NOT EXISTS (SELECT 1
+            FROM `pacific-plating-282708.sap_integration_v3.v3_unit5_balance_hold` h
+            WHERE h.pipeline_run_id=p_pipeline_run_id AND h.order_item=i.order_item)));
   ASSERT v_identity_rows>0 AS 'delivery cannot be marked for a zero-row run';
   ASSERT v_archive_rows=v_identity_rows
     AS 'archive ledger does not conserve against the same pipeline run identity';
+  ASSERT v_identity_unmatched=0 AND v_archive_unmatched=0
+    AS 'archive ledger identity set does not exactly match the same pipeline run payload';
   ASSERT (SELECT COUNT(DISTINCT archive_uri)
     FROM `pacific-plating-282708.sap_integration_v3.export_archive`
     WHERE export_run_id=p_export_run_id)=1 AS 'export run has multiple archive URIs';

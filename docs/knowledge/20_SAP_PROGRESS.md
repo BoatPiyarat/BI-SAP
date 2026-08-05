@@ -1,5 +1,15 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-05 09:42 ICT — exact delivery-manifest conservation note corrected; delta review pending
+
+The delivery-manifest review found that equal counts across `p_pipeline_run_id` and
+`p_export_run_id` do not prove the same identities were archived. DDL 062 now checks both
+directions of the set equality using `(order_item, period, charge_id, payload_hash)`, excluding the
+same held identities on the pipeline side, before it can mark delivery. This is in addition to the
+existing equal-count guard, exact filename/hash evidence, and atomic three-table write. The delta
+remains source-only and must receive Class A review before deployment; no procedure call, GCS write,
+Gmail, BigQuery, scheduler, or SAP state changed.
+
 ## 2026-08-05 10:0x ICT — exact-delivery manifest writer PASS with required conservation note
 
 Reviewed DDL 062 (`7d4866a`) against all six checklist items in the review request. Filename-
