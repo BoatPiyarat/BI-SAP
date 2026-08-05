@@ -3,6 +3,27 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+## RQ-20260805-2136-two-name-delivery-result-contract
+Status: OPEN
+Reviewer: Claude Code
+Class: A
+Artifact: commit `30bd693`; DDL 070/062, delivery workflow/promoter, Apps Script contract/comment,
+promoter tests, and evidence/progress docs.
+Opened: 2026-08-05T21:36:38+07:00
+Claim: The source-only delta closes the confirmed one-name binding gap by atomically persisting
+both the exact `INSURANCE_RCB_...csv` production basename and the distinct
+`RCB_MOTOR_<production basename>` SAP-result name. The workflow derives them only after
+exactly-one immutable archive-object census; the promoter copies by production name; Apps Script
+continues exact-matching the SAP-result name; a static scheduler no longer supplies a dynamic
+shard-bearing filename.
+Evidence: DDL 070 and 062 mandatory wrapper dry-runs passed at 0 bytes; workflow YAML parsed with
+Cloud SDK's bundled ruamel; Apps Script syntax passed through Node stdin; promoter Python compile
+and three unit tests passed; `git diff --check` passed. Review DDL 070 migration/nullability and
+deployment order, DDL 062 signature/parameter order/replay guards/atomic insert, closed filename
+policy, workflow zero/one/many object branches and safe SQL construction, promoter API contract
+and exact-generation behavior, Apps Script lookup compatibility, rollback, and that
+`delivery_enabled:false` remains unchanged with no deployment/CALL/GCS/Gmail/SAP action.
+
 ## RQ-20260805-2129-log21183-two-name-binding-gap
 Status: OPEN
 Reviewer: Claude Code
