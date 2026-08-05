@@ -44,6 +44,13 @@ Once available, deploy the reviewed source/manifest, set `PROJECT_ID`, `LOG_BUCK
 synthetic rehearsal pass. The first authorization must be completed by the mailbox owner because
 the script uses Gmail, BigQuery, Cloud Storage, Pub/Sub, and send-mail scopes.
 
+**Separate completeness-report inputs:** approve one primary recipient that reaches Boat and one
+distinct independent fallback recipient, plus the trigger cadence for
+`dispatchPendingV3DailyCompletenessReports`. DDL 067 and the reviewed dispatcher remain source
+only, and the nightly workflow does not call the snapshot procedure. A project staged with only
+`sap_result_ingestion.gs` does not contain the completeness dispatcher; see
+`FINDINGS_DAILY_COMPLETENESS_RUNTIME_GAP_20260805.md`.
+
 ## RESOLVED 2026-08-04 — LogID 21183 filename provenance and mirror reconciliation
 
 The approved 2026-08-04 post-import extract/load/mirror/reconciliation completed. Boat confirmed

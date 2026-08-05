@@ -25,6 +25,8 @@ This is the short operational index. Exact commands and evidence requirements re
 - [ ] Gmail attachment-ingestion Apps Script is deployed and authorized.
 - [ ] A recurring V3 workflow trigger exists.
 - [ ] Finance cutoff registry and reviewed automatic monthly transition are live.
+- [ ] DDL 067 completeness snapshot is live and called after the final zero/delivered outcome.
+- [ ] Completeness-mail dispatcher, distinct primary/fallback recipients, and trigger are proven.
 
 No post-import workflow execution, rehearsal fixture call, Gmail publication, production GCS
 delivery, or SAP action was created by this activation work.
@@ -91,11 +93,14 @@ a separate reviewed production change:
 3. deploy the reviewed private promoter and create the recurring V3 workflow trigger PAUSED;
    require `scripts/check_v3_delivery_control_plane.ps1` to return `safety_passed=true` and
    `control_plane_ready=true` before any one-file production rehearsal;
-4. keep legacy extract/query schedules until the V3 trigger and delivery path pass the defined
+4. after the controlled zero/delivered outcome is final, deploy and rehearse the separate
+   completeness snapshot/dispatcher path from
+   `../FINDINGS_DAILY_COMPLETENESS_RUNTIME_GAP_20260805.md`;
+5. keep legacy extract/query schedules until the V3 trigger and delivery path pass the defined
    overlap/shadow gate, then pause legacy producers in one rollback-safe cutover;
-5. never enable a recurring trigger while `delivery_enabled: false` and call the result “daily
+6. never enable a recurring trigger while `delivery_enabled: false` and call the result “daily
    interface automation”;
-6. retain July close `2026-08-03 15:00 ICT` and August close
+7. retain July close `2026-08-03 15:00 ICT` and August close
    `2026-09-01 14:00 ICT`; Finance supplies future monthly cutoffs. The current workflow does not
    call `sp_close_open_period`, and that procedure requires the next cutoff at call time; close
    `../FINDINGS_MONTHLY_CUTOFF_AUTOMATION_GAP_20260805.md` before claiming automation across a

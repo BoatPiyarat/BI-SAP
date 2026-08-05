@@ -1,5 +1,15 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-05 22:05 ICT — daily completeness runtime gap exposed
+
+Canonical inventory/source tracing confirmed DDL 067 is reviewed but not live, the workflow and
+Units 2–5 wrapper never call its snapshot procedure, and the reviewed batch-isolated completeness
+Apps Script has no deployment/properties/trigger. Added explicit completion items and the missing
+human inputs: a Boat-reaching primary, a distinct independent fallback, and approved cadence.
+The snapshot call belongs after the final zero-file or exact delivered-manifest outcome, not in
+post-import activation. Documentation only; no DDL, call, Apps Script, OAuth, email, trigger,
+BigQuery, workflow, GCS, scheduler, or SAP mutation.
+
 ## 2026-08-05 22:01 ICT — monthly cutoff automation gap exposed
 
 Repository source tracing confirmed the nightly workflow calls only the Units 2–5 wrapper, and

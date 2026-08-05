@@ -1,5 +1,12 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-05 22:05 ICT — expose daily completeness runtime gap
+
+- Confirmed DDL 067, its snapshot call, and the reviewed mail dispatcher are not live/wired.
+- Added ordered cutover tasks and explicit primary/fallback recipient plus cadence inputs.
+- Kept snapshot ordering after the final zero/delivered outcome to preserve its manifest gate.
+- Documentation only; no snapshot, email, Apps Script, trigger, or production mutation.
+
 ## 2026-08-05 22:01 ICT — expose monthly cutoff automation gap
 
 - Confirmed from source that the nightly workflow/wrapper never calls `sp_close_open_period`.
