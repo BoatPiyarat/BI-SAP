@@ -83,8 +83,8 @@ main:
                   result: post_import_binding
               - exit_duplicate_post_import_execution:
                   switch:
-                    - condition: ${post_import_binding != workflow_execution_name}
-                      return: '${"DUPLICATE_NOOP:" + post_import_binding}'
+                    - condition: ${post_import_binding.execution_name != workflow_execution_name}
+                      return: '${"DUPLICATE_NOOP:" + post_import_binding.execution_name}'
 
     - log_start:
         call: write_run_log
@@ -296,12 +296,43 @@ main:
         switch:
           - condition: ${post_import_mode}
             steps:
+              - reconcile_post_import_rows:
+                  call: reconcile_post_import
+                  args:
+                    project: ${project}
+                    child_pipeline_run_id: ${run_id}
+                    log_id: ${post_import_log_id}
+                    export_run_id: ${post_import_binding.export_run_id}
+                    sap_file_name: ${post_import_binding.sap_file_name}
+                  result: post_import_reconciliation
+              - gate_post_import_residual:
+                  switch:
+                    - condition: ${post_import_reconciliation.pending_rows > 0}
+                      steps:
+                        - complete_post_import_human_action:
+                            call: complete_post_import
+                            args:
+                              project: ${project}
+                              log_id: ${post_import_log_id}
+                              workflow_execution_name: ${workflow_execution_name}
+                              terminal_status: "HUMAN_ACTION"
+                              error_template: "ROW_RECONCILIATION_RESIDUAL"
+                        - alert_post_import_residual:
+                            call: fail_closed
+                            args:
+                              project: ${project}
+                              run_id: ${run_id}
+                              alert_topic: ${alert_topic}
+                              step: "POST_IMPORT_RECONCILIATION"
+                              reason: '${"row conservation left " + string(post_import_reconciliation.pending_rows) + " PENDING_ACK identities for LogID " + post_import_log_id}'
               - complete_post_import_success:
                   call: complete_post_import
                   args:
                     project: ${project}
                     log_id: ${post_import_log_id}
                     workflow_execution_name: ${workflow_execution_name}
+                    terminal_status: "SUCCEEDED"
+                    error_template: null
               - return_post_import:
                   return: ${run_id}
     # Units 2-5 share this exact run_id. The SQL wrapper evaluates notification and release gates
@@ -400,17 +431,20 @@ bind_post_import:
           - condition: ${len(rows) != 1}
             raise: "post-import execution bind returned an unexpected row count"
     - out:
-        return: ${rows[0].f[1].v}
+        return:
+          execution_name: ${rows[0].f[1].v}
+          export_run_id: ${rows[0].f[2].v}
+          sap_file_name: ${rows[0].f[3].v}
 
 complete_post_import:
-  params: [project, log_id, workflow_execution_name]
+  params: [project, log_id, workflow_execution_name, terminal_status, error_template]
   steps:
     - complete:
         call: googleapis.bigquery.v2.jobs.query
         args:
           projectId: ${project}
           body:
-            query: "CALL `pacific-plating-282708.sap_integration_v3.sp_complete_v3_post_import_refresh`(@log_id,@workflow_execution_name,'SUCCEEDED',NULL)"
+            query: "CALL `pacific-plating-282708.sap_integration_v3.sp_complete_v3_post_import_refresh`(@log_id,@workflow_execution_name,@terminal_status,@error_template)"
             useLegacySql: false
             location: "asia-southeast1"
             timeoutMs: 60000
@@ -422,13 +456,65 @@ complete_post_import:
               - name: "workflow_execution_name"
                 parameterType: { type: "STRING" }
                 parameterValue: { value: '${workflow_execution_name}' }
+              - name: "terminal_status"
+                parameterType: { type: "STRING" }
+                parameterValue: { value: '${terminal_status}' }
+              - name: "error_template"
+                parameterType: { type: "STRING" }
+                parameterValue: { value: '${error_template}' }
         result: completion
     - gate_complete:
         switch:
           - condition: ${not default(map.get(completion, "jobComplete"), false)}
-            raise: "post-import success completion did not complete synchronously"
+            raise: "post-import terminal completion did not complete synchronously"
     - out:
         return: true
+
+reconcile_post_import:
+  params: [project, child_pipeline_run_id, log_id, export_run_id, sap_file_name]
+  steps:
+    - reconcile:
+        call: googleapis.bigquery.v2.jobs.query
+        args:
+          projectId: ${project}
+          body:
+            query: "CALL `pacific-plating-282708.sap_integration_v3.sp_reconcile_v3_post_import_rows`(@child_pipeline_run_id,@log_id,@export_run_id,@sap_file_name)"
+            useLegacySql: false
+            location: "asia-southeast1"
+            timeoutMs: 60000
+            parameterMode: "NAMED"
+            queryParameters:
+              - name: "child_pipeline_run_id"
+                parameterType: { type: "STRING" }
+                parameterValue: { value: '${child_pipeline_run_id}' }
+              - name: "log_id"
+                parameterType: { type: "STRING" }
+                parameterValue: { value: '${log_id}' }
+              - name: "export_run_id"
+                parameterType: { type: "STRING" }
+                parameterValue: { value: '${export_run_id}' }
+              - name: "sap_file_name"
+                parameterType: { type: "STRING" }
+                parameterValue: { value: '${sap_file_name}' }
+        result: reconciliation
+    - gate_complete:
+        switch:
+          - condition: ${not default(map.get(reconciliation, "jobComplete"), false)}
+            raise: "post-import row reconciliation did not complete synchronously"
+    - read_rows:
+        assign:
+          - rows: ${default(map.get(reconciliation, "rows"), [])}
+    - require_one_row:
+        switch:
+          - condition: ${len(rows) != 1}
+            raise: "post-import row reconciliation returned an unexpected row count"
+    - out:
+        return:
+          total_rows: ${int(rows[0].f[0].v)}
+          acknowledged_rows: ${int(rows[0].f[1].v)}
+          rejected_rows: ${int(rows[0].f[2].v)}
+          pending_rows: ${int(rows[0].f[3].v)}
+          manifest_status: ${rows[0].f[4].v}
 
 # Exact-generation production promotion. Zero archive rows is a healthy no-file night. Any
 # ambiguous ledger/object or copy mismatch fails closed before DELIVERED is persisted.

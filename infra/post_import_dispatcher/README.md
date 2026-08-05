@@ -9,8 +9,10 @@ passes only the LogID and token in the Workflows argument. Because the Execution
 execution name, the workflow reconstructs its own full resource name and atomically binds it
 through DDL 072 before any Unit-1 side effect. If duplicate executions are created, only the
 winning bound execution proceeds; the others return `DUPLICATE_NOOP`.
-After a clean Unit 1, the workflow records `SUCCEEDED` before returning. A separate reviewed
-watchdog is still required to classify executions that terminate or time out before that write.
+After a clean Unit 1, the workflow runs DDL 073's exact row reconciliation. Zero residual rows
+records `SUCCEEDED`; any `PENDING_ACK` residual records `HUMAN_ACTION`, publishes the existing
+orchestrator alert, and fails closed. A separate reviewed watchdog is still required to classify
+executions that terminate or time out before either terminal write.
 
 Required configuration:
 

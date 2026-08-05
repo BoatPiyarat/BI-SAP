@@ -1,5 +1,13 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-05 19:44 ICT — exact post-import row reconciliation
+
+- Added DDL 073 exact archive-identity reconciliation against parsed row errors and the refreshed
+  SAP document mirror.
+- Added atomic archive/manifest ACK/reject evidence and strict row-count conservation.
+- Wired zero residual to `SUCCEEDED`; residuals become `HUMAN_ACTION` plus the existing alert path.
+- Source only; DDL dry-run passed at 0 bytes and review is required before deployment.
+
 ## 2026-08-05 19:37 ICT — post-import dispatcher and Unit-1-only mode
 
 - Added source-only private Pub/Sub push dispatcher with strict event validation and deterministic

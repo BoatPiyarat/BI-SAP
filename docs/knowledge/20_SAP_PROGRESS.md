@@ -1,5 +1,14 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-05 19:44 ICT — exact post-import row reconciliation source
+
+Added source-only DDL 073 and workflow wiring after the child Unit 1 refresh. It binds the parsed
+LIVE header and delivery manifest to the exact export run, conserves every archive identity into
+`ACKNOWLEDGED`, exact-detail `REJECTED_BY_SAP`, or `PENDING_ACK`, and writes row evidence plus both
+manifest states atomically. A residual completes the outbox as `HUMAN_ACTION` and alerts; zero
+residual completes `SUCCEEDED`. DDL 072 and 073 both passed 0-byte dry-runs. Nothing was deployed
+or executed.
+
 ## 2026-08-05 19:37 ICT — private post-import dispatcher source ready for review
 
 Added a source-only private Cloud Run Pub/Sub dispatcher and Unit-1 workflow self-bind mode. The
