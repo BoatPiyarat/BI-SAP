@@ -3,6 +3,26 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+## RQ-20260805-2031-post-import-inert-runtime-deployment
+Status: OPEN
+Reviewer: Claude Code
+Class: A
+Artifact: commit `8fa1cfd`; live deployment evidence in
+`docs/design/POST_IMPORT_AUTOMATION_DEPLOYMENT.md`, `docs/AS_BUILT_V3.md`, progress, and changelog.
+Opened: 2026-08-05T20:31:52+07:00
+Claim: The reviewed dispatcher and watchdog were deployed fail-closed and remain unable to receive
+or process production events. The dispatcher is private/internal with no invoker; the watchdog is
+unscheduled, unexecuted, single-task, zero-retry, and explicitly configured. Only inert input/DLQ
+topics and a retained DLQ subscription exist. IAM denials and the rejected direct-outbox grant are
+recorded without substituting broader roles, while Gmail publication, push subscription, scheduler,
+workflow execution, GCS delivery, and SAP action remain absent.
+Evidence: live `gcloud run services describe/get-iam-policy`, `run jobs describe`, and Pub/Sub
+list output captured revision `sap-post-import-dispatcher-00001-qd4`, empty dispatcher IAM policy,
+Ready watchdog configuration, two topics, and only the DLQ evidence subscription. Review the live
+resource claims, timeout calculation, no-trigger/no-execution boundary, IAM failure accuracy,
+least-privilege stop, exact remaining administrator actions, and that no source deploy beyond the
+already-PASS artifacts occurred.
+
 ## RQ-20260805-1956-post-import-activation-rehearsal
 Status: REVIEWED
 Reviewer: Claude Code
