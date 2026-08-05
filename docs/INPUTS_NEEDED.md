@@ -4,6 +4,32 @@ Created 2026-07-27 per `TASK_V3_GAP_CLOSURE_v2.md` (A0, A5, Housekeeping — "ke
 Nothing here blocks build work that doesn't depend on the specific answer; each item notes what
 IS being done in the meantime.
 
+## Boat + GCP IAM administrator — post-import runtime activation
+
+**Boat decision required:** explicitly approve or reject table-level
+`roles/bigquery.dataEditor` for both dedicated runtime identities on only
+`sap_integration_v3.v3_post_import_refresh_outbox`:
+
+- `sap-post-import-dispatch@pacific-plating-282708.iam.gserviceaccount.com`
+- `sap-post-import-watchdog@pacific-plating-282708.iam.gserviceaccount.com`
+
+This exact-table grant is operationally sufficient but permits direct table DML outside the
+reviewed procedures. Approval of a PASS review or of the overall project does not by itself record
+informed acceptance of that residual permission. The alternative authorized-routine design needs
+the routines in a different dataset from the protected table and therefore needs a separate
+exception to the current `sap_integration_v3`-only DDL rule.
+
+**Administrator action required after Boat's decision:** use an account with `iam.roles.create`,
+project IAM administration, and Cloud Run/Pub/Sub service-policy authority to run the already
+reviewed [post-import administrator completion](design/POST_IMPORT_ADMIN_COMPLETION.md).
+It creates the two narrow custom Workflows roles, binds the dedicated identities, creates the
+authenticated push subscription, and creates then pauses the watchdog scheduler. Do not resume
+the scheduler or populate the Gmail publisher topic during this step.
+
+The live activation checker currently passes safety and reports exactly three readiness blockers:
+dispatcher `run.invoker`, authenticated push subscription, and watchdog scheduler. The current
+`data@rabbit.co.th` account cannot complete the administrator-owned policy changes.
+
 ## Boat / Google Apps Script owner — Unit 6 project identity and authorization
 
 **Needed to finish daily automation:** provide or create the Apps Script project that will own
