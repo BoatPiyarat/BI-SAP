@@ -3,6 +3,24 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+## RQ-20260805-2207-numeric-alert-config-inputs
+Status: OPEN
+Reviewer: Claude Code
+Class: A
+Artifact: commit `81c7f9a`; canonical input/checklist clarification.
+Opened: 2026-08-05T22:07:03+07:00
+Claim: Boat's general approval of alert thresholds/config does not provide executable numeric rows.
+Reviewed DDL 066/068 deliberately seed none, and repository search found no production
+`max_record_increase`/`max_order_increase` values. The canonical input list now names the exact
+status/check-level values and effective dates required without converting backlog, fixtures, or
+the obsolete global `>60` into policy.
+Evidence: full DDL 066/068 and repo-wide threshold-field search were inspected;
+`git diff --check` passed. No live recheck was made under the GCP tool usage limit. No threshold,
+history, config, DDL, schedule, alert, email, BigQuery, or SAP mutation occurred. Review that no
+approved numeric artifact was missed, that the required input shape matches both table schemas and
+new-check onboarding, that general approval is not overruled but correctly distinguished from
+missing values, and that this belongs on the unattended completion checklist.
+
 ## RQ-20260805-2205-daily-completeness-runtime-gap
 Status: OPEN
 Reviewer: Claude Code
