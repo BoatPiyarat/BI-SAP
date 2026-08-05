@@ -1,5 +1,11 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-05 20:51 ICT — synthetic post-import fixture source ready
+
+- Added atomic, nonce-bound ACK, exact-rejection, and residual rehearsal fixtures in DDL 074.
+- Used shadow-only evidence URIs and dispatcher-valid synthetic identifiers.
+- Mandatory dry-run passed at 0 bytes; no deploy, CALL, GCS write, workflow, delivery, or SAP action.
+
 ## 2026-08-05 20:45 ICT — administrator completion runbook ready for review
 
 - Added exact custom-role, resource-IAM, authenticated push/DLQ, and paused-scheduler commands.

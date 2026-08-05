@@ -1,5 +1,14 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-05 20:51 ICT — atomic synthetic ACK/reject/residual fixture source
+
+Added source-only DDL 074 for three retained, isolated post-import rehearsal cases. ACK binds a
+current mirror tuple, REJECT uses the same mirror-match shape plus an exact row error to prove
+error precedence, and RESIDUAL has no possible mirror/error match and must fail to HUMAN_ACTION.
+All file/result URIs are under `gs://rcb-bronze-zone/post_import_rehearsal/`; the procedure writes
+no GCS object and calls no SAP/runtime API. The six fixture/outbox ledgers seed atomically, a nonce
+cannot be reused, and the mandatory dry-run passed at 0 bytes. Nothing was deployed or called.
+
 ## 2026-08-05 20:50 ICT — activation-check delta resolves required note; PASS
 
 `RQ-20260805-2035-post-import-activation-check` delta `aae4e01` reviewed —
