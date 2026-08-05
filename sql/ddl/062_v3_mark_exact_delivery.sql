@@ -1,6 +1,7 @@
 -- Class A / called only after an exact-generation, create-only GCS copy has succeeded.
 -- GCS is mutated by the orchestrator, not by this procedure. This procedure only persists
 -- delivery evidence; it never infers SAP pickup or row-level acknowledgement from the copy.
+-- Deploy reviewed DDL 070's production_file_name schema delta before this replacement.
 
 CREATE OR REPLACE PROCEDURE `pacific-plating-282708.sap_integration_v3.sp_mark_v3_exact_delivery`(
   p_pipeline_run_id STRING,
@@ -11,7 +12,8 @@ CREATE OR REPLACE PROCEDURE `pacific-plating-282708.sap_integration_v3.sp_mark_v
   p_production_generation STRING,
   p_size_bytes INT64,
   p_crc32c STRING,
-  p_sap_file_name STRING,
+  p_production_file_name STRING,
+  p_sap_result_file_name STRING,
   p_file_sha256 STRING
 )
 BEGIN
@@ -32,12 +34,18 @@ BEGIN
     AS 'production generation evidence is required';
   ASSERT p_size_bytes>0 AS 'production object must be non-empty';
   ASSERT NULLIF(TRIM(p_crc32c),'') IS NOT NULL AS 'matching CRC32C evidence is required';
-  ASSERT NULLIF(TRIM(p_sap_file_name),'') IS NOT NULL
-    AS 'exact SAP-facing filename evidence is required';
+  ASSERT REGEXP_CONTAINS(p_production_file_name,
+    r'^INSURANCE_RCB_[A-Za-z0-9._-]*[.]csv$')
+    AS 'exact production filename must satisfy the INSURANCE_RCB CSV contract';
+  ASSERT REGEXP_CONTAINS(p_sap_result_file_name,
+    r'^RCB_MOTOR_INSURANCE_RCB_[A-Za-z0-9._-]*[.]csv$')
+    AS 'exact SAP result filename must satisfy the RCB_MOTOR reporting contract';
   ASSERT REGEXP_CONTAINS(p_file_sha256,r'^[0-9A-Fa-f]{64}$')
     AS 'exact delivery SHA-256 evidence is required';
-  ASSERT REGEXP_EXTRACT(p_production_uri,r'([^/]+)$')=p_sap_file_name
-    AS 'SAP-facing filename must exactly equal the production object basename';
+  ASSERT REGEXP_EXTRACT(p_production_uri,r'([^/]+)$')=p_production_file_name
+    AS 'production filename must exactly equal the production object basename';
+  ASSERT p_sap_result_file_name=CONCAT('RCB_MOTOR_',p_production_file_name)
+    AS 'SAP result filename must be the approved BU reporting prefix plus production filename';
 
   SET v_identity_rows=(SELECT COUNT(*)
     FROM `pacific-plating-282708.sap_integration_v3.v3_unit5_payload_identity` i
@@ -87,8 +95,10 @@ BEGIN
     AS 'manifest/export destination already recorded; refusing replay';
   ASSERT (SELECT COUNT(*)
     FROM `pacific-plating-282708.sap_integration_v3.sap_delivery_manifest_v3`
-    WHERE export_run_id=p_export_run_id OR sap_file_name=p_sap_file_name)=0
-    AS 'SAP delivery manifest filename or export run already recorded; refusing replay';
+    WHERE export_run_id=p_export_run_id
+      OR production_file_name=p_production_file_name
+      OR sap_file_name=p_sap_result_file_name)=0
+    AS 'SAP delivery manifest production/result filename or export run already recorded';
 
   BEGIN TRANSACTION;
   UPDATE `pacific-plating-282708.sap_integration_v3.export_archive`
@@ -110,10 +120,10 @@ BEGIN
 
   INSERT INTO `pacific-plating-282708.sap_integration_v3.sap_delivery_manifest_v3`
     (export_run_id,production_uri,production_generation,sap_file_name,file_sha256,data_row_count,
-     delivery_status,recorded_at)
+     delivery_status,recorded_at,production_file_name)
   VALUES
-    (p_export_run_id,p_production_uri,p_production_generation,p_sap_file_name,p_file_sha256,
-     v_archive_rows,'DELIVERED',CURRENT_TIMESTAMP());
+    (p_export_run_id,p_production_uri,p_production_generation,p_sap_result_file_name,p_file_sha256,
+     v_archive_rows,'DELIVERED',CURRENT_TIMESTAMP(),p_production_file_name);
   COMMIT TRANSACTION;
 
   -- DELIVERED is only GCS evidence. PICKED_UP/ACKNOWLEDGED remain untouched until independent

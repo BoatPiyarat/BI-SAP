@@ -59,5 +59,10 @@ identified exactly one archive object, so no scheduler supplies a dynamic shard 
 Do not enable delivery or deploy the Apps Script publisher until the two-name delta passes Class-A
 review, deploys, and is included in the synthetic/controlled production rehearsal.
 
+Source correction is now prepared but not reviewed/deployed: DDL 070 adds
+`production_file_name`; DDL 062 persists and validates both names atomically; the workflow derives
+them only after exact-one object census; the promoter API copies by `production_file_name`; and the
+Apps Script continues exact-matching `sap_file_name` as the SAP-reported value.
+
 No manifest, table, GCS object, workflow, scheduler, Gmail label, delivery, or SAP state changed in
 this investigation.

@@ -1,5 +1,14 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-05 21:35 ICT — two-name delivery/result binding source ready
+
+Prepared a source-only correction for the confirmed LogID 21183 gap. DDL 070 adds the separate
+production basename; DDL 062 atomically validates/stores production and SAP-result names; the
+workflow derives both only after exactly-one archive-object census; and the promoter API now
+copies by `production_file_name`. Apps Script still exact-matches `sap_file_name`, now explicitly
+the SAP-reported value. Both DDL dry-runs passed at 0 bytes, workflow YAML parsed, Apps Script
+syntax passed, promoter compile and three unit tests passed. Nothing was deployed or called.
+
 ## 2026-08-05 21:30 ICT — daily automation completion checklist: Class-A review PASSED
 
 `RQ-20260805-2120-daily-automation-completion-checklist` reviewed and passed —

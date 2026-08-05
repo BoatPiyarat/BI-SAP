@@ -52,19 +52,21 @@ def promote():
         archive_generation = required_string(payload, "archive_generation")
         production_bucket_name = required_string(payload, "production_bucket")
         production_object = required_string(payload, "production_object")
-        sap_file_name = required_string(payload, "sap_file_name")
+        production_file_name = required_string(payload, "production_file_name")
 
         if not _GENERATION.fullmatch(archive_generation):
             raise ValueError("archive_generation must be a positive decimal generation")
-        if not _FILENAME.fullmatch(sap_file_name):
-            raise ValueError("sap_file_name must be a safe .csv basename")
+        if not _FILENAME.fullmatch(production_file_name):
+            raise ValueError("production_file_name must be a safe .csv basename")
         if archive_bucket_name != configured_name("ARCHIVE_BUCKET"):
             raise ValueError("archive_bucket does not match service configuration")
         if production_bucket_name != configured_name("PRODUCTION_BUCKET"):
             raise ValueError("production_bucket does not match service configuration")
         prefix = configured_name("PRODUCTION_PREFIX").rstrip("/") + "/"
-        if production_object != prefix + sap_file_name:
-            raise ValueError("production_object must be the configured prefix plus sap_file_name")
+        if production_object != prefix + production_file_name:
+            raise ValueError(
+                "production_object must be the configured prefix plus production_file_name"
+            )
         if archive_object.startswith("/") or ".." in archive_object.split("/"):
             raise ValueError("archive_object is not a safe object name")
     except (RuntimeError, ValueError) as error:
@@ -102,6 +104,6 @@ def promote():
         production_generation=str(destination.generation),
         size_bytes=destination.size,
         crc32c=destination.crc32c,
-        sap_file_name=sap_file_name,
+        production_file_name=production_file_name,
         file_sha256=file_sha256,
     )

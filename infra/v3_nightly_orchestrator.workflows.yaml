@@ -53,10 +53,9 @@ main:
           # Incident 21178: keep production delivery disabled until Unit 5 emits the complete
           # RCL period spine (all periods through TotalPeriods), not only the paid event row.
           - delivery_enabled: false
-          # A caller must provide the exact SAP-facing rename and authenticated promoter URL.
-          # Never infer the production basename from the archive object (LogID 21183 lesson).
+          # The caller supplies only the authenticated promoter URL. After exactly-one object
+          # census, the workflow validates and persists the distinct production/SAP-result names.
           - promotion_service_url: ${default(map.get(args, "promotion_service_url"), "")}
-          - sap_file_name: ${default(map.get(args, "sap_file_name"), "")}
           # A post-import execution must atomically bind its server-assigned identity before any
           # extract/load/mirror side effect. A duplicate execution exits without entering Unit 1.
           - post_import_log_id: ${default(map.get(args, "post_import_log_id"), "")}
@@ -353,7 +352,7 @@ main:
             steps:
               - require_delivery_contract:
                   switch:
-                    - condition: ${promotion_service_url == "" or sap_file_name == ""}
+                    - condition: ${promotion_service_url == ""}
                       steps:
                         - fail_missing_delivery_contract:
                             call: fail_closed
@@ -362,7 +361,7 @@ main:
                               run_id: ${run_id}
                               alert_topic: ${alert_topic}
                               step: "UNIT6_DELIVERY_CONTRACT"
-                              reason: "delivery requires explicit promotion_service_url and exact sap_file_name"
+                              reason: "delivery requires an explicit promotion_service_url"
               - promote_exact_archive:
                   call: promote_daily_archive
                   args:
@@ -370,7 +369,6 @@ main:
                     run_id: ${run_id}
                     alert_topic: ${alert_topic}
                     promotion_service_url: ${promotion_service_url}
-                    sap_file_name: ${sap_file_name}
                   result: delivery
               - gate_delivery_rows:
                   switch:
@@ -379,7 +377,7 @@ main:
               - build_delivery_statement:
                   assign:
                     - delivery_call_head: '${"CALL `pacific-plating-282708.sap_integration_v3.sp_mark_v3_exact_delivery`(\u0027" + run_id + "\u0027,\u0027" + delivery.export_run_id + "\u0027,\u0027" + delivery.archive_uri + "\u0027,\u0027" + delivery.archive_generation + "\u0027,"}'
-                    - delivery_call_tail: '${"\u0027" + delivery.production_uri + "\u0027,\u0027" + delivery.production_generation + "\u0027," + string(delivery.size_bytes) + ",\u0027" + delivery.crc32c + "\u0027,\u0027" + delivery.sap_file_name + "\u0027,\u0027" + delivery.file_sha256 + "\u0027);"}'
+                    - delivery_call_tail: '${"\u0027" + delivery.production_uri + "\u0027,\u0027" + delivery.production_generation + "\u0027," + string(delivery.size_bytes) + ",\u0027" + delivery.crc32c + "\u0027,\u0027" + delivery.production_file_name + "\u0027,\u0027" + delivery.sap_result_file_name + "\u0027,\u0027" + delivery.file_sha256 + "\u0027);"}'
               - persist_delivery:
                   call: run_bq_call
                   args:
@@ -519,7 +517,7 @@ reconcile_post_import:
 # Exact-generation production promotion. Zero archive rows is a healthy no-file night. Any
 # ambiguous ledger/object or copy mismatch fails closed before DELIVERED is persisted.
 promote_daily_archive:
-  params: [project, run_id, alert_topic, promotion_service_url, sap_file_name]
+  params: [project, run_id, alert_topic, promotion_service_url]
   steps:
     - find_archive:
         call: googleapis.bigquery.v2.jobs.query
@@ -587,7 +585,26 @@ promote_daily_archive:
         assign:
           - source_name: ${objects[0].name}
           - source_generation: ${string(objects[0].generation)}
-          - destination_name: '${"RCB_MOTOR/" + sap_file_name}'
+          - source_parts: ${text.split(objects[0].name, "/")}
+    - derive_delivery_names:
+        assign:
+          - production_file_name: ${source_parts[len(source_parts) - 1]}
+          - sap_result_file_name: '${"RCB_MOTOR_" + source_parts[len(source_parts) - 1]}'
+    - gate_delivery_names:
+        switch:
+          - condition: ${not text.match_regex(production_file_name, "^INSURANCE_RCB_[A-Za-z0-9._-]*[.]csv$") or not text.match_regex(sap_result_file_name, "^RCB_MOTOR_INSURANCE_RCB_[A-Za-z0-9._-]*[.]csv$")}
+            steps:
+              - fail_delivery_names:
+                  call: fail_closed
+                  args:
+                    project: ${project}
+                    run_id: ${run_id}
+                    alert_topic: ${alert_topic}
+                    step: "UNIT6_FILENAME_POLICY"
+                    reason: "production and SAP-result filenames do not satisfy the approved two-name policy"
+    - destination_metadata:
+        assign:
+          - destination_name: '${"RCB_MOTOR/" + production_file_name}'
           - expected_production_uri: '${"gs://interface-file/" + destination_name}'
     - promote_and_hash_exact_generation:
         call: http.post
@@ -602,7 +619,7 @@ promote_daily_archive:
             archive_generation: ${source_generation}
             production_bucket: "interface-file"
             production_object: ${destination_name}
-            sap_file_name: ${sap_file_name}
+            production_file_name: ${production_file_name}
         result: promotion_response
     - inspect_promotion:
         assign:
@@ -613,11 +630,11 @@ promote_daily_archive:
           - dest_generation: ${string(default(map.get(promotion, "production_generation"), ""))}
           - dest_size: ${int(default(map.get(promotion, "size_bytes"), "0"))}
           - dest_crc: ${default(map.get(promotion, "crc32c"), "")}
-          - promoted_sap_file_name: ${default(map.get(promotion, "sap_file_name"), "")}
+          - promoted_production_file_name: ${default(map.get(promotion, "production_file_name"), "")}
           - file_sha256: ${default(map.get(promotion, "file_sha256"), "")}
     - gate_promotion:
         switch:
-          - condition: ${promoted_archive_uri != "gs://rcb-bronze-zone/" + source_name or promoted_archive_generation != source_generation or production_uri != expected_production_uri or dest_generation == "" or dest_size <= 0 or dest_crc == "" or promoted_sap_file_name != sap_file_name or file_sha256 == ""}
+          - condition: ${promoted_archive_uri != "gs://rcb-bronze-zone/" + source_name or promoted_archive_generation != source_generation or production_uri != expected_production_uri or dest_generation == "" or dest_size <= 0 or dest_crc == "" or promoted_production_file_name != production_file_name or file_sha256 == ""}
             steps:
               - fail_promotion:
                   call: fail_closed
@@ -626,7 +643,7 @@ promote_daily_archive:
                     run_id: ${run_id}
                     alert_topic: ${alert_topic}
                     step: "UNIT6_EXACT_PROMOTION"
-                    reason: "promotion response did not bind the requested source generation, destination, SAP filename, and hash"
+                    reason: "promotion response did not bind the requested source generation, production filename, destination, and hash"
     - output:
         return:
           has_delivery: true
@@ -637,7 +654,8 @@ promote_daily_archive:
           production_generation: ${dest_generation}
           size_bytes: ${dest_size}
           crc32c: ${dest_crc}
-          sap_file_name: ${promoted_sap_file_name}
+          production_file_name: ${promoted_production_file_name}
+          sap_result_file_name: ${sap_result_file_name}
           file_sha256: ${file_sha256}
 
 # ----------------------------------------------------------------------

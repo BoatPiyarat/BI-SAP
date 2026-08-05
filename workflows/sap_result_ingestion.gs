@@ -79,6 +79,7 @@ function findCandidates_(now) {
 function groupByManifest_(config, candidates) {
   const result = {};
   candidates.forEach((candidate) => {
+    // sap_file_name is the exact SAP-reported result name, not the production GCS basename.
     const manifests = query_(config,
       `SELECT export_run_id, production_uri
        FROM \`${config.projectId}.${config.dataset}.sap_delivery_manifest_v3\`

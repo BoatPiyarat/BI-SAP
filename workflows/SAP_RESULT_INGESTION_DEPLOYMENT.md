@@ -15,10 +15,13 @@ Install separate 15-minute triggers for `pollSapResultMailbox` and
 
 Deploy DDL 070 before the reviewed replacement of DDL 062. After an exact-generation, create-only
 promotion copy, call `sp_mark_v3_exact_delivery` with its original evidence plus the exact
-SAP-facing production-object basename and its 64-hex SHA-256. The procedure atomically marks the
-archive ledger DELIVERED and persists exactly one `sap_delivery_manifest_v3` row with the immutable
-production URI/generation/hash, row count, and supplied filename. The filename is never inferred
-from the archive basename: LogID 21183 proved the names can differ.
+production-object basename, the distinct expected SAP-result filename, and its 64-hex SHA-256.
+The procedure atomically marks the archive ledger DELIVERED and persists exactly one
+`sap_delivery_manifest_v3` row with the immutable production URI/generation/hash, row count, and
+both names. For RCB Motor, the production basename must start `INSURANCE_RCB_`; SAP reports that
+same basename with the approved `RCB_MOTOR_` reporting prefix. LogID 21183 proved these names are
+not equal. The workflow constructs both only after exactly-one archive-object census and validates
+the closed naming policy before promotion.
 
 For the post-import refresh handoff, deploy reviewed DDL 071 first. Leave
 `POST_IMPORT_REFRESH_TOPIC` blank until the outbox dispatcher and its dedicated Pub/Sub topic are

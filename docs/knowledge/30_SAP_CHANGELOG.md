@@ -1,5 +1,15 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-05 21:35 ICT — prepare two-name delivery/result contract
+
+- Added `production_file_name` alongside SAP-reported `sap_file_name` in DDL 070.
+- DDL 062 validates the RCB Motor transformation and atomically stores both names.
+- Workflow derives the exact shard-bearing production basename after one-object census and
+  constructs the distinct BU-prefixed SAP-result name.
+- Promoter API now uses `production_file_name`; Apps Script exact-matches the result name.
+- DDL dry-runs 0 bytes, YAML parse PASS, Apps Script syntax PASS, promoter compile + 3 tests PASS.
+- Source only; no deploy, CALL, workflow execution, GCS write, Gmail, delivery, or SAP action.
+
 ## 2026-08-05 21:30 ICT — daily automation completion checklist review PASSED
 
 - `RQ-20260805-2120-daily-automation-completion-checklist` reviewed PASS —

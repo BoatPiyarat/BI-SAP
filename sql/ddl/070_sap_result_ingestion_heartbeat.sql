@@ -27,16 +27,21 @@ CREATE TABLE IF NOT EXISTS
     file_sha256 STRING NOT NULL,
     data_row_count INT64 NOT NULL,
     delivery_status STRING NOT NULL,
-    recorded_at TIMESTAMP NOT NULL
+    recorded_at TIMESTAMP NOT NULL,
+    production_file_name STRING NOT NULL
   )
 PARTITION BY DATE(recorded_at)
 CLUSTER BY sap_file_name, export_run_id
 OPTIONS (
-  description = 'Exact SAP-facing delivery identity. sap_file_name may differ from archive basename and must be persisted at production promotion time.'
+  description = 'Two-name delivery identity: production_file_name is the exact GCS basename; sap_file_name is the exact SAP-reported result name.'
 );
+
+ALTER TABLE `pacific-plating-282708.sap_integration_v3.sap_delivery_manifest_v3`
+ADD COLUMN IF NOT EXISTS production_file_name STRING;
 
 -- Deployment gate: the runtime writer must MERGE exactly one logical row per ingestor_name and
 -- the independent monitor must alert before a 60-minute successful-poll gap. The promotion writer
 -- must MERGE one active delivery-manifest row with the exact SAP-facing filename, generation, and
--- hash; it must not infer that filename from an archive URI. A ScriptProperties timestamp is not
+-- hash; it must persist both the exact production basename and SAP-reported result name. A
+-- ScriptProperties timestamp is not
 -- sufficient evidence because it is not independently observable.
