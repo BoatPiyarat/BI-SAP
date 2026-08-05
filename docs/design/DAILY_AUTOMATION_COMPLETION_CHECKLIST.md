@@ -24,6 +24,7 @@ This is the short operational index. Exact commands and evidence requirements re
 - [ ] Post-import runtime IAM is complete.
 - [ ] Gmail attachment-ingestion Apps Script is deployed and authorized.
 - [ ] A recurring V3 workflow trigger exists.
+- [ ] Finance cutoff registry and reviewed automatic monthly transition are live.
 
 No post-import workflow execution, rehearsal fixture call, Gmail publication, production GCS
 delivery, or SAP action was created by this activation work.
@@ -95,7 +96,10 @@ a separate reviewed production change:
 5. never enable a recurring trigger while `delivery_enabled: false` and call the result “daily
    interface automation”;
 6. retain July close `2026-08-03 15:00 ICT` and August close
-   `2026-09-01 14:00 ICT`; Finance supplies future monthly cutoffs.
+   `2026-09-01 14:00 ICT`; Finance supplies future monthly cutoffs. The current workflow does not
+   call `sp_close_open_period`, and that procedure requires the next cutoff at call time; close
+   `../FINDINGS_MONTHLY_CUTOFF_AUTOMATION_GAP_20260805.md` before claiming automation across a
+   month boundary.
 
 Rollback is configuration-first: blank Gmail publication, pause the watchdog and V3 recurring
 trigger, disable authenticated push delivery through a separately reviewed resource/IAM change,

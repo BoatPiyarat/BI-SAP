@@ -1,5 +1,15 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-05 22:01 ICT — monthly cutoff automation gap exposed
+
+Repository source tracing confirmed the nightly workflow calls only the Units 2–5 wrapper, and
+neither source calls `sp_close_open_period`. That reviewed atomic procedure also requires the
+next month's authoritative cutoff as a call argument. July/August are recorded, but the September
+closing cutoff remains Finance-owned and unknown. Documented the minimum append-only calendar,
+registration, transition, alert, and test design; added an explicit unchecked completion item.
+This is source evidence only: the GCP tool limit prevented a live recheck and mandatory SQL
+dry-run, so no DDL was drafted and no live-state claim or mutation occurred.
+
 ## 2026-08-05 21:55 ICT — owner-supplied Apps Script ID staging helper ready
 
 Added a local-only helper that requires the exact Script ID, refuses repository/non-empty output

@@ -1,5 +1,13 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-05 22:01 ICT — expose monthly cutoff automation gap
+
+- Confirmed from source that the nightly workflow/wrapper never calls `sp_close_open_period`.
+- Recorded that safe transition also needs the adjacent month's Finance-approved cutoff, which is
+  not yet available for September's eventual close.
+- Added the minimum append-only calendar/transition/alert design and an unchecked goal item.
+- Documentation only; no DDL drafted because mandatory live dry-run evidence was unavailable.
+
 ## 2026-08-05 21:55 ICT — add non-pushing Apps Script staging helper
 
 - Added `prepare_sap_result_apps_script.ps1` to validate the exact manifest and stage clasp names
