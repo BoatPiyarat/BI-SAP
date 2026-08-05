@@ -1,5 +1,13 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-05 21:21 ICT — single completion checklist for full daily automation
+
+Added a cross-computer operational index that separates the live inert post-import foundation,
+human/IAM/Apps Script prerequisites, ten-case synthetic rehearsal, post-import production
+activation, and the separate outbound-delivery/recurring-trigger cutover. It explicitly prevents a
+post-import-only activation or a scheduled delivery-disabled workflow from being labelled fully
+automatic and keeps the five-day unattended acceptance rule visible.
+
 ## 2026-08-05 21:19 ICT — canonical binding deployment review PASSED
 
 Claude Code matched all four live DDL 072 procedure bodies and the full workflow source to the

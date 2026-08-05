@@ -1,5 +1,12 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-05 21:21 ICT — index remaining daily-automation gates
+
+- Added `docs/design/DAILY_AUTOMATION_COMPLETION_CHECKLIST.md`.
+- Separated inert foundation, human prerequisites, rehearsal, post-import activation, outbound
+  delivery/scheduler cutover, rollback, and five-day goal acceptance.
+- Documentation only; no IAM, runtime, scheduler, workflow, GCS, delivery, or SAP mutation.
+
 ## 2026-08-05 21:19 ICT — canonical execution-binding deployment review PASSED
 
 - Live DDL 072 procedure bodies and workflow revision `000009-e96` match reviewed source.
