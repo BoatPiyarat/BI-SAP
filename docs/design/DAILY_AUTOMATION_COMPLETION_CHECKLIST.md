@@ -82,12 +82,16 @@ a separate reviewed production change:
 
 1. prove the delivery-enabled configuration against the exact-byte manifest, filename, generation,
    hash, 56-column contract, mapping/hold gates, and current OPEN accounting period;
-2. create the recurring V3 workflow trigger at the approved daily time;
-3. keep legacy extract/query schedules until the V3 trigger and delivery path pass the defined
+2. deploy and rehearse the two-name filename contract: exact production object basename
+   (`INSURANCE_RCB_...`) plus exact SAP-reported result name
+   (`RCB_MOTOR_<production basename>`). Current one-name DDL/workflow/Apps Script binding cannot
+   match the confirmed LogID 21183 shape;
+3. create the recurring V3 workflow trigger at the approved daily time;
+4. keep legacy extract/query schedules until the V3 trigger and delivery path pass the defined
    overlap/shadow gate, then pause legacy producers in one rollback-safe cutover;
-4. never enable a recurring trigger while `delivery_enabled: false` and call the result “daily
+5. never enable a recurring trigger while `delivery_enabled: false` and call the result “daily
    interface automation”;
-5. retain July close `2026-08-03 15:00 ICT` and August close
+6. retain July close `2026-08-03 15:00 ICT` and August close
    `2026-09-01 14:00 ICT`; Finance supplies future monthly cutoffs.
 
 Rollback is configuration-first: blank Gmail publication, pause the watchdog and V3 recurring

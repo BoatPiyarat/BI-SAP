@@ -9,6 +9,14 @@
   mirror path (not a mock), validating the delta's non-overlap-window safety requirement.
 - No mutation, deployment, or production action occurred in this review.
 
+## 2026-08-05 21:29 ICT — confirm production/SAP-result filename binding gap
+
+- LogID 21183 production basename `INSURANCE_RCB_...csv` does not equal SAP-reported
+  `RCB_MOTOR_INSURANCE_RCB_...csv`.
+- Current one-name DDL 062 → manifest → Apps Script exact match cannot close automatically.
+- Read-only job `bqjob_r11d028b8cfd54f2e_0000019fd251056f_1`, dry-run 308,583 bytes.
+- No manifest, GCS, workflow, Gmail, delivery, or SAP mutation.
+
 ## 2026-08-05 21:27 ICT — insurer-code disposition review PASSED
 
 - Reviewer independently reproduced the exact DDL 032/E3 query result: zero accepted/live master

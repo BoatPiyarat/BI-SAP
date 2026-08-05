@@ -11,6 +11,15 @@ rehearsal still touches real SAP infrastructure and needs a non-overlapping wind
 finding, not boilerplate caution. No contradictory "done" claims found; five-day acceptance bar and
 dependency ordering are sound.
 
+## 2026-08-05 21:29 ICT — confirmed two-name LogID 21183 automation blocker
+
+Read-only job `bqjob_r11d028b8cfd54f2e_0000019fd251056f_1` proved the delivered production
+basename was `INSURANCE_RCB_...csv` while SAP reported `RCB_MOTOR_INSURANCE_RCB_...csv`; dry-run
+was 308,583 bytes. Current DDL 062 persists the production basename as `sap_file_name`, while the
+Apps Script requires exact equality to the SAP-reported name. The future unattended result cannot
+bind to its manifest under the one-name contract. Delivery and Gmail publication remain disabled
+pending a reviewed two-name correction.
+
 ## 2026-08-05 21:27 ICT — insurer-code live disposition review PASSED
 
 Claude Code verified the four-code query is line-for-line identical to DDL 032's E3 source,
