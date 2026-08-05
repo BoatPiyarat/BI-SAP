@@ -7,7 +7,9 @@ production basename; DDL 062 atomically validates/stores production and SAP-resu
 workflow derives both only after exactly-one archive-object census; and the promoter API now
 copies by `production_file_name`. Apps Script still exact-matches `sap_file_name`, now explicitly
 the SAP-reported value. Both DDL dry-runs passed at 0 bytes, workflow YAML parsed, Apps Script
-syntax passed, promoter compile and three unit tests passed. Nothing was deployed or called.
+syntax passed, promoter compile and three unit tests passed. A zero-byte literal contract job
+(`bqjob_raebafbf0173312f_0000019fd25c5c37_1`) passed seven assertions against the exact LogID
+21183 name pair, including rejection of both swapped roles. Nothing was deployed or called.
 
 ## 2026-08-05 21:30 ICT — daily automation completion checklist: Class-A review PASSED
 
