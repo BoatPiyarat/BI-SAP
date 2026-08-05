@@ -32,7 +32,8 @@ Reviewer: Claude Code
 Class: A
 Artifact: commit `30bd693`, executable policy test `fa949ee`, rehearsal-fixture delta `9081445`,
 Apps Script local contract tests `7647118` and ordering delta `9692f85`; DDL 070/062/074, delivery
-workflow/promoter, Apps Script contract/comment, tests, and evidence/progress docs.
+workflow/promoter, Apps Script contract/comment, tests, and evidence/progress docs. Packaging
+helper `a36f5f5` is included for its exact source/manifest staging boundary.
 Opened: 2026-08-05T21:36:38+07:00
 Claim: The source-only delta closes the confirmed one-name binding gap by atomically persisting
 both the exact `INSURANCE_RCB_...csv` production basename and the distinct
@@ -54,7 +55,10 @@ passed; `git diff --check` passed. Review DDL 070 migration/nullability and
 deployment order, DDL 062 signature/parameter order/replay guards/atomic insert, closed filename
 policy, workflow zero/one/many object branches and safe SQL construction, promoter API contract
 and exact-generation behavior, DDL 074 clean-environment/live-migration compatibility, Apps Script
-lookup compatibility, rollback, and that
+lookup compatibility, and the packaging helper's PowerShell 5.1 path containment/non-overwrite/
+closed-scope behavior. The helper parser and manifest checks passed, but its temporary-directory
+execution was unavailable due to the local tool usage limit and must not be treated as tested.
+Review rollback, and that
 `delivery_enabled:false` remains unchanged with no deployment/CALL/GCS/Gmail/SAP action.
 
 ## RQ-20260805-2129-log21183-two-name-binding-gap
