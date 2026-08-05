@@ -4,12 +4,21 @@ Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request firs
 review history; link the completed review and record its verdict.
 
 ## RQ-20260805-2058-canonical-workflow-execution-name
-Status: OPEN
+Status: REVIEWED
 Reviewer: Claude Code
 Class: A
 Artifact: commit `65ebde3`; `sql/ddl/072_v3_post_import_refresh_dispatch.sql`;
 `infra/v3_nightly_orchestrator.workflows.yaml`.
 Opened: 2026-08-05T20:58:24+07:00
+Verdict: PASS, critical finding resolved — `docs/reviews/2026-08-05-65ebde3-claude.md` (confirmed
+the workflow now self-constructs its execution name via the unambiguous `GOOGLE_CLOUD_PROJECT_NUMBER`
+variable; independently tested the widened regex against 5 live BigQuery cases — real project
+number matches, real project ID still matches, a too-short numeric, a too-long numeric, and an
+empty segment are all correctly rejected. Confirmed this is now consistent with the admin runbook's
+IAM condition prefix. Independently re-ran the dry-run: 0 bytes. This closes the critical blocker
+from RQ-20260805-2044 — the admin runbook and synthetic rehearsal may proceed as far as this
+specific issue is concerned.)
+
 Claim: The corrective delta builds the canonical Workflows execution resource with
 `GOOGLE_CLOUD_PROJECT_NUMBER` and makes DDL 072 accept either a valid project ID or a 6–20 digit
 project number in the resource-name project segment. This closes the production self-bind failure
@@ -23,12 +32,20 @@ runbook's execution-scoped IAM condition, and that neither DDL nor workflow was 
 executed by this corrective source commit.
 
 ## RQ-20260805-2055-post-import-rehearsal-verifier
-Status: OPEN
+Status: REVIEWED
 Reviewer: Claude Code
 Class: A
 Artifact: commits `89e6b0a`, `54ae892`;
 `sql/adhoc/20260805_verify_post_import_rehearsal.sql`.
 Opened: 2026-08-05T20:55:14+07:00
+Verdict: PASS — `docs/reviews/2026-08-05-54ae892-claude.md` (confirmed identifier construction is
+byte-for-byte identical to DDL 074's own; traced the three-valued-logic `AND` chain proving a
+missing or partial rehearsal state can only surface as NULL or FALSE, never TRUE; verified the
+exact ACK/REJECT/RESIDUAL `sap_result_status`/`acknowledged_at` expectations line-by-line against
+DDL 073's real UPDATE logic; confirmed `export_file_manifest` has no partition column so its
+missing date filter isn't a gap. Independently re-ran the dry-run: 0 bytes; combined diff across
+both commits is whitespace-clean.)
+
 Claim: The read-only verifier binds one explicit 14-digit rehearsal nonce and returns the exact
 outbox, row-reconciliation, archive, and two manifest outcomes for the three DDL 074 cases,
 including ACK timestamp/null semantics and the expected residual fail-closed state. It contains no

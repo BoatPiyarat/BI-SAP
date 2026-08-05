@@ -1,5 +1,20 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-05 21:05 ICT — canonical execution-name fix and rehearsal verifier: both PASSED
+
+`RQ-20260805-2058-canonical-workflow-execution-name` (commit `65ebde3`) and
+`RQ-20260805-2055-post-import-rehearsal-verifier` (commits `89e6b0a`, `54ae892`) both reviewed and
+passed — `docs/reviews/2026-08-05-65ebde3-claude.md` and
+`docs/reviews/2026-08-05-54ae892-claude.md`. The execution-name fix: independently tested the
+widened regex against 5 live BigQuery cases (real project number, real project ID, too-short
+numeric, too-long numeric, empty segment) — all behaved exactly as intended, closing the critical
+blocker found in the admin-completion review. The rehearsal verifier: confirmed its identifier
+construction is byte-for-byte identical to DDL 074's, traced the three-valued-logic proof that a
+missing or partial rehearsal state can only surface as NULL/FALSE never TRUE, and verified its
+exact ACK/REJECT/RESIDUAL expectations against DDL 073's real UPDATE logic line-by-line. Both
+independently re-ran dry-runs at 0 bytes. No deploy, CALL, or production action occurred in either
+review.
+
 ## 2026-08-05 21:02 ICT — DDL 074 procedure deployed, not called
 
 After its Class-A PASS, the synthetic post-import fixture procedure was deployed by BigQuery job

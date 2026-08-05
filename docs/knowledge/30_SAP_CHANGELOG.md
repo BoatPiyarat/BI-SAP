@@ -1,5 +1,15 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-05 21:05 ICT — execution-name fix and rehearsal verifier reviews PASSED
+
+- `RQ-20260805-2058-canonical-workflow-execution-name` (commit `65ebde3`) reviewed PASS —
+  `docs/reviews/2026-08-05-65ebde3-claude.md`. Closes the critical DDL 072 blocker found earlier.
+- `RQ-20260805-2055-post-import-rehearsal-verifier` (commits `89e6b0a`, `54ae892`) reviewed PASS —
+  `docs/reviews/2026-08-05-54ae892-claude.md`.
+- Independently tested the widened execution-name regex against 5 live cases; independently traced
+  the verifier's NULL/FALSE-never-TRUE behavior and its expectations against DDL 073's real logic.
+- Both re-ran dry-runs at 0 bytes. No deploy, CALL, or production action in either review.
+
 ## 2026-08-05 21:02 ICT — DDL 074 procedure deployed inert
 
 - Deployed `sp_seed_post_import_rehearsal_fixtures` after Class-A PASS; job
