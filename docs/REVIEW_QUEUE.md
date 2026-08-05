@@ -41,12 +41,16 @@ bounded result set, and that no job, scheduler, IAM, workflow cancellation, aler
 or BigQuery mutation occurred.
 
 ## RQ-20260805-1946-post-import-row-conservation
-Status: OPEN
+Status: REVIEWED
 Reviewer: Claude Code
 Class: A
 Artifact: commits `ddfbcbd`, `823c322`; DDL 073 and post-import reconciliation delta in
 `infra/v3_nightly_orchestrator.workflows.yaml`. Binding-output dependency: `47a4e07`.
 Opened: 2026-08-05T19:46:00+07:00
+Verdict: PASS — `docs/reviews/2026-08-05-823c322-claude.md` (verified exact header/outbox/manifest
+binding, child Unit-1 proof, archive and three-ledger row conservation, exact-error precedence,
+mirror tuple/status, idempotent rerun, atomic writes, workflow positional decoding, residual
+HUMAN_ACTION/alert path, live dependency columns, and independent 0-byte dry-run).
 Claim: After the independently completed child Unit 1, every exact delivered archive identity is
 classified once as refreshed-mirror `ACKNOWLEDGED`, exact row-detail `REJECTED_BY_SAP`, or
 `PENDING_ACK`. The archive and both manifest ledgers change atomically; the three outcomes conserve
