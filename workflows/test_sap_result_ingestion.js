@@ -99,4 +99,59 @@ assert.throws(
   'more than one exact manifest must fail closed'
 );
 
-console.log('sap_result_ingestion local contract tests: 14 assertions passed');
+const pollConfig = { projectId: 'p', dataset: 'd' };
+const pollCandidate = {
+  logId: '21183',
+  message: {
+    getThread: () => ({
+      addLabel: () => pollEvents.push('label'),
+    }),
+  },
+};
+let pollEvents = [];
+context.getConfig_ = () => pollConfig;
+context.findCandidates_ = () => [pollCandidate];
+context.groupByManifest_ = () => ({ run: [pollCandidate] });
+context.persistCandidate_ = () => pollEvents.push('persist');
+context.requestPostImportRefresh_ = () => pollEvents.push('publish');
+context.getOrCreateLabel_ = () => 'ingested';
+context.writeHeartbeat_ = (_config, _startedAt, outcome, count) =>
+  pollEvents.push(`heartbeat:${outcome}:${count}`);
+context.notify_ = () => pollEvents.push('notify');
+context.pollSapResultMailbox();
+assert.deepEqual(
+  pollEvents,
+  ['persist', 'publish', 'label', 'heartbeat:SUCCESS:1'],
+  'success must persist and publish before applying the ingested label'
+);
+
+pollEvents = [];
+context.groupByManifest_ = () => ({});
+context.pollSapResultMailbox();
+assert.deepEqual(
+  pollEvents,
+  ['heartbeat:SUCCESS:1'],
+  'a candidate without an exact manifest must remain unlabeled and unpersisted'
+);
+
+pollEvents = [];
+const ambiguousCandidate = {
+  logId: '21184',
+  message: pollCandidate.message,
+};
+context.findCandidates_ = () => [pollCandidate, ambiguousCandidate];
+context.groupByManifest_ = () => ({
+  run: [pollCandidate, ambiguousCandidate],
+});
+assert.throws(
+  () => context.pollSapResultMailbox(),
+  /AMBIGUOUS_ACK/,
+  'multiple candidates for one run must fail closed'
+);
+assert.deepEqual(
+  pollEvents,
+  ['heartbeat:FAILED:0', 'notify'],
+  'ambiguity must write a failed heartbeat and alert without persistence or labeling'
+);
+
+console.log('sap_result_ingestion local contract tests: 18 assertions passed');

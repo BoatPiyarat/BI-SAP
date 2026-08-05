@@ -3,8 +3,9 @@
 ## 2026-08-05 21:51 ICT — make Apps Script name binding locally testable
 
 - Added a Node VM test for exact LogID 21183 metadata/sender parsing, TXT detail parsing,
-  SAP-result-name manifest match, production-name non-match, and ambiguous-manifest refusal.
-- All 14 assertions passed; Apps Script syntax and manifest JSON parsing also passed.
+  SAP-result-name manifest match, production-name non-match, ambiguous-manifest refusal, ordered
+  persist/publish/label, zero-manifest no-label, and ambiguity alert/failure behavior.
+- All 18 assertions passed; Apps Script syntax and manifest JSON parsing also passed.
 - Local/source-only; no Script ID, OAuth, Gmail, BigQuery, Pub/Sub, GCS, trigger, or deployment.
 
 ## 2026-08-05 21:48 ICT — add inert outbound control-plane gate

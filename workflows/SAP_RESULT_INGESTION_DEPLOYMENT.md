@@ -13,7 +13,8 @@ Get-Content -Raw -Encoding UTF8 workflows/sap_result_ingestion.appsscript.json |
 
 The test uses no Gmail, GCP, Script ID, OAuth token, or network call. It exercises the exact LogID
 21183-shaped metadata, sender boundary, TXT row parsing, SAP-result-name manifest match,
-production-basename non-match, and duplicate-manifest refusal.
+production-basename non-match, duplicate-manifest refusal, persist/publish/label ordering,
+zero-manifest no-label behavior, and ambiguity alert/failure behavior.
 
 Before deployment, deploy reviewed DDL 064 and 070, grant the script principal narrowly scoped Gmail,
 BigQuery, and `gs://rcb-bronze-zone/sap_import_logs/` access, and set Script Properties:
