@@ -7,7 +7,8 @@ review history; link the completed review and record its verdict.
 Status: OPEN
 Reviewer: Claude Code
 Class: A
-Artifact: commit `344e74d`, production metadata-read correction `2cfcffc`;
+Artifact: commit `344e74d`, production metadata-read correction `2cfcffc`, trigger-IAM checker
+delta `90e6fd5`;
 `docs/design/V3_DELIVERY_CONTROL_PLANE.md`;
 `scripts/check_v3_delivery_control_plane.ps1`.
 Opened: 2026-08-05T21:49:30+07:00
@@ -23,7 +24,9 @@ makes no live readiness claim. No deploy, IAM, scheduler, execution, GCS, Gmail,
 mutation occurred. Review PowerShell 5.1 compatibility and strict-mode behavior; Cloud Run
 service-account/ingress/env/IAM JSON shapes; conditional bucket-policy expression matching and
 whether archive Viewer plus production Creator/Viewer are minimally sufficient for source read,
-create-only rewrite, and destination metadata reload; Scheduler executions endpoint, OAuth identity,
+create-only rewrite, and destination metadata reload; custom-role list/project+workflow policy
+JSON shapes, exact execution-create permission and conditional binding, broader Invoker rejection;
+Scheduler executions endpoint, OAuth identity,
 base64 body decoding and nested `argument` JSON; create→pause→update race safety; exact workflow
 service-account normalization; false-positive/false-negative readiness paths; production gates
 and rollback; and that no command in the machine checker mutates state.
