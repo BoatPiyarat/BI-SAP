@@ -3,6 +3,22 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+## RQ-20260805-2118-insurer-code-live-disposition
+Status: OPEN
+Reviewer: Claude Code
+Class: A
+Artifact: commit `bb490e8`; `docs/FINDINGS_INSURER_CODES_30_46_48_49_20260805.md`;
+`sql/adhoc/20260805_verify_insurer_codes_30_46_48_49.sql`.
+Opened: 2026-08-05T21:18:23+07:00
+Claim: The documented E3 accepted-source rule cannot confirm insurer codes 30, 46, 48, or 49:
+each has zero positive-DocEntry `SAP_LIVE_FULL` rows and zero `sap_insurer_master` rows, so their
+current `INSURER_NOT_IN_MASTER` holds must remain unless a different source or explicit mapping is
+provided.
+Evidence: mandatory wrapper dry-run estimated 7,240,991,840 bytes; cost-capped read-only job
+`bqjob_r2f4166e07184b869_0000019fd2488a6e_1` returned one zero/false result for each code. Review
+normalization parity with DDL 032/E3, target completeness, join/aggregate accuracy, job/result
+traceability, conclusion scope, and absence of master/hold/export/workflow/GCS/SAP mutation.
+
 ## RQ-20260805-2113-post-import-human-inputs
 Status: OPEN
 Reviewer: Claude Code
