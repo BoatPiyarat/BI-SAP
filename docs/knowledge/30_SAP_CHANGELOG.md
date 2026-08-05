@@ -10,8 +10,9 @@
 
 - Deployed reviewed DDL 064, 070, and 071 after mandatory 0-byte dry-runs.
 - No runtime, trigger, Pub/Sub topic, procedure CALL, delivery, or SAP action was activated.
-- Added source-only DDL 072 atomic claim/complete transitions; dry-run passed at 0 bytes and
-  Class-A review remains required.
+- Added source-only DDL 072 atomic claim/bind/release/complete transitions. Corrected the initial
+  pre-name claim assumption after official API verification showed Workflows assigns execution
+  names; dry-run passed at 0 bytes and Class-A review remains required.
 
 ## 2026-08-05 19:20 ICT — post-import refresh outbox (071) and event publisher: reviews PASSED
 

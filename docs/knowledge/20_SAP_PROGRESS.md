@@ -16,7 +16,9 @@ result, heartbeat, exact-manifest, and outbox objects under jobs
 `bqjob_r6034b61b4401af32_0000019fd1e1ae57_1`, and
 `bqjob_r2b0856cabb4a4c8f_0000019fd1e2060e_1`; all DONE after 0-byte dry-runs. No procedure CALL,
 Gmail trigger, Pub/Sub topic, GCS write, delivery, or SAP action occurred. DDL 072 dispatcher
-claim/complete source passes a 0-byte dry-run and awaits review.
+claim/bind/release/complete source passes a 0-byte dry-run and awaits review. The initial source
+incorrectly required a full execution name before Workflows creates one; corrected pre-review to
+claim by deterministic token first, then bind the server-assigned execution resource name.
 
 ## 2026-08-05 19:20 ICT — post-import refresh outbox (071) and event publisher: both PASSED
 
