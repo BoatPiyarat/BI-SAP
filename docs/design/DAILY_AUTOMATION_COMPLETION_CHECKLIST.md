@@ -25,7 +25,8 @@ This is the short operational index. Exact commands and evidence requirements re
 - [ ] Gmail attachment-ingestion Apps Script is deployed and authorized.
 - [ ] A recurring V3 workflow trigger exists.
 - [ ] Finance cutoff registry and reviewed automatic monthly transition are live.
-- [ ] DDL 067 completeness snapshot is live and called after the final zero/delivered outcome.
+- [ ] DDL 067 completeness snapshot is live: healthy-zero after Units 2–5; nonzero only after
+  terminal post-import row reconciliation with no residual.
 - [ ] Completeness-mail dispatcher, distinct primary/fallback recipients, and trigger are proven.
 - [ ] DDL 066/068 numeric alert configurations, schedules, and human-delivery tests are live.
 
@@ -94,8 +95,8 @@ a separate reviewed production change:
 3. deploy the reviewed private promoter and create the recurring V3 workflow trigger PAUSED;
    require `scripts/check_v3_delivery_control_plane.ps1` to return `safety_passed=true` and
    `control_plane_ready=true` before any one-file production rehearsal;
-4. after the controlled zero/delivered outcome is final, deploy and rehearse the separate
-   completeness snapshot/dispatcher path from
+4. after controlled healthy-zero or terminal post-import reconciliation is final, deploy and
+   rehearse the separate completeness snapshot/dispatcher path from
    `../FINDINGS_DAILY_COMPLETENESS_RUNTIME_GAP_20260805.md`;
 5. keep legacy extract/query schedules until the V3 trigger and delivery path pass the defined
    overlap/shadow gate, then pause legacy producers in one rollback-safe cutover;

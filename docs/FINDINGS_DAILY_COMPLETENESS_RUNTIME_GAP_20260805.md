@@ -25,17 +25,29 @@ it neither creates this immutable completeness snapshot nor dispatches its human
 ## Required ordering
 
 1. Deploy reviewed DDL 067 definitions without calling the snapshot procedure.
-2. Add the snapshot call to the workflow only after the zero-file or exact delivered-manifest
-   outcome is final. A nonzero archive without its exact manifest must fail the DDL 067 gate; do
-   not snapshot before promotion/delivery persistence.
-3. Record the snapshot job/procedure outcome in the same pipeline run and route any failure through
-   the workflow's existing persist→alert→raise path.
-4. Obtain and prove distinct primary/fallback recipients.
-5. Deploy the reviewed completeness Apps Script in an owner-controlled project, configure only
+2. Split snapshot timing by outcome:
+   - healthy zero: the outbound workflow may snapshot after Units 2–5 completes with zero export
+     runs/manifests;
+   - nonzero export: do **not** snapshot immediately after delivery. DDL 067's immutable
+     `SAP_RESULT` metrics would permanently capture `PENDING_ACK`. Defer until DDL 073 finishes
+     row reconciliation with `pending_rows=0` and the manifest is terminal
+     `ACKNOWLEDGED|PARTIAL_REJECT|REJECTED`.
+3. Bind the post-import child back to exactly one original outbound `pipeline_run_id`. The current
+   outbox/manifest carries `export_run_id`, not that original pipeline ID; derive it with exact
+   export/payload identity conservation or persist it explicitly. Never use the child Unit-1
+   pipeline ID as DDL 067's argument.
+4. Strengthen DDL 067's nonzero gate so a merely `DELIVERED`/`PICKED_UP` manifest cannot produce a
+   final immutable completeness snapshot. A `HUMAN_ACTION` residual remains a failed day and must
+   alert; it cannot be labelled five-day acceptance.
+5. Record the snapshot job/procedure outcome and route any failure through the workflow's existing
+   persist→alert→raise path.
+6. Obtain and prove distinct primary/fallback recipients.
+7. Deploy the reviewed completeness Apps Script in an owner-controlled project, configure only
    the documented properties/scopes, and install a reviewed bounded trigger.
-6. Rehearse healthy-zero, delivered-file, primary success, primary failure/fallback success, both
-   channels failed, multiple pending runs, duplicate/non-pending snapshot, and no-PII body.
-7. Retain immutable BigQuery rows, trigger execution, and human receipt timestamps.
+8. Rehearse healthy-zero, final ACK, partial/full reject, residual HUMAN_ACTION refusal, primary
+   success, primary failure/fallback success, both channels failed, multiple pending runs,
+   duplicate/non-pending snapshot, and no-PII body.
+9. Retain immutable BigQuery rows, trigger execution, and human receipt timestamps.
 
 The completeness dispatcher and the SAP-result mailbox ingestor may share an Apps Script project
 only if the owner intentionally deploys both reviewed sources and the union of reviewed scopes/

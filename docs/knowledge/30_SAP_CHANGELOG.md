@@ -11,7 +11,8 @@
 
 - Confirmed DDL 067, its snapshot call, and the reviewed mail dispatcher are not live/wired.
 - Added ordered cutover tasks and explicit primary/fallback recipient plus cadence inputs.
-- Kept snapshot ordering after the final zero/delivered outcome to preserve its manifest gate.
+- Split immutable snapshot ordering: healthy zero after Units 2–5; nonzero only after terminal
+  post-import reconciliation, no residual, and original outbound pipeline-run binding.
 - Documentation only; no snapshot, email, Apps Script, trigger, or production mutation.
 
 ## 2026-08-05 22:01 ICT — expose monthly cutoff automation gap

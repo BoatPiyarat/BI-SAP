@@ -15,9 +15,11 @@ Canonical inventory/source tracing confirmed DDL 067 is reviewed but not live, t
 Units 2–5 wrapper never call its snapshot procedure, and the reviewed batch-isolated completeness
 Apps Script has no deployment/properties/trigger. Added explicit completion items and the missing
 human inputs: a Boat-reaching primary, a distinct independent fallback, and approved cadence.
-The snapshot call belongs after the final zero-file or exact delivered-manifest outcome, not in
-post-import activation. Documentation only; no DDL, call, Apps Script, OAuth, email, trigger,
-BigQuery, workflow, GCS, scheduler, or SAP mutation.
+Exact DDL inspection further showed its immutable `SAP_RESULT` metric would freeze PENDING_ACK if
+called immediately after delivery. Healthy zero can snapshot after Units 2–5; a nonzero run must
+wait for DDL 073 `pending_rows=0`, a terminal manifest, and exact binding back to the original
+outbound pipeline run (not the child Unit-1 run). Documentation only; no DDL, call, Apps Script,
+OAuth, email, trigger, BigQuery, workflow, GCS, scheduler, or SAP mutation.
 
 ## 2026-08-05 22:01 ICT — monthly cutoff automation gap exposed
 
