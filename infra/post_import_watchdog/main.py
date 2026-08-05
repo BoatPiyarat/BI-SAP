@@ -42,35 +42,72 @@ def call_procedure(client, sql, parameters):
     )
 
 
-def release_claim(client, row):
-    call_procedure(
-        client,
-        "CALL `{project}.{dataset}.sp_release_v3_post_import_claim`"
-        "(@log_id,@claim_token,@error_template)".format(
-            project=configured("PROJECT_ID"), dataset=configured("BQ_DATASET")
-        ),
-        {
-            "log_id": row["log_id"],
-            "claim_token": row["claim_token"],
-            "error_template": "STALE_CLAIM_WITHOUT_EXECUTION",
-        },
+def outbox_status(client, log_id):
+    config = bigquery.QueryJobConfig(
+        query_parameters=[
+            bigquery.ScalarQueryParameter("log_id", "STRING", log_id)
+        ],
+        maximum_bytes_billed=1024 * 1024,
     )
+    rows = list(
+        client.query(
+            "SELECT request_status FROM "
+            f"`{configured('PROJECT_ID')}.{configured('BQ_DATASET')}."
+            "v3_post_import_refresh_outbox` WHERE log_id=@log_id",
+            job_config=config,
+            location=configured("BQ_LOCATION"),
+        ).result()
+    )
+    if len(rows) != 1:
+        raise RuntimeError("outbox status lookup did not return exactly one row")
+    return rows[0]["request_status"]
+
+
+def release_claim(client, row):
+    try:
+        call_procedure(
+            client,
+            "CALL `{project}.{dataset}.sp_release_v3_post_import_claim`"
+            "(@log_id,@claim_token,@error_template)".format(
+                project=configured("PROJECT_ID"), dataset=configured("BQ_DATASET")
+            ),
+            {
+                "log_id": row["log_id"],
+                "claim_token": row["claim_token"],
+                "error_template": "STALE_CLAIM_WITHOUT_EXECUTION",
+            },
+        )
+        return True
+    except Exception:
+        if outbox_status(client, row["log_id"]) != "CLAIMED":
+            return False
+        raise
 
 
 def complete(client, row, terminal_status, error_template):
-    call_procedure(
-        client,
-        "CALL `{project}.{dataset}.sp_complete_v3_post_import_refresh`"
-        "(@log_id,@workflow_execution_name,@terminal_status,@error_template)".format(
-            project=configured("PROJECT_ID"), dataset=configured("BQ_DATASET")
-        ),
-        {
-            "log_id": row["log_id"],
-            "workflow_execution_name": row["workflow_execution_name"],
-            "terminal_status": terminal_status,
-            "error_template": error_template,
-        },
-    )
+    try:
+        call_procedure(
+            client,
+            "CALL `{project}.{dataset}.sp_complete_v3_post_import_refresh`"
+            "(@log_id,@workflow_execution_name,@terminal_status,@error_template)".format(
+                project=configured("PROJECT_ID"), dataset=configured("BQ_DATASET")
+            ),
+            {
+                "log_id": row["log_id"],
+                "workflow_execution_name": row["workflow_execution_name"],
+                "terminal_status": terminal_status,
+                "error_template": error_template,
+            },
+        )
+        return True
+    except Exception:
+        if outbox_status(client, row["log_id"]) in {
+            "SUCCEEDED",
+            "TIMEOUT",
+            "HUMAN_ACTION",
+        }:
+            return False
+        raise
 
 
 def publish_alert(publisher, row, state, template):
@@ -130,9 +167,9 @@ def main():
         if row["request_status"] == "CLAIMED":
             if age_seconds < claim_timeout:
                 continue
-            release_claim(bq_client, row)
-            actions += 1
-            if row["attempt_count"] >= 3:
+            released = release_claim(bq_client, row)
+            actions += int(released)
+            if released and row["attempt_count"] >= 3:
                 publish_alert(
                     publisher, row, "NO_EXECUTION", "STALE_CLAIM_ATTEMPTS_EXHAUSTED"
                 )
@@ -153,9 +190,10 @@ def main():
         else:
             terminal = "HUMAN_ACTION"
             template = "WORKFLOW_TERMINAL_WITHOUT_OUTBOX_COMPLETION"
-        complete(bq_client, row, terminal, template)
-        publish_alert(publisher, row, state, template)
-        actions += 1
+        completed = complete(bq_client, row, terminal, template)
+        if completed:
+            publish_alert(publisher, row, state, template)
+            actions += 1
 
     print(json.dumps({"open_rows": len(rows), "actions": actions}, sort_keys=True))
 
