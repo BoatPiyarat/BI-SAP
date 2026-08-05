@@ -31,8 +31,8 @@ Status: OPEN
 Reviewer: Claude Code
 Class: A
 Artifact: commit `30bd693`, executable policy test `fa949ee`, rehearsal-fixture delta `9081445`,
-Apps Script local contract test `7647118`; DDL 070/062/074, delivery workflow/promoter, Apps Script
-contract/comment, tests, and evidence/progress docs.
+Apps Script local contract tests `7647118` and ordering delta `9692f85`; DDL 070/062/074, delivery
+workflow/promoter, Apps Script contract/comment, tests, and evidence/progress docs.
 Opened: 2026-08-05T21:36:38+07:00
 Claim: The source-only delta closes the confirmed one-name binding gap by atomically persisting
 both the exact `INSURANCE_RCB_...csv` production basename and the distinct
@@ -47,8 +47,10 @@ seven exact LogID 21183 policy assertions, including rejection of both swapped n
 the updated DDL 074 fixture and rehearsal verifier each passed the mandatory wrapper dry-run at
 0 bytes and now assert both names while remaining compatible with the not-yet-migrated live
 schema; the Node VM test passed 14 assertions covering the exact LogID 21183 email/sender, result
-name match, production-name non-match, TXT parsing, and ambiguous-manifest refusal; Apps Script
-syntax and manifest JSON parsing passed; `git diff --check` passed. Review DDL 070 migration/nullability and
+name match, production-name non-match, TXT parsing, and ambiguous-manifest refusal, then the delta
+passed 18 assertions including persist→publish→label order, zero-manifest no-label, and ambiguity
+failure/alert without persistence or labeling; Apps Script syntax and manifest JSON parsing
+passed; `git diff --check` passed. Review DDL 070 migration/nullability and
 deployment order, DDL 062 signature/parameter order/replay guards/atomic insert, closed filename
 policy, workflow zero/one/many object branches and safe SQL construction, promoter API contract
 and exact-generation behavior, DDL 074 clean-environment/live-migration compatibility, Apps Script
