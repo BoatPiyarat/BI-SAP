@@ -7,8 +7,9 @@ review history; link the completed review and record its verdict.
 Status: OPEN
 Reviewer: Claude Code
 Class: A
-Artifact: commits `09abd59`, timestamp correction `dc00024`;
-`docs/design/DAILY_AUTOMATION_COMPLETION_CHECKLIST.md`.
+Artifact: commits `09abd59`, timestamp correction `dc00024`, live-path safety delta `fe02a0c`;
+`docs/design/DAILY_AUTOMATION_COMPLETION_CHECKLIST.md` and rehearsal section in
+`docs/design/POST_IMPORT_AUTOMATION_DEPLOYMENT.md`.
 Opened: 2026-08-05T21:20:50+07:00
 Claim: The checklist accurately separates the live inert post-import foundation from remaining
 human/IAM/Apps Script inputs, synthetic rehearsal, post-import activation, and the separate
@@ -17,7 +18,10 @@ workflow as fully automatic and requires five unattended business days for goal 
 Evidence: live foundation and blockers are tied to the two just-PASSed deployment reviews and the
 activation checker; cutoff dates and insurer disposition reference current canonical evidence.
 Review every checked/unchecked state, dependency order, rollback safety, five-day acceptance,
-absence of contradictory “done” claims, and that this documentation performs no mutation.
+absence of contradictory “done” claims, and that this documentation performs no mutation. The
+delta must accurately disclose that post-import mode still performs the real SAP extract/bronze
+load/mirror read path, require a non-overlap window, and serialize the three terminal cases except
+for deliberate duplicate redelivery.
 
 ## RQ-20260805-2118-insurer-code-live-disposition
 Status: OPEN
