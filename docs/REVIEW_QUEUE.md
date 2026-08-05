@@ -3,6 +3,24 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+## RQ-20260805-1946-post-import-row-conservation
+Status: OPEN
+Reviewer: Claude Code
+Class: A
+Artifact: commits `ddfbcbd`, `823c322`; DDL 073 and post-import reconciliation delta in
+`infra/v3_nightly_orchestrator.workflows.yaml`. Binding-output dependency: `47a4e07`.
+Opened: 2026-08-05T19:46:00+07:00
+Claim: After the independently completed child Unit 1, every exact delivered archive identity is
+classified once as refreshed-mirror `ACKNOWLEDGED`, exact row-detail `REJECTED_BY_SAP`, or
+`PENDING_ACK`. The archive and both manifest ledgers change atomically; the three outcomes conserve
+to the delivered row count. Zero residual completes the outbox `SUCCEEDED`; any residual completes
+`HUMAN_ACTION`, publishes the existing human alert, and fails closed.
+Evidence: DDL 073 mandatory dry-run passed at 0 bytes and `git diff --check` passed. Review exact
+LogID/export/filename/header/outbox binding, child `UNIT1_COMPLETE` proof, archive key and manifest
+row conservation, exact error precedence, mirror match tuple/status, idempotent rerun behavior,
+atomic ledger transitions, workflow result decoding, residual alert path, and that no GCS,
+delivery, workflow execution, SAP action, deployment, or procedure CALL occurred.
+
 ## RQ-20260805-1939-post-import-unit1-dispatcher
 Status: OPEN
 Reviewer: Claude Code
@@ -26,7 +44,7 @@ trigger, execution, GCS write, delivery, ACK, or SAP action is requested.
 Status: OPEN
 Reviewer: Claude Code
 Class: A
-Artifact: commits `afefd67` + corrective deltas `785f62e`, `cbdf430`;
+Artifact: commits `afefd67` + corrective deltas `785f62e`, `cbdf430`, `47a4e07`;
 `sql/ddl/072_v3_post_import_refresh_dispatch.sql`.
 Opened: 2026-08-05T19:28:16+07:00
 Claim: Source-only procedures atomically claim one exact outbox row by deterministic token, bind
