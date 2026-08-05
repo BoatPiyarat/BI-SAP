@@ -3,6 +3,23 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+## RQ-20260805-2112-machine-failing-rehearsal-verifier
+Status: OPEN
+Reviewer: Claude Code
+Class: A
+Artifact: commit `4b446c4`; `scripts/check_post_import_rehearsal.ps1`;
+`sql/adhoc/20260805_verify_post_import_rehearsal.sql`.
+Opened: 2026-08-05T21:12:06+07:00
+Claim: Rehearsal result verification now fails unless activation is safe and ready, the exact
+nonce yields exactly ACK/REJECT/RESIDUAL, and all three expected final-state predicates are TRUE.
+Nonce substitution exists only in a temporary query that is deleted in `finally`; every BigQuery
+read uses the mandatory safety wrapper.
+Evidence: query dry-run passed at 0 bytes, PowerShell parser passed, and a live read-only negative
+test refused before creating/running the result query because the known three readiness blockers
+remain. Review PowerShell exit-code/error behavior, temporary-path conversion and cleanup,
+token-count/substitution safety, activation JSON handling, SQL cardinality/three-valued-logic
+assertions, wrapper enforcement, and absence of production mutation/workflow/GCS/SAP action.
+
 ## RQ-20260805-2107-canonical-execution-binding-deployment
 Status: OPEN
 Reviewer: Claude Code
