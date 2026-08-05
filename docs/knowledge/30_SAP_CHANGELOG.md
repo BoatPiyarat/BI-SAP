@@ -1,5 +1,11 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-05 22:12 ICT — two-name blocker finding review PASSED
+
+- Claude independently reproduced the 558/3,857 live evidence and exact filename inequality.
+- Pre-fix DDL 062 and Apps Script causal trace passed; historical table caveat remained honest.
+- Review: `docs/reviews/2026-08-05-9e7724c-claude.md`.
+
 ## 2026-08-05 22:11 ICT — add offline completeness-dispatch tests
 
 - Added 11 assertions for metric-only report construction, success/fallback/status ordering,

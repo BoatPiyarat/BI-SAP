@@ -1,5 +1,14 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-05 22:12 ICT — LogID 21183 two-name blocker finding PASSED
+
+Claude independently reran the finding query and reproduced 558 archive identities, 3,857 manifest
+payload rows, the exact production basename, and both false comparisons to SAP's reported name.
+It also traced the actual pre-fix DDL 062 single-name assertion/insert and Apps Script's exact
+result-name lookup. Verdict PASS: this is a confirmed structural blocker, not speculation. The
+finding boundary `9e7724c` is eligible for exact-boundary push; the corrective source remains a
+separate OPEN review.
+
 ## 2026-08-05 22:11 ICT — completeness dispatcher locally executable
 
 Added an offline Node VM test over the real reviewed completeness Apps Script. Eleven assertions

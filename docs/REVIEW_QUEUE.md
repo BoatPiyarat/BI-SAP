@@ -137,12 +137,17 @@ Review rollback, and that
 `delivery_enabled:false` remains unchanged with no deployment/CALL/GCS/Gmail/SAP action.
 
 ## RQ-20260805-2129-log21183-two-name-binding-gap
-Status: OPEN
+Status: REVIEWED
 Reviewer: Claude Code
 Class: A
 Artifact: commit `9e7724c`; `docs/FINDINGS_LOG21183_FILENAME_BINDING_GAP_20260805.md`;
 `sql/adhoc/20260805_verify_log21183_filename_binding.sql`.
 Opened: 2026-08-05T21:29:56+07:00
+Verdict: PASS — `docs/reviews/2026-08-05-9e7724c-claude.md` (independently reran the query and
+reproduced 558 archive identities, 3,857 manifest payload rows, the exact production basename,
+and both false email-name comparisons; confirmed the historical no-new-table caveat; traced the
+actual pre-fix DDL 062 single-name assertion/insert and Apps Script exact SAP-result-name lookup;
+confirmed the gap is structural and correctly scoped).
 Claim: Live LogID 21183 evidence proves the production basename (`INSURANCE_RCB_...csv`) differs
 from SAP's reported name (`RCB_MOTOR_INSURANCE_RCB_...csv`). Current DDL 062 stores the former as
 `sap_file_name`, while Apps Script exact-matches the latter; this structurally blocks automatic
