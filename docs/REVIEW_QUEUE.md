@@ -3,6 +3,26 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+## RQ-20260805-2051-post-import-rehearsal-fixtures
+Status: OPEN
+Reviewer: Claude Code
+Class: A
+Artifact: commit `3242a85`; `sql/ddl/074_post_import_rehearsal_fixtures.sql`.
+Opened: 2026-08-05T20:51:30+07:00
+Claim: The source-only procedure atomically seeds exactly three retained, nonce-isolated
+post-import cases across archive/file manifest/SAP manifest/header/error/outbox ledgers. ACK uses a
+current exact mirror tuple; REJECT uses the same match shape plus one exact row error to prove error
+precedence; RESIDUAL cannot match mirror/error evidence and must become PENDING_ACK/HUMAN_ACTION.
+All URIs are non-production shadow evidence, identifiers satisfy dispatcher validation, nonce reuse
+fails closed, and the source cannot write GCS, publish, execute a workflow, deliver a file, or call
+SAP. No cleanup/delete path is provided.
+Evidence: mandatory wrapper dry-run passed at 0 bytes after the outbox seed was moved into the same
+transaction as all fixture ledgers. `git diff --check` passed. Review exact live column contracts,
+transaction/row-count conservation, nonce and dispatcher-shape guards, mirror seed stability,
+error precedence, residual non-match guarantee, shadow URI/no-object boundary, retained-evidence
+behavior, outbox initial state, expected-result claims, and that the source was not deployed or
+called.
+
 ## RQ-20260805-2044-post-import-admin-completion
 Status: OPEN
 Reviewer: Claude Code
