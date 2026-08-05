@@ -101,7 +101,7 @@ service-account normalization; false-positive/false-negative readiness paths; pr
 and rollback; and that no command in the machine checker mutates state.
 
 ## RQ-20260805-2136-two-name-delivery-result-contract
-Status: OPEN
+Status: REVIEWED
 Reviewer: Claude Code
 Class: A
 Artifact: commit `30bd693`, executable policy test `fa949ee`, rehearsal-fixture delta `9081445`,
@@ -110,6 +110,18 @@ workflow/promoter, Apps Script contract/comment, tests, and evidence/progress do
 helper `a36f5f5` and BOM-safe delta `fc037f3` are included for the exact source/manifest staging
 boundary.
 Opened: 2026-08-05T21:36:38+07:00
+Verdict: PASS — `docs/reviews/2026-08-05-fc037f3-claude.md`. Independently ran every test suite
+myself rather than trusting descriptions: promoter Python tests (3/3, including an explicit
+assertion the response never contains `sap_file_name`), the executable SQL policy test against
+real LogID 21183 values (7/7 asserts, 0 bytes), DDL 070/062/074 and the rehearsal-verifier dry-runs
+(0 bytes each), and the Node VM Apps Script contract suite (18/18 assertions, including a direct
+regression test that manifest matching keys on the SAP-reported name, not the production
+basename). Also actually executed the packaging helper end-to-end against a real temp directory:
+confirmed byte-for-byte the staged `.clasp.json` has no UTF-8 BOM, and triggered both safety guards
+live (path-containment and non-overwrite each threw exactly as claimed). Traced the workflow's
+name-derivation timing and confirmed DDL 062's argument order matches the workflow's call
+positionally. `delivery_enabled: false` unchanged throughout.
+
 Claim: The source-only delta closes the confirmed one-name binding gap by atomically persisting
 both the exact `INSURANCE_RCB_...csv` production basename and the distinct
 `RCB_MOTOR_<production basename>` SAP-result name. The workflow derives them only after
