@@ -29,7 +29,7 @@ state. It never records timeout while an execution remains ACTIVE/QUEUED: it can
 non-running state, then completes `TIMEOUT`. Other terminal-without-completion states become
 `HUMAN_ACTION`; exhausted and terminal actions publish minimal human-alert metadata.
 Evidence: `python -m py_compile infra/post_import_watchdog/main.py`, pinned-dependency import smoke,
-official seven-state enum inspection, threshold boundary checks, and `git diff --check` passed.
+official seven-state enum inspection, four watchdog unit tests, and `git diff --check` passed.
 Review candidate selection/age handling, threshold validation, release attempt boundary, Workflows
 state mapping, cancel-and-poll ordering, terminal completion race behavior, alert payload/IAM,
 bounded result set, and that no job, scheduler, IAM, workflow cancellation, alert, procedure CALL,
@@ -67,7 +67,7 @@ The workflow binds its server-assigned full execution name before any side effec
 losers exit, winners persist `SUCCEEDED` after Unit 1, and the post-import path cannot enter Units
 2–5 or delivery.
 Evidence: `python -m py_compile infra/post_import_dispatcher/main.py`, pinned-dependency import
-smoke, valid-event/unsafe-filename/token-determinism checks, and `git diff --check` passed; DDL 072
+smoke, five dispatcher unit tests, and `git diff --check` passed; DDL 072
 dependency re-dry-run passed at 0 bytes and the full workflow YAML parsed structurally. Review
 Pub/Sub envelope/event validation,
 token determinism, admitted status handling, claim/retry behavior, definite-vs-ambiguous execution
