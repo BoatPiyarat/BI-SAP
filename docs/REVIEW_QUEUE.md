@@ -20,12 +20,20 @@ missing-property handling, safety assertions, false-positive/false-negative risk
 mutating commands, and that the reported live state matches the independent deployment review.
 
 ## RQ-20260805-2031-post-import-inert-runtime-deployment
-Status: OPEN
+Status: REVIEWED
 Reviewer: Claude Code
 Class: A
 Artifact: commit `8fa1cfd`; live deployment evidence in
 `docs/design/POST_IMPORT_AUTOMATION_DEPLOYMENT.md`, `docs/AS_BUILT_V3.md`, progress, and changelog.
 Opened: 2026-08-05T20:31:52+07:00
+Verdict: PASS — `docs/reviews/2026-08-05-8fa1cfd-claude.md` (independently reproduced every
+concrete claim against live GCP/BigQuery state: exact dispatcher revision with an empty IAM
+policy, watchdog Ready/0-executions/exact env-var timeouts, exactly two topics and one
+DLQ-attached subscription with 14-day retention and no expiration, zero project-IAM bindings for
+all three new service accounts, and the 900s/315.4s/2.85x timeout arithmetic matched to the
+decimal against the five most recent live workflow-execution wall-clock durations I pulled
+myself. No mutation, IAM change, or production action performed in this review.)
+
 Claim: The reviewed dispatcher and watchdog were deployed fail-closed and remain unable to receive
 or process production events. The dispatcher is private/internal with no invoker; the watchdog is
 unscheduled, unexecuted, single-task, zero-retry, and explicitly configured. Only inert input/DLQ

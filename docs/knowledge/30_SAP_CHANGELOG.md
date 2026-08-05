@@ -1,5 +1,11 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-05 20:38 ICT — inert runtime deployment review PASSED
+
+- Recorded Claude PASS after independent live reproduction of every inert-deployment claim.
+- Added the missing Apps Script project ID/owner OAuth authorization to the human-input checklist.
+- Kept the Gmail publisher topic blank; no runtime, trigger, message, delivery, or SAP action.
+
 ## 2026-08-05 20:35 ICT — added read-only activation-state checker
 
 - Added a fail-closed PowerShell checker for workflow safety markers, private dispatcher, bounded

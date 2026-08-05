@@ -1,5 +1,16 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-05 20:38 ICT — inert runtime deployment PASS; Apps Script owner input exposed
+
+Claude independently reproduced the private dispatcher, zero-execution watchdog, exact timeout
+configuration, inert topic/DLQ resources, empty runtime IAM, and 2.85x interim timeout arithmetic;
+`RQ-20260805-2031-post-import-inert-runtime-deployment` is PASS. No runtime was activated.
+
+The remaining Gmail-ingestion deployment cannot be identified from this checkout: there is no
+Apps Script ID/`.clasp.json` or authenticated `clasp`. `docs/INPUTS_NEEDED.md` now asks the mailbox
+owner for the intended project and interactive OAuth authorization while keeping
+`POST_IMPORT_REFRESH_TOPIC` blank.
+
 ## 2026-08-05 20:35 ICT — read-only post-import activation checker
 
 Added `scripts/check_post_import_activation.ps1` to re-read the workflow, dispatcher, watchdog,

@@ -4,6 +4,20 @@ Created 2026-07-27 per `TASK_V3_GAP_CLOSURE_v2.md` (A0, A5, Housekeeping — "ke
 Nothing here blocks build work that doesn't depend on the specific answer; each item notes what
 IS being done in the meantime.
 
+## Boat / Google Apps Script owner — Unit 6 project identity and authorization
+
+**Needed to finish daily automation:** provide or create the Apps Script project that will own
+`workflows/sap_result_ingestion.gs`, and confirm the account that can complete its interactive
+OAuth consent. The repository has no `.clasp.json`/Script ID and this computer has no authenticated
+`clasp` installation, so Codex cannot safely identify or update the intended project.
+
+Once available, deploy the reviewed source/manifest, set `PROJECT_ID`, `LOG_BUCKET`,
+`ALERT_RECIPIENT=piyaratt@rabbit.co.th`, and optional `BQ_DATASET`, then install separate 15-minute
+`pollSapResultMailbox` and `checkSapResultIngestionHeartbeat` triggers. Keep
+`POST_IMPORT_REFRESH_TOPIC` blank until the dispatcher IAM, authenticated push subscription, and
+synthetic rehearsal pass. The first authorization must be completed by the mailbox owner because
+the script uses Gmail, BigQuery, Cloud Storage, Pub/Sub, and send-mail scopes.
+
 ## RESOLVED 2026-08-04 — LogID 21183 filename provenance and mirror reconciliation
 
 The approved 2026-08-04 post-import extract/load/mirror/reconciliation completed. Boat confirmed
