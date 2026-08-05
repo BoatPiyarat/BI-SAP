@@ -1,5 +1,14 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-05 15:10 ICT — SHA-256 exact-promotion source: review PASSED
+
+- `RQ-20260805-1428-exact-sha-promotion` (commit `daa9331`) reviewed PASS —
+  `docs/reviews/2026-08-05-daa9331-claude.md`.
+- Independently re-verified generation-bound hashing, create-only semantics, destination
+  size/CRC32C check, no-archive-name-inference filename handling, bucket/prefix confinement,
+  correct DDL 062 argument order, and both fail-closed gates (missing contract, response binding).
+- Still source-only; no deployment, GCS write, BigQuery mutation, or SAP action occurred.
+
 ## 2026-08-05 14:30 ICT — post-import refresh handoff design
 
 - Recorded the source contract for a durable, idempotent outbox → narrow Pub/Sub → private

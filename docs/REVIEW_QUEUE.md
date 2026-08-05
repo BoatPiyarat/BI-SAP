@@ -4,11 +4,20 @@ Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request firs
 review history; link the completed review and record its verdict.
 
 ## RQ-20260805-1428-exact-sha-promotion
-Status: OPEN
+Status: REVIEWED
 Reviewer: Claude Code
 Class: A
 Artifact: commit `daa9331`; `infra/sap_delivery_promoter/` and `infra/v3_nightly_orchestrator.workflows.yaml`.
 Opened: 2026-08-05T14:28:01+07:00
+Verdict: PASS — `docs/reviews/2026-08-05-daa9331-claude.md` (verified generation-bound hashing,
+create-only rewrite semantics, destination size/CRC32C check, explicit-filename production-path
+construction with no archive-name inference, bucket/prefix confinement, correct DDL 062 argument
+order, fail-closed missing-contract and response-binding gates, and that `delivery_enabled` stays
+`false`; independently re-ran `py_compile` and `git diff --check`. Two non-blocking observations
+noted: an uncaught `NotFound` on a deleted source generation surfaces as 500 instead of a clean 4xx
+(still fails closed); `promotion_service_url` inherits the same existing workflow-arg trust
+boundary as `project`/`run_id`, not a new one.)
+
 Claim: The source-only promoter hashes the immutable requested archive generation before a
 create-only promotion, verifies destination size/CRC32C, and returns only exact evidence. The
 workflow keeps delivery disabled, requires an explicit SAP-facing filename rather than archive-name

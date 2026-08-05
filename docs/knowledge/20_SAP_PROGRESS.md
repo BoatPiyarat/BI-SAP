@@ -1,5 +1,17 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-05 15:10 ICT — SHA-256 exact-promotion source: Class-A review PASSED
+
+`RQ-20260805-1428-exact-sha-promotion` (commit `daa9331`) reviewed and passed —
+`docs/reviews/2026-08-05-daa9331-claude.md`. Verified generation-bound hashing, create-only rewrite
+semantics, destination size/CRC32C verification, explicit-filename production-path construction
+(no archive-name inference), bucket/prefix confinement, correct DDL 062 ten-argument call order,
+fail-closed missing-contract and response-binding gates, and that `delivery_enabled` stays `false`.
+Independently re-ran `py_compile` and `git diff --check` rather than trusting the commit's own
+claims. Two non-blocking observations recorded for future polish (uncaught `NotFound` surfaces as
+500 instead of 4xx; `promotion_service_url` inherits the existing workflow-arg trust boundary) —
+neither blocks this review. Still source-only: not deployed, no GCS/BigQuery/SAP action occurred.
+
 ## 2026-08-05 14:30 ICT — post-import refresh handoff design recorded
 
 Recorded the missing Unit 6 handoff as a durable, idempotent outbox plus narrow Pub/Sub event and
