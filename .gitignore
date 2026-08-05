@@ -11,6 +11,10 @@ secrets/
 *.rar
 workspace.code-workspace
 
+# local Python validation artifacts
+__pycache__/
+*.py[cod]
+
 # PII-bearing exports and SAP import evidence must stay outside OneDrive (use C:\dev only)
 *.mbox
 *.eml
