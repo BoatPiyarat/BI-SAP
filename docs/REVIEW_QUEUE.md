@@ -7,7 +7,8 @@ review history; link the completed review and record its verdict.
 Status: OPEN
 Reviewer: Claude Code
 Class: A
-Artifact: commit `f6d7151`; `infra/post_import_watchdog/` and Workflows client dependency bump.
+Artifact: commits `f6d7151`, concurrency delta `cdb5843`;
+`infra/post_import_watchdog/` and Workflows client dependency bump.
 Opened: 2026-08-05T19:49:00+07:00
 Claim: The source-only scheduled job uses required configured thresholds, releases stale CLAIMED
 rows for DDL 072's bounded retry, and reconciles STARTED rows with the actual Workflows execution
