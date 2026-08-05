@@ -1,6 +1,6 @@
 # AS-BUILT — sap_integration_v3
 
-Live inventory of everything that actually exists in `sap_integration_v3` as of 2026-07-27,
+Live inventory of everything that actually exists in `sap_integration_v3` as of 2026-08-05,
 cross-referenced to the `sql/ddl/` file that creates it, whether it's actually scheduled, and
 whether it's documented anywhere. Compiled from `INFORMATION_SCHEMA.TABLES`/`ROUTINES` and
 `bq ls --transfer_config` — not from memory of what was supposed to get built. Per
@@ -34,6 +34,12 @@ either inside the one nightly chain above, on-demand (`ADHOC:` scope), or not at
 | `expected_state` | `016_expected_state.sql` | ✅ (`sp_refresh_expected_state`) | README, CHANGELOG 07-25 |
 | `sap_validation_error` | `017_sap_validation_error.sql` | ✅ (`sp_run_validation`) | README, CHANGELOG 07-25/07-26 |
 | `delta_export` | `018_delta_export.sql` | ✅ (`sp_refresh_delta_export`) | README, CHANGELOG 07-25/07-26 |
+| `sap_import_result_header_v3` | `064_sap_result_ingestion_contract.sql` | ❌ runtime not deployed | CHANGELOG 08-05 |
+| `sap_import_error_detail_v3` | `064_sap_result_ingestion_contract.sql` | ❌ runtime not deployed | CHANGELOG 08-05 |
+| `sap_file_pickup_v3` | `064_sap_result_ingestion_contract.sql` | ❌ runtime not deployed | CHANGELOG 08-05 |
+| `sap_result_ingestion_heartbeat_v3` | `070_sap_result_ingestion_heartbeat.sql` | ❌ runtime not deployed | CHANGELOG 08-05 |
+| `sap_delivery_manifest_v3` | `070_sap_result_ingestion_heartbeat.sql` | written by reviewed DDL 062 after exact promotion | CHANGELOG 08-05 |
+| `v3_post_import_refresh_outbox` | `071_v3_post_import_refresh_outbox.sql` | ❌ publisher/dispatcher not deployed | CHANGELOG 08-05 |
 | `manual_close_20260726_motor_newpayment_gap` | `021_backfill_motor_newpayment_gap_20260726.sql` | ❌ one-off audit table | CHANGELOG 07-26 |
 | `manual_close_20260726_rcl_creditshell` | `022_backfill_rcl_creditshell_20260726.sql` | ❌ one-off audit table | CHANGELOG 07-26 |
 | `manual_close_20260726_rcb_creditshell` | `023_backfill_rcb_creditshell_20260726.sql` | ❌ one-off audit table | CHANGELOG 07-26 |
@@ -81,6 +87,7 @@ scheduler proof. Deployment remains a separate reviewed gate.
 | `sp_recon_all_charges` | `005` | ✅ inside nightly chain | README, CHANGELOG 07-25 |
 | `sp_refresh_expected_state` | `016` | ✅ inside nightly chain | README, CHANGELOG 07-25 |
 | `sp_run_validation` | `017` | ✅ inside nightly chain | README, CHANGELOG 07-25/07-26 |
+| `sp_enqueue_v3_post_import_refresh` | `071` | ❌ feature-gated runtime not deployed | CHANGELOG 08-05 |
 | `sp_refresh_delta_export` | `018` | ✅ inside nightly chain | README, CHANGELOG 07-25/07-26 |
 | `sp_check_dead_mans_switch` | `004` | ✅ `sap_dead_mans_switch`, 22:00 ICT daily | README, CHANGELOG 07-24 |
 | `sp_backfill_rcl_newpayment_chunked` | `010` | ❌ callable on-demand only, one-off tool | README, CHANGELOG 07-25 |

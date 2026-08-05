@@ -1,5 +1,18 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-05 19:27 ICT — period state verified live
+
+- Verified July CLOSED, August OPEN, and September PLANNED from `sap_period_state`.
+- Exact cutoffs match Boat's decisions: July 3 Aug 15:00 ICT; August 1 Sep 14:00 ICT.
+- Replaced the earlier no-op verification with actual wrapper output (165-byte dry-run).
+
+## 2026-08-05 19:25 ICT — deployed ingestion/outbox contracts; dispatcher transitions ready
+
+- Deployed reviewed DDL 064, 070, and 071 after mandatory 0-byte dry-runs.
+- No runtime, trigger, Pub/Sub topic, procedure CALL, delivery, or SAP action was activated.
+- Added source-only DDL 072 atomic claim/complete transitions; dry-run passed at 0 bytes and
+  Class-A review remains required.
+
 ## 2026-08-05 19:20 ICT — post-import refresh outbox (071) and event publisher: reviews PASSED
 
 - `RQ-20260805-1903-post-import-refresh-outbox` (commit `282581f`) reviewed PASS —

@@ -1,5 +1,23 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-05 19:27 ICT — live period-state verification corrected
+
+The repaired safe-query path returned the actual three-row state: July `CLOSED` with
+`closing_at=2026-08-03 07:00:00 UTC` (15:00 ICT), August `OPEN` with
+`closing_at=2026-09-01 07:00:00 UTC` (14:00 ICT), and September `PLANNED`. Query dry-run was
+165 bytes. This replaces the earlier verification attempt, which was a local command no-op.
+
+## 2026-08-05 19:25 ICT — result-ingestion and post-import outbox contracts deployed
+
+Deployed reviewed DDL 064, 070, and 071 in dependency order after correcting a local Git Bash
+Cloud SDK Python-selection issue and an embedded-command segmentation no-op. BigQuery created the
+result, heartbeat, exact-manifest, and outbox objects under jobs
+`bqjob_r66ecbba511d067f_0000019fd1e12098_1`,
+`bqjob_r6034b61b4401af32_0000019fd1e1ae57_1`, and
+`bqjob_r2b0856cabb4a4c8f_0000019fd1e2060e_1`; all DONE after 0-byte dry-runs. No procedure CALL,
+Gmail trigger, Pub/Sub topic, GCS write, delivery, or SAP action occurred. DDL 072 dispatcher
+claim/complete source passes a 0-byte dry-run and awaits review.
+
 ## 2026-08-05 19:20 ICT — post-import refresh outbox (071) and event publisher: both PASSED
 
 `RQ-20260805-1903-post-import-refresh-outbox` (commit `282581f`, DDL 071) and
