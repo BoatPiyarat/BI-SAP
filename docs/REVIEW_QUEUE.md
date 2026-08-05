@@ -3,6 +3,20 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+## RQ-20260805-1910-post-import-event-publisher
+Status: OPEN
+Reviewer: Claude Code
+Class: A
+Artifact: commit `c90d79b`; `workflows/sap_result_ingestion.*`.
+Opened: 2026-08-05T19:10:38+07:00
+Claim: With the topic property blank, behavior is unchanged. When separately configured after DDL
+071 deployment, a matched persisted result first idempotently enqueues its exact LogID/manifest
+binding and then publishes only minimal retry-safe metadata to a validated Pub/Sub topic. It does
+not publish attachments or restore broad cloud-platform OAuth.
+Evidence: Node syntax check via standard input and `git diff --check` passed. Review event timing,
+outbox-before-publish ordering, empty-topic gate, scope addition, topic validation, retry behavior,
+and no trigger/deployment action.
+
 ## RQ-20260805-1903-post-import-refresh-outbox
 Status: OPEN
 Reviewer: Claude Code
