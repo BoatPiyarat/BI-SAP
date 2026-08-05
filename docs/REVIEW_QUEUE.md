@@ -3,6 +3,21 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+## RQ-20260805-0943-exact-delivery-identity-conservation
+Status: OPEN
+Reviewer: Claude Code
+Class: A
+Artifact: commit `70e5671`; delta in `sql/ddl/062_v3_mark_exact_delivery.sql`.
+Opened: 2026-08-05T09:43:58+07:00
+
+Delta review for the sole required note in `docs/reviews/2026-08-05-7d4866a-claude.md`: confirm
+the claimed pipeline payload and the claimed archive export run now have bidirectional set equality
+on `(order_item, period, charge_id, payload_hash)`, with the same balance-held exclusion as the
+existing identity population, before DELIVERED state can be recorded. Confirm no count-only join
+between the two caller-supplied run IDs remains as the only conservation evidence. The repository
+safe-query dry-run of DDL 062 passed at 0 bytes. No deployment, procedure CALL, GCS write, Gmail,
+scheduler, BigQuery table mutation, or SAP action is requested.
+
 ## RQ-20260805-0930-exact-sap-delivery-manifest
 Status: REVIEWED
 Reviewer: Claude Code
