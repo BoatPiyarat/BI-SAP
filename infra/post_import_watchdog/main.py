@@ -130,7 +130,13 @@ def terminal_state(execution):
 
 
 def cancel_until_terminal(client, name, wait_seconds):
-    client.cancel_execution(name=name)
+    try:
+        client.cancel_execution(name=name)
+    except Exception:
+        execution = client.get_execution(name=name)
+        if terminal_state(execution) not in {"ACTIVE", "QUEUED"}:
+            return terminal_state(execution)
+        raise
     deadline = time.monotonic() + wait_seconds
     while time.monotonic() < deadline:
         execution = client.get_execution(name=name)
@@ -160,7 +166,15 @@ def main():
       ORDER BY claimed_at
       LIMIT 100
     """
-    rows = list(bq_client.query(query, location=location).result())
+    rows = list(
+        bq_client.query(
+            query,
+            location=location,
+            job_config=bigquery.QueryJobConfig(
+                maximum_bytes_billed=20 * 1024 * 1024 * 1024
+            ),
+        ).result()
+    )
     actions = 0
     for row in rows:
         age_seconds = (now - row["claimed_at"]).total_seconds()
@@ -185,8 +199,12 @@ def main():
             state = cancel_until_terminal(
                 workflow_client, row["workflow_execution_name"], cancel_wait
             )
-            terminal = "TIMEOUT"
-            template = "WORKFLOW_EXECUTION_TIMEOUT"
+            if state == "SUCCEEDED":
+                terminal = "HUMAN_ACTION"
+                template = "WORKFLOW_TERMINAL_WITHOUT_OUTBOX_COMPLETION"
+            else:
+                terminal = "TIMEOUT"
+                template = "WORKFLOW_EXECUTION_TIMEOUT"
         else:
             terminal = "HUMAN_ACTION"
             template = "WORKFLOW_TERMINAL_WITHOUT_OUTBOX_COMPLETION"
