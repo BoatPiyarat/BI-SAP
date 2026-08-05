@@ -15,6 +15,9 @@ $promoterServiceAccountEmail =
 $triggerServiceAccountEmail =
   'v3-nightly-trigger@pacific-plating-282708.iam.gserviceaccount.com'
 $promoterMember = "serviceAccount:$promoterServiceAccountEmail"
+$triggerMember = "serviceAccount:$triggerServiceAccountEmail"
+$workflowPrefix =
+  "projects/$projectNumber/locations/$region/workflows/$workflowName"
 $archivePrefix =
   'projects/_/buckets/rcb-bronze-zone/objects/sap-interface-archive/'
 $productionPrefix =
@@ -107,6 +110,19 @@ $productionPolicy = Invoke-GcloudJson @(
   'storage', 'buckets', 'get-iam-policy', 'gs://interface-file',
   "--project=$project"
 )
+$triggerRoles = @(
+  Invoke-GcloudJson @(
+  'iam', 'roles', 'list',
+  "--project=$project"
+  )
+)
+$projectPolicy = Invoke-GcloudJson @(
+  'projects', 'get-iam-policy', $project
+)
+$workflowPolicy = Invoke-GcloudJson @(
+  'workflows', 'get-iam-policy', $workflowName,
+  "--project=$project", "--location=$region"
+)
 
 $workflowSource = [string]$workflow.sourceContents
 $workflowServiceAccountEmail = ([string]$workflow.serviceAccount).Replace(
@@ -121,6 +137,12 @@ $schedulerSummary = @(
   $schedulers |
     Where-Object {
       $_.name -eq "projects/$project/locations/$region/jobs/$schedulerName"
+    }
+)
+$triggerRoleSummary = @(
+  $triggerRoles |
+    Where-Object {
+      $_.name -eq "projects/$project/roles/nightlyWorkflowCreator"
     }
 )
 
@@ -225,6 +247,32 @@ if (-not (Test-ConditionalBinding `
     -Member $promoterMember `
     -RequiredPrefix $productionPrefix)) {
   $readinessBlockers += 'promoter lacks prefix-scoped production objectViewer'
+}
+if ($triggerRoleSummary.Count -ne 1) {
+  $readinessBlockers += 'nightlyWorkflowCreator custom role is absent'
+}
+elseif (@($triggerRoleSummary[0].includedPermissions).Count -ne 1 -or
+    @($triggerRoleSummary[0].includedPermissions) -notcontains 'workflows.executions.create' -or
+    $triggerRoleSummary[0].stage -ne 'GA') {
+  $readinessBlockers +=
+    'nightlyWorkflowCreator must be GA with only workflows.executions.create'
+}
+if (-not (Test-ConditionalBinding `
+    -Policy $projectPolicy `
+    -Role "projects/$project/roles/nightlyWorkflowCreator" `
+    -Member $triggerMember `
+    -RequiredPrefix $workflowPrefix)) {
+  $readinessBlockers += 'trigger lacks execution-create binding on only the V3 workflow'
+}
+$broadTriggerBindings = @(
+  @($projectPolicy.bindings) + @($workflowPolicy.bindings) |
+    Where-Object {
+      $_.role -eq 'roles/workflows.invoker' -and
+      @($_.members) -contains $triggerMember
+    }
+)
+if ($broadTriggerBindings.Count -ne 0) {
+  $readinessBlockers += 'trigger has the broader predefined Workflows Invoker role'
 }
 
 if ($schedulerSummary.Count -ne 1) {

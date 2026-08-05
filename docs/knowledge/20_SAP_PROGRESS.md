@@ -26,12 +26,13 @@ Added a source-only administrator runbook and read-only checker for the private 
 promoter plus a PAUSED recurring V3 trigger. The checker fails unless the current workflow remains
 delivery-disabled, the two-name markers exist, the promoter is Ready/internal/private on its
 dedicated identity, archive-read plus production-create/read IAM are conditionally restricted to
-the closed prefixes, the workflow is the exact invoker, and the 20:30 ICT Scheduler target/body/
-OAuth identity bind the exact workflow and promoter URL. Production read is required only for the
-post-rewrite metadata reload. PowerShell syntax and repository whitespace checks passed. The live
-checker was not run because the local GCP tool account reported its usage limit; no live-state
-claim is made. No service, IAM, scheduler, workflow, execution, GCS, Gmail, BigQuery, or SAP state
-changed.
+the closed prefixes, the workflow is the exact invoker, the trigger has only a conditionally
+scoped `workflows.executions.create` custom role and no predefined Workflows Invoker, and the
+20:30 ICT Scheduler target/body/OAuth identity bind the exact workflow and promoter URL.
+Production read is required only for the post-rewrite metadata reload. PowerShell syntax and
+repository whitespace checks passed. The live checker was not run because the local GCP tool
+account reported its usage limit; no live-state claim is made. No service, IAM, scheduler,
+workflow, execution, GCS, Gmail, BigQuery, or SAP state changed.
 
 ## 2026-08-05 21:35 ICT — two-name delivery/result binding source ready
 

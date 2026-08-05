@@ -177,6 +177,9 @@ Require `safety_passed=true` and `control_plane_ready=true`. The checker require
 - exact workflow identity `run.invoker`;
 - conditional archive `objectViewer`, production `objectCreator`, and production `objectViewer`
   bindings on only the two closed prefixes;
+- a GA `nightlyWorkflowCreator` role containing only `workflows.executions.create`, conditionally
+  bound to the trigger identity on only the exact V3 workflow, with no predefined Workflows
+  Invoker grant;
 - exactly one PAUSED `20:30` Asia/Bangkok scheduler whose endpoint, OAuth identity, and decoded
   execution argument bind the exact workflow and promoter URL.
 
