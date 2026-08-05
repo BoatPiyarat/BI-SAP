@@ -49,6 +49,10 @@ CREATE OR REPLACE PROCEDURE `pacific-plating-282708.sap_integration_v3.sp_bind_v
   p_workflow_execution_name STRING
 )
 BEGIN
+  ASSERT (SELECT COUNT(*)
+    FROM `pacific-plating-282708.sap_integration_v3.v3_post_import_refresh_outbox`
+    WHERE log_id=p_log_id AND claim_token=p_claim_token)=1
+    AS 'execution bind must reference exactly one claimed LogID/token';
   ASSERT REGEXP_CONTAINS(p_workflow_execution_name,
     r'^projects/[a-z][a-z0-9-]{4,28}[a-z0-9]/locations/[a-z0-9-]+/workflows/[A-Za-z0-9_-]+/executions/[A-Za-z0-9_-]+$')
     AS 'workflow_execution_name must be a complete Workflows execution resource name';
@@ -62,12 +66,10 @@ BEGIN
   SET request_status='STARTED',workflow_execution_name=p_workflow_execution_name
   WHERE log_id=p_log_id AND claim_token=p_claim_token AND request_status='CLAIMED';
   ASSERT @@row_count IN (0,1) AS 'execution bind affected an unexpected number of rows';
-  ASSERT (SELECT COUNT(*)
-    FROM `pacific-plating-282708.sap_integration_v3.v3_post_import_refresh_outbox`
-    WHERE log_id=p_log_id AND claim_token=p_claim_token AND request_status='STARTED'
-      AND workflow_execution_name=p_workflow_execution_name)=1
-    AS 'execution bind lost or conflicts with an existing execution';
   COMMIT TRANSACTION;
+  SELECT request_status,workflow_execution_name
+  FROM `pacific-plating-282708.sap_integration_v3.v3_post_import_refresh_outbox`
+  WHERE log_id=p_log_id AND claim_token=p_claim_token;
 END;
 
 CREATE OR REPLACE PROCEDURE `pacific-plating-282708.sap_integration_v3.sp_release_v3_post_import_claim`(
