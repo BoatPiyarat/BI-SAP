@@ -3,6 +3,38 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+## RQ-20260805-2107-canonical-execution-binding-deployment
+Status: OPEN
+Reviewer: Claude Code
+Class: A
+Artifact: commit `0e44aec`; live DDL 072 procedures and workflow revision `000009-e96`.
+Opened: 2026-08-05T21:07:39+07:00
+Claim: The review-passed canonical execution-name correction is live: DDL 072 replacement job
+`bqjob_r44f87f4cfafffe4b_0000019fd23dd027_1` completed, and workflow revision `000009-e96` is
+ACTIVE with the prior service account, `GOOGLE_CLOUD_PROJECT_NUMBER`, no old project-ID
+construction, and `delivery_enabled: false`. Deployment did not start an execution.
+Evidence: mandatory DDL wrapper dry-run passed at 0 bytes; real job replaced only the four DDL 072
+procedures and skipped the existing table. Read-only workflow describe and execution inventory
+verified the claim. The reviewed activation checker at `2026-08-05T14:06:08.2249628Z` returned
+`safety_passed=true`, `rehearsal_ready=false`, with the same three expected blockers. Review exact
+live procedure regex, workflow revision/source/service account, execution inventory, safety
+result, and absence of Gmail publication, workflow execution, delivery, GCS write, or SAP action.
+
+## RQ-20260805-2103-ddl074-inert-deployment
+Status: OPEN
+Reviewer: Claude Code
+Class: A
+Artifact: commit `97ebcf6`; live routine
+`sap_integration_v3.sp_seed_post_import_rehearsal_fixtures`.
+Opened: 2026-08-05T21:03:24+07:00
+Claim: The review-passed DDL 074 procedure is live but was not called. Its deployment only created
+the synthetic rehearsal seeder; no fixture rows, GCS objects, workflow execution, delivery, or SAP
+action were produced.
+Evidence: mandatory wrapper dry-run passed at 0 bytes; deployment job
+`bqjob_r2732ec7e5e42097_0000019fd23b665a_1` completed. Read-only `bq show --routine` confirmed one
+STRING `p_nonce` argument and the reviewed SQL body. Review live/source identity, job evidence,
+the procedure-not-called boundary, and documentation accuracy.
+
 ## RQ-20260805-2058-canonical-workflow-execution-name
 Status: REVIEWED
 Reviewer: Claude Code
