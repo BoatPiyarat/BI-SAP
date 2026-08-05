@@ -28,6 +28,7 @@ SELECT 'RESIDUAL',
   'HUMAN_ACTION',
   'DELIVERED';
 
+CREATE TEMP TABLE _verification AS
 WITH
 outbox AS (
   SELECT log_id, export_run_id, request_status, workflow_execution_name, attempt_count,
@@ -93,5 +94,13 @@ LEFT JOIN outbox o USING(log_id, export_run_id)
 LEFT JOIN row_result r USING(log_id, export_run_id)
 LEFT JOIN archive a USING(export_run_id)
 LEFT JOIN sap_manifest sm USING(export_run_id)
-LEFT JOIN file_manifest fm USING(export_run_id)
-ORDER BY c.case_name;
+LEFT JOIN file_manifest fm USING(export_run_id);
+
+ASSERT (SELECT COUNT(*) FROM _verification) = 3
+  AS 'rehearsal verification must return exactly ACK, REJECT, and RESIDUAL';
+ASSERT (SELECT COUNTIF(expected_final_state IS TRUE) FROM _verification) = 3
+  AS 'one or more rehearsal cases is missing, duplicated, or not in its exact expected state';
+
+SELECT *
+FROM _verification
+ORDER BY case_name;

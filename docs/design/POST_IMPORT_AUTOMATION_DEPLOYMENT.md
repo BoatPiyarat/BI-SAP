@@ -127,6 +127,17 @@ delivery manifest or invoke SAP. Prove:
 Capture BigQuery rows, execution names/revisions/states, Pub/Sub message IDs, Cloud Run revision/job
 names, and human alert receipt timestamps. Do not use LogID 21153 or replay any production file.
 
+After the ACK/REJECT/RESIDUAL cases reach terminal state, verify their exact retained ledgers with:
+
+```powershell
+.\scripts\check_post_import_rehearsal.ps1 -Nonce '<the exact 14-digit seed nonce>'
+```
+
+The checker first requires the activation safety/readiness checker to pass. It substitutes the
+nonce only in a temporary query copy, runs through the mandatory BigQuery safety wrapper, and
+fails unless exactly three cases exist and every expected final state is TRUE. It is read-only
+against production data and always removes its temporary query.
+
 ## Activation and rollback
 
 Only after the rehearsal passes:

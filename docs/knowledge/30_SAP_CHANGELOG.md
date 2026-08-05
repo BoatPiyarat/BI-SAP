@@ -1,5 +1,13 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-05 21:10 ICT — automate exact rehearsal-result verification
+
+- Made the read-only verifier assert exactly three retained cases and three TRUE final states.
+- Added `scripts/check_post_import_rehearsal.ps1`, gated by the live activation checker and the
+  mandatory BigQuery wrapper.
+- Dry-run 0 bytes, PowerShell parse PASS, and live negative test refused on the expected three
+  readiness blockers; no BigQuery query, workflow, GCS, delivery, or SAP action followed.
+
 ## 2026-08-05 21:06 ICT — canonical workflow execution binding deployed
 
 - Deployed review-passed DDL 072 correction as

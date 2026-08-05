@@ -1,5 +1,14 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-05 21:10 ICT — machine-failing rehearsal result checker ready
+
+Strengthened the read-only ACK/REJECT/RESIDUAL verifier so it fails unless exactly three cases
+exist and all three exact final-state predicates are TRUE. Added a PowerShell wrapper that first
+requires activation safety and rehearsal readiness, replaces the nonce only in a temporary query,
+uses the mandatory BigQuery safety wrapper, and removes the temporary file. Mandatory query
+dry-run passed at 0 bytes; PowerShell parse passed. A live read-only negative test correctly
+refused to query while the three known readiness blockers remain.
+
 ## 2026-08-05 21:06 ICT — canonical self-bind correction deployed, safety remains closed
 
 After `65ebde3` passed Class-A review, corrected DDL 072 deployed as job
