@@ -1,5 +1,13 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-05 17:40 ICT — deployment authority and cutoff calendar approved
+
+- Boat approved deployment of every Class-A increment with a recorded PASS; unreviewed work
+  remains source-only until its own PASS.
+- Recorded exact ICT cutoff instants: July `2026-08-03 15:00`, August `2026-09-01 14:00`.
+- Verified the active default GCP account is `data@rabbit.co.th` on
+  `pacific-plating-282708`; no account switch was needed.
+
 ## 2026-08-05 15:10 ICT — SHA-256 exact-promotion source: review PASSED
 
 - `RQ-20260805-1428-exact-sha-promotion` (commit `daa9331`) reviewed PASS —

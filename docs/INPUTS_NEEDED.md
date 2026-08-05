@@ -78,16 +78,15 @@ Repository remote is `https://github.com/BoatPiyarat/BI-SAP.git`. `origin` was c
 D12/D13 resolves the former tolerance input: ±฿10 **per order**, after order aggregation.
 `MISPOSTING` has no buffer. Do not ask whether the threshold is per row/period/document again.
 
-## Finance — monthly accounting cutoff calendar remains open
+## RESOLVED 2026-08-05 — monthly accounting cutoff calendar
 
-**Ask**: provide/confirm the monthly closed-period cutoff calendar and the allowed rollover date
-for PaymentDate. `sap_accounting_cutoff_dates` is referenced by design but was not found in the
-project during commit `3106719`; do not replace it with an inferred calendar.
+Boat approved the following ICT cutoffs for the reviewed monthly transition:
 
-**Current production blocker (2026-08-02):** `sap_period_state` still marks July
-`[2026-07-01,2026-08-01)` OPEN, while all 585 ready NEWPAYMENT events are dated 2026-08-01.
-Boat must supply the exact July `closing_at` and the intended August `closing_at` for the reviewed
-`sp_close_open_period` transition. Codex must not invent either timestamp.
+- July: `2026-08-03 15:00:00 Asia/Bangkok`
+- August: `2026-09-01 14:00:00 Asia/Bangkok`
+
+Use these exact instants for the corresponding `sap_period_state` close transition; do not infer
+other months. Finance remains owner of future monthly calendar entries.
 
 ## RESOLVED 2026-07-29 — Aware actual-received correction method
 
