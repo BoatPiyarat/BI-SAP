@@ -115,10 +115,11 @@ scheduler proof. Deployment remains a separate reviewed gate.
   private dispatcher revision `sap-post-import-dispatcher-00001-qd4`, unscheduled watchdog job,
   input/DLQ topics, and DLQ evidence subscription now exist but are inert pending IAM and
   rehearsal. No push subscription, watchdog scheduler, or Gmail publisher setting exists.
-- DDL 074 is source-ready but not deployed/called. It atomically seeds three retained synthetic
+- DDL 074 is deployed but has never been called. It can atomically seed three retained synthetic
   post-import ACK/reject/residual cases using only shadow evidence URIs; it cannot write GCS or
   invoke SAP.
 - 7 one-off audit tables from prior backfills are intentionally unscheduled and undocumented beyond
   their originating changelog entry — acceptable, flagged for an eventual retention decision only.
-- V3 still writes **no interface file** — every object above feeds `expected_state`/`delta_export`
-  (diagnostics), not `gs://interface-file/`. That's PHASE B/C/D, not yet done.
+- The unattended V3 workflow still writes **no production interface file**:
+  `delivery_enabled: false` remains live and there is no recurring workflow trigger. Prior
+  reviewed manual export/promotion evidence does not make daily delivery automatic.

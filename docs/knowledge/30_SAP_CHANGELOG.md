@@ -1,5 +1,11 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-05 21:17 ICT — inert DDL 074 deployment review PASSED
+
+- Live body matched reviewed DDL 074 source byte-for-byte; job succeeded at 0 processed/billed
+  bytes; no synthetic outbox row exists.
+- Verdict PASS: `docs/reviews/2026-08-05-97ebcf6-claude.md`.
+
 ## 2026-08-05 21:10 ICT — automate exact rehearsal-result verification
 
 - Made the read-only verifier assert exactly three retained cases and three TRUE final states.

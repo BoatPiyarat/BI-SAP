@@ -1,5 +1,12 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-05 21:17 ICT — inert DDL 074 deployment review PASSED
+
+Claude Code independently confirmed the live rehearsal procedure body is byte-for-byte identical
+to the reviewed source, its deployment job succeeded with zero processed/billed bytes, and no
+synthetic-shaped outbox row exists. `RQ-20260805-2103-ddl074-inert-deployment` is PASS; the
+procedure remains deployed but never called.
+
 ## 2026-08-05 21:10 ICT — machine-failing rehearsal result checker ready
 
 Strengthened the read-only ACK/REJECT/RESIDUAL verifier so it fails unless exactly three cases
