@@ -3,6 +3,22 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+## RQ-20260805-2035-post-import-activation-check
+Status: OPEN
+Reviewer: Claude Code
+Class: A
+Artifact: commit `228aeb1`; `scripts/check_post_import_activation.ps1` and evidence notes.
+Opened: 2026-08-05T20:35:57+07:00
+Claim: The checker is read-only, fails visibly on gcloud errors, verifies the deployed
+delivery-disabled workflow/private dispatcher/bounded watchdog/topic foundation, and distinguishes
+safety failures from missing rehearsal-readiness resources. It cannot execute a workflow/job,
+create or change IAM, create a subscription/scheduler, publish a message, write GCS, or call SAP.
+Evidence: PowerShell parse passed. A live run at `2026-08-05T13:35:12.7814693Z` returned
+`safety_passed=true`, `rehearsal_ready=false`, and exactly the three known blockers (dispatcher
+invoker, authenticated push subscription, watchdog scheduler). Review command construction,
+missing-property handling, safety assertions, false-positive/false-negative risk, absence of
+mutating commands, and that the reported live state matches the independent deployment review.
+
 ## RQ-20260805-2031-post-import-inert-runtime-deployment
 Status: OPEN
 Reviewer: Claude Code
