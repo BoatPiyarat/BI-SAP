@@ -2,6 +2,19 @@
 
 `sap_result_ingestion.gs` is the Unit 6 attachment-first reader. It does not authorize a deployment.
 
+Before packaging, run the local source contract:
+
+```powershell
+node workflows/test_sap_result_ingestion.js
+Get-Content -Raw -Encoding UTF8 workflows/sap_result_ingestion.gs | node --check -
+Get-Content -Raw -Encoding UTF8 workflows/sap_result_ingestion.appsscript.json |
+  ConvertFrom-Json | Out-Null
+```
+
+The test uses no Gmail, GCP, Script ID, OAuth token, or network call. It exercises the exact LogID
+21183-shaped metadata, sender boundary, TXT row parsing, SAP-result-name manifest match,
+production-basename non-match, and duplicate-manifest refusal.
+
 Before deployment, deploy reviewed DDL 064 and 070, grant the script principal narrowly scoped Gmail,
 BigQuery, and `gs://rcb-bronze-zone/sap_import_logs/` access, and set Script Properties:
 

@@ -1,5 +1,14 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-05 21:51 ICT — Apps Script two-name contract locally executable
+
+Added a Node VM test that loads the real Apps Script source without Gmail/GCP globals and passes 14
+assertions over the supplied LogID 21183-shaped email, exact sender matching, TXT row parsing,
+SAP-result-name manifest binding, rejection of the production basename as a result name, and
+duplicate-manifest fail-closed behavior. Apps Script syntax, manifest JSON parsing, and
+`git diff --check` also passed. No Script ID, OAuth, Gmail read/label, attachment upload, BigQuery,
+Pub/Sub, GCS, trigger, or deployment was used.
+
 ## 2026-08-05 21:48 ICT — outbound control-plane machine gate ready
 
 Added a source-only administrator runbook and read-only checker for the private exact-generation
