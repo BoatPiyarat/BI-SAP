@@ -60,12 +60,16 @@ atomic ledger transitions, workflow result decoding, residual alert path, and th
 delivery, workflow execution, SAP action, deployment, or procedure CALL occurred.
 
 ## RQ-20260805-1939-post-import-unit1-dispatcher
-Status: OPEN
+Status: REVIEWED
 Reviewer: Claude Code
 Class: A
 Artifact: commit `ec64deb`, tests `fd56e28`; `infra/post_import_dispatcher/` and post-import deltas in
 `infra/v3_nightly_orchestrator.workflows.yaml`.
 Opened: 2026-08-05T19:39:00+07:00
+Verdict: PASS — `docs/reviews/2026-08-05-ec64deb-claude.md` (verified strict event validation,
+deterministic exact-key token, admitted statuses, duplicate/no-op behavior, definite-versus-
+ambiguous create failure handling, least-privilege boundary, server-assigned self-bind before
+side effects, duplicate-loser exit, Unit-1-only stop, and no runtime action).
 Claim: The private source-only Pub/Sub dispatcher validates minimal result metadata, atomically
 claims the exact outbox binding, and creates a Unit-1 execution carrying only LogID/claim token.
 The workflow binds its server-assigned full execution name before any side effect; duplicate
@@ -81,12 +85,15 @@ no-op, Unit-1-only stop, and success completion. No service, workflow, topic, su
 trigger, execution, GCS write, delivery, ACK, or SAP action is requested.
 
 ## RQ-20260805-1928-post-import-dispatch-transitions
-Status: OPEN
+Status: REVIEWED
 Reviewer: Claude Code
 Class: A
 Artifact: commits `afefd67` + corrective deltas `785f62e`, `cbdf430`, `47a4e07`;
 `sql/ddl/072_v3_post_import_refresh_dispatch.sql`.
 Opened: 2026-08-05T19:28:16+07:00
+Verdict: PASS — `docs/reviews/2026-08-05-47a4e07-claude.md` (verified exact-key/token/execution
+uniqueness, full duplicate claim/bind race, bounded release at attempt three, terminal/error
+rules, transaction row-count guards, both corrective deltas, and independent 0-byte dry-run).
 Claim: Source-only procedures atomically claim one exact outbox row by deterministic token, bind
 the Workflows API's subsequently returned complete execution resource name, release a failed
 create for bounded retry, and permit completion only from STARTED into `SUCCEEDED`, `TIMEOUT`, or

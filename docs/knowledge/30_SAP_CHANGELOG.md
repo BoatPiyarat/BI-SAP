@@ -1,5 +1,10 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-05 20:07 ICT — DDL 072 and dispatcher reviews PASSED
+
+- Recorded Claude PASS for exact dispatcher transitions and private Unit-1 dispatch source.
+- DDL 072 is eligible for deployment; runtime activation still waits on dependent open reviews.
+
 ## 2026-08-05 20:04 ICT — diagnosed latest V3 failure chronology
 
 - Proved the balance procedure was replaced 52 seconds after the latest workflow failed.

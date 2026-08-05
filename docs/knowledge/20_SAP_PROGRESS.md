@@ -1,5 +1,14 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-05 20:07 ICT — DDL 072 and dispatcher reviews PASSED
+
+Claude Code returned PASS for the complete DDL 072 transition chain and the private dispatcher /
+Unit-1-only self-bind increment. The reviews independently traced the duplicate claim/create/bind
+race, bounded attempt-three release, server-assigned execution identity, ambiguous-create handling,
+duplicate-loser exit, and no-deployment boundary. DDL 072 is now deployable under Boat's standing
+approval; dispatcher infrastructure remains gated by the still-open reconciliation, watchdog, and
+activation reviews.
+
 ## 2026-08-05 20:04 ICT — latest V3 failure is pre-fix; fresh rehearsal still required
 
 Bounded read-only diagnosis (11,557,675-byte dry-run) proved the 2026-08-03 workflow failure ended
