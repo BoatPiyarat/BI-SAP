@@ -4,11 +4,19 @@ Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request firs
 review history; link the completed review and record its verdict.
 
 ## RQ-20260805-2051-post-import-rehearsal-fixtures
-Status: OPEN
+Status: REVIEWED
 Reviewer: Claude Code
 Class: A
 Artifact: commit `3242a85`; `sql/ddl/074_post_import_rehearsal_fixtures.sql`.
 Opened: 2026-08-05T20:51:30+07:00
+Verdict: PASS — `docs/reviews/2026-08-05-3242a85-claude.md` (verified all six target tables'
+column lists column-for-column against live BigQuery schema; diffed the nonce/log_id/export_run_id/
+sap_file_name guard regexes character-for-character against the real dispatcher's own validation
+patterns; traced that ACK/REJECT sharing one mirror identity but different log_ids is a valid,
+non-cross-contaminating test of DDL 073's error precedence; confirmed the RESIDUAL identity cannot
+exist in real mirror data; confirmed no DELETE/GCS-write/CALL anywhere in the file. Independently
+re-ran the dry-run: 0 bytes.)
+
 Claim: The source-only procedure atomically seeds exactly three retained, nonce-isolated
 post-import cases across archive/file manifest/SAP manifest/header/error/outbox ledgers. ACK uses a
 current exact mirror tuple; REJECT uses the same match shape plus one exact row error to prove error

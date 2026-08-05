@@ -1,5 +1,17 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-05 21:00 ICT — rehearsal fixture seeder (DDL 074): Class-A review PASSED
+
+`RQ-20260805-2051-post-import-rehearsal-fixtures` (commit `3242a85`) reviewed and passed —
+`docs/reviews/2026-08-05-3242a85-claude.md`. Verified all six target tables' INSERT column lists
+column-for-column against live BigQuery schema; diffed the nonce/log_id/export_run_id/
+sap_file_name guard regexes character-for-character against the real dispatcher's own validation
+(reviewed in RQ-1939); confirmed ACK and REJECT sharing one real mirror identity but distinct
+log_ids is a valid, non-cross-contaminating test of DDL 073's error precedence; confirmed the
+RESIDUAL case's synthetic identity cannot exist in real mirror data; confirmed no DELETE, GCS
+write, or CALL anywhere in the file. Independently re-ran the dry-run: 0 bytes. Source-only, not
+called.
+
 ## 2026-08-05 20:57 ICT — canonical Workflows execution-name binding correction
 
 The administrator-runbook review found that live Workflows execution names use numeric project

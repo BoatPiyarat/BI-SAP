@@ -1,5 +1,15 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-05 21:00 ICT — rehearsal fixture seeder (DDL 074) review PASSED
+
+- `RQ-20260805-2051-post-import-rehearsal-fixtures` (commit `3242a85`) reviewed PASS —
+  `docs/reviews/2026-08-05-3242a85-claude.md`.
+- Verified all six target tables' column contracts live, diffed guard regexes against the real
+  dispatcher, and confirmed the ACK/REJECT/RESIDUAL cases genuinely exercise DDL 073's error
+  precedence and non-match logic rather than superficially resembling three outcomes.
+- Independently re-ran the dry-run: 0 bytes. Source-only; no deploy, CALL, GCS write, workflow
+  execution, delivery, or SAP action occurred.
+
 ## 2026-08-05 20:57 ICT — corrected canonical workflow execution-name binding
 
 - Switched workflow self-binding to `GOOGLE_CLOUD_PROJECT_NUMBER`.
