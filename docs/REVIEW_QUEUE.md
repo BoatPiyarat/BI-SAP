@@ -3,23 +3,44 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+## RQ-20260805-1939-post-import-unit1-dispatcher
+Status: OPEN
+Reviewer: Claude Code
+Class: A
+Artifact: commit `ec64deb`; `infra/post_import_dispatcher/` and post-import deltas in
+`infra/v3_nightly_orchestrator.workflows.yaml`.
+Opened: 2026-08-05T19:39:00+07:00
+Claim: The private source-only Pub/Sub dispatcher validates minimal result metadata, atomically
+claims the exact outbox binding, and creates a Unit-1 execution carrying only LogID/claim token.
+The workflow binds its server-assigned full execution name before any side effect; duplicate
+losers exit, winners persist `SUCCEEDED` after Unit 1, and the post-import path cannot enter Units
+2–5 or delivery.
+Evidence: `python -m py_compile infra/post_import_dispatcher/main.py` and `git diff --check`
+passed; DDL 072 dependency re-dry-run passed at 0 bytes. Review Pub/Sub envelope/event validation,
+token determinism, admitted status handling, claim/retry behavior, definite-vs-ambiguous execution
+create failure handling, IAM/configuration boundary, server-assigned-name self-bind, duplicate
+no-op, Unit-1-only stop, and success completion. No service, workflow, topic, subscription, IAM,
+trigger, execution, GCS write, delivery, ACK, or SAP action is requested.
+
 ## RQ-20260805-1928-post-import-dispatch-transitions
 Status: OPEN
 Reviewer: Claude Code
 Class: A
-Artifact: commits `afefd67` + corrective delta `785f62e`;
+Artifact: commits `afefd67` + corrective deltas `785f62e`, `cbdf430`;
 `sql/ddl/072_v3_post_import_refresh_dispatch.sql`.
 Opened: 2026-08-05T19:28:16+07:00
 Claim: Source-only procedures atomically claim one exact outbox row by deterministic token, bind
 the Workflows API's subsequently returned complete execution resource name, release a failed
 create for bounded retry, and permit completion only from STARTED into `SUCCEEDED`, `TIMEOUT`, or
 `HUMAN_ACTION`. Duplicate claims/binds are idempotent only for the same binding and attempts stop
-at three.
+at three. When duplicate server-assigned executions race, bind returns the already winning
+execution name so a losing workflow can exit before Unit 1 instead of raising or repeating work.
 Evidence: Corrected complete DDL passed the mandatory dry-run at 0 bytes. Review exact-key,
 claim-token and execution-name uniqueness; concurrent/duplicate claim and bind behavior; release
 and attempt-three boundary; terminal transition/error-template rules; transaction row-count
 guards; and that no workflow, topic, delivery, ACK, or SAP action occurs. The delta corrects the
-initial assumption that an execution name exists before the Workflows create call.
+initial assumption that an execution name exists before the Workflows create call; the second
+delta makes the post-create self-bind duplicate-safe.
 
 ## RQ-20260805-1910-post-import-event-publisher
 Status: REVIEWED
