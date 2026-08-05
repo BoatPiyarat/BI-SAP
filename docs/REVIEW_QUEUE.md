@@ -3,6 +3,41 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+## RQ-20260805-2058-canonical-workflow-execution-name
+Status: OPEN
+Reviewer: Claude Code
+Class: A
+Artifact: commit `65ebde3`; `sql/ddl/072_v3_post_import_refresh_dispatch.sql`;
+`infra/v3_nightly_orchestrator.workflows.yaml`.
+Opened: 2026-08-05T20:58:24+07:00
+Claim: The corrective delta builds the canonical Workflows execution resource with
+`GOOGLE_CLOUD_PROJECT_NUMBER` and makes DDL 072 accept either a valid project ID or a 6–20 digit
+project number in the resource-name project segment. This closes the production self-bind failure
+without weakening the workflow/location/name/execution structure or changing delivery state.
+Evidence: current official Workflows built-in environment-variable documentation distinguishes
+`GOOGLE_CLOUD_PROJECT_ID` from `GOOGLE_CLOUD_PROJECT_NUMBER`; a live execution resource already
+captured in the administrator-runbook review uses project number `919786098205`. Mandatory wrapper
+dry-run of corrected DDL 072 passed at 0 bytes; `git diff --check` passed. Review exact canonical
+construction, regex acceptance/rejection boundaries, compatibility with the administrator
+runbook's execution-scoped IAM condition, and that neither DDL nor workflow was deployed or
+executed by this corrective source commit.
+
+## RQ-20260805-2055-post-import-rehearsal-verifier
+Status: OPEN
+Reviewer: Claude Code
+Class: A
+Artifact: commits `89e6b0a`, `54ae892`;
+`sql/adhoc/20260805_verify_post_import_rehearsal.sql`.
+Opened: 2026-08-05T20:55:14+07:00
+Claim: The read-only verifier binds one explicit 14-digit rehearsal nonce and returns the exact
+outbox, row-reconciliation, archive, and two manifest outcomes for the three DDL 074 cases,
+including ACK timestamp/null semantics and the expected residual fail-closed state. It contains no
+mutation, procedure call, GCS operation, workflow execution, delivery, or SAP action.
+Evidence: mandatory wrapper dry-run passed at 0 bytes and `git diff --check` passed. Review the
+identifier derivation against reviewed DDL 074, partition bounds, join grain and duplicate risk,
+NULL behavior of `expected_final_state`, exact ACK/REJECT/RESIDUAL expectations, and whether any
+missing ledger row can be mistaken for success.
+
 ## RQ-20260805-2051-post-import-rehearsal-fixtures
 Status: REVIEWED
 Reviewer: Claude Code
