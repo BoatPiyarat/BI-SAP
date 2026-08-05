@@ -1,5 +1,12 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-05 20:00 ICT — refreshed live automation inventory
+
+- Confirmed V3 workflow ACTIVE but unscheduled; latest execution failed closed at the balance gate.
+- Confirmed legacy 20:30 extract and 01:00 loader schedulers remain enabled.
+- Confirmed alert topic exists and post-import service/job/topic resources do not.
+- Read-only inventory; no configuration or runtime mutation.
+
 ## 2026-08-05 19:55 ICT — post-import deployment/rehearsal plan
 
 - Added exact deploy order, least-privilege identities, required measured configuration, ten

@@ -1,5 +1,15 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-05 20:00 ICT — live automation inventory exposes remaining cutover blocker
+
+Read-only GCP inventory confirmed `v3-nightly-orchestrator` ACTIVE at revision `000007-952`, but no
+Cloud Scheduler job targets it. Its latest execution (2026-08-03) failed closed in Units 2–5 on
+the receipt-balance mismatch gate; the preceding revision failed its exact LOAD source-object
+audit. The legacy `sap-extract-schedule` remains ENABLED at 20:30 ICT using the default Compute
+service account, and the unrelated legacy 01:00 loader scheduler remains ENABLED. The existing
+`v3-orchestrator-alerts` topic exists. No post-import dispatcher service, watchdog job, or dedicated
+post-import topic exists yet. This was inventory only; no GCP resource changed.
+
 ## 2026-08-05 19:55 ICT — post-import cutover and rehearsal plan
 
 Documented the dependency-ordered deployment, dedicated identities, required non-defaulted timeout
