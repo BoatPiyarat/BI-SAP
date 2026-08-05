@@ -3,6 +3,23 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+## RQ-20260805-1950-post-import-watchdog
+Status: OPEN
+Reviewer: Claude Code
+Class: A
+Artifact: commit `f6d7151`; `infra/post_import_watchdog/` and Workflows client dependency bump.
+Opened: 2026-08-05T19:50:00+07:00
+Claim: The source-only scheduled job uses required configured thresholds, releases stale CLAIMED
+rows for DDL 072's bounded retry, and reconciles STARTED rows with the actual Workflows execution
+state. It never records timeout while an execution remains ACTIVE/QUEUED: it cancels, polls to a
+non-running state, then completes `TIMEOUT`. Other terminal-without-completion states become
+`HUMAN_ACTION`; exhausted and terminal actions publish minimal human-alert metadata.
+Evidence: `python -m py_compile infra/post_import_watchdog/main.py` and `git diff --check` passed.
+Review candidate selection/age handling, threshold validation, release attempt boundary, Workflows
+state mapping, cancel-and-poll ordering, terminal completion race behavior, alert payload/IAM,
+bounded result set, and that no job, scheduler, IAM, workflow cancellation, alert, procedure CALL,
+or BigQuery mutation occurred.
+
 ## RQ-20260805-1946-post-import-row-conservation
 Status: OPEN
 Reviewer: Claude Code
