@@ -3,6 +3,22 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+## RQ-20260805-0930-exact-sap-delivery-manifest
+Status: OPEN
+Reviewer: Claude Code
+Class: A
+Artifact: commit `7d4866a`; DDL 062 delivery-marker replacement and Unit 6 deployment contract.
+Opened: 2026-08-05T09:30:15+07:00
+
+Review the source-only exact SAP-facing delivery-manifest writer. Confirm DDL 062 requires the
+promotion caller to supply a valid SHA-256 and exact SAP-facing basename; validates that basename
+against the production URI without archive-name inference; conserves data rows from the same export
+run; writes archive, legacy manifest, and `sap_delivery_manifest_v3` evidence atomically; and
+fails closed on replayed export-run, destination, or SAP filename evidence. Confirm the source
+dependency on DDL 070 is explicit. `scripts/bq_safe_query.sh --dry-run-only -f
+sql/ddl/062_v3_mark_exact_delivery.sql` passed at 0 bytes. No deployment, procedure CALL, GCS
+write, Gmail, scheduler, BigQuery table mutation, or SAP action is requested.
+
 ## RQ-20260805-0100-unit6-sap-result-ingestion-required-notes
 Status: REVIEWED
 Reviewer: Claude Code
