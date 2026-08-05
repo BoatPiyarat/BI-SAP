@@ -20,6 +20,12 @@ archive ledger DELIVERED and persists exactly one `sap_delivery_manifest_v3` row
 production URI/generation/hash, row count, and supplied filename. The filename is never inferred
 from the archive basename: LogID 21183 proved the names can differ.
 
+For the post-import refresh handoff, deploy reviewed DDL 071 first. Leave
+`POST_IMPORT_REFRESH_TOPIC` blank until the outbox dispatcher and its dedicated Pub/Sub topic are
+deployed. Once configured, the ingestor enqueues the exact persisted LogID/manifest binding before
+publishing a minimal retry-safe event. Add only the narrow `pubsub` OAuth scope; do not restore
+`cloud-platform`.
+
 Acceptance rehearsal must prove: zero-match stays unlabeled/PENDING_ACK; two LogIDs for one manifest
 alerts and persists nothing; a successful TXT persists header and attachment before label; rerun is
 idempotent; attachment parse failure is unlabeled; rejected-row details remain PENDING_ACK; heartbeat

@@ -3,7 +3,8 @@
  * IAM, trigger, GCS, alert-recipient, and rehearsal approvals are recorded.
  *
  * Required Script Properties: PROJECT_ID, LOG_BUCKET, ALERT_RECIPIENT.
- * Optional: BQ_DATASET (default sap_integration_v3), POLL_MINUTES (default 15).
+ * Optional: BQ_DATASET (default sap_integration_v3), POLL_MINUTES (default 15),
+ * POST_IMPORT_REFRESH_TOPIC (Pub/Sub topic ID; leave blank until DDL 071 and dispatcher deploy).
  * Required OAuth scopes are declared in sap_result_ingestion.appsscript.json.
  */
 
@@ -35,6 +36,7 @@ function pollSapResultMailbox() {
         throw new Error(`AMBIGUOUS_ACK run=${runId} candidates=${group.length} log_ids=${logIds.join(',')}`);
       }
       persistCandidate_(config, group[0]);
+      requestPostImportRefresh_(config, group[0]);
       group[0].message.getThread().addLabel(getOrCreateLabel_(SAP_RESULT.INGESTED_LABEL));
       processed += 1;
     });
@@ -86,6 +88,7 @@ function groupByManifest_(config, candidates) {
     if (manifests.length === 0) return; // No current manifest: remain PENDING_ACK and do not label.
     if (manifests.length !== 1) throw new Error(`AMBIGUOUS_MANIFEST file=${candidate.fileName}`);
     const runId = manifests[0].f[0].v;
+    candidate.exportRunId = runId;
     candidate.productionUri = manifests[0].f[1].v;
     (result[runId] ||= []).push(candidate);
   });
@@ -105,6 +108,37 @@ function persistCandidate_(config, candidate) {
 
   mergeHeader_(config, candidate, txtUri, xlsxUri);
   mergeDetails_(config, candidate.logId, details);
+}
+
+function requestPostImportRefresh_(config, candidate) {
+  if (!config.postImportRefreshTopic) return;
+  query_(config,
+    `CALL \`${config.projectId}.${config.dataset}.sp_enqueue_v3_post_import_refresh\`(
+      @log_id,@export_run_id,@sap_file_name,@import_status,@email_date)`,
+    [
+      param_('log_id', 'STRING', candidate.logId),
+      param_('export_run_id', 'STRING', candidate.exportRunId),
+      param_('sap_file_name', 'STRING', candidate.fileName),
+      param_('import_status', 'STRING', candidate.status),
+      param_('email_date', 'TIMESTAMP', candidate.emailDate.toISOString()),
+    ]);
+  const event = {
+    log_id: candidate.logId,
+    export_run_id: candidate.exportRunId,
+    sap_file_name: candidate.fileName,
+    import_status: candidate.status.toLowerCase(),
+    email_date: candidate.emailDate.toISOString(),
+  };
+  const url = `https://pubsub.googleapis.com/v1/projects/${config.projectId}/topics/${encodeURIComponent(config.postImportRefreshTopic)}:publish`;
+  const response = UrlFetchApp.fetch(url, {
+    method: 'post', contentType: 'application/json',
+    headers: { Authorization: `Bearer ${ScriptApp.getOAuthToken()}` },
+    payload: JSON.stringify({ messages: [{ data: Utilities.base64Encode(JSON.stringify(event)) }] }),
+    muteHttpExceptions: true,
+  });
+  if (response.getResponseCode() !== 200) {
+    throw new Error(`POST_IMPORT_PUBSUB_${response.getResponseCode()} log_id=${candidate.logId}`);
+  }
 }
 
 function mergeHeader_(config, candidate, txtUri, xlsxUri) {
@@ -181,7 +215,7 @@ function query_(config, sql, parameters) {
 }
 
 function param_(name, type, value) { return { name, parameterType: { type }, parameterValue: { value } }; }
-function getConfig_() { const p = PropertiesService.getScriptProperties(); const projectId = p.getProperty('PROJECT_ID'); const bucket = p.getProperty('LOG_BUCKET'); const alertRecipient = p.getProperty('ALERT_RECIPIENT'); if (!projectId || !bucket || !alertRecipient) throw new Error('Missing required Script Properties PROJECT_ID, LOG_BUCKET, ALERT_RECIPIENT'); return { projectId, bucket, alertRecipient, dataset: p.getProperty('BQ_DATASET') || SAP_RESULT.DATASET }; }
+function getConfig_() { const p = PropertiesService.getScriptProperties(); const projectId = p.getProperty('PROJECT_ID'); const bucket = p.getProperty('LOG_BUCKET'); const alertRecipient = p.getProperty('ALERT_RECIPIENT'); const postImportRefreshTopic = p.getProperty('POST_IMPORT_REFRESH_TOPIC') || ''; if (!projectId || !bucket || !alertRecipient) throw new Error('Missing required Script Properties PROJECT_ID, LOG_BUCKET, ALERT_RECIPIENT'); if (postImportRefreshTopic && !/^[A-Za-z][A-Za-z0-9._~+%-]*$/.test(postImportRefreshTopic)) throw new Error('POST_IMPORT_REFRESH_TOPIC must be a topic ID'); return { projectId, bucket, alertRecipient, dataset: p.getProperty('BQ_DATASET') || SAP_RESULT.DATASET, postImportRefreshTopic }; }
 function getOrCreateLabel_(name) { return GmailApp.getUserLabelByName(name) || GmailApp.createLabel(name); }
 function isExpectedSender_(from) { return new RegExp(`(?:^|<)${SAP_RESULT.SENDER.replace('.', '\\.')}(?:>|$)`, 'i').test(from); }
 function notify_(config, body) { MailApp.sendEmail(config.alertRecipient, '[ACTION REQUIRED] SAP result ingestion', body); }
