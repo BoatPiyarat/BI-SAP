@@ -1,5 +1,14 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-05 20:31 ICT — deployed inert post-import runtimes; stopped at IAM boundary
+
+- Deployed private/internal dispatcher revision `sap-post-import-dispatcher-00001-qd4`.
+- Deployed the watchdog Ready but unscheduled/unexecuted with explicit 600/900/120-second bounds.
+- Created input/DLQ topics and a 14-day, non-expiring DLQ evidence subscription.
+- Created three dedicated service accounts; did not substitute broad roles after custom-role and
+  resource-IAM permissions were denied.
+- Kept Gmail publication blank and did not create a push subscription or scheduler.
+
 ## 2026-08-05 20:30 ICT — post-import activation rehearsal plan: review PASSED (increment closed)
 
 - `RQ-20260805-1956-post-import-activation-rehearsal` (commit `8b1f2bb`) reviewed PASS —

@@ -110,8 +110,9 @@ scheduler proof. Deployment remains a separate reviewed gate.
   trigger provenance remain open.
 - `v3-nightly-orchestrator` revision `000008-4e4` is ACTIVE with the reviewed post-import
   self-bind/reconciliation path and `delivery_enabled: false`. It has no Scheduler target; the
-  dispatcher service, watchdog job, post-import Pub/Sub resources, and Gmail publisher setting
-  remain inactive.
+  private dispatcher revision `sap-post-import-dispatcher-00001-qd4`, unscheduled watchdog job,
+  input/DLQ topics, and DLQ evidence subscription now exist but are inert pending IAM and
+  rehearsal. No push subscription, watchdog scheduler, or Gmail publisher setting exists.
 - 7 one-off audit tables from prior backfills are intentionally unscheduled and undocumented beyond
   their originating changelog entry — acceptable, flagged for an eventual retention decision only.
 - V3 still writes **no interface file** — every object above feeds `expected_state`/`delta_export`

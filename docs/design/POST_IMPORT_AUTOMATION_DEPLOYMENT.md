@@ -3,6 +3,62 @@
 Status: source plan only. Nothing in this document authorizes an unreviewed deploy or enables
 `POST_IMPORT_REFRESH_TOPIC`.
 
+## Activation evidence — 2026-08-05 20:31 ICT
+
+The reviewed foundation is now partly deployed but intentionally inert:
+
+- DDL 072 job `bqjob_r2275791741e4aa6a_0000019fd20b3076_1`;
+- DDL 073 job `bqjob_r26029521d6ea2cf0_0000019fd20bb351_1`;
+- workflow revision `000008-4e4`, ACTIVE with `delivery_enabled: false`;
+- private/internal dispatcher revision `sap-post-import-dispatcher-00001-qd4`, with no invoker;
+- unscheduled watchdog job `sap-post-import-watchdog`, Ready, never executed;
+- topics `sap-post-import-refresh` and `sap-post-import-refresh-dlq`;
+- evidence subscription `sap-post-import-refresh-dlq-retain`, 14-day retention and no expiration;
+- dedicated service accounts `sap-post-import-dispatch`, `sap-post-import-watchdog`, and
+  `sap-post-import-push`.
+
+The recorded watchdog values are claim timeout 600 seconds, execution timeout 900 seconds, and
+cancel wait 120 seconds. The 900-second bound is 2.85 times the longest of the five available
+historical full-workflow durations (315.4 seconds); a healthy post-import Unit-1 measurement is
+still required during rehearsal. Proposed but not activated values are a two-minute watchdog
+schedule, five Pub/Sub delivery attempts, and a 600-second acknowledgement deadline.
+
+No push subscription, watchdog scheduler, Gmail publisher setting, workflow execution, GCS
+delivery, or SAP action exists from this activation work.
+
+## IAM stop and required administrator actions
+
+`data@rabbit.co.th` created the three service accounts and runtime resources but cannot complete
+IAM:
+
+- `iam.roles.create` was denied while creating the create-only and get/cancel-only Workflows
+  custom roles;
+- `run.services.setIamPolicy` was denied while granting the push identity `run.invoker` on the one
+  dispatcher service;
+- the inactive `piyaratt@rabbit.co.th` credential is expired and requires interactive login.
+
+Do not substitute the predefined `roles/workflows.invoker`: it combines create, get, and cancel
+and breaks the reviewed dispatcher/watchdog separation. An administrator must create and bind a
+create-only role (`workflows.executions.create`) for the dispatcher and a monitor role
+(`workflows.executions.get`, `workflows.executions.cancel`) for the watchdog, restricted to
+`v3-nightly-orchestrator`. The same administrator must grant:
+
+- `roles/run.invoker` to `sap-post-import-push@...` on only
+  `sap-post-import-dispatcher`;
+- `roles/pubsub.publisher` to `sap-post-import-watchdog@...` on only
+  `v3-orchestrator-alerts`;
+- `roles/iam.serviceAccountTokenCreator` to the Pub/Sub service agent on only the push service
+  account.
+
+BigQuery remains deliberately ungranted. Both runtimes require project-level
+`roles/bigquery.jobUser`. The current watchdog also directly reads the outbox, and both runtimes
+call procedures that modify it. Granting table-level `roles/bigquery.dataEditor` on only
+`v3_post_import_refresh_outbox` is operationally sufficient but permits direct DML outside the
+procedures; it requires Boat's explicit informed approval. The safer authorized-routine model
+requires the routine to be in a different dataset from the protected table, conflicting with the
+current rule that all DDL stays in `sap_integration_v3`; that alternative therefore requires a
+separate design/rule decision and review.
+
 ## Reviewed artifact order
 
 Deploy only after each named Class-A request records PASS:

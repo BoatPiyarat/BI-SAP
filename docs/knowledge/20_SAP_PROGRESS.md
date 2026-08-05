@@ -1,5 +1,21 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-05 20:31 ICT — dispatcher/watchdog deployed inert; IAM stopped fail-closed
+
+Deployed the reviewed dispatcher as private/internal revision
+`sap-post-import-dispatcher-00001-qd4` and the reviewed watchdog as an unscheduled Ready Cloud Run
+Job. The job uses explicit 600/900/120-second claim/execution/cancel values, zero retries, and one
+task. Created the input/DLQ topics plus a non-expiring 14-day DLQ evidence subscription. The Gmail
+topic remains blank; there is no push subscription or watchdog scheduler, and neither runtime has
+executed.
+
+Created the three dedicated service accounts. Custom Workflows role creation failed on
+`iam.roles.create`; exact Cloud Run invoker binding failed on `run.services.setIamPolicy`.
+No broader predefined role was substituted. Direct outbox-table Data Editor access was also
+withheld because it can bypass procedure transitions. Activation is blocked on administrator IAM
+plus Boat's explicit informed choice between exact-table access and a separately reviewed
+authorized-routine/dataset exception.
+
 ## 2026-08-05 20:30 ICT — post-import activation rehearsal plan: Class-A review PASSED
 
 `RQ-20260805-1956-post-import-activation-rehearsal` (commit `8b1f2bb`) reviewed and passed —
