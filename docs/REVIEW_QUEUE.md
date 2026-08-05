@@ -4,13 +4,20 @@ Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request firs
 review history; link the completed review and record its verdict.
 
 ## RQ-20260805-2120-daily-automation-completion-checklist
-Status: OPEN
+Status: REVIEWED
 Reviewer: Claude Code
 Class: A
 Artifact: commits `09abd59`, timestamp correction `dc00024`, live-path safety delta `fe02a0c`;
 `docs/design/DAILY_AUTOMATION_COMPLETION_CHECKLIST.md` and rehearsal section in
 `docs/design/POST_IMPORT_AUTOMATION_DEPLOYMENT.md`.
 Opened: 2026-08-05T21:20:50+07:00
+Verdict: PASS — `docs/reviews/2026-08-05-fe02a0c-claude.md` (every checked/unchecked state
+independently cross-checked against this session's own live verification, including confirming
+DDL 073 live just now; dependency order and five-day acceptance bar are sound; grepped the
+workflow YAML and confirmed post_import_mode gates only the self-bind step — the real extract/
+bronze-load/mirror-refresh path is never skipped, proving the delta's core safety disclosure true
+rather than boilerplate; no contradictory "done" claims found.)
+
 Claim: The checklist accurately separates the live inert post-import foundation from remaining
 human/IAM/Apps Script inputs, synthetic rehearsal, post-import activation, and the separate
 outbound delivery/recurring-trigger cutover. It does not label the delivery-disabled unscheduled
@@ -24,12 +31,17 @@ load/mirror read path, require a non-overlap window, and serialize the three ter
 for deliberate duplicate redelivery.
 
 ## RQ-20260805-2118-insurer-code-live-disposition
-Status: OPEN
+Status: REVIEWED
 Reviewer: Claude Code
 Class: A
 Artifact: commit `bb490e8`; `docs/FINDINGS_INSURER_CODES_30_46_48_49_20260805.md`;
 `sql/adhoc/20260805_verify_insurer_codes_30_46_48_49.sql`.
 Opened: 2026-08-05T21:18:23+07:00
+Verdict: PASS — `docs/reviews/2026-08-05-bb490e8-claude.md` (verified the normalization/source/
+acceptance predicate is line-for-line identical to DDL 032's own E3 master-seeding MERGE, not
+just similar to it; independently re-ran the exact query — identical zero-result for all four
+codes; conclusion honestly scoped to the documented evidence source only.)
+
 Claim: The documented E3 accepted-source rule cannot confirm insurer codes 30, 46, 48, or 49:
 each has zero positive-DocEntry `SAP_LIVE_FULL` rows and zero `sap_insurer_master` rows, so their
 current `INSURER_NOT_IN_MASTER` holds must remain unless a different source or explicit mapping is

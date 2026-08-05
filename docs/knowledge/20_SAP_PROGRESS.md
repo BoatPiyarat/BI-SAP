@@ -1,5 +1,11 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-05 21:27 ICT — insurer-code live disposition review PASSED
+
+Claude Code verified the four-code query is line-for-line identical to DDL 032's E3 source,
+normalization, and positive-DocEntry acceptance rule, then independently reproduced zero accepted
+rows and zero master rows for `30`, `46`, `48`, and `49`. The fail-closed hold conclusion passed.
+
 ## 2026-08-05 21:23 ICT — rehearsal verifier and human-input updates PASSED
 
 Claude Code passed the machine-failing rehearsal verifier and the canonical human-input update. It

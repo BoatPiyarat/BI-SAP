@@ -1,5 +1,11 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-05 21:27 ICT — insurer-code disposition review PASSED
+
+- Reviewer independently reproduced the exact DDL 032/E3 query result: zero accepted/live master
+  evidence for codes `30`, `46`, `48`, `49`.
+- Verdict PASS: `docs/reviews/2026-08-05-bb490e8-claude.md`; holds remain unchanged.
+
 ## 2026-08-05 21:23 ICT — verifier and human-input reviews PASSED
 
 - Machine-failing rehearsal result checker: PASS
