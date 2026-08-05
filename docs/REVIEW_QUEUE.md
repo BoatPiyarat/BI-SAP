@@ -15,7 +15,8 @@ rows for DDL 072's bounded retry, and reconciles STARTED rows with the actual Wo
 state. It never records timeout while an execution remains ACTIVE/QUEUED: it cancels, polls to a
 non-running state, then completes `TIMEOUT`. Other terminal-without-completion states become
 `HUMAN_ACTION`; exhausted and terminal actions publish minimal human-alert metadata.
-Evidence: `python -m py_compile infra/post_import_watchdog/main.py` and `git diff --check` passed.
+Evidence: `python -m py_compile infra/post_import_watchdog/main.py`, pinned-dependency import smoke,
+official seven-state enum inspection, threshold boundary checks, and `git diff --check` passed.
 Review candidate selection/age handling, threshold validation, release attempt boundary, Workflows
 state mapping, cancel-and-poll ordering, terminal completion race behavior, alert payload/IAM,
 bounded result set, and that no job, scheduler, IAM, workflow cancellation, alert, procedure CALL,
@@ -51,8 +52,9 @@ claims the exact outbox binding, and creates a Unit-1 execution carrying only Lo
 The workflow binds its server-assigned full execution name before any side effect; duplicate
 losers exit, winners persist `SUCCEEDED` after Unit 1, and the post-import path cannot enter Units
 2–5 or delivery.
-Evidence: `python -m py_compile infra/post_import_dispatcher/main.py` and `git diff --check`
-passed; DDL 072 dependency re-dry-run passed at 0 bytes. Review Pub/Sub envelope/event validation,
+Evidence: `python -m py_compile infra/post_import_dispatcher/main.py`, pinned-dependency import
+smoke, valid-event/unsafe-filename/token-determinism checks, and `git diff --check` passed; DDL 072
+dependency re-dry-run passed at 0 bytes. Review Pub/Sub envelope/event validation,
 token determinism, admitted status handling, claim/retry behavior, definite-vs-ambiguous execution
 create failure handling, IAM/configuration boundary, server-assigned-name self-bind, duplicate
 no-op, Unit-1-only stop, and success completion. No service, workflow, topic, subscription, IAM,
