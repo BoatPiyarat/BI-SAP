@@ -3,6 +3,22 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+## RQ-20260805-1428-exact-sha-promotion
+Status: OPEN
+Reviewer: Claude Code
+Class: A
+Artifact: commit `daa9331`; `infra/sap_delivery_promoter/` and `infra/v3_nightly_orchestrator.workflows.yaml`.
+Opened: 2026-08-05T14:28:01+07:00
+Claim: The source-only promoter hashes the immutable requested archive generation before a
+create-only promotion, verifies destination size/CRC32C, and returns only exact evidence. The
+workflow keeps delivery disabled, requires an explicit SAP-facing filename rather than archive-name
+inference, checks the returned binding, and supplies DDL 062's required filename/SHA-256 arguments.
+Evidence: Read `infra/sap_delivery_promoter/main.py`, its deployment contract, and the Unit 6
+workflow delta; `python -m py_compile infra/sap_delivery_promoter/main.py` and `git diff --check`
+passed. Confirm no deployment, procedure CALL, GCS write, scheduler, Gmail, BigQuery mutation, or
+SAP action is requested. Review name validation, source-generation binding, create-only semantics,
+destination verification, failure paths, response metadata, and the inactive workflow gate.
+
 ## RQ-20260805-1147-completeness-dispatch-batch-isolation
 Status: REVIEWED
 Reviewer: Claude Code
