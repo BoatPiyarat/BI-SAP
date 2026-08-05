@@ -27,6 +27,7 @@ This is the short operational index. Exact commands and evidence requirements re
 - [ ] Finance cutoff registry and reviewed automatic monthly transition are live.
 - [ ] DDL 067 completeness snapshot is live and called after the final zero/delivered outcome.
 - [ ] Completeness-mail dispatcher, distinct primary/fallback recipients, and trigger are proven.
+- [ ] DDL 066/068 numeric alert configurations, schedules, and human-delivery tests are live.
 
 No post-import workflow execution, rehearsal fixture call, Gmail publication, production GCS
 delivery, or SAP action was created by this activation work.

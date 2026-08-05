@@ -1,5 +1,14 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-05 22:06 ICT — alert approval still lacks executable numeric rows
+
+Repository-wide search confirmed DDL 066/068 intentionally contain no config seed and no other
+artifact supplies production `max_record_increase`/`max_order_increase` values. Boat's approval of
+the threshold/config approach is recorded, but it cannot be translated into four DDL 066 values
+plus per-active-check DDL 068 values/effective dates by guessing or copying backlog/fixture/legacy
+numbers. Added the exact remaining input shape and an unchecked automation item. No threshold,
+history, schedule, alert, DDL, or live state changed.
+
 ## 2026-08-05 22:05 ICT — daily completeness runtime gap exposed
 
 Canonical inventory/source tracing confirmed DDL 067 is reviewed but not live, the workflow and

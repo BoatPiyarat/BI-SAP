@@ -311,6 +311,18 @@ For a newly introduced `check_name`, the first comparison is against zero: inspe
 snapshot before threshold approval. The full onboarding sequence is canonical in
 `docs/design/SAP_RUNBOOK_v3.md` §5c; no day-zero history may be silently seeded.
 
+**2026-08-05 clarification:** Boat approved the alert threshold/config approach, but no numeric
+threshold rows were supplied and the reviewed DDL deliberately contains none. The remaining
+executable inputs are:
+
+- DDL 066 effective date plus `max_record_increase` and `max_order_increase` for `MISSING`;
+- DDL 066 effective date plus the same two values for `STATUS_CONFLICT`;
+- DDL 068 effective date plus those two values for every active `sap_validation_error.check_name`
+  after its first real snapshot is inspected.
+
+General approval does not authorize treating the current backlog, fixture numbers, or the obsolete
+global `>60` value as any of these rows.
+
 Confirmed 2026-07-27: every BQDTS `enableFailureEmail` alert (dead-man's-switch/missed-extract,
 column-contract guard, validation-regression) is owned by `data@rabbit.co.th`
 (`ownerInfo.email` on the transfer config) - that's where the failure emails go, not

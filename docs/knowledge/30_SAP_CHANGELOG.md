@@ -1,5 +1,12 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-05 22:06 ICT — clarify missing numeric alert inputs
+
+- Distinguished approval of the DDL 066/068 framework from absent numeric configuration rows.
+- Listed the exact status/check-level record/order limits and effective dates still required.
+- Prohibited converting current backlog, fixtures, or obsolete `>60` into production thresholds.
+- Documentation only; no config, snapshot, schedule, or alert mutation.
+
 ## 2026-08-05 22:05 ICT — expose daily completeness runtime gap
 
 - Confirmed DDL 067, its snapshot call, and the reviewed mail dispatcher are not live/wired.
