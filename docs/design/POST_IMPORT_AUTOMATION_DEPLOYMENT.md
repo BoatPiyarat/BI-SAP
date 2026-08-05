@@ -9,6 +9,8 @@ The reviewed foundation is now partly deployed but intentionally inert:
 
 - DDL 072 job `bqjob_r2275791741e4aa6a_0000019fd20b3076_1`;
 - DDL 073 job `bqjob_r26029521d6ea2cf0_0000019fd20bb351_1`;
+- DDL 074 rehearsal-fixture procedure job
+  `bqjob_r2732ec7e5e42097_0000019fd23b665a_1` (procedure exists but was not called);
 - workflow revision `000008-4e4`, ACTIVE with `delivery_enabled: false`;
 - private/internal dispatcher revision `sap-post-import-dispatcher-00001-qd4`, with no invoker;
 - unscheduled watchdog job `sap-post-import-watchdog`, Ready, never executed;

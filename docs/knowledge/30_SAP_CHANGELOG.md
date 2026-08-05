@@ -1,5 +1,12 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-05 21:02 ICT — DDL 074 procedure deployed inert
+
+- Deployed `sp_seed_post_import_rehearsal_fixtures` after Class-A PASS; job
+  `bqjob_r2732ec7e5e42097_0000019fd23b665a_1`, mandatory dry-run 0 bytes.
+- Read-only routine metadata confirmed the expected STRING nonce parameter and SQL body.
+- Did not call the procedure; no rows, GCS objects, workflow execution, delivery, or SAP action.
+
 ## 2026-08-05 21:00 ICT — rehearsal fixture seeder (DDL 074) review PASSED
 
 - `RQ-20260805-2051-post-import-rehearsal-fixtures` (commit `3242a85`) reviewed PASS —

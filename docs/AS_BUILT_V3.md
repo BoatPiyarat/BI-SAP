@@ -94,6 +94,7 @@ scheduler proof. Deployment remains a separate reviewed gate.
 | `sp_release_v3_post_import_claim` | `072` | ✅ deployed; dispatcher/watchdog runtimes absent | CHANGELOG 08-05 |
 | `sp_complete_v3_post_import_refresh` | `072` | ✅ deployed; dispatcher/watchdog runtimes absent | CHANGELOG 08-05 |
 | `sp_reconcile_v3_post_import_rows` | `073` | ✅ deployed; post-import runtime not activated | CHANGELOG 08-05 |
+| `sp_seed_post_import_rehearsal_fixtures` | `074` | ✅ deployed but never called; retained synthetic rehearsal only | CHANGELOG 08-05 |
 | `sp_refresh_delta_export` | `018` | ✅ inside nightly chain | README, CHANGELOG 07-25/07-26 |
 | `sp_check_dead_mans_switch` | `004` | ✅ `sap_dead_mans_switch`, 22:00 ICT daily | README, CHANGELOG 07-24 |
 | `sp_backfill_rcl_newpayment_chunked` | `010` | ❌ callable on-demand only, one-off tool | README, CHANGELOG 07-25 |

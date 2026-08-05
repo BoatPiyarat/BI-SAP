@@ -1,5 +1,13 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-05 21:02 ICT — DDL 074 procedure deployed, not called
+
+After its Class-A PASS, the synthetic post-import fixture procedure was deployed by BigQuery job
+`bqjob_r2732ec7e5e42097_0000019fd23b665a_1`. The mandatory pre-deploy dry-run was 0 bytes and a
+read-only `bq show --routine` confirmed one STRING argument (`p_nonce`) and the expected SQL body
+live in `sap_integration_v3.sp_seed_post_import_rehearsal_fixtures`. The procedure was not called:
+no fixture rows, GCS objects, workflow execution, delivery, or SAP action were produced.
+
 ## 2026-08-05 21:00 ICT — rehearsal fixture seeder (DDL 074): Class-A review PASSED
 
 `RQ-20260805-2051-post-import-rehearsal-fixtures` (commit `3242a85`) reviewed and passed —
