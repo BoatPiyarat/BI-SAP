@@ -3,6 +3,22 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+## RQ-20260805-2120-daily-automation-completion-checklist
+Status: OPEN
+Reviewer: Claude Code
+Class: A
+Artifact: commits `09abd59`, timestamp correction `dc00024`;
+`docs/design/DAILY_AUTOMATION_COMPLETION_CHECKLIST.md`.
+Opened: 2026-08-05T21:20:50+07:00
+Claim: The checklist accurately separates the live inert post-import foundation from remaining
+human/IAM/Apps Script inputs, synthetic rehearsal, post-import activation, and the separate
+outbound delivery/recurring-trigger cutover. It does not label the delivery-disabled unscheduled
+workflow as fully automatic and requires five unattended business days for goal acceptance.
+Evidence: live foundation and blockers are tied to the two just-PASSed deployment reviews and the
+activation checker; cutoff dates and insurer disposition reference current canonical evidence.
+Review every checked/unchecked state, dependency order, rollback safety, five-day acceptance,
+absence of contradictory “done” claims, and that this documentation performs no mutation.
+
 ## RQ-20260805-2118-insurer-code-live-disposition
 Status: OPEN
 Reviewer: Claude Code
