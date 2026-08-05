@@ -3,6 +3,19 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+## RQ-20260805-1928-post-import-dispatch-transitions
+Status: OPEN
+Reviewer: Claude Code
+Class: A
+Artifact: commit `afefd67`; `sql/ddl/072_v3_post_import_refresh_dispatch.sql`.
+Opened: 2026-08-05T19:28:16+07:00
+Claim: Source-only procedures atomically bind one exact outbox row to one complete Workflows
+execution resource name, make duplicate claims idempotent only for the same binding, limit attempts
+to three, and permit completion only from STARTED into `SUCCEEDED`, `TIMEOUT`, or `HUMAN_ACTION`.
+Evidence: Mandatory DDL dry-run passed at 0 bytes. Review exact-key/execution-name uniqueness,
+concurrent/duplicate claim behavior, attempt boundary, terminal transition/error-template rules,
+transaction row-count guards, and that no workflow, topic, delivery, ACK, or SAP action occurs.
+
 ## RQ-20260805-1910-post-import-event-publisher
 Status: REVIEWED
 Reviewer: Claude Code
