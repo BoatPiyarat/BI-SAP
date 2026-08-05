@@ -18,6 +18,8 @@ audit. The legacy `sap-extract-schedule` remains ENABLED at 20:30 ICT using the 
 service account, and the unrelated legacy 01:00 loader scheduler remains ENABLED. The existing
 `v3-orchestrator-alerts` topic exists. No post-import dispatcher service, watchdog job, or dedicated
 post-import topic exists yet. This was inventory only; no GCP resource changed.
+Deployed source inspection also confirmed `delivery_enabled: false` and no post-import bind or
+reconciliation markers; those remain local review-gated deltas.
 
 ## 2026-08-05 19:55 ICT — post-import cutover and rehearsal plan
 
