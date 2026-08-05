@@ -25,7 +25,8 @@ missing values, and that this belongs on the unattended completion checklist.
 Status: OPEN
 Reviewer: Claude Code
 Class: A
-Artifact: commit `b1e3508`, terminal-result ordering correction `a6bc76e`;
+Artifact: commit `b1e3508`, terminal-result ordering correction `a6bc76e`, offline dispatcher
+contract tests `da301ee`;
 `docs/FINDINGS_DAILY_COMPLETENESS_RUNTIME_GAP_20260805.md`.
 Opened: 2026-08-05T22:05:17+07:00
 Claim: Canonical live inventory and reviewed source prove the daily completeness snapshot/report
@@ -37,7 +38,10 @@ delivery would immutably freeze `SAP_RESULT=PENDING_ACK`: healthy zero may snaps
 the original outbound pipeline run. It remains separate from post-import activation.
 Evidence: `AS_BUILT_V3.md`, DDL README, DDL 067, workflow/wrapper zero-reference grep, reviewed
 dispatcher source, deployment contract, and reviews `44ade18`/`d85aa20` were traced;
-`git diff --check` passed. No live recheck was made under the local GCP tool usage limit. No DDL,
+11 offline Node VM assertions passed for metric report construction, no recipient addresses in the
+body, mail/status/fallback ordering, dual-channel failure, aggregate failure, and batch isolation;
+Apps Script syntax and `git diff --check` passed. No live recheck was made under the local GCP
+tool usage limit. No DDL,
 CALL, Apps Script, OAuth, trigger, email, BigQuery, workflow, scheduler, GCS, or SAP mutation
 occurred. Review inventory/source interpretation; DDL 067's manifest/SAP-result semantics;
 healthy-zero vs terminal nonzero ordering; feasibility and exactness of original outbound
