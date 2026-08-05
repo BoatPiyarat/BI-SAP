@@ -3,6 +3,29 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+## RQ-20260805-2149-v3-delivery-control-plane-gate
+Status: OPEN
+Reviewer: Claude Code
+Class: A
+Artifact: commit `344e74d`; `docs/design/V3_DELIVERY_CONTROL_PLANE.md`;
+`scripts/check_v3_delivery_control_plane.ps1`.
+Opened: 2026-08-05T21:49:30+07:00
+Claim: The source-only administrator runbook safely prepares, but does not activate, the exact
+delivery control plane: a private promoter on a dedicated identity, conditional archive-read and
+production-create bucket IAM, exact workflow invoker, narrow scheduler execution creator, and a
+PAUSED 20:30 ICT trigger whose only argument is the exact promoter URL. The read-only checker
+fails unless those bindings/configurations are exact while the workflow remains visibly
+`delivery_enabled:false`.
+Evidence: PowerShell parser passed with zero errors and `git diff --check` passed. The checker was
+not run live because the local GCP tool account returned its usage limit; the artifact therefore
+makes no live readiness claim. No deploy, IAM, scheduler, execution, GCS, Gmail, BigQuery, or SAP
+mutation occurred. Review PowerShell 5.1 compatibility and strict-mode behavior; Cloud Run
+service-account/ingress/env/IAM JSON shapes; conditional bucket-policy expression matching and
+whether the roles are minimally sufficient; Scheduler executions endpoint, OAuth identity,
+base64 body decoding and nested `argument` JSON; create→pause→update race safety; exact workflow
+service-account normalization; false-positive/false-negative readiness paths; production gates
+and rollback; and that no command in the machine checker mutates state.
+
 ## RQ-20260805-2136-two-name-delivery-result-contract
 Status: OPEN
 Reviewer: Claude Code
