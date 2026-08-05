@@ -1,5 +1,12 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-05 11:46 ICT — completeness-dispatch batch-isolation note corrected
+
+- Added per-run exception isolation so every pending completeness snapshot is attempted even when
+  another run's primary/fallback path fails; the dispatcher then raises one sanitized aggregate.
+- Node syntax and whitespace validation passed; delta review is required before deployment.
+- Source-only change; no production state changed.
+
 ## 2026-08-05 10:2x ICT — two reviews closed: identity conservation PASS, completeness dispatcher PASS with note
 
 - Recorded Claude's PASS verdict for `70e5671` (DDL 062 identity-conservation delta), note resolved.

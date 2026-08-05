@@ -14,7 +14,18 @@ function dispatchPendingV3DailyCompletenessReports() {
     `SELECT pipeline_run_id FROM \`${config.projectId}.${config.dataset}.v3_daily_completeness_run\`
      WHERE snapshot_status='READY_TO_ALERT' AND alert_delivery_status='PENDING'
      ORDER BY created_at`, []).rows;
-  pending.forEach((row) => deliverV3DailyCompletenessReport_(config, row.f[0].v));
+  const failures = [];
+  pending.forEach((row) => {
+    const pipelineRunId = row.f[0].v;
+    try {
+      deliverV3DailyCompletenessReport_(config, pipelineRunId);
+    } catch (error) {
+      failures.push(`${pipelineRunId}:${completenessSanitize_(error)}`);
+    }
+  });
+  if (failures.length) {
+    throw new Error(`COMPLETENESS_DISPATCH_FAILURES count=${failures.length} ${failures.join('; ')}`);
+  }
 }
 
 function deliverV3DailyCompletenessReport_(config, pipelineRunId) {

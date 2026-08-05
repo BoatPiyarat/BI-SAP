@@ -1,5 +1,14 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-05 11:46 ICT — completeness-dispatch batch-isolation note corrected; delta review pending
+
+The dispatcher now catches each pending pipeline run's delivery failure, continues attempting every
+other pending report, then raises one sanitized aggregate error if any run failed. A failed run's
+own `ALERT_FAILED`/fallback behavior remains unchanged; the correction only prevents it from
+stranding unrelated PENDING snapshots in the same batch. Node syntax and whitespace validation
+passed. This source-only delta needs Class A review before deployment; no trigger, email, BigQuery,
+GCS, scheduler, or SAP state changed.
+
 ## 2026-08-05 10:2x ICT — two more reviews closed; review debt clear
 
 DDL 062's identity-conservation delta (`70e5671`) PASSED, note resolved: the procedure now proves
