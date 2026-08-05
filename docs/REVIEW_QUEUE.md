@@ -7,14 +7,19 @@ review history; link the completed review and record its verdict.
 Status: OPEN
 Reviewer: Claude Code
 Class: A
-Artifact: commit `afefd67`; `sql/ddl/072_v3_post_import_refresh_dispatch.sql`.
+Artifact: commits `afefd67` + corrective delta `785f62e`;
+`sql/ddl/072_v3_post_import_refresh_dispatch.sql`.
 Opened: 2026-08-05T19:28:16+07:00
-Claim: Source-only procedures atomically bind one exact outbox row to one complete Workflows
-execution resource name, make duplicate claims idempotent only for the same binding, limit attempts
-to three, and permit completion only from STARTED into `SUCCEEDED`, `TIMEOUT`, or `HUMAN_ACTION`.
-Evidence: Mandatory DDL dry-run passed at 0 bytes. Review exact-key/execution-name uniqueness,
-concurrent/duplicate claim behavior, attempt boundary, terminal transition/error-template rules,
-transaction row-count guards, and that no workflow, topic, delivery, ACK, or SAP action occurs.
+Claim: Source-only procedures atomically claim one exact outbox row by deterministic token, bind
+the Workflows API's subsequently returned complete execution resource name, release a failed
+create for bounded retry, and permit completion only from STARTED into `SUCCEEDED`, `TIMEOUT`, or
+`HUMAN_ACTION`. Duplicate claims/binds are idempotent only for the same binding and attempts stop
+at three.
+Evidence: Corrected complete DDL passed the mandatory dry-run at 0 bytes. Review exact-key,
+claim-token and execution-name uniqueness; concurrent/duplicate claim and bind behavior; release
+and attempt-three boundary; terminal transition/error-template rules; transaction row-count
+guards; and that no workflow, topic, delivery, ACK, or SAP action occurs. The delta corrects the
+initial assumption that an execution name exists before the Workflows create call.
 
 ## RQ-20260805-1910-post-import-event-publisher
 Status: REVIEWED
