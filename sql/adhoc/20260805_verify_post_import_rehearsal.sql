@@ -95,4 +95,3 @@ LEFT JOIN archive a USING(export_run_id)
 LEFT JOIN sap_manifest sm USING(export_run_id)
 LEFT JOIN file_manifest fm USING(export_run_id)
 ORDER BY c.case_name;
-
