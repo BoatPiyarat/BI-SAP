@@ -53,6 +53,10 @@ main:
           # Incident 21178: keep production delivery disabled until Unit 5 emits the complete
           # RCL period spine (all periods through TotalPeriods), not only the paid event row.
           - delivery_enabled: false
+          # A caller must provide the exact SAP-facing rename and authenticated promoter URL.
+          # Never infer the production basename from the archive object (LogID 21183 lesson).
+          - promotion_service_url: ${default(map.get(args, "promotion_service_url"), "")}
+          - sap_file_name: ${default(map.get(args, "sap_file_name"), "")}
           - pre_watermark: {}
 
     - log_start:
@@ -277,12 +281,26 @@ main:
         switch:
           - condition: ${delivery_enabled}
             steps:
+              - require_delivery_contract:
+                  switch:
+                    - condition: ${promotion_service_url == "" or sap_file_name == ""}
+                      steps:
+                        - fail_missing_delivery_contract:
+                            call: fail_closed
+                            args:
+                              project: ${project}
+                              run_id: ${run_id}
+                              alert_topic: ${alert_topic}
+                              step: "UNIT6_DELIVERY_CONTRACT"
+                              reason: "delivery requires explicit promotion_service_url and exact sap_file_name"
               - promote_exact_archive:
                   call: promote_daily_archive
                   args:
                     project: ${project}
                     run_id: ${run_id}
                     alert_topic: ${alert_topic}
+                    promotion_service_url: ${promotion_service_url}
+                    sap_file_name: ${sap_file_name}
                   result: delivery
               - gate_delivery_rows:
                   switch:
@@ -291,7 +309,7 @@ main:
               - build_delivery_statement:
                   assign:
                     - delivery_call_head: '${"CALL `pacific-plating-282708.sap_integration_v3.sp_mark_v3_exact_delivery`(\u0027" + run_id + "\u0027,\u0027" + delivery.export_run_id + "\u0027,\u0027" + delivery.archive_uri + "\u0027,\u0027" + delivery.archive_generation + "\u0027,"}'
-                    - delivery_call_tail: '${"\u0027" + delivery.production_uri + "\u0027,\u0027" + delivery.production_generation + "\u0027," + string(delivery.size_bytes) + ",\u0027" + delivery.crc32c + "\u0027);"}'
+                    - delivery_call_tail: '${"\u0027" + delivery.production_uri + "\u0027,\u0027" + delivery.production_generation + "\u0027," + string(delivery.size_bytes) + ",\u0027" + delivery.crc32c + "\u0027,\u0027" + delivery.sap_file_name + "\u0027,\u0027" + delivery.file_sha256 + "\u0027);"}'
               - persist_delivery:
                   call: run_bq_call
                   args:
@@ -307,7 +325,7 @@ main:
 # Exact-generation production promotion. Zero archive rows is a healthy no-file night. Any
 # ambiguous ledger/object or copy mismatch fails closed before DELIVERED is persisted.
 promote_daily_archive:
-  params: [project, run_id, alert_topic]
+  params: [project, run_id, alert_topic, promotion_service_url, sap_file_name]
   steps:
     - find_archive:
         call: googleapis.bigquery.v2.jobs.query
@@ -375,46 +393,58 @@ promote_daily_archive:
         assign:
           - source_name: ${objects[0].name}
           - source_generation: ${string(objects[0].generation)}
-          - source_size: ${int(objects[0].size)}
-          - source_crc: ${objects[0].crc32c}
-          - name_parts: ${text.split(objects[0].name, "/")}
-          - destination_name: '${"RCB_MOTOR/" + name_parts[len(name_parts) - 1]}'
-          - production_uri: '${"gs://interface-file/" + destination_name}'
-    - copy_create_only:
+          - destination_name: '${"RCB_MOTOR/" + sap_file_name}'
+          - expected_production_uri: '${"gs://interface-file/" + destination_name}'
+    - promote_and_hash_exact_generation:
         call: http.post
         args:
-          url: '${"https://storage.googleapis.com/storage/v1/b/rcb-bronze-zone/o/" + text.url_encode(source_name) + "/rewriteTo/b/interface-file/o/" + text.url_encode(destination_name) + "?sourceGeneration=" + source_generation + "&ifGenerationMatch=0"}'
+          url: '${promotion_service_url + "/promote"}'
           auth:
-            type: OAuth2
-        result: copied
-    - inspect_copy:
+            type: OIDC
+            audience: ${promotion_service_url}
+          body:
+            archive_bucket: "rcb-bronze-zone"
+            archive_object: ${source_name}
+            archive_generation: ${source_generation}
+            production_bucket: "interface-file"
+            production_object: ${destination_name}
+            sap_file_name: ${sap_file_name}
+        result: promotion_response
+    - inspect_promotion:
         assign:
-          - copy_done: ${default(map.get(copied.body, "done"), false)}
-          - dest_generation: ${string(default(map.get(copied.body, ["resource", "generation"]), ""))}
-          - dest_size: ${int(default(map.get(copied.body, ["resource", "size"]), "0"))}
-          - dest_crc: ${default(map.get(copied.body, ["resource", "crc32c"]), "")}
-    - gate_copy:
+          - promotion: ${promotion_response.body}
+          - promoted_archive_uri: ${default(map.get(promotion, "archive_uri"), "")}
+          - promoted_archive_generation: ${string(default(map.get(promotion, "archive_generation"), ""))}
+          - production_uri: ${default(map.get(promotion, "production_uri"), "")}
+          - dest_generation: ${string(default(map.get(promotion, "production_generation"), ""))}
+          - dest_size: ${int(default(map.get(promotion, "size_bytes"), "0"))}
+          - dest_crc: ${default(map.get(promotion, "crc32c"), "")}
+          - promoted_sap_file_name: ${default(map.get(promotion, "sap_file_name"), "")}
+          - file_sha256: ${default(map.get(promotion, "file_sha256"), "")}
+    - gate_promotion:
         switch:
-          - condition: ${not copy_done or dest_generation == "" or source_size != dest_size or source_crc != dest_crc}
+          - condition: ${promoted_archive_uri != "gs://rcb-bronze-zone/" + source_name or promoted_archive_generation != source_generation or production_uri != expected_production_uri or dest_generation == "" or dest_size <= 0 or dest_crc == "" or promoted_sap_file_name != sap_file_name or file_sha256 == ""}
             steps:
-              - fail_copy:
+              - fail_promotion:
                   call: fail_closed
                   args:
                     project: ${project}
                     run_id: ${run_id}
                     alert_topic: ${alert_topic}
-                    step: "UNIT6_EXACT_COPY"
-                    reason: '${"copy evidence mismatch; done=" + string(copy_done) + "; source_size=" + string(source_size) + "; dest_size=" + string(dest_size) + "; source_crc=" + source_crc + "; dest_crc=" + dest_crc}'
+                    step: "UNIT6_EXACT_PROMOTION"
+                    reason: "promotion response did not bind the requested source generation, destination, SAP filename, and hash"
     - output:
         return:
           has_delivery: true
           export_run_id: ${archive_info.export_run_id}
-          archive_uri: '${"gs://rcb-bronze-zone/" + source_name}'
+          archive_uri: ${promoted_archive_uri}
           archive_generation: ${source_generation}
           production_uri: ${production_uri}
           production_generation: ${dest_generation}
           size_bytes: ${dest_size}
           crc32c: ${dest_crc}
+          sap_file_name: ${promoted_sap_file_name}
+          file_sha256: ${file_sha256}
 
 # ----------------------------------------------------------------------
 # F3 support: read the extract control object content (alt=media) with the

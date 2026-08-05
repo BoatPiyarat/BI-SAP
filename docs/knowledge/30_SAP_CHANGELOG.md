@@ -1,5 +1,14 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-05 14:26 ICT — SHA-256 exact-promotion source ready
+
+- Added source-only Cloud Run promoter that hashes an immutable archive generation, copies it with
+  GCS create-only semantics, and returns SHA-256/generation/CRC32C evidence without file content.
+- The disabled workflow now requires an explicit SAP-facing rename and calls DDL 062 with its
+  required filename and SHA-256 parameters; it never derives the production basename from archive.
+- Python syntax and whitespace validation passed. No deployment or production state changed;
+  Class-A review is pending.
+
 ## 2026-08-05 12:0x ICT — completeness-dispatch batch-isolation delta: PASS
 
 - Recorded Claude's PASS verdict for `d85aa20`, note resolved.

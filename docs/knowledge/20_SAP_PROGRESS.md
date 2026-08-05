@@ -1,5 +1,16 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-05 14:26 ICT — SHA-256 exact-promotion source ready; Class-A review pending
+
+Added a source-only private Cloud Run promoter and updated the disabled nightly workflow contract.
+The workflow now requires an explicit SAP-facing filename and promoter URL rather than deriving a
+production basename from the archive object. The promoter hashes the immutable archive generation,
+performs a create-only server-side copy, verifies destination size/CRC32C, and returns the
+SHA-256 plus both generations to DDL 062's reviewed ten-argument delivery marker. The source is
+not deployed and `delivery_enabled` remains `false`; no GCS, scheduler, BigQuery, Gmail, SAP, or
+production state changed. Python syntax and whitespace validation passed. Class-A review is
+required before this source is eligible for deployment.
+
 ## 2026-08-05 12:0x ICT — completeness-dispatch batch-isolation delta PASSED; review debt clear
 
 Confirmed `d85aa20`'s per-run try/catch is inside the `forEach` callback, so one pipeline run's
