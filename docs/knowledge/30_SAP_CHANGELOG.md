@@ -1,5 +1,14 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-05 20:16 ICT — deployed reviewed post-import SQL/workflow; watchdog PASSED
+
+- Deployed DDL 072 and DDL 073 after their Class-A PASS verdicts and 0-byte dry-runs.
+- Deployed workflow revision `000008-4e4`; verified ACTIVE, post-import bind/reconciliation present,
+  and `delivery_enabled: false`.
+- Recorded Claude PASS for the watchdog source and all four independently rerun unit tests.
+- Did not create or activate dispatcher, watchdog, IAM, Pub/Sub, Gmail, scheduler, delivery, or SAP
+  runtime actions; activation/rehearsal review remains open.
+
 ## 2026-08-05 20:07 ICT — DDL 072 and dispatcher reviews PASSED
 
 - Recorded Claude PASS for exact dispatcher transitions and private Unit-1 dispatch source.

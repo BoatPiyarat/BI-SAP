@@ -4,12 +4,22 @@ Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request firs
 review history; link the completed review and record its verdict.
 
 ## RQ-20260805-1956-post-import-activation-rehearsal
-Status: OPEN
+Status: REVIEWED
 Reviewer: Claude Code
 Class: A
 Artifact: commit `8b1f2bb`; live inventory/diagnosis evidence `4ed5dd6`, `43bbed3`;
 `docs/design/POST_IMPORT_AUTOMATION_DEPLOYMENT.md`.
 Opened: 2026-08-05T19:55:00+07:00
+Verdict: PASS — `docs/reviews/2026-08-05-8b1f2bb-claude.md` (verified the six-step order matches
+what was actually reviewed this session, all three identities are least-privilege per the real
+READMEs, the ten rehearsal cases map onto already-reviewed behavior rather than invented
+properties, and rollback/evidence-retention rules hold. Independently re-ran the balance-gate
+diagnosis query — confirmed 559 identities/1 held/558 matched/0 remaining mismatches and the
+~52-54s failure-to-fix gap — and ran live read-only `gcloud` inventory myself: workflow ACTIVE,
+`sap-extract-schedule` and the legacy 01:00 loader both ENABLED, alert topic present, no
+post-import Cloud Run service or Pub/Sub topic exists yet. `git diff --check` clean on all three
+commits.)
+
 Claim: The activation plan preserves dependency/review order, uses three dedicated least-privilege
 identities, requires measured timeout/delivery configuration, proves ten synthetic cases before
 enabling the Gmail publisher, and gives a configuration-first rollback that retains evidence.

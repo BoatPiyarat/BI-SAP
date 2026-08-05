@@ -1,5 +1,37 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-05 20:30 ICT — post-import activation rehearsal plan: Class-A review PASSED
+
+`RQ-20260805-1956-post-import-activation-rehearsal` (commit `8b1f2bb`) reviewed and passed —
+`docs/reviews/2026-08-05-8b1f2bb-claude.md`. This closes the last open review in the post-import
+increment: DDL 072, DDL 073, the dispatcher, the watchdog, and now this activation/rehearsal plan
+have all independently received PASS this session. Verified the plan's six-step deploy order
+matches what was actually reviewed, all three new identities are least-privilege per the real
+service READMEs, and the ten synthetic rehearsal cases map cleanly onto behavior already verified
+in the preceding reviews rather than being invented. Independently re-ran the referenced
+balance-gate diagnosis query (confirmed 559 identities / 1 held / 558 matched / 0 remaining
+mismatches, ~52-54s failure-to-fix gap) and ran my own live read-only `gcloud` inventory
+(workflow ACTIVE, `sap-extract-schedule` and the legacy 01:00 loader both ENABLED, alert topic
+present, no post-import Cloud Run service or Pub/Sub topic exists yet) — every inventory claim in
+the commit checked out independently. No deploy, IAM grant, or production action occurred in this
+review; the dispatcher service, watchdog job, dedicated identities, Pub/Sub topic/subscription,
+Gmail publisher setting, and scheduler activation itself remain a separate, still-ungated step.
+
+## 2026-08-05 20:16 ICT — reviewed post-import foundation deployed; watchdog PASS
+
+Under Boat's standing Class-A PASS deployment authorization, DDL 072 and DDL 073 were deployed
+after 0-byte dry-runs. BigQuery jobs:
+`bqjob_r2275791741e4aa6a_0000019fd20b3076_1` and
+`bqjob_r26029521d6ea2cf0_0000019fd20bb351_1`. The reviewed workflow source was then deployed as
+ACTIVE revision `000008-4e4`; verification confirms `delivery_enabled: false` and the post-import
+self-bind and exact reconciliation paths are present. No workflow execution, scheduler activation,
+GCS delivery, or SAP action occurred.
+
+Claude independently reviewed the watchdog source and concurrency tests PASS in
+`docs/reviews/2026-08-05-8fbbb93-claude.md`. The activation/rehearsal plan remains the only OPEN
+review in this increment. The dispatcher service, watchdog job, dedicated identities, Pub/Sub
+topic/subscription, Gmail publisher setting, and scheduler remain absent/inactive.
+
 ## 2026-08-05 20:07 ICT — DDL 072 and dispatcher reviews PASSED
 
 Claude Code returned PASS for the complete DDL 072 transition chain and the private dispatcher /

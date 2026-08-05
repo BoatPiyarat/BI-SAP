@@ -40,6 +40,7 @@ either inside the one nightly chain above, on-demand (`ADHOC:` scope), or not at
 | `sap_result_ingestion_heartbeat_v3` | `070_sap_result_ingestion_heartbeat.sql` | ❌ runtime not deployed | CHANGELOG 08-05 |
 | `sap_delivery_manifest_v3` | `070_sap_result_ingestion_heartbeat.sql` | written by reviewed DDL 062 after exact promotion | CHANGELOG 08-05 |
 | `v3_post_import_refresh_outbox` | `071_v3_post_import_refresh_outbox.sql` | ❌ publisher/dispatcher not deployed | CHANGELOG 08-05 |
+| `v3_post_import_row_reconciliation` | `073_v3_post_import_row_reconciliation.sql` | ✅ deployed; written only by post-import child execution (runtime not activated) | CHANGELOG 08-05 |
 | `manual_close_20260726_motor_newpayment_gap` | `021_backfill_motor_newpayment_gap_20260726.sql` | ❌ one-off audit table | CHANGELOG 07-26 |
 | `manual_close_20260726_rcl_creditshell` | `022_backfill_rcl_creditshell_20260726.sql` | ❌ one-off audit table | CHANGELOG 07-26 |
 | `manual_close_20260726_rcb_creditshell` | `023_backfill_rcb_creditshell_20260726.sql` | ❌ one-off audit table | CHANGELOG 07-26 |
@@ -88,6 +89,11 @@ scheduler proof. Deployment remains a separate reviewed gate.
 | `sp_refresh_expected_state` | `016` | ✅ inside nightly chain | README, CHANGELOG 07-25 |
 | `sp_run_validation` | `017` | ✅ inside nightly chain | README, CHANGELOG 07-25/07-26 |
 | `sp_enqueue_v3_post_import_refresh` | `071` | ❌ feature-gated runtime not deployed | CHANGELOG 08-05 |
+| `sp_claim_v3_post_import_refresh` | `072` | ✅ deployed; dispatcher runtime absent | CHANGELOG 08-05 |
+| `sp_bind_v3_post_import_execution` | `072` | ✅ deployed; dispatcher runtime absent | CHANGELOG 08-05 |
+| `sp_release_v3_post_import_claim` | `072` | ✅ deployed; dispatcher/watchdog runtimes absent | CHANGELOG 08-05 |
+| `sp_complete_v3_post_import_refresh` | `072` | ✅ deployed; dispatcher/watchdog runtimes absent | CHANGELOG 08-05 |
+| `sp_reconcile_v3_post_import_rows` | `073` | ✅ deployed; post-import runtime not activated | CHANGELOG 08-05 |
 | `sp_refresh_delta_export` | `018` | ✅ inside nightly chain | README, CHANGELOG 07-25/07-26 |
 | `sp_check_dead_mans_switch` | `004` | ✅ `sap_dead_mans_switch`, 22:00 ICT daily | README, CHANGELOG 07-24 |
 | `sp_backfill_rcl_newpayment_chunked` | `010` | ❌ callable on-demand only, one-off tool | README, CHANGELOG 07-25 |
@@ -102,6 +108,10 @@ scheduler proof. Deployment remains a separate reviewed gate.
   `sap_mirror_doc`/`sap_mirror_state`).
 - Extract-scheduler-health widget source is ready in DDL 065; deployment and durable scheduler
   trigger provenance remain open.
+- `v3-nightly-orchestrator` revision `000008-4e4` is ACTIVE with the reviewed post-import
+  self-bind/reconciliation path and `delivery_enabled: false`. It has no Scheduler target; the
+  dispatcher service, watchdog job, post-import Pub/Sub resources, and Gmail publisher setting
+  remain inactive.
 - 7 one-off audit tables from prior backfills are intentionally unscheduled and undocumented beyond
   their originating changelog entry — acceptable, flagged for an eventual retention decision only.
 - V3 still writes **no interface file** — every object above feeds `expected_state`/`delta_export`
