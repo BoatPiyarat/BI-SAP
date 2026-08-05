@@ -1,5 +1,19 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-05 19:20 ICT — post-import refresh outbox (071) and event publisher: reviews PASSED
+
+- `RQ-20260805-1903-post-import-refresh-outbox` (commit `282581f`) reviewed PASS —
+  `docs/reviews/2026-08-05-282581f-claude.md`.
+- `RQ-20260805-1910-post-import-event-publisher` (commit `c90d79b`) reviewed PASS —
+  `docs/reviews/2026-08-05-c90d79b-claude.md`.
+- Independently re-verified DDL 071's dependency assertions against live BigQuery schema,
+  idempotent/cross-manifest-reject enqueue semantics, and transaction/row-count guard; re-ran the
+  dry-run at 0 bytes. Independently re-verified the publisher's empty-topic gate,
+  outbox-before-publish ordering, topic validation, and narrow (pubsub-only) scope addition; re-ran
+  node --check and git diff --check.
+- Still source-only: DDL 071 not deployed, `POST_IMPORT_REFRESH_TOPIC` left blank, no trigger, GCS,
+  or production state changed.
+
 ## 2026-08-05 17:40 ICT — deployment authority and cutoff calendar approved
 
 - Boat approved deployment of every Class-A increment with a recorded PASS; unreviewed work

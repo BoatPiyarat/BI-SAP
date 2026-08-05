@@ -4,11 +4,19 @@ Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request firs
 review history; link the completed review and record its verdict.
 
 ## RQ-20260805-1910-post-import-event-publisher
-Status: OPEN
+Status: REVIEWED
 Reviewer: Claude Code
 Class: A
 Artifact: commit `c90d79b`; `workflows/sap_result_ingestion.*`.
 Opened: 2026-08-05T19:10:38+07:00
+Verdict: PASS — `docs/reviews/2026-08-05-c90d79b-claude.md` (verified the empty-topic gate returns
+before any enqueue or publish; outbox-before-publish ordering via the existing query_ helper, which
+throws before the Pub/Sub call on any DDL 071 rejection; topic-ID validation; only the narrow
+pubsub scope added, no cloud-platform restored; idempotent retry behavior since the email stays
+unlabeled and is safely reprocessed on failure. Independently re-ran node --check and git diff
+--check. One non-blocking observation: the new Pub/Sub call joins the existing no-per-item-
+try/catch batch loop already accepted for persistCandidate_ in the 1e949e7 review.)
+
 Claim: With the topic property blank, behavior is unchanged. When separately configured after DDL
 071 deployment, a matched persisted result first idempotently enqueues its exact LogID/manifest
 binding and then publishes only minimal retry-safe metadata to a validated Pub/Sub topic. It does
@@ -18,11 +26,21 @@ outbox-before-publish ordering, empty-topic gate, scope addition, topic validati
 and no trigger/deployment action.
 
 ## RQ-20260805-1903-post-import-refresh-outbox
-Status: OPEN
+Status: REVIEWED
 Reviewer: Claude Code
 Class: A
 Artifact: commit `282581f`; `sql/ddl/071_v3_post_import_refresh_outbox.sql`.
 Opened: 2026-08-05T19:03:30+07:00
+Verdict: PASS — `docs/reviews/2026-08-05-282581f-claude.md` (verified table grain, dependency
+assertions against live BigQuery schema (neither dependency table is deployed yet, which is
+expected — same staged review-before-deploy model as the rest of this project, and correctly
+disclosed in the file's own header), retry/idempotency, cross-manifest rejection, transaction/
+row-count guard, status restriction, and the no-trigger/no-delivery boundary. Independently re-ran
+the dry-run: 0 bytes. One non-blocking observation: a narrow TOCTOU gap on two genuinely concurrent
+first-time enqueues of the same brand-new log_id with different manifests — doesn't corrupt data,
+just a silent no-op instead of a clear rejection; not a live concern given the intended
+single-caller-per-log_id usage.)
+
 Claim: Source-only DDL creates an idempotent durable outbox keyed by SAP LogID and bound to one
 exact delivered manifest. Its enqueue procedure admits only the two evidenced terminal statuses,
 requires one persisted parsed LIVE result header, rejects cross-manifest LogID reuse, and cannot

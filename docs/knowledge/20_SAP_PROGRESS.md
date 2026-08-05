@@ -1,5 +1,23 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-05 19:20 ICT — post-import refresh outbox (071) and event publisher: both PASSED
+
+`RQ-20260805-1903-post-import-refresh-outbox` (commit `282581f`, DDL 071) and
+`RQ-20260805-1910-post-import-event-publisher` (commit `c90d79b`, `sap_result_ingestion.gs` delta)
+both reviewed and passed — `docs/reviews/2026-08-05-282581f-claude.md` and
+`docs/reviews/2026-08-05-c90d79b-claude.md`. DDL 071: verified table grain, dependency assertions
+against live BigQuery schema (`sap_delivery_manifest_v3`/`sap_import_result_header_v3` are correctly
+not deployed yet, matching this project's staged review-before-deploy model), idempotent
+retry/cross-manifest rejection, transaction/row-count guard, status restriction, and the
+no-trigger/no-delivery boundary; independently re-ran the dry-run at 0 bytes. Publisher delta:
+verified the empty-topic no-op gate, outbox-before-publish ordering, topic-ID validation, narrow
+scope addition (pubsub only, no cloud-platform), and idempotent retry-safety; independently re-ran
+node --check and git diff --check. Two non-blocking observations recorded (a narrow
+first-time-concurrent-enqueue race in 071; the new Pub/Sub call joining an existing
+no-per-item-try/catch batch loop already accepted in the 1e949e7 review) — neither blocks either
+PASS. Still source-only: DDL 071 not deployed, `POST_IMPORT_REFRESH_TOPIC` left blank, no trigger,
+GCS, or production state changed.
+
 ## 2026-08-05 15:10 ICT — SHA-256 exact-promotion source: Class-A review PASSED
 
 `RQ-20260805-1428-exact-sha-promotion` (commit `daa9331`) reviewed and passed —
