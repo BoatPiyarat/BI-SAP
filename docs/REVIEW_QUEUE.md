@@ -35,7 +35,8 @@ Class: A
 Artifact: commit `30bd693`, executable policy test `fa949ee`, rehearsal-fixture delta `9081445`,
 Apps Script local contract tests `7647118` and ordering delta `9692f85`; DDL 070/062/074, delivery
 workflow/promoter, Apps Script contract/comment, tests, and evidence/progress docs. Packaging
-helper `a36f5f5` is included for its exact source/manifest staging boundary.
+helper `a36f5f5` and BOM-safe delta `fc037f3` are included for the exact source/manifest staging
+boundary.
 Opened: 2026-08-05T21:36:38+07:00
 Claim: The source-only delta closes the confirmed one-name binding gap by atomically persisting
 both the exact `INSURANCE_RCB_...csv` production basename and the distinct
