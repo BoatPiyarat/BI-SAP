@@ -1,5 +1,12 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-05 22:11 ICT — add offline completeness-dispatch tests
+
+- Added 11 assertions for metric-only report construction, success/fallback/status ordering,
+  dual-channel failure, aggregate failure, and multi-run batch isolation.
+- Node tests, Apps Script syntax, and whitespace checks passed.
+- Local only; no Script ID, OAuth, BigQuery, email, trigger, or network action.
+
 ## 2026-08-05 22:06 ICT — clarify missing numeric alert inputs
 
 - Distinguished approval of the DDL 066/068 framework from absent numeric configuration rows.

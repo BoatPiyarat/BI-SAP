@@ -1,5 +1,14 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-05 22:11 ICT — completeness dispatcher locally executable
+
+Added an offline Node VM test over the real reviewed completeness Apps Script. Eleven assertions
+pass for metric report construction, absence of configured recipient addresses from the body,
+primary-send-before-DELIVERED ordering, ALERT_FAILED-before-fallback ordering, dual-channel
+failure, aggregate failure, and attempt-all batch isolation. Apps Script syntax and
+`git diff --check` pass. No Script ID, OAuth, BigQuery, email, trigger, network, or live state was
+used.
+
 ## 2026-08-05 22:06 ICT — alert approval still lacks executable numeric rows
 
 Repository-wide search confirmed DDL 066/068 intentionally contain no config seed and no other

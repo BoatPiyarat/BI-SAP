@@ -2,6 +2,17 @@
 
 The source does not authorize deployment, a trigger, a mailbox change, or a BigQuery mutation.
 
+Run the offline contract before packaging or deployment:
+
+```powershell
+node workflows/test_v3_daily_completeness_report.js
+Get-Content -Raw -Encoding UTF8 workflows/v3_daily_completeness_report.gs | node --check -
+```
+
+The test uses no Apps Script ID, OAuth, Gmail, BigQuery, network, or mail call. It covers metric
+report construction, recipient exclusion from the body, success ordering, primary→fallback
+ordering, dual-channel failure, and multi-run batch isolation.
+
 Before deployment, Boat must approve and prove a primary recipient and an independent fallback
 recipient; they must be different, and `data@rabbit.co.th` alone is insufficient. Set Script
 Properties `PROJECT_ID`, `COMPLETENESS_RECIPIENT`, and `COMPLETENESS_FALLBACK_RECIPIENT` (with
