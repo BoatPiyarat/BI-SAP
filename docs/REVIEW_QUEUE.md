@@ -4,11 +4,20 @@ Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request firs
 review history; link the completed review and record its verdict.
 
 ## RQ-20260805-0946-v3-completeness-report-dispatcher
-Status: OPEN
+Status: REVIEWED
 Reviewer: Claude Code
 Class: A
 Artifact: commit `44ade18`; `workflows/v3_daily_completeness_report.gs` and deployment contract.
 Opened: 2026-08-05T09:46:26+07:00
+Verdict: PASS WITH REQUIRED NOTE — `docs/reviews/2026-08-05-44ade18-claude.md` (every checklist item
+verified correct: TOCTOU-aware snapshot recheck, metric-only/no-PII body, DELIVERED-after-success
+ordering, ALERT_FAILED-before-fallback ordering with an enforced distinct recipient, missing/
+duplicate/non-pending fail-closed, exactly-one-row UPDATE guard, reused OAuth scopes correctly
+disclosed. Required note: the dispatch `forEach` has no per-item try/catch, so one pipeline run's
+alert failure — even when its fallback succeeds — throws and aborts the loop, silently stranding
+any other unrelated pending report in the same batch until the next trigger fire; worse than the
+15-minute ingestion-poller equivalent since this is a daily-cadence dispatcher. Independently
+re-verified with node --check and a trailing-whitespace scan)
 
 Review the source-only daily completeness report dispatcher. Confirm it reads only immutable
 `READY_TO_ALERT`/`PENDING` snapshots, emits metric-only/no-PII mail, records `DELIVERED` only after
@@ -18,11 +27,17 @@ does not affect exactly one row fail closed. Verify no trigger, email, BigQuery 
 production deployment is requested. Node syntax and whitespace validation passed.
 
 ## RQ-20260805-0943-exact-delivery-identity-conservation
-Status: OPEN
+Status: REVIEWED
 Reviewer: Claude Code
 Class: A
 Artifact: commit `70e5671`; delta in `sql/ddl/062_v3_mark_exact_delivery.sql`.
 Opened: 2026-08-05T09:43:58+07:00
+Verdict: PASS, note resolved — `docs/reviews/2026-08-05-70e5671-claude.md` (traced both new
+set-difference counts by hand: `v_identity_unmatched=0` catches missing archive rows,
+`v_archive_unmatched=0` catches extraneous/wrong ones, together proving genuine bidirectional
+4-tuple set equality with no vacuous-pass risk given `v_identity_rows>0` is still asserted first;
+balance-held exclusion applied identically on both sides; old count check retained but no longer
+sole evidence, exactly as requested; independently re-ran the dry-run at 0 bytes)
 
 Delta review for the sole required note in `docs/reviews/2026-08-05-7d4866a-claude.md`: confirm
 the claimed pipeline payload and the claimed archive export run now have bidirectional set equality

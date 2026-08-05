@@ -1,5 +1,22 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-05 10:2x ICT — two more reviews closed; review debt clear
+
+DDL 062's identity-conservation delta (`70e5671`) PASSED, note resolved: the procedure now proves
+bidirectional set equality on `(order_item, period, charge_id, payload_hash)` between the claimed
+pipeline payload and the claimed archive export run, not just a count match across two unlinked
+identifiers. Independently re-ran the dry-run at 0 bytes and traced both new set-difference
+counts by hand.
+
+The V3 daily completeness report dispatcher (`44ade18`) PASSED WITH A REQUIRED NOTE: every checklist
+item (immutable-snapshot recheck, metric-only/no-PII body, DELIVERED/ALERT_FAILED ordering,
+fail-closed on missing/duplicate/non-pending/multi-row-update) verified correct, but the dispatch
+loop has no per-item try/catch — one pipeline run's alert failure aborts the batch and silently
+strands any other unrelated pending report until the next trigger fire, which matters more here
+than in the 15-minute ingestion poller since this is a daily-cadence dispatcher. `scripts/
+review_status.sh` reports 0 OPEN. No deployment, trigger, email, GCS write, or BigQuery mutation
+occurred in either review.
+
 ## 2026-08-05 09:46 ICT — Unit 6 daily completeness delivery source ready
 
 New Apps Script source dispatches every immutable `READY_TO_ALERT`/`PENDING` completeness snapshot

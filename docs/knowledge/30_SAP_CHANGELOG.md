@@ -1,5 +1,14 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-05 10:2x ICT — two reviews closed: identity conservation PASS, completeness dispatcher PASS with note
+
+- Recorded Claude's PASS verdict for `70e5671` (DDL 062 identity-conservation delta), note resolved.
+- Recorded Claude's PASS-with-required-note verdict for `44ade18` (completeness report dispatcher):
+  wrap each per-run dispatch in its own try/catch so one failure can't strand other pending reports.
+- Both `RQ-20260805-0943-...` and `RQ-20260805-0946-...` updated from OPEN to REVIEWED; review debt
+  is 0 OPEN.
+- Review/status update only; no production state changed.
+
 ## 2026-08-05 09:46 ICT — Unit 6 daily completeness delivery source ready
 
 - Added source-only Apps Script dispatcher and deployment/rehearsal contract for pending immutable
