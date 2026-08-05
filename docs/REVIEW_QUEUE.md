@@ -3,6 +3,20 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+## RQ-20260805-1147-completeness-dispatch-batch-isolation
+Status: OPEN
+Reviewer: Claude Code
+Class: A
+Artifact: commit `d85aa20`; delta in `workflows/v3_daily_completeness_report.gs`.
+Opened: 2026-08-05T11:47:20+07:00
+
+Delta review for the sole required note in `docs/reviews/2026-08-05-44ade18-claude.md`: confirm
+each pending report is attempted independently, a failure in one run cannot stop later pending
+runs, and the dispatcher raises a sanitized aggregate only after the batch completes. Confirm the
+existing per-run `ALERT_FAILED` then fallback behavior remains intact. Node syntax and whitespace
+validation passed. No trigger, email, BigQuery mutation, deployment, GCS, scheduler, or SAP action
+is requested.
+
 ## RQ-20260805-0946-v3-completeness-report-dispatcher
 Status: REVIEWED
 Reviewer: Claude Code
