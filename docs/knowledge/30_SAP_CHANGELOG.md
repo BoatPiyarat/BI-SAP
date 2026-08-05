@@ -1,5 +1,12 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-05 20:35 ICT — added read-only activation-state checker
+
+- Added a fail-closed PowerShell checker for workflow safety markers, private dispatcher, bounded
+  watchdog config, topics, invoker, push subscription, and paused-scheduler readiness.
+- Live check passed all safety assertions and reported the three known IAM/runtime blockers.
+- Read-only only; no workflow, job, subscription, schedule, delivery, or SAP action occurred.
+
 ## 2026-08-05 20:31 ICT — deployed inert post-import runtimes; stopped at IAM boundary
 
 - Deployed private/internal dispatcher revision `sap-post-import-dispatcher-00001-qd4`.

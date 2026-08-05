@@ -1,5 +1,13 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-05 20:35 ICT — read-only post-import activation checker
+
+Added `scripts/check_post_import_activation.ps1` to re-read the workflow, dispatcher, watchdog,
+Pub/Sub, IAM, and Scheduler state without mutation. Its first successful live run passed every
+safety assertion and correctly returned `rehearsal_ready=false` with exactly three blockers:
+missing dispatcher invoker, missing authenticated push subscription, and missing watchdog
+scheduler. No runtime executed and no resource changed during the check.
+
 ## 2026-08-05 20:31 ICT — dispatcher/watchdog deployed inert; IAM stopped fail-closed
 
 Deployed the reviewed dispatcher as private/internal revision
