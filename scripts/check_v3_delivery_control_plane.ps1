@@ -219,6 +219,13 @@ if (-not (Test-ConditionalBinding `
     -RequiredPrefix $productionPrefix)) {
   $readinessBlockers += 'promoter lacks prefix-scoped production objectCreator'
 }
+if (-not (Test-ConditionalBinding `
+    -Policy $productionPolicy `
+    -Role 'roles/storage.objectViewer' `
+    -Member $promoterMember `
+    -RequiredPrefix $productionPrefix)) {
+  $readinessBlockers += 'promoter lacks prefix-scoped production objectViewer'
+}
 
 if ($schedulerSummary.Count -ne 1) {
   $readinessBlockers += 'PAUSED recurring V3 scheduler is absent'

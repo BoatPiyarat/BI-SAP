@@ -19,8 +19,9 @@
 
 ## 2026-08-05 21:48 ICT — add inert outbound control-plane gate
 
-- Added `V3_DELIVERY_CONTROL_PLANE.md` with private promoter, prefix-conditioned GCS IAM, narrow
-  trigger role, create→pause→update Scheduler ordering, production gates, and rollback.
+- Added `V3_DELIVERY_CONTROL_PLANE.md` with private promoter, prefix-conditioned GCS IAM (archive
+  read, production create plus metadata read), narrow trigger role, create→pause→update Scheduler
+  ordering, production gates, and rollback.
 - Added `check_v3_delivery_control_plane.ps1` to require delivery-disabled source, exact private
   runtime/IAM, and a PAUSED 20:30 ICT trigger bound to the exact promoter URL.
 - PowerShell parse and `git diff --check` passed. Live execution was unavailable due to the local

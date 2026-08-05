@@ -43,8 +43,10 @@ if ($LASTEXITCODE -ne 0) {
 }
 ```
 
-Grant only the two object operations used by the service. Both bucket bindings are conditional;
-an unconditioned bucket or project grant does not satisfy this runbook.
+Grant only the object operations used by the service. Every bucket binding is conditional; an
+unconditioned bucket or project grant does not satisfy this runbook. Production needs both create
+and get: `destination.rewrite(..., if_generation_match=0)` creates, then `destination.reload()`
+reads back size/CRC32C/generation before the service returns evidence.
 
 ```powershell
 $archiveCondition =
@@ -62,6 +64,9 @@ gcloud storage buckets add-iam-policy-binding gs://rcb-bronze-zone `
 gcloud storage buckets add-iam-policy-binding gs://interface-file `
   --project=$project --member="serviceAccount:$promoterSa" `
   --role='roles/storage.objectCreator' --condition=$productionCondition
+gcloud storage buckets add-iam-policy-binding gs://interface-file `
+  --project=$project --member="serviceAccount:$promoterSa" `
+  --role='roles/storage.objectViewer' --condition=$productionCondition
 ```
 
 Deploy without allowing public invocation. This creates runtime infrastructure but does not call
@@ -170,8 +175,8 @@ Require `safety_passed=true` and `control_plane_ready=true`. The checker require
 - an ACTIVE workflow that still contains `delivery_enabled: false` and the two-name markers;
 - a Ready, internal-only promoter on its dedicated identity with no public invoker;
 - exact workflow identity `run.invoker`;
-- conditional archive `objectViewer` and production `objectCreator` bindings on only the two
-  closed prefixes;
+- conditional archive `objectViewer`, production `objectCreator`, and production `objectViewer`
+  bindings on only the two closed prefixes;
 - exactly one PAUSED `20:30` Asia/Bangkok scheduler whose endpoint, OAuth identity, and decoded
   execution argument bind the exact workflow and promoter URL.
 
