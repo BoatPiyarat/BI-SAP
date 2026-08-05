@@ -1,5 +1,20 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-05 10:0x ICT — exact-delivery manifest writer PASS with required conservation note
+
+Reviewed DDL 062 (`7d4866a`) against all six checklist items in the review request. Filename-
+exactness against the production URI (never the archive name), the atomic 3-table transactional
+write, and replay protection on export-run/destination/SAP-filename are all correctly implemented
+and independently verified — dry-run re-confirmed at 0 bytes, and both `v3_unit5_payload_identity`
+and `v3_unit5_balance_hold` dependencies confirmed to already exist live. One required note before
+deploy: the row-conservation check compares row *counts* between `p_pipeline_run_id` and
+`p_export_run_id`, two caller-supplied identifiers with no structural link in the schema
+(`export_archive` has no `pipeline_run_id` column) — it proves count equality, not that the
+archived rows are the claimed pipeline run's actual identities. Both source tables already carry
+`order_item`/`period`/`charge_id`/`payload_hash`, so a set-level check is directly buildable,
+matching the same class of fix already required in the Unit 6 completeness-snapshot review. No
+deployment, procedure CALL, GCS write, or SAP action occurred.
+
 ## 2026-08-05 09:28 ICT — exact SAP-filename delivery-manifest writer source ready
 
 The reviewed Unit 6 Gmail ingestor can only match an SAP result to a delivery once promotion writes

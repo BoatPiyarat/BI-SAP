@@ -4,11 +4,22 @@ Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request firs
 review history; link the completed review and record its verdict.
 
 ## RQ-20260805-0930-exact-sap-delivery-manifest
-Status: OPEN
+Status: REVIEWED
 Reviewer: Claude Code
 Class: A
 Artifact: commit `7d4866a`; DDL 062 delivery-marker replacement and Unit 6 deployment contract.
 Opened: 2026-08-05T09:30:15+07:00
+Verdict: PASS WITH REQUIRED NOTE — `docs/reviews/2026-08-05-7d4866a-claude.md` (filename-exactness,
+atomic 3-table write, and all three replay-protection vectors verified correct; independently
+re-ran the dry-run at 0 bytes and confirmed both `v3_unit5_payload_identity`/`v3_unit5_balance_hold`
+dependencies already exist live. Required note: the row-conservation check compares counts across
+`p_pipeline_run_id` and `p_export_run_id` — two identifiers with no structural link, since
+`export_archive` has no `pipeline_run_id` column — so it proves count equality, not that the
+archived rows are the same identities; both tables already carry `order_item`/`period`/
+`charge_id`/`payload_hash` needed for a real set-level check, matching the pattern required in
+`docs/reviews/2026-08-04-913ff3b-claude.md`. One non-blocking note: replay-guard ASSERTs run before
+`BEGIN TRANSACTION`, so they carry no isolation guarantee against a concurrent second call —
+low risk given single-deployer operational discipline)
 
 Review the source-only exact SAP-facing delivery-manifest writer. Confirm DDL 062 requires the
 promotion caller to supply a valid SHA-256 and exact SAP-facing basename; validates that basename

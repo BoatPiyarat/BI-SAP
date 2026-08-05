@@ -1,5 +1,14 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-05 10:0x ICT — DDL 062 reviewed: PASS with required conservation note
+
+- Recorded Claude's PASS-with-required-note verdict for `7d4866a`.
+- Filename-exactness, atomic 3-table write, and replay protection all verified correct.
+- Required before deploy: replace the count-only pipeline_run_id/export_run_id conservation check
+  with a set-level check on `order_item`/`period`/`charge_id`/`payload_hash`, which both source
+  tables already carry.
+- Review/status update only; no production state changed.
+
 ## 2026-08-05 09:28 ICT — exact SAP-filename delivery-manifest writer source ready
 
 - Extended DDL 062's exact-delivery evidence with the supplied SAP-facing production filename and
