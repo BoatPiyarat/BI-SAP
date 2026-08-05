@@ -11,12 +11,15 @@ $dispatcherName = 'sap-post-import-dispatcher'
 $watchdogName = 'sap-post-import-watchdog'
 $pushSubscriptionName = 'sap-post-import-refresh-push'
 $watchdogSchedulerName = 'sap-post-import-watchdog'
+$inputTopicName = "projects/$project/topics/sap-post-import-refresh"
+$deadLetterTopicName = "projects/$project/topics/sap-post-import-refresh-dlq"
 $dispatcherServiceAccount =
   'sap-post-import-dispatch@pacific-plating-282708.iam.gserviceaccount.com'
 $watchdogServiceAccount =
   'sap-post-import-watchdog@pacific-plating-282708.iam.gserviceaccount.com'
-$pushServiceAccount =
-  'serviceAccount:sap-post-import-push@pacific-plating-282708.iam.gserviceaccount.com'
+$pushServiceAccountEmail =
+  'sap-post-import-push@pacific-plating-282708.iam.gserviceaccount.com'
+$pushServiceAccount = "serviceAccount:$pushServiceAccountEmail"
 
 function Invoke-GcloudJson {
   param(
@@ -77,9 +80,16 @@ $watchdogExecutionSpec = $watchdog.spec.template.spec
 $watchdogTaskSpec = $watchdogExecutionSpec.template.spec
 $watchdogEnv = Get-EnvMap $watchdogTaskSpec.containers[0].env
 $dispatcherMembers = @()
+$dispatcherInvokerMembers = @()
 if ($dispatcherPolicy.PSObject.Properties.Name -contains 'bindings') {
   $dispatcherMembers = @(
     $dispatcherPolicy.bindings |
+      ForEach-Object { $_.members } |
+      Where-Object { $_ }
+  )
+  $dispatcherInvokerMembers = @(
+    $dispatcherPolicy.bindings |
+      Where-Object { $_.role -eq 'roles/run.invoker' } |
       ForEach-Object { $_.members } |
       Where-Object { $_ }
   )
@@ -117,6 +127,9 @@ if ($dispatcher.spec.template.spec.serviceAccountName -ne $dispatcherServiceAcco
 if ($dispatcherMembers -contains 'allUsers') {
   $safetyFailures += 'dispatcher permits unauthenticated allUsers invocation'
 }
+if ($dispatcherMembers -contains 'allAuthenticatedUsers') {
+  $safetyFailures += 'dispatcher permits allAuthenticatedUsers invocation'
+}
 if ($watchdogTaskSpec.serviceAccountName -ne $watchdogServiceAccount) {
   $safetyFailures += 'watchdog uses the wrong service account'
 }
@@ -130,8 +143,8 @@ if ($watchdogEnv.CLAIM_TIMEOUT_SECONDS -ne '600' -or
   $safetyFailures += 'watchdog timeout configuration differs from 600/900/120'
 }
 foreach ($topic in @(
-  "projects/$project/topics/sap-post-import-refresh",
-  "projects/$project/topics/sap-post-import-refresh-dlq"
+  $inputTopicName,
+  $deadLetterTopicName
 )) {
   if ($topicNames -notcontains $topic) {
     $safetyFailures += "missing topic $topic"
@@ -139,18 +152,59 @@ foreach ($topic in @(
 }
 
 $readinessBlockers = @()
-if ($dispatcherMembers -notcontains $pushServiceAccount) {
+if ($dispatcherInvokerMembers -notcontains $pushServiceAccount) {
   $readinessBlockers += 'push identity lacks dispatcher run.invoker'
 }
 if ($pushSubscription.Count -ne 1) {
   $readinessBlockers += 'authenticated push subscription is absent'
 }
+else {
+  $subscription = $pushSubscription[0]
+  $expectedPushEndpoint = "$($dispatcher.status.url)/dispatch"
+  if ($subscription.topic -ne $inputTopicName) {
+    $readinessBlockers += 'push subscription targets the wrong input topic'
+  }
+  if ($subscription.pushConfig.pushEndpoint -ne $expectedPushEndpoint) {
+    $readinessBlockers += 'push subscription targets the wrong dispatcher endpoint'
+  }
+  if ($subscription.pushConfig.oidcToken.serviceAccountEmail -ne
+      $pushServiceAccountEmail) {
+    $readinessBlockers += 'push subscription uses the wrong OIDC service account'
+  }
+  if ($subscription.pushConfig.oidcToken.audience -ne $expectedPushEndpoint) {
+    $readinessBlockers += 'push subscription uses the wrong OIDC audience'
+  }
+  if ($subscription.deadLetterPolicy.deadLetterTopic -ne $deadLetterTopicName -or
+      [int]$subscription.deadLetterPolicy.maxDeliveryAttempts -ne 5) {
+    $readinessBlockers += 'push subscription DLQ/attempt bound differs from expected'
+  }
+  if ([int]$subscription.ackDeadlineSeconds -ne 600) {
+    $readinessBlockers += 'push subscription acknowledgement deadline is not 600 seconds'
+  }
+}
 if ($watchdogScheduler.Count -ne 1) {
   $readinessBlockers += 'watchdog scheduler is absent'
 }
-elseif ($watchdogScheduler[0].state -ne 'PAUSED') {
-  $readinessBlockers +=
-    "watchdog scheduler must remain PAUSED before rehearsal (state=$($watchdogScheduler[0].state))"
+else {
+  $scheduler = $watchdogScheduler[0]
+  $expectedRunUri =
+    "https://${region}-run.googleapis.com/apis/run.googleapis.com/v1/" +
+    "namespaces/919786098205/jobs/${watchdogName}:run"
+  if ($scheduler.state -ne 'PAUSED') {
+    $readinessBlockers +=
+      "watchdog scheduler must remain PAUSED before rehearsal (state=$($scheduler.state))"
+  }
+  if ($scheduler.schedule -ne '*/2 * * * *' -or $scheduler.timeZone -ne 'Asia/Bangkok') {
+    $readinessBlockers += 'watchdog scheduler cadence/time zone differs from expected'
+  }
+  if ($scheduler.httpTarget.uri -ne $expectedRunUri -or
+      $scheduler.httpTarget.httpMethod -ne 'POST') {
+    $readinessBlockers += 'watchdog scheduler targets the wrong job endpoint or method'
+  }
+  if ($scheduler.httpTarget.oauthToken.serviceAccountEmail -ne
+      $watchdogServiceAccount) {
+    $readinessBlockers += 'watchdog scheduler uses the wrong OAuth service account'
+  }
 }
 
 [pscustomobject]@{
