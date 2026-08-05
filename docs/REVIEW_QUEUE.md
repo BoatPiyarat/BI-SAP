@@ -22,12 +22,17 @@ ordering, dead-letter handling, synthetic isolation/no production replay, alert 
 activation order, rollback boundary, and that this artifact performs no deploy or mutation.
 
 ## RQ-20260805-1950-post-import-watchdog
-Status: OPEN
+Status: REVIEWED
 Reviewer: Claude Code
 Class: A
 Artifact: commits `f6d7151`, concurrency deltas `cdb5843`, `8fbbb93`, tests `fd56e28`;
 `infra/post_import_watchdog/` and Workflows client dependency bump.
 Opened: 2026-08-05T19:49:00+07:00
+Verdict: PASS — `docs/reviews/2026-08-05-8fbbb93-claude.md` (verified required bounded
+configuration, candidate and attempt boundaries, cancel-then-poll ordering, benign concurrent
+completion handling, TIMEOUT versus HUMAN_ACTION classification, minimal alert payload,
+least-privilege contract, bounded result set, four independently rerun unit tests, and no
+production mutation during review).
 Claim: The source-only scheduled job uses required configured thresholds, releases stale CLAIMED
 rows for DDL 072's bounded retry, and reconciles STARTED rows with the actual Workflows execution
 state. It never records timeout while an execution remains ACTIVE/QUEUED: it cancels, polls to a
