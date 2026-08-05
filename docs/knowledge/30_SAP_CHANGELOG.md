@@ -1,5 +1,13 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-05 19:37 ICT — post-import dispatcher and Unit-1-only mode
+
+- Added source-only private Pub/Sub push dispatcher with strict event validation and deterministic
+  exact-key claims.
+- Added workflow self-binding with the built-in execution identity; duplicate losers exit before
+  Unit 1 and post-import winners persist `SUCCEEDED` then return immediately after Unit 1.
+- Kept all runtime/topic/subscription/IAM configuration inactive pending Class-A review.
+
 ## 2026-08-05 19:27 ICT — period state verified live
 
 - Verified July CLOSED, August OPEN, and September PLANNED from `sap_period_state`.

@@ -1,5 +1,15 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-05 19:37 ICT — private post-import dispatcher source ready for review
+
+Added a source-only private Cloud Run Pub/Sub dispatcher and Unit-1 workflow self-bind mode. The
+dispatcher claims the exact DDL 071 outbox key and creates a workflow with only LogID/claim-token
+arguments. The workflow reconstructs its server-assigned execution name, atomically binds it before
+any side effect, exits duplicate losers, records `SUCCEEDED` after a clean Unit 1, and stops there
+so post-import refresh cannot run Units 2–5 or delivery. Python compilation and whitespace checks
+passed; DDL 072 re-dry-run passed at 0 bytes. No service, workflow, topic, subscription, IAM,
+trigger, execution, or SAP action occurred.
+
 ## 2026-08-05 19:27 ICT — live period-state verification corrected
 
 The repaired safe-query path returned the actual three-row state: July `CLOSED` with

@@ -57,7 +57,34 @@ main:
           # Never infer the production basename from the archive object (LogID 21183 lesson).
           - promotion_service_url: ${default(map.get(args, "promotion_service_url"), "")}
           - sap_file_name: ${default(map.get(args, "sap_file_name"), "")}
+          # A post-import execution must atomically bind its server-assigned identity before any
+          # extract/load/mirror side effect. A duplicate execution exits without entering Unit 1.
+          - post_import_log_id: ${default(map.get(args, "post_import_log_id"), "")}
+          - post_import_claim_token: ${default(map.get(args, "post_import_claim_token"), "")}
+          - post_import_mode: ${post_import_log_id != "" or post_import_claim_token != ""}
+          - workflow_execution_name: '${"projects/" + sys.get_env("GOOGLE_CLOUD_PROJECT_ID") + "/locations/" + sys.get_env("GOOGLE_CLOUD_LOCATION") + "/workflows/" + sys.get_env("GOOGLE_CLOUD_WORKFLOW_ID") + "/executions/" + sys.get_env("GOOGLE_CLOUD_WORKFLOW_EXECUTION_ID")}'
           - pre_watermark: {}
+
+    - maybe_bind_post_import_execution:
+        switch:
+          - condition: ${post_import_mode}
+            steps:
+              - gate_post_import_contract:
+                  switch:
+                    - condition: ${post_import_log_id == "" or post_import_claim_token == ""}
+                      raise: "post-import execution requires both log ID and claim token"
+              - bind_post_import_execution:
+                  call: bind_post_import
+                  args:
+                    project: ${project}
+                    log_id: ${post_import_log_id}
+                    claim_token: ${post_import_claim_token}
+                    workflow_execution_name: ${workflow_execution_name}
+                  result: post_import_binding
+              - exit_duplicate_post_import_execution:
+                  switch:
+                    - condition: ${post_import_binding != workflow_execution_name}
+                      return: '${"DUPLICATE_NOOP:" + post_import_binding}'
 
     - log_start:
         call: write_run_log
@@ -265,6 +292,18 @@ main:
           status: "SUCCESS"
           rows_out: null
           detail: '${"extract_execution=" + extract_execution + "; loader_triggered=" + string(loader_triggered) + "; bronze=" + bronze_object_name + "@" + bronze_generation}'
+    - stop_after_post_import_unit1:
+        switch:
+          - condition: ${post_import_mode}
+            steps:
+              - complete_post_import_success:
+                  call: complete_post_import
+                  args:
+                    project: ${project}
+                    log_id: ${post_import_log_id}
+                    workflow_execution_name: ${workflow_execution_name}
+              - return_post_import:
+                  return: ${run_id}
     # Units 2-5 share this exact run_id. The SQL wrapper evaluates notification and release gates
     # every night, treats zero delivery rows as a healthy no-file outcome, and writes archive only.
     # Exact-generation production promotion and SAP ACK remain Unit 6 gates.
@@ -321,6 +360,75 @@ main:
                     timeout_seconds: ${bq_call_timeout_seconds}
     - done:
         return: ${run_id}
+
+# The workflow, not the dispatcher, owns the final execution-name bind. The Executions API assigns
+# the name server-side, so this must be the first operation in post-import mode. DDL 072 returns the
+# winning name; duplicate executions exit before Unit 1 instead of repeating extract/load/mirror.
+bind_post_import:
+  params: [project, log_id, claim_token, workflow_execution_name]
+  steps:
+    - bind:
+        call: googleapis.bigquery.v2.jobs.query
+        args:
+          projectId: ${project}
+          body:
+            query: "CALL `pacific-plating-282708.sap_integration_v3.sp_bind_v3_post_import_execution`(@log_id,@claim_token,@workflow_execution_name)"
+            useLegacySql: false
+            location: "asia-southeast1"
+            timeoutMs: 60000
+            parameterMode: "NAMED"
+            queryParameters:
+              - name: "log_id"
+                parameterType: { type: "STRING" }
+                parameterValue: { value: '${log_id}' }
+              - name: "claim_token"
+                parameterType: { type: "STRING" }
+                parameterValue: { value: '${claim_token}' }
+              - name: "workflow_execution_name"
+                parameterType: { type: "STRING" }
+                parameterValue: { value: '${workflow_execution_name}' }
+        result: binding
+    - gate_complete:
+        switch:
+          - condition: ${not default(map.get(binding, "jobComplete"), false)}
+            raise: "post-import execution bind did not complete synchronously"
+    - gate_one_row:
+        assign:
+          - rows: ${default(map.get(binding, "rows"), [])}
+    - require_one_row:
+        switch:
+          - condition: ${len(rows) != 1}
+            raise: "post-import execution bind returned an unexpected row count"
+    - out:
+        return: ${rows[0].f[1].v}
+
+complete_post_import:
+  params: [project, log_id, workflow_execution_name]
+  steps:
+    - complete:
+        call: googleapis.bigquery.v2.jobs.query
+        args:
+          projectId: ${project}
+          body:
+            query: "CALL `pacific-plating-282708.sap_integration_v3.sp_complete_v3_post_import_refresh`(@log_id,@workflow_execution_name,'SUCCEEDED',NULL)"
+            useLegacySql: false
+            location: "asia-southeast1"
+            timeoutMs: 60000
+            parameterMode: "NAMED"
+            queryParameters:
+              - name: "log_id"
+                parameterType: { type: "STRING" }
+                parameterValue: { value: '${log_id}' }
+              - name: "workflow_execution_name"
+                parameterType: { type: "STRING" }
+                parameterValue: { value: '${workflow_execution_name}' }
+        result: completion
+    - gate_complete:
+        switch:
+          - condition: ${not default(map.get(completion, "jobComplete"), false)}
+            raise: "post-import success completion did not complete synchronously"
+    - out:
+        return: true
 
 # Exact-generation production promotion. Zero archive rows is a healthy no-file night. Any
 # ambiguous ledger/object or copy mismatch fails closed before DELIVERED is persisted.
