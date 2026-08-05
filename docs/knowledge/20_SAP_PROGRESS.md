@@ -1,5 +1,15 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-05 21:06 ICT — canonical self-bind correction deployed, safety remains closed
+
+After `65ebde3` passed Class-A review, corrected DDL 072 deployed as job
+`bqjob_r44f87f4cfafffe4b_0000019fd23dd027_1` and the workflow deployed as ACTIVE revision
+`000009-e96`. Live source inspection confirms `GOOGLE_CLOUD_PROJECT_NUMBER`, no remaining
+`GOOGLE_CLOUD_PROJECT_ID` construction, and `delivery_enabled: false`; the execution inventory
+still ends on 2026-08-03, so this deploy started no workflow. The read-only activation checker at
+`2026-08-05T14:06:08.2249628Z` returned `safety_passed=true`, `rehearsal_ready=false`, with the same
+three blockers: dispatcher invoker, authenticated push subscription, and watchdog scheduler.
+
 ## 2026-08-05 21:05 ICT — canonical execution-name fix and rehearsal verifier: both PASSED
 
 `RQ-20260805-2058-canonical-workflow-execution-name` (commit `65ebde3`) and

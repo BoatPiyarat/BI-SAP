@@ -109,8 +109,9 @@ scheduler proof. Deployment remains a separate reviewed gate.
   `sap_mirror_doc`/`sap_mirror_state`).
 - Extract-scheduler-health widget source is ready in DDL 065; deployment and durable scheduler
   trigger provenance remain open.
-- `v3-nightly-orchestrator` revision `000008-4e4` is ACTIVE with the reviewed post-import
-  self-bind/reconciliation path and `delivery_enabled: false`. It has no Scheduler target; the
+- `v3-nightly-orchestrator` revision `000009-e96` is ACTIVE with the reviewed canonical
+  project-number post-import self-bind/reconciliation path and `delivery_enabled: false`. It has
+  no Scheduler target; the
   private dispatcher revision `sap-post-import-dispatcher-00001-qd4`, unscheduled watchdog job,
   input/DLQ topics, and DLQ evidence subscription now exist but are inert pending IAM and
   rehearsal. No push subscription, watchdog scheduler, or Gmail publisher setting exists.

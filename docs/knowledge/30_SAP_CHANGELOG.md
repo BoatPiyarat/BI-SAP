@@ -1,5 +1,15 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-05 21:06 ICT — canonical workflow execution binding deployed
+
+- Deployed review-passed DDL 072 correction as
+  `bqjob_r44f87f4cfafffe4b_0000019fd23dd027_1` after a 0-byte mandatory dry-run.
+- Deployed ACTIVE workflow revision `000009-e96`, preserving the existing service account and
+  `delivery_enabled: false`; no execution was started.
+- Live source uses `GOOGLE_CLOUD_PROJECT_NUMBER` and not the old project-ID construction.
+- Activation checker remains safety PASS and rehearsal not ready on the same three external-IAM/
+  trigger blockers.
+
 ## 2026-08-05 21:05 ICT — execution-name fix and rehearsal verifier reviews PASSED
 
 - `RQ-20260805-2058-canonical-workflow-execution-name` (commit `65ebde3`) reviewed PASS —
