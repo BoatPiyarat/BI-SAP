@@ -7,7 +7,7 @@ review history; link the completed review and record its verdict.
 Status: OPEN
 Reviewer: Claude Code
 Class: A
-Artifact: commit `8b1f2bb`; live inventory evidence `4ed5dd6`;
+Artifact: commit `8b1f2bb`; live inventory/diagnosis evidence `4ed5dd6`, `43bbed3`;
 `docs/design/POST_IMPORT_AUTOMATION_DEPLOYMENT.md`.
 Opened: 2026-08-05T19:55:00+07:00
 Claim: The activation plan preserves dependency/review order, uses three dedicated least-privilege
@@ -15,7 +15,9 @@ identities, requires measured timeout/delivery configuration, proves ten synthet
 enabling the Gmail publisher, and gives a configuration-first rollback that retains evidence.
 Evidence: `git diff --check` passed. Read-only GCP inventory found the V3 workflow ACTIVE but
 unscheduled, latest execution failed closed at the receipt-balance gate, alert topic present, and
-post-import runtime resources absent. Review IAM separation, no default service account, resource
+post-import runtime resources absent. A bounded query proved that execution preceded the live
+balance-procedure replacement by 52 seconds and now conserves 559 = 558 delivered + 1 held with
+zero target mismatches; fresh rehearsal remains required. Review IAM separation, no default service account, resource
 ordering, dead-letter handling, synthetic isolation/no production replay, alert receipt proof,
 activation order, rollback boundary, and that this artifact performs no deploy or mutation.
 
