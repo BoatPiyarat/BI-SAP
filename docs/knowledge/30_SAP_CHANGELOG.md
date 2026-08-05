@@ -1,5 +1,12 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-05 19:49 ICT — post-import watchdog source
+
+- Added configurable stale-claim release and execution-state reconciliation.
+- Added cancel-then-terminal-poll before `TIMEOUT`; no running workflow is labelled timed out.
+- Added minimal human alert publication for exhausted/terminal watchdog actions.
+- Source only; no runtime, schedule, IAM, cancellation, or alert was activated.
+
 ## 2026-08-05 19:44 ICT — exact post-import row reconciliation
 
 - Added DDL 073 exact archive-identity reconciliation against parsed row errors and the refreshed

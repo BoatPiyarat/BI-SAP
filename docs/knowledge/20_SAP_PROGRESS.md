@@ -1,5 +1,14 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-05 19:49 ICT — post-import watchdog source
+
+Added a source-only scheduled Cloud Run Job that releases stale unbound claims for bounded retry,
+inspects Workflows execution state, cancels overdue ACTIVE/QUEUED executions and waits for terminal
+state before recording `TIMEOUT`, and converts other terminal-without-outbox-completion cases to
+`HUMAN_ACTION`. Terminal watchdog actions publish minimal metadata to the existing alert topic.
+All timeouts are required configuration rather than guessed constants. Python compilation passed;
+no job, schedule, IAM, cancellation, alert, or BigQuery mutation occurred.
+
 ## 2026-08-05 19:44 ICT — exact post-import row reconciliation source
 
 Added source-only DDL 073 and workflow wiring after the child Unit 1 refresh. It binds the parsed
