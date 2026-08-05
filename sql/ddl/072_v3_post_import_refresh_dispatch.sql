@@ -67,7 +67,7 @@ BEGIN
   WHERE log_id=p_log_id AND claim_token=p_claim_token AND request_status='CLAIMED';
   ASSERT @@row_count IN (0,1) AS 'execution bind affected an unexpected number of rows';
   COMMIT TRANSACTION;
-  SELECT request_status,workflow_execution_name
+  SELECT request_status,workflow_execution_name,export_run_id,sap_file_name
   FROM `pacific-plating-282708.sap_integration_v3.v3_post_import_refresh_outbox`
   WHERE log_id=p_log_id AND claim_token=p_claim_token;
 END;
