@@ -61,20 +61,28 @@ if (@($manifest.oauthScopes).Count -ne $requiredScopes.Count) {
   throw 'Apps Script manifest contains an unreviewed extra OAuth scope'
 }
 
-Copy-Item -LiteralPath $sourceFile -Destination (Join-Path $resolvedOutput 'Code.gs')
-Copy-Item -LiteralPath $manifestFile -Destination (Join-Path $resolvedOutput 'appsscript.json')
-@{
+$stagedSource = Join-Path $resolvedOutput 'Code.gs'
+$stagedManifest = Join-Path $resolvedOutput 'appsscript.json'
+$stagedClaspConfig = Join-Path $resolvedOutput '.clasp.json'
+Copy-Item -LiteralPath $sourceFile -Destination $stagedSource
+Copy-Item -LiteralPath $manifestFile -Destination $stagedManifest
+$claspJson = @{
   scriptId = $ScriptId
   rootDir = '.'
 } |
-  ConvertTo-Json |
-  Set-Content -Encoding UTF8 -LiteralPath (Join-Path $resolvedOutput '.clasp.json')
+  ConvertTo-Json
+$utf8WithoutBom = New-Object System.Text.UTF8Encoding($false)
+[System.IO.File]::WriteAllText(
+  $stagedClaspConfig,
+  $claspJson + [Environment]::NewLine,
+  $utf8WithoutBom
+)
 
 [pscustomobject]@{
   output_directory = $resolvedOutput
-  source_file = (Join-Path $resolvedOutput 'Code.gs')
-  manifest_file = (Join-Path $resolvedOutput 'appsscript.json')
-  clasp_config_file = (Join-Path $resolvedOutput '.clasp.json')
+  source_file = $stagedSource
+  manifest_file = $stagedManifest
+  clasp_config_file = $stagedClaspConfig
   pushed = $false
   oauth_authorized = $false
 } | ConvertTo-Json
