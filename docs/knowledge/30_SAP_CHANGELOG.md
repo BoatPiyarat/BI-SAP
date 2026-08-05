@@ -1,5 +1,12 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-05 20:04 ICT — diagnosed latest V3 failure chronology
+
+- Proved the balance procedure was replaced 52 seconds after the latest workflow failed.
+- Reconciled that run to 559 identities = 558 delivery matches + 1 hold, zero target mismatches.
+- Classified the failure as pre-fix; retained a fresh delivery-disabled rehearsal as a cutover gate.
+- Read-only query only; no procedure CALL, workflow execution, or production mutation.
+
 ## 2026-08-05 20:00 ICT — refreshed live automation inventory
 
 - Confirmed V3 workflow ACTIVE but unscheduled; latest execution failed closed at the balance gate.

@@ -1,5 +1,14 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-05 20:04 ICT — latest V3 failure is pre-fix; fresh rehearsal still required
+
+Bounded read-only diagnosis (11,557,675-byte dry-run) proved the 2026-08-03 workflow failure ended
+at 11:29:42 UTC and `sp_build_v3_newpayment_delivery_ready` was replaced at 11:30:34 UTC, 52 seconds
+later. The failed run's persisted evidence now conserves 559 identities into 558 delivery matches
+plus 1 held identity, with zero remaining target balance mismatches. The failure is stale pre-fix
+evidence, not proof the current procedure still fails. Because no workflow execution has run since
+the replacement, a fresh delivery-disabled rehearsal remains mandatory before scheduling.
+
 ## 2026-08-05 20:00 ICT — live automation inventory exposes remaining cutover blocker
 
 Read-only GCP inventory confirmed `v3-nightly-orchestrator` ACTIVE at revision `000007-952`, but no
