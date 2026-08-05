@@ -10,6 +10,10 @@ CREATE TEMP TABLE _cases AS
 SELECT 'ACK' AS case_name,
   CONCAT('99', p_nonce, '01') AS log_id,
   CONCAT('SYNTH-POSTIMPORT-', p_nonce, '-ACK') AS export_run_id,
+  CONCAT('INSURANCE_RCB_TEST_POST_IMPORT_', p_nonce, '_ACK.csv')
+    AS expected_production_file_name,
+  CONCAT('RCB_MOTOR_INSURANCE_RCB_TEST_POST_IMPORT_', p_nonce, '_ACK.csv')
+    AS expected_sap_file_name,
   'ACKNOWLEDGED' AS expected_row_outcome,
   'SUCCEEDED' AS expected_outbox_status,
   'ACKNOWLEDGED' AS expected_manifest_status
@@ -17,6 +21,8 @@ UNION ALL
 SELECT 'REJECT',
   CONCAT('99', p_nonce, '02'),
   CONCAT('SYNTH-POSTIMPORT-', p_nonce, '-REJECT'),
+  CONCAT('INSURANCE_RCB_TEST_POST_IMPORT_', p_nonce, '_REJECT.csv'),
+  CONCAT('RCB_MOTOR_INSURANCE_RCB_TEST_POST_IMPORT_', p_nonce, '_REJECT.csv'),
   'REJECTED_BY_SAP',
   'SUCCEEDED',
   'REJECTED'
@@ -24,6 +30,8 @@ UNION ALL
 SELECT 'RESIDUAL',
   CONCAT('99', p_nonce, '03'),
   CONCAT('SYNTH-POSTIMPORT-', p_nonce, '-RESIDUAL'),
+  CONCAT('INSURANCE_RCB_TEST_POST_IMPORT_', p_nonce, '_RESIDUAL.csv'),
+  CONCAT('RCB_MOTOR_INSURANCE_RCB_TEST_POST_IMPORT_', p_nonce, '_RESIDUAL.csv'),
   'PENDING_ACK',
   'HUMAN_ACTION',
   'DELIVERED';
@@ -50,8 +58,13 @@ archive AS (
     AND export_run_id IN (SELECT export_run_id FROM _cases)
 ),
 sap_manifest AS (
-  SELECT export_run_id, delivery_status
-  FROM `pacific-plating-282708.sap_integration_v3.sap_delivery_manifest_v3`
+  SELECT
+    export_run_id,
+    production_uri,
+    JSON_VALUE(TO_JSON_STRING(m), '$.production_file_name') AS production_file_name,
+    sap_file_name,
+    delivery_status
+  FROM `pacific-plating-282708.sap_integration_v3.sap_delivery_manifest_v3` AS m
   WHERE DATE(recorded_at) >= DATE_SUB(CURRENT_DATE('Asia/Bangkok'), INTERVAL 2 DAY)
     AND export_run_id IN (SELECT export_run_id FROM _cases)
 ),
@@ -74,12 +87,18 @@ SELECT
   a.sap_log_id AS archive_log_id,
   a.sap_result_status AS archive_result_status,
   a.acknowledged_at AS archive_acknowledged_at,
+  sm.production_file_name,
+  sm.sap_file_name,
+  sm.production_uri,
   sm.delivery_status AS sap_manifest_status,
   fm.delivery_status AS file_manifest_status,
   o.request_status = c.expected_outbox_status
     AND r.outcome = c.expected_row_outcome
     AND sm.delivery_status = c.expected_manifest_status
     AND fm.delivery_status = c.expected_manifest_status
+    AND sm.production_file_name = c.expected_production_file_name
+    AND sm.sap_file_name = c.expected_sap_file_name
+    AND REGEXP_EXTRACT(sm.production_uri, r'([^/]+)$') = c.expected_production_file_name
     AND a.sap_log_id = c.log_id
     AND CASE c.case_name
       WHEN 'ACK' THEN a.sap_result_status = 'ACKNOWLEDGED'

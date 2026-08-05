@@ -42,7 +42,8 @@ BEGIN
     'ACK' AS case_name,
     CONCAT('99', p_nonce, '01') AS log_id,
     CONCAT('SYNTH-POSTIMPORT-', p_nonce, '-ACK') AS export_run_id,
-    CONCAT('RCB_TEST_POST_IMPORT_', p_nonce, '_ACK.csv') AS sap_file_name,
+    CONCAT('INSURANCE_RCB_TEST_POST_IMPORT_', p_nonce, '_ACK.csv') AS production_file_name,
+    CONCAT('RCB_MOTOR_INSURANCE_RCB_TEST_POST_IMPORT_', p_nonce, '_ACK.csv') AS sap_file_name,
     v_order_item AS order_item,
     v_period AS period,
     CONCAT('SYNTH-', p_nonce, '-ACK-CHARGE') AS charge_id,
@@ -56,7 +57,8 @@ BEGIN
     'REJECT',
     CONCAT('99', p_nonce, '02'),
     CONCAT('SYNTH-POSTIMPORT-', p_nonce, '-REJECT'),
-    CONCAT('RCB_TEST_POST_IMPORT_', p_nonce, '_REJECT.csv'),
+    CONCAT('INSURANCE_RCB_TEST_POST_IMPORT_', p_nonce, '_REJECT.csv'),
+    CONCAT('RCB_MOTOR_INSURANCE_RCB_TEST_POST_IMPORT_', p_nonce, '_REJECT.csv'),
     v_order_item,
     v_period,
     CONCAT('SYNTH-', p_nonce, '-REJECT-CHARGE'),
@@ -70,7 +72,8 @@ BEGIN
     'RESIDUAL',
     CONCAT('99', p_nonce, '03'),
     CONCAT('SYNTH-POSTIMPORT-', p_nonce, '-RESIDUAL'),
-    CONCAT('RCB_TEST_POST_IMPORT_', p_nonce, '_RESIDUAL.csv'),
+    CONCAT('INSURANCE_RCB_TEST_POST_IMPORT_', p_nonce, '_RESIDUAL.csv'),
+    CONCAT('RCB_MOTOR_INSURANCE_RCB_TEST_POST_IMPORT_', p_nonce, '_RESIDUAL.csv'),
     CONCAT('SYNTHETIC-NO-MIRROR-', p_nonce),
     1,
     CONCAT('SYNTH-', p_nonce, '-RESIDUAL-CHARGE'),
@@ -85,7 +88,11 @@ BEGIN
   ASSERT (SELECT COUNT(*) FROM _cases
     WHERE NOT REGEXP_CONTAINS(log_id, r'^[0-9]{1,20}$')
       OR NOT REGEXP_CONTAINS(export_run_id, r'^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$')
-      OR NOT REGEXP_CONTAINS(sap_file_name, r'^[A-Za-z0-9][A-Za-z0-9._-]*[.]csv$')) = 0
+      OR NOT REGEXP_CONTAINS(production_file_name,
+        r'^INSURANCE_RCB_[A-Za-z0-9._-]*[.]csv$')
+      OR sap_file_name != CONCAT('RCB_MOTOR_', production_file_name)
+      OR NOT REGEXP_CONTAINS(sap_file_name,
+        r'^RCB_MOTOR_INSURANCE_RCB_[A-Za-z0-9._-]*[.]csv$')) = 0
     AS 'synthetic event identity violates dispatcher validation';
   ASSERT (SELECT COUNT(*)
     FROM `pacific-plating-282708.sap_integration_v3.export_archive`
@@ -108,9 +115,12 @@ BEGIN
      delivery_status, object_generation, file_sha256, uat2_status, exported_at, sap_log_id,
      sap_result_status, acknowledged_at)
   SELECT
-    export_run_id, order_item, period, charge_id, CURRENT_DATE('Asia/Bangkok'), sap_file_name,
-    CONCAT('gs://rcb-bronze-zone/post_import_rehearsal/', export_run_id, '/', sap_file_name),
-    CONCAT('gs://rcb-bronze-zone/post_import_rehearsal/', export_run_id, '/archive/', sap_file_name),
+    export_run_id, order_item, period, charge_id, CURRENT_DATE('Asia/Bangkok'),
+    production_file_name,
+    CONCAT('gs://rcb-bronze-zone/post_import_rehearsal/', export_run_id, '/',
+      production_file_name),
+    CONCAT('gs://rcb-bronze-zone/post_import_rehearsal/', export_run_id, '/archive/',
+      production_file_name),
     'SYNTHETIC_ONLY', 'POST_IMPORT_REHEARSAL_V1',
     LOWER(TO_HEX(SHA256(CONCAT(export_run_id, '|', charge_id, '|', payload_json)))),
     payload_json, 'REHEARSAL', 'DELIVERED', CONCAT('SYNTHETIC-', p_nonce),
@@ -125,8 +135,10 @@ BEGIN
      uat2_accepted_at, delivery_status, recorded_at)
   SELECT
     export_run_id,
-    CONCAT('gs://rcb-bronze-zone/post_import_rehearsal/', export_run_id, '/archive/', sap_file_name),
-    CONCAT('gs://rcb-bronze-zone/post_import_rehearsal/', export_run_id, '/', sap_file_name),
+    CONCAT('gs://rcb-bronze-zone/post_import_rehearsal/', export_run_id, '/archive/',
+      production_file_name),
+    CONCAT('gs://rcb-bronze-zone/post_import_rehearsal/', export_run_id, '/',
+      production_file_name),
     CONCAT('SYNTHETIC-ARCHIVE-', p_nonce),
     CONCAT('SYNTHETIC-PRODUCTION-', p_nonce),
     LOWER(TO_HEX(SHA256(CONCAT('FILE|', export_run_id)))),
@@ -137,14 +149,15 @@ BEGIN
 
   INSERT INTO `pacific-plating-282708.sap_integration_v3.sap_delivery_manifest_v3`
     (export_run_id, production_uri, production_generation, sap_file_name, file_sha256,
-     data_row_count, delivery_status, recorded_at)
+     data_row_count, delivery_status, recorded_at, production_file_name)
   SELECT
     export_run_id,
-    CONCAT('gs://rcb-bronze-zone/post_import_rehearsal/', export_run_id, '/', sap_file_name),
+    CONCAT('gs://rcb-bronze-zone/post_import_rehearsal/', export_run_id, '/',
+      production_file_name),
     CONCAT('SYNTHETIC-PRODUCTION-', p_nonce),
     sap_file_name,
     LOWER(TO_HEX(SHA256(CONCAT('FILE|', export_run_id)))),
-    1, 'DELIVERED', CURRENT_TIMESTAMP()
+    1, 'DELIVERED', CURRENT_TIMESTAMP(), production_file_name
   FROM _cases;
   ASSERT @@row_count = 3 AS 'failed to seed exactly three synthetic SAP delivery manifests';
 
@@ -189,6 +202,7 @@ BEGIN
     case_name,
     log_id,
     export_run_id,
+    production_file_name,
     sap_file_name,
     'success' AS import_status,
     FORMAT_TIMESTAMP('%Y-%m-%dT%H:%M:%E6SZ', CURRENT_TIMESTAMP(), 'UTC') AS email_date,
