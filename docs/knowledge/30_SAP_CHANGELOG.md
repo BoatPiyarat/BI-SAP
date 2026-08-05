@@ -1,5 +1,16 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-05 20:30 ICT — post-import activation rehearsal plan: review PASSED (increment closed)
+
+- `RQ-20260805-1956-post-import-activation-rehearsal` (commit `8b1f2bb`) reviewed PASS —
+  `docs/reviews/2026-08-05-8b1f2bb-claude.md`. Last open review in the post-import increment;
+  DDL 072/073, dispatcher, watchdog, and this plan have all now independently received PASS.
+- Independently re-ran the balance-gate diagnosis query and live read-only `gcloud` inventory
+  (workflow, schedulers, Cloud Run, Pub/Sub) — every claim in the commit checked out.
+- No deploy, IAM grant, or production action occurred in this review. Dispatcher/watchdog
+  deployment, dedicated identities, Pub/Sub resources, Gmail publisher config, and scheduler
+  activation remain a separate, still-ungated step per the plan's own dependency order.
+
 ## 2026-08-05 20:16 ICT — deployed reviewed post-import SQL/workflow; watchdog PASSED
 
 - Deployed DDL 072 and DDL 073 after their Class-A PASS verdicts and 0-byte dry-runs.
