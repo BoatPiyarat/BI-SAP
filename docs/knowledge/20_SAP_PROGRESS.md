@@ -1,5 +1,14 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-05 14:30 ICT — post-import refresh handoff design recorded
+
+Recorded the missing Unit 6 handoff as a durable, idempotent outbox plus narrow Pub/Sub event and
+private dispatcher. This intentionally avoids a direct Gmail-to-workflow call and preserves the
+reviewed narrowly scoped Apps Script model. The future child execution is Unit-1-only, bounded,
+and linked to the exact delivery/run evidence; no component, trigger, workflow execution, or
+production state was created. The remaining status-normalization rule is explicitly constrained to
+documented SAP result evidence rather than attachment inference.
+
 ## 2026-08-05 14:26 ICT — SHA-256 exact-promotion source ready; Class-A review pending
 
 Added a source-only private Cloud Run promoter and updated the disabled nightly workflow contract.

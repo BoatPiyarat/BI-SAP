@@ -1,5 +1,13 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-05 14:30 ICT — post-import refresh handoff design
+
+- Recorded the source contract for a durable, idempotent outbox → narrow Pub/Sub → private
+  dispatcher → Unit-1-only child execution path.
+- Explicitly excludes direct Gmail-to-workflow execution, duplicate-trigger risk, attachment data
+  in events, and any Units 2–5 or new delivery from the child path.
+- Design only; no service, topic, trigger, workflow execution, or production state changed.
+
 ## 2026-08-05 14:26 ICT — SHA-256 exact-promotion source ready
 
 - Added source-only Cloud Run promoter that hashes an immutable archive generation, copies it with
