@@ -1,5 +1,15 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-05 09:28 ICT — exact SAP-filename delivery-manifest writer source ready
+
+The reviewed Unit 6 Gmail ingestor can only match an SAP result to a delivery once promotion writes
+the exact SAP-facing filename. The source replacement for DDL 062 now requires that filename and a
+64-hex SHA-256 explicitly, verifies the filename is exactly the production-object basename, and in
+one transaction records it with production URI/generation, hash, and conserved archive-row count
+in `sap_delivery_manifest_v3`. It also writes the same hash to the existing archive/manifest
+evidence, rather than leaving the old manifest hash NULL. DDL 070 must deploy first. Source only;
+no procedure deployment or call, GCS write, Gmail, BigQuery, scheduler, or SAP state changed.
+
 ## 2026-08-05 01:1x ICT — Unit 6 ingestion runtime delta review passed; review debt clear
 
 Both required notes from the prior review are resolved in `2cd1c28`: the Gmail search now excludes

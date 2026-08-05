@@ -13,9 +13,12 @@ BigQuery, and `gs://rcb-bronze-zone/sap_import_logs/` access, and set Script Pro
 Install separate 15-minute triggers for `pollSapResultMailbox` and
 `checkSapResultIngestionHeartbeat`. The latter is the independent pre-60-minute poll-gap alarm.
 
-Promotion must first persist exactly one `sap_delivery_manifest_v3` row containing the immutable
-production URI/generation/hash and the exact SAP-facing filename. The latter is not inferred from
-the archive basename: LogID 21183 proved the names can differ.
+Deploy DDL 070 before the reviewed replacement of DDL 062. After an exact-generation, create-only
+promotion copy, call `sp_mark_v3_exact_delivery` with its original evidence plus the exact
+SAP-facing production-object basename and its 64-hex SHA-256. The procedure atomically marks the
+archive ledger DELIVERED and persists exactly one `sap_delivery_manifest_v3` row with the immutable
+production URI/generation/hash, row count, and supplied filename. The filename is never inferred
+from the archive basename: LogID 21183 proved the names can differ.
 
 Acceptance rehearsal must prove: zero-match stays unlabeled/PENDING_ACK; two LogIDs for one manifest
 alerts and persists nothing; a successful TXT persists header and attachment before label; rerun is

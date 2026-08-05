@@ -1,5 +1,14 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-05 09:28 ICT — exact SAP-filename delivery-manifest writer source ready
+
+- Extended DDL 062's exact-delivery evidence with the supplied SAP-facing production filename and
+  SHA-256, atomically persisting the associated `sap_delivery_manifest_v3` record.
+- Replaced the stale global-view row count with the same export run's conserved archive-row count
+  and made replayed export-run or SAP filename evidence fail closed.
+- Source-only change; no deployment, procedure call, GCS write, Gmail, BigQuery, scheduler, or SAP
+  state changed.
+
 ## 2026-08-05 01:1x ICT — Unit 6 delta review passed; review debt clear
 
 - Recorded Claude's PASS verdict for `2cd1c28`, closing both required notes from the prior review.
