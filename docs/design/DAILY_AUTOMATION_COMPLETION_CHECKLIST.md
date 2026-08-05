@@ -47,13 +47,18 @@ delivery, or SAP action was created by this activation work.
 1. Run `scripts/check_post_import_activation.ps1`.
 2. Require `safety_passed=true`, `rehearsal_ready=true`, watchdog scheduler `PAUSED`, and zero
    watchdog executions.
-3. Call DDL 074 once with a unique 14-digit UTC nonce.
-4. Run the reviewed ten-case rehearsal: claim/start, duplicate suppression, canonical self-bind,
+3. Use an approved window outside the enabled 20:30 ICT legacy extract and any other extract/load.
+   Post-import mode runs the real Unit-1 SAP extract, bronze load, and mirror refresh even though
+   delivery is disabled.
+4. Call DDL 074 once with a unique 14-digit UTC nonce.
+5. Run the reviewed ten-case rehearsal: claim/start, duplicate suppression, canonical self-bind,
    post-import early return, ACK, exact reject precedence, residual human action + received alert,
    overdue cancel/terminal TIMEOUT, bounded stale-claim retry, and malformed-message dead letter.
-5. Run `scripts/check_post_import_rehearsal.ps1 -Nonce <nonce>`; require exactly three exact ledger
+   Run ACK, REJECT, and RESIDUAL one at a time, waiting for terminal state before the next; only
+   the deliberate duplicate redelivery overlaps its original child.
+6. Run `scripts/check_post_import_rehearsal.ps1 -Nonce <nonce>`; require exactly three exact ledger
    cases and all expected states TRUE.
-6. Retain Pub/Sub message IDs, workflow names/revisions/states, Cloud Run revision/job names,
+7. Retain Pub/Sub message IDs, workflow names/revisions/states, Cloud Run revision/job names,
    BigQuery rows, and human alert receipt timestamp. Do not delete rehearsal evidence.
 
 Do not use production LogID 21153/21183 or replay a production file.

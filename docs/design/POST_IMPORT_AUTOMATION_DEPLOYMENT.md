@@ -111,7 +111,7 @@ configuration, not silently defaulted:
 ## Synthetic rehearsal before enabling Gmail publication
 
 Use a synthetic non-production LogID/export/filename binding that cannot select a production
-delivery manifest or invoke SAP. Prove:
+delivery manifest or invoke SAP import/delivery. Prove:
 
 1. one event creates one CLAIMED → STARTED child execution;
 2. a duplicate event creates no second active Unit-1 run;
@@ -123,6 +123,14 @@ delivery manifest or invoke SAP. Prove:
 8. an overdue execution is cancelled and observed terminal before `TIMEOUT`;
 9. a stale claim retries no more than three times, then alerts;
 10. malformed Pub/Sub data reaches retry/dead-letter handling without a workflow execution.
+
+Post-import mode still runs the real Unit-1 SAP extract → bronze load → mirror refresh read path.
+Run this rehearsal only in a separately approved window that cannot overlap the enabled 20:30 ICT
+legacy extract or another manual/automated extract. Before each child, require the bronze prefix
+gate to be clean. Dispatch ACK, REJECT, and RESIDUAL sequentially and wait for each child to become
+terminal before starting the next; only the duplicate-event case may deliberately redeliver while
+its original child is active. `delivery_enabled: false` prevents outbound production delivery but
+does not make concurrent extracts safe.
 
 Capture BigQuery rows, execution names/revisions/states, Pub/Sub message IDs, Cloud Run revision/job
 names, and human alert receipt timestamps. Do not use LogID 21153 or replay any production file.
