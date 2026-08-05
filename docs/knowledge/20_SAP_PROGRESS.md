@@ -1,5 +1,11 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-05 19:55 ICT — post-import cutover and rehearsal plan
+
+Documented the dependency-ordered deployment, dedicated identities, required non-defaulted timeout
+inputs, ten synthetic acceptance cases, activation sequence, and configuration-first rollback.
+The Apps Script topic remains blank and no infrastructure was changed.
+
 ## 2026-08-05 19:49 ICT — post-import watchdog source
 
 Added a source-only scheduled Cloud Run Job that releases stale unbound claims for bounded retry,

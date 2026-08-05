@@ -1,5 +1,11 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-05 19:55 ICT — post-import deployment/rehearsal plan
+
+- Added exact deploy order, least-privilege identities, required measured configuration, ten
+  synthetic acceptance cases, activation, and rollback.
+- Kept `POST_IMPORT_REFRESH_TOPIC` blank; documentation only.
+
 ## 2026-08-05 19:49 ICT — post-import watchdog source
 
 - Added configurable stale-claim release and execution-state reconciliation.
