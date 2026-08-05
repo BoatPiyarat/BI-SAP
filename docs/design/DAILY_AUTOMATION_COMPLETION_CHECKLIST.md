@@ -4,7 +4,8 @@ Status at 2026-08-05 21:19 ICT: **NOT YET UNATTENDED**
 
 This is the short operational index. Exact commands and evidence requirements remain in
 `POST_IMPORT_ADMIN_COMPLETION.md`, `POST_IMPORT_AUTOMATION_DEPLOYMENT.md`,
-`SAP_RESULT_INGESTION_DEPLOYMENT.md`, and `V3_ORCHESTRATOR_UNIT1_RUNBOOK.md`.
+`SAP_RESULT_INGESTION_DEPLOYMENT.md`, `V3_ORCHESTRATOR_UNIT1_RUNBOOK.md`, and
+`V3_DELIVERY_CONTROL_PLANE.md`.
 
 ## 1. Live and reviewed, but deliberately inert
 
@@ -86,7 +87,9 @@ a separate reviewed production change:
    (`INSURANCE_RCB_...`) plus exact SAP-reported result name
    (`RCB_MOTOR_<production basename>`). Current one-name DDL/workflow/Apps Script binding cannot
    match the confirmed LogID 21183 shape;
-3. create the recurring V3 workflow trigger at the approved daily time;
+3. deploy the reviewed private promoter and create the recurring V3 workflow trigger PAUSED;
+   require `scripts/check_v3_delivery_control_plane.ps1` to return `safety_passed=true` and
+   `control_plane_ready=true` before any one-file production rehearsal;
 4. keep legacy extract/query schedules until the V3 trigger and delivery path pass the defined
    overlap/shadow gate, then pause legacy producers in one rollback-safe cutover;
 5. never enable a recurring trigger while `delivery_enabled: false` and call the result “daily

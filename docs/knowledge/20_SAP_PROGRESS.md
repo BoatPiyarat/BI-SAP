@@ -1,5 +1,17 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-05 21:48 ICT — outbound control-plane machine gate ready
+
+Added a source-only administrator runbook and read-only checker for the private exact-generation
+promoter plus a PAUSED recurring V3 trigger. The checker fails unless the current workflow remains
+delivery-disabled, the two-name markers exist, the promoter is Ready/internal/private on its
+dedicated identity, archive-read and production-create IAM are conditionally restricted to the
+closed prefixes, the workflow is the exact invoker, and the 20:30 ICT Scheduler target/body/OAuth
+identity bind the exact workflow and promoter URL. PowerShell syntax and repository whitespace
+checks passed. The live checker was not run because the local GCP tool account reported its usage
+limit; no live-state claim is made. No service, IAM, scheduler, workflow, execution, GCS, Gmail,
+BigQuery, or SAP state changed.
+
 ## 2026-08-05 21:35 ICT — two-name delivery/result binding source ready
 
 Prepared a source-only correction for the confirmed LogID 21183 gap. DDL 070 adds the separate
