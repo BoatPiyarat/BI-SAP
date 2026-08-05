@@ -1,5 +1,14 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-05 21:17 ICT — insurer codes 30/46/48/49 not confirmed by SAP LIVE
+
+Boat requested disposition by accepted SAP LIVE evidence. The canonical E3 normalization over
+`sap_integration_v2.SAP_LIVE_FULL` found zero positive-DocEntry rows for every one of codes
+`30`, `46`, `48`, and `49`; `sap_insurer_master` also has zero rows for all four. Read-only job
+`bqjob_r2f4166e07184b869_0000019fd2488a6e_1` used 7,240,991,840 estimated bytes under the 20 GiB
+cap. The existing holds remain; a different SAP source or an explicit mapping must be named before
+release.
+
 ## 2026-08-05 21:17 ICT — inert DDL 074 deployment review PASSED
 
 Claude Code independently confirmed the live rehearsal procedure body is byte-for-byte identical

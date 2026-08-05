@@ -1,5 +1,13 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-05 21:17 ICT — insurer-code SAP LIVE verification stays fail-closed
+
+- Checked `30`, `46`, `48`, `49` against canonical accepted `SAP_LIVE_FULL` evidence and
+  `sap_insurer_master`.
+- Each code returned 0 valid live rows, 0 distinct positive DocEntry, and 0 master rows.
+- Kept `INSURER_NOT_IN_MASTER` holds; no registry, export, workflow, GCS, or SAP mutation.
+- Evidence job `bqjob_r2f4166e07184b869_0000019fd2488a6e_1`, dry-run 7,240,991,840 bytes.
+
 ## 2026-08-05 21:17 ICT — inert DDL 074 deployment review PASSED
 
 - Live body matched reviewed DDL 074 source byte-for-byte; job succeeded at 0 processed/billed

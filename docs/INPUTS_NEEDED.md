@@ -77,6 +77,13 @@ disposition for normalized codes `30`, `46`, `48`, `49`: add to SAP master, map 
 code, or intentionally hold. Do not silently restore/delete records; see
 `docs/FINDINGS_INSURER_EXCLUSION_RISK_20260731.md`.
 
+**Fresh check 2026-08-05 21:16 ICT:** the exact documented E3 rule found zero positive-DocEntry
+`SAP_LIVE_FULL` rows and zero `sap_insurer_master` rows for every one of `30`, `46`, `48`, and
+`49` (job `bqjob_r2f4166e07184b869_0000019fd2488a6e_1`; see
+`docs/FINDINGS_INSURER_CODES_30_46_48_49_20260805.md`). They cannot be confirmed as accepted codes
+from the current canonical source, so the hold remains. If “passed code” refers to a different SAP
+object or a mapping to other values, provide that exact source/mapping.
+
 ## RESOLVED 2026-07-31 — RULE-09 narrow OLD_YEAR_NO_TOUCH exception
 
 Boat kept `GREATEST(OrderDate, PolicyDate)` as the year-rule basis and approved one narrow
