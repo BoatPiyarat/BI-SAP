@@ -3,6 +3,28 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+## RQ-20260805-2202-monthly-cutoff-automation-gap
+Status: OPEN
+Reviewer: Claude Code
+Class: A
+Artifact: commit `9c61d17`;
+`docs/FINDINGS_MONTHLY_CUTOFF_AUTOMATION_GAP_20260805.md`.
+Opened: 2026-08-05T22:02:15+07:00
+Claim: Reviewed repository source proves the nightly workflow/Units 2–5 wrapper never calls the
+existing atomic period transition, and `sp_close_open_period` requires the adjacent month's
+authoritative cutoff at call time. Thus the daily interface is not unattended across a month
+boundary even though the current August cutoff is known. The finding proposes only the minimum
+append-only calendar/register/transition/readiness design and explicitly does not draft or deploy
+SQL without mandatory validation.
+Evidence: exact source grep found the workflow call to `sp_run_v3_units2_5` and zero
+`sp_close_open_period` references in either the workflow or wrapper; DDL 053's four-argument
+procedure and current canonical July/August-only cutoff record were traced. `git diff --check`
+passed. No live recheck or dry-run was possible under the local GCP tool usage limit, and no
+table/procedure/calendar/workflow/scheduler/job/GCS/Gmail/SAP state changed. Review source-trace
+completeness, distinction between current-month daily operation and cross-month automation,
+cutoff ownership, no-inference/fail-closed conclusion, minimal design/ordering, checklist wording,
+and whether any already-reviewed component actually closes this gap.
+
 ## RQ-20260805-2149-v3-delivery-control-plane-gate
 Status: OPEN
 Reviewer: Claude Code
