@@ -24,11 +24,29 @@ behavior, outbox initial state, expected-result claims, and that the source was 
 called.
 
 ## RQ-20260805-2044-post-import-admin-completion
-Status: OPEN
+Status: REVIEWED
 Reviewer: Claude Code
 Class: A
 Artifact: commit `fc048d9`; `docs/design/POST_IMPORT_ADMIN_COMPLETION.md`.
 Opened: 2026-08-05T20:44:59+07:00
+Verdict: PASS ON THIS ARTIFACT, WITH A CRITICAL CROSS-ARTIFACT BLOCKER —
+`docs/reviews/2026-08-05-fc048d9-claude.md`. The runbook itself is correct and internally
+consistent with every other reviewed artifact (IAM condition scoping, Pub/Sub/service-agent
+grants, push endpoint/audience, DLQ forwarding, scheduler create-pause-update sequencing, checker
+field-for-field compatibility) — do not run it yet. **CRITICAL FINDING**: this runbook's IAM
+condition correctly uses the project *number* (`919786098205`), matching the real Workflows
+execution resource name I pulled live via `gcloud workflows executions describe ... --format=
+"value(name)"` (`projects/919786098205/locations/.../executions/...`). But DDL 072's
+`sp_bind_v3_post_import_execution` (already reviewed PASS in RQ-20260805-1928) asserts
+`REGEXP_CONTAINS(p_workflow_execution_name, r'^projects/[a-z][a-z0-9-]{4,28}...')` — requiring the
+project segment to start with a lowercase letter, which a numeric project number never does. Since
+`sys.get_env("GOOGLE_CLOUD_PROJECT_ID")` in GCP Workflows is documented to return the project
+*number* (not the ID string, despite the name), every real self-bind call would very likely fail
+this assertion, breaking the entire post-import pipeline end to end even though every individual
+component passed review. Requires urgent resolution (regex fix or documentation/rehearsal
+confirmation) via a new Class-A delta against DDL 072 before this runbook is run or any rehearsal
+proceeds.
+
 Claim: The source-only administrator handoff completes only the reviewed IAM/resource plan without
 activating Gmail publication or delivery. It uses separate custom create-only and get/cancel-only
 Workflows roles restricted to the one workflow, exact Cloud Run/PubSub/service-account bindings,

@@ -1,5 +1,18 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-05 20:55 ICT — CRITICAL finding: DDL 072 execution-name regex vs. real resource format
+
+- `RQ-20260805-2044-post-import-admin-completion` (commit `fc048d9`) reviewed: PASS on the runbook
+  itself — `docs/reviews/2026-08-05-fc048d9-claude.md`.
+- Surfaced a likely-critical defect in already-PASSED DDL 072: its execution-name format assert
+  requires a letter-leading project segment, but the real Workflows execution resource name (live-
+  verified) uses the numeric project number, and `GOOGLE_CLOUD_PROJECT_ID` in Workflows is
+  documented to return that number, not the project-ID string.
+- If confirmed, every real self-bind call fails and the pipeline cannot complete a single request.
+- Do not run the admin completion runbook or the synthetic rehearsal until a corrective DDL 072
+  delta is reviewed and passed, or the concern is otherwise conclusively resolved.
+- Read-only `gcloud describe` only; no mutation, IAM change, or production action occurred.
+
 ## 2026-08-05 20:51 ICT — synthetic post-import fixture source ready
 
 - Added atomic, nonce-bound ACK, exact-rejection, and residual rehearsal fixtures in DDL 074.

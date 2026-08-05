@@ -1,5 +1,23 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-05 20:55 ICT — CRITICAL: DDL 072 execution-name regex likely rejects every real bind
+
+Reviewing `RQ-20260805-2044-post-import-admin-completion`
+(`docs/reviews/2026-08-05-fc048d9-claude.md`) surfaced a probable defect in the already-PASSED
+DDL 072 (RQ-20260805-1928). The admin runbook's IAM condition correctly scopes to the project
+*number* (`919786098205`), matching the real Workflows execution resource name pulled live via
+`gcloud workflows executions describe ... --format="value(name)"`
+(`projects/919786098205/locations/.../executions/...`). But
+`sp_bind_v3_post_import_execution`'s format `ASSERT` requires the project segment to start with a
+lowercase letter — it can never match a numeric project number. `sys.get_env(
+"GOOGLE_CLOUD_PROJECT_ID")`, which the workflow uses to self-construct its execution name, is
+documented GCP Workflows behavior to return the project number despite its name. If confirmed,
+every real self-bind call fails immediately, and the entire post-import pipeline cannot complete a
+single successful request even though every individual reviewed component is otherwise correct.
+**Do not run the admin completion runbook or the synthetic rehearsal until this is resolved** — a
+new Class-A delta against DDL 072 (regex fix, or documented/rehearsal-confirmed proof this concern
+is unfounded) is required first.
+
 ## 2026-08-05 20:51 ICT — atomic synthetic ACK/reject/residual fixture source
 
 Added source-only DDL 074 for three retained, isolated post-import rehearsal cases. ACK binds a
