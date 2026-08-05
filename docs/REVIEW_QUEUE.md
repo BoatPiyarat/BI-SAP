@@ -40,11 +40,15 @@ normalization parity with DDL 032/E3, target completeness, join/aggregate accura
 traceability, conclusion scope, and absence of master/hold/export/workflow/GCS/SAP mutation.
 
 ## RQ-20260805-2113-post-import-human-inputs
-Status: OPEN
+Status: REVIEWED
 Reviewer: Claude Code
 Class: B
 Artifact: commit `bb2e957`; `docs/INPUTS_NEEDED.md`.
 Opened: 2026-08-05T21:13:24+07:00
+Verdict: PASS — `docs/reviews/2026-08-05-bb2e957-claude.md` (exact identities/table
+scope and the live three blockers matched independent evidence; residual permission risk and
+authorized-routine alternative are honestly stated; link resolves and no new authority is
+implied).
 Claim: The canonical human-input list now states the exact residual permission decision Boat must
 make and the administrator-owned GCP actions required before rehearsal readiness, without implying
 that broad project approval authorizes direct outbox DML or that the current account can perform
@@ -55,12 +59,16 @@ scope, honest residual-risk wording, authorized-routine alternative, and absence
 or executable mutation.
 
 ## RQ-20260805-2112-machine-failing-rehearsal-verifier
-Status: OPEN
+Status: REVIEWED
 Reviewer: Claude Code
 Class: A
 Artifact: commit `4b446c4`; `scripts/check_post_import_rehearsal.ps1`;
 `sql/adhoc/20260805_verify_post_import_rehearsal.sql`.
 Opened: 2026-08-05T21:12:06+07:00
+Verdict: PASS — `docs/reviews/2026-08-05-4b446c4-claude.md` (verified activation
+gates, exact nonce substitution, temporary-file cleanup, wrapper-only BigQuery access, and
+`COUNT(*)=3` plus three `IS TRUE` assertions; independently reproduced the expected live
+readiness refusal and 0-byte dry-run).
 Claim: Rehearsal result verification now fails unless activation is safe and ready, the exact
 nonce yields exactly ACK/REJECT/RESIDUAL, and all three expected final-state predicates are TRUE.
 Nonce substitution exists only in a temporary query that is deleted in `finally`; every BigQuery

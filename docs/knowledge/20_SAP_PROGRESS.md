@@ -1,5 +1,12 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-05 21:23 ICT — rehearsal verifier and human-input updates PASSED
+
+Claude Code passed the machine-failing rehearsal verifier and the canonical human-input update. It
+independently reproduced the verifier's readiness refusal, confirmed the SQL rejects missing,
+duplicate, NULL, or false evidence, and verified the exact IAM identities/table scope and honest
+residual-permission wording. No runtime action occurred.
+
 ## 2026-08-05 21:20 ICT — single completion checklist for full daily automation
 
 Added a cross-computer operational index that separates the live inert post-import foundation,

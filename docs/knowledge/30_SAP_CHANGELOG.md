@@ -1,5 +1,13 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-05 21:23 ICT — verifier and human-input reviews PASSED
+
+- Machine-failing rehearsal result checker: PASS
+  (`docs/reviews/2026-08-05-4b446c4-claude.md`).
+- Exact IAM/human-input update: PASS
+  (`docs/reviews/2026-08-05-bb2e957-claude.md`).
+- Reviewer independently reproduced readiness refusal; no production mutation.
+
 ## 2026-08-05 21:20 ICT — index remaining daily-automation gates
 
 - Added `docs/design/DAILY_AUTOMATION_COMPLETION_CHECKLIST.md`.
