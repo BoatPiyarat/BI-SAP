@@ -3,6 +3,23 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+## RQ-20260805-2129-log21183-two-name-binding-gap
+Status: OPEN
+Reviewer: Claude Code
+Class: A
+Artifact: commit `9e7724c`; `docs/FINDINGS_LOG21183_FILENAME_BINDING_GAP_20260805.md`;
+`sql/adhoc/20260805_verify_log21183_filename_binding.sql`.
+Opened: 2026-08-05T21:29:56+07:00
+Claim: Live LogID 21183 evidence proves the production basename (`INSURANCE_RCB_...csv`) differs
+from SAP's reported name (`RCB_MOTOR_INSURANCE_RCB_...csv`). Current DDL 062 stores the former as
+`sap_file_name`, while Apps Script exact-matches the latter; this structurally blocks automatic
+manifest/result binding and a static scheduler also cannot provide the dynamic shard-bearing name.
+Evidence: mandatory wrapper dry-run estimated 308,583 bytes; read-only job
+`bqjob_r11d028b8cfd54f2e_0000019fd251056f_1` returned the retained production URI/basename for 558
+event identities and 3,857 payload rows, both exact-name comparisons false. Review query
+partitioning/results, historical no-new-manifest caveat, DDL 062/workflow/promoter/Apps Script
+trace, conclusion scope, two-name correction direction, and absence of mutation.
+
 ## RQ-20260805-2120-daily-automation-completion-checklist
 Status: REVIEWED
 Reviewer: Claude Code
