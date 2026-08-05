@@ -1,5 +1,14 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-05 20:45 ICT — activation-check script review: PASS WITH REQUIRED NOTE
+
+- `RQ-20260805-2035-post-import-activation-check` (commit `228aeb1`) reviewed —
+  `docs/reviews/2026-08-05-228aeb1-claude.md`.
+- Independently re-ran the script against the live project: identical safety/readiness results.
+- Required fix (non-blocking): push-subscription check should validate `pushConfig.pushEndpoint`/
+  OIDC binding, not just the subscription's name.
+- Read-only only; no workflow, job, subscription, schedule, delivery, or SAP action occurred.
+
 ## 2026-08-05 20:38 ICT — inert runtime deployment review PASSED
 
 - Recorded Claude PASS after independent live reproduction of every inert-deployment claim.

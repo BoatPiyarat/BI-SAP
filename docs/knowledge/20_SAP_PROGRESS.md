@@ -1,5 +1,17 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-05 20:45 ICT — activation-check script: PASS WITH REQUIRED NOTE
+
+`RQ-20260805-2035-post-import-activation-check` (commit `228aeb1`) reviewed —
+`docs/reviews/2026-08-05-228aeb1-claude.md`. Confirmed the script is genuinely read-only (every
+`gcloud` call is describe/list, no mutation), fails visibly on `gcloud` errors, and correctly
+separates safety failures from rehearsal-readiness blockers. Independently re-ran the script
+against the live project: identical `safety_passed=true`, `rehearsal_ready=false`, and the same
+three readiness blockers reported in the commit. One required fix before relying on this checker
+alone: the push-subscription readiness check verifies only the subscription's name, not its actual
+`pushConfig.pushEndpoint`/OIDC binding — a false-positive risk the mandatory synthetic rehearsal
+would still catch, so it does not block this PASS.
+
 ## 2026-08-05 20:38 ICT — inert runtime deployment PASS; Apps Script owner input exposed
 
 Claude independently reproduced the private dispatcher, zero-execution watchdog, exact timeout

@@ -7,8 +7,21 @@ review history; link the completed review and record its verdict.
 Status: OPEN
 Reviewer: Claude Code
 Class: A
-Artifact: commit `228aeb1`; `scripts/check_post_import_activation.ps1` and evidence notes.
+Artifact: commit `228aeb1`, required-note delta `aae4e01`;
+`scripts/check_post_import_activation.ps1` and evidence notes.
 Opened: 2026-08-05T20:35:57+07:00
+Interim verdict: PASS WITH REQUIRED NOTE — `docs/reviews/2026-08-05-228aeb1-claude.md` (confirmed read-only,
+fails visibly on gcloud errors, safety/readiness distinction is sound, and independently re-ran the
+script myself: identical `safety_passed=true`/`rehearsal_ready=false`/same three blockers.
+Required fix: the push-subscription readiness check verifies only the subscription's name, not
+its actual `pushConfig.pushEndpoint`/OIDC binding — a false-positive risk on that one readiness
+item, though the mandatory synthetic rehearsal would still catch it. Does not block this PASS.)
+Delta `aae4e01` resolves that note by checking the exact endpoint and OIDC identity, and also checks
+the exact input topic, OIDC audience, DLQ/attempt count, acknowledgement deadline,
+`roles/run.invoker` binding, rejects `allAuthenticatedUsers`, and validates the paused watchdog
+schedule/target/OAuth identity. PowerShell parse and live rerun passed with the same three known
+blockers. Review the corrective delta before returning this request to REVIEWED.
+
 Claim: The checker is read-only, fails visibly on gcloud errors, verifies the deployed
 delivery-disabled workflow/private dispatcher/bounded watchdog/topic foundation, and distinguishes
 safety failures from missing rehearsal-readiness resources. It cannot execute a workflow/job,
