@@ -34,7 +34,8 @@ classified once as refreshed-mirror `ACKNOWLEDGED`, exact row-detail `REJECTED_B
 `PENDING_ACK`. The archive and both manifest ledgers change atomically; the three outcomes conserve
 to the delivered row count. Zero residual completes the outbox `SUCCEEDED`; any residual completes
 `HUMAN_ACTION`, publishes the existing human alert, and fails closed.
-Evidence: DDL 073 mandatory dry-run passed at 0 bytes and `git diff --check` passed. Review exact
+Evidence: DDL 073 mandatory dry-run passed at 0 bytes; the full workflow YAML parsed structurally
+with all expected subworkflows; and `git diff --check` passed. Review exact
 LogID/export/filename/header/outbox binding, child `UNIT1_COMPLETE` proof, archive key and manifest
 row conservation, exact error precedence, mirror match tuple/status, idempotent rerun behavior,
 atomic ledger transitions, workflow result decoding, residual alert path, and that no GCS,
@@ -54,7 +55,8 @@ losers exit, winners persist `SUCCEEDED` after Unit 1, and the post-import path 
 2–5 or delivery.
 Evidence: `python -m py_compile infra/post_import_dispatcher/main.py`, pinned-dependency import
 smoke, valid-event/unsafe-filename/token-determinism checks, and `git diff --check` passed; DDL 072
-dependency re-dry-run passed at 0 bytes. Review Pub/Sub envelope/event validation,
+dependency re-dry-run passed at 0 bytes and the full workflow YAML parsed structurally. Review
+Pub/Sub envelope/event validation,
 token determinism, admitted status handling, claim/retry behavior, definite-vs-ambiguous execution
 create failure handling, IAM/configuration boundary, server-assigned-name self-bind, duplicate
 no-op, Unit-1-only stop, and success completion. No service, workflow, topic, subscription, IAM,
