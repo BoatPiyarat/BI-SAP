@@ -5,8 +5,9 @@
 - `RQ-20260805-2035-post-import-activation-check` (commit `228aeb1`) reviewed —
   `docs/reviews/2026-08-05-228aeb1-claude.md`.
 - Independently re-ran the script against the live project: identical safety/readiness results.
-- Required fix (non-blocking): push-subscription check should validate `pushConfig.pushEndpoint`/
-  OIDC binding, not just the subscription's name.
+- Required note corrected in `aae4e01`: validate exact push topic/endpoint/OIDC/audience,
+  DLQ/attempt/ACK settings, invoker binding, and paused watchdog schedule/target/OAuth identity.
+- Corrective delta parsed and reran live with unchanged safe/current blockers; delta review open.
 - Read-only only; no workflow, job, subscription, schedule, delivery, or SAP action occurred.
 
 ## 2026-08-05 20:38 ICT — inert runtime deployment review PASSED

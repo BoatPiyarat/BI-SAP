@@ -7,10 +7,11 @@
 `gcloud` call is describe/list, no mutation), fails visibly on `gcloud` errors, and correctly
 separates safety failures from rehearsal-readiness blockers. Independently re-ran the script
 against the live project: identical `safety_passed=true`, `rehearsal_ready=false`, and the same
-three readiness blockers reported in the commit. One required fix before relying on this checker
-alone: the push-subscription readiness check verifies only the subscription's name, not its actual
-`pushConfig.pushEndpoint`/OIDC binding — a false-positive risk the mandatory synthetic rehearsal
-would still catch, so it does not block this PASS.
+three readiness blockers reported in the commit. The review required exact push endpoint/OIDC
+validation before relying on the checker alone. Corrective delta `aae4e01` adds that check plus the
+exact input topic, audience, DLQ/attempt count, ACK deadline, invoker binding, paused watchdog
+schedule/target/OAuth identity, and rejection of `allAuthenticatedUsers`. Parse and live rerun
+passed; the request remains OPEN only for review of this delta.
 
 ## 2026-08-05 20:38 ICT — inert runtime deployment PASS; Apps Script owner input exposed
 
