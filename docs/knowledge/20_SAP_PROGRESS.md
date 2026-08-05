@@ -7,7 +7,10 @@ payload rows, the exact production basename, and both false comparisons to SAP's
 It also traced the actual pre-fix DDL 062 single-name assertion/insert and Apps Script's exact
 result-name lookup. Verdict PASS: this is a confirmed structural blocker, not speculation. The
 finding boundary `9e7724c` is eligible for exact-boundary push; the corrective source remains a
-separate OPEN review.
+separate OPEN review. The exact `9e7724c:refs/heads/p0/stg-sap-state` push was attempted, but
+GitHub was unreachable inside the sandbox and network escalation was rejected because the tool
+account reached its usage limit. The local remote-tracking ref remains `5a4d735`; no later OPEN
+commit was published.
 
 ## 2026-08-05 22:11 ICT — completeness dispatcher locally executable
 

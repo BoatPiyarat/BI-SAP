@@ -5,6 +5,8 @@
 - Claude independently reproduced the 558/3,857 live evidence and exact filename inequality.
 - Pre-fix DDL 062 and Apps Script causal trace passed; historical table caveat remained honest.
 - Review: `docs/reviews/2026-08-05-9e7724c-claude.md`.
+- Exact-boundary push to `9e7724c` failed on sandbox network access; escalation was unavailable at
+  the tool usage limit. Local `origin/p0/stg-sap-state` remains `5a4d735`.
 
 ## 2026-08-05 22:11 ICT — add offline completeness-dispatch tests
 
