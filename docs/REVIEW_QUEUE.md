@@ -3,6 +3,19 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+## RQ-20260805-1956-post-import-activation-rehearsal
+Status: OPEN
+Reviewer: Claude Code
+Class: A
+Artifact: commit `8b1f2bb`; `docs/design/POST_IMPORT_AUTOMATION_DEPLOYMENT.md`.
+Opened: 2026-08-05T19:55:00+07:00
+Claim: The activation plan preserves dependency/review order, uses three dedicated least-privilege
+identities, requires measured timeout/delivery configuration, proves ten synthetic cases before
+enabling the Gmail publisher, and gives a configuration-first rollback that retains evidence.
+Evidence: `git diff --check` passed. Review IAM separation, no default service account, resource
+ordering, dead-letter handling, synthetic isolation/no production replay, alert receipt proof,
+activation order, rollback boundary, and that this artifact performs no deploy or mutation.
+
 ## RQ-20260805-1950-post-import-watchdog
 Status: OPEN
 Reviewer: Claude Code
