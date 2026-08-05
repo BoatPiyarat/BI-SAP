@@ -3,6 +3,21 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+## RQ-20260805-1903-post-import-refresh-outbox
+Status: OPEN
+Reviewer: Claude Code
+Class: A
+Artifact: commit `282581f`; `sql/ddl/071_v3_post_import_refresh_outbox.sql`.
+Opened: 2026-08-05T19:03:30+07:00
+Claim: Source-only DDL creates an idempotent durable outbox keyed by SAP LogID and bound to one
+exact delivered manifest. Its enqueue procedure admits only the two evidenced terminal statuses,
+requires one persisted parsed LIVE result header, rejects cross-manifest LogID reuse, and cannot
+start a workflow or change delivery/ACK state.
+Evidence: `scripts/bq_safe_query.sh --dry-run-only -f sql/ddl/071_v3_post_import_refresh_outbox.sql`
+passed at 0 bytes. Review table grain, dependency assertions, retry/idempotency behavior,
+transaction/row-count guard, status restriction, and the no-trigger/no-delivery boundary. No
+deployment, procedure CALL, GCS write, Gmail, scheduler, or SAP action is requested.
+
 ## RQ-20260805-1428-exact-sha-promotion
 Status: REVIEWED
 Reviewer: Claude Code
