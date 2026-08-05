@@ -7,8 +7,8 @@ review history; link the completed review and record its verdict.
 Status: OPEN
 Reviewer: Claude Code
 Class: A
-Artifact: commit `30bd693`; DDL 070/062, delivery workflow/promoter, Apps Script contract/comment,
-promoter tests, and evidence/progress docs.
+Artifact: commit `30bd693`, executable policy test `fa949ee`; DDL 070/062, delivery
+workflow/promoter, Apps Script contract/comment, tests, and evidence/progress docs.
 Opened: 2026-08-05T21:36:38+07:00
 Claim: The source-only delta closes the confirmed one-name binding gap by atomically persisting
 both the exact `INSURANCE_RCB_...csv` production basename and the distinct
@@ -18,7 +18,9 @@ continues exact-matching the SAP-result name; a static scheduler no longer suppl
 shard-bearing filename.
 Evidence: DDL 070 and 062 mandatory wrapper dry-runs passed at 0 bytes; workflow YAML parsed with
 Cloud SDK's bundled ruamel; Apps Script syntax passed through Node stdin; promoter Python compile
-and three unit tests passed; `git diff --check` passed. Review DDL 070 migration/nullability and
+and three unit tests passed. Zero-byte job `bqjob_raebafbf0173312f_0000019fd25c5c37_1` passed
+seven exact LogID 21183 policy assertions, including rejection of both swapped name roles;
+`git diff --check` passed. Review DDL 070 migration/nullability and
 deployment order, DDL 062 signature/parameter order/replay guards/atomic insert, closed filename
 policy, workflow zero/one/many object branches and safe SQL construction, promoter API contract
 and exact-generation behavior, Apps Script lookup compatibility, rollback, and that
