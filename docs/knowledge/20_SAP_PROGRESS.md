@@ -1,5 +1,20 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-06 21:45 ICT — default-SA activation workaround: PASS WITH REQUIRED NOTE
+
+`RQ-20260806-2123-default-compute-sa-activation-workaround` reviewed —
+`docs/reviews/2026-08-06-8e045ad-claude.md`. Ran both corrected checkers live: confirmed the
+RQ-2149 fatal `gcloud workflows get-iam-policy` crash is genuinely gone. Found a new, real
+false-positive in the delivery checker: its workflow-service-account normalization targets a
+`projects/-/serviceAccounts/` wildcard pattern the real live field never contains (it's
+`projects/pacific-plating-282708/serviceAccounts/...`), so the check can never pass even though the
+workflow has used the correct default Compute SA all along — confirmed directly via `gcloud
+workflows describe`. The sibling post-import checker has no such bug and correctly reports the
+dispatcher/watchdog Cloud Run services still need redeploying under the new shared identity. No
+IAM/administrator mutation exists anywhere in the diff; public-principal rejection and the
+permission-rehearsal-required flag are both confirmed present in live output. Required fix
+identified but does not block this PASS.
+
 ## 2026-08-06 21:33 ICT — numeric alert-input clarification review PASSED
 
 Claude confirmed DDL 066/068 intentionally contain no numeric configuration rows and found no

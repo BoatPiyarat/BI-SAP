@@ -1,5 +1,15 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-06 21:45 ICT — default-SA activation workaround review: PASS WITH REQUIRED NOTE
+
+- `RQ-20260806-2123-default-compute-sa-activation-workaround` reviewed —
+  `docs/reviews/2026-08-06-8e045ad-claude.md`.
+- Ran both checkers live: confirmed the RQ-2149 crash is fixed; found a new false-positive in the
+  delivery checker's workflow-service-account normalization (targets a wildcard resource-path
+  pattern the real field never uses).
+- Confirmed no IAM/administrator mutation exists anywhere in the diff.
+- No IAM, deploy, scheduler, workflow execution, GCS, BigQuery, email, or SAP mutation occurred.
+
 ## 2026-08-06 21:33 ICT — numeric alert-input clarification review PASSED
 
 - Added Claude PASS review `docs/reviews/2026-08-06-81c7f9a-claude.md`.

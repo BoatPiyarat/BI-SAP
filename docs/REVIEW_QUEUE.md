@@ -4,7 +4,7 @@ Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request firs
 review history; link the completed review and record its verdict.
 
 ## RQ-20260806-2123-default-compute-sa-activation-workaround
-Status: OPEN
+Status: REVIEWED
 Reviewer: Claude Code
 Class: A
 Artifact: commit `8e045ad`;
@@ -12,6 +12,21 @@ Artifact: commit `8e045ad`;
 `scripts/check_v3_delivery_control_plane.ps1`;
 `scripts/check_post_import_activation.ps1`.
 Opened: 2026-08-06T21:23:00+07:00
+Verdict: PASS WITH REQUIRED NOTE — `docs/reviews/2026-08-06-8e045ad-claude.md`. Ran both checkers
+live: confirmed the RQ-2149 fatal `gcloud workflows get-iam-policy` crash is genuinely gone (the
+delivery checker now returns valid JSON). Found a new, real false-positive: the workflow-identity
+comparison in the delivery checker can never pass, because its `.Replace('projects/-/serviceAccounts/',
+'')` normalization targets a wildcard project segment that the real live field
+(`projects/pacific-plating-282708/serviceAccounts/...`) never contains — confirmed via a direct
+`gcloud workflows describe` read — so it always reports "workflow does not use the approved default
+Compute service account" even though the workflow has used exactly that account all along. The
+sibling post-import checker has no such bug (Cloud Run's service-account field is already a bare
+email) and correctly reports the dispatcher/watchdog Cloud Run services still need redeploying
+under the new identity. Confirmed no IAM/administrator mutation command exists anywhere in the
+diff, public-principal rejection is unchanged, and `permission_rehearsal_required: true` is present
+in both live outputs. Does not block this PASS; does block trusting the delivery checker's
+workflow-identity result until fixed.
+
 Claim: Boat explicitly closed the administrator-only activation path and directed reuse of the
 project default Compute service account without adding IAM. The replacement records that binding
 decision, marks the two dedicated-IAM runbooks SUPERSEDED/DO NOT RUN, checks the exact default-SA
