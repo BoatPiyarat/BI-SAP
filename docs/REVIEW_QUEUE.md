@@ -3,6 +3,29 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+## RQ-20260806-2123-default-compute-sa-activation-workaround
+Status: OPEN
+Reviewer: Claude Code
+Class: A
+Artifact: commit `8e045ad`;
+`docs/design/DEFAULT_COMPUTE_SA_AUTOMATION_WORKAROUND.md`;
+`scripts/check_v3_delivery_control_plane.ps1`;
+`scripts/check_post_import_activation.ps1`.
+Opened: 2026-08-06T21:23:00+07:00
+Claim: Boat explicitly closed the administrator-only activation path and directed reuse of the
+project default Compute service account without adding IAM. The replacement records that binding
+decision, marks the two dedicated-IAM runbooks SUPERSEDED/DO NOT RUN, checks the exact default-SA
+identity and non-public Cloud Run boundary, and requires a fail-closed permission rehearsal before
+activation. The delivery checker also removes the confirmed-fatal nonexistent
+`gcloud workflows get-iam-policy` call.
+Evidence: both PowerShell files parse with zero errors; `git diff --check` passed; repository search
+found no stale dedicated runtime identity or nonexistent Workflows IAM call in either checker. No
+IAM, deploy, scheduler, workflow execution, GCS, BigQuery, email, or SAP mutation occurred.
+Review that no administrator/IAM mutation is implied by the replacement; all runtime/caller
+identities match Boat's decision; public principals remain hard failures; removal of the old
+dedicated-IAM readiness checks does not overclaim effective permission; the rehearsal requirement
+fails closed; and the checker bug is actually removed. Source-only review—do not deploy.
+
 ## RQ-20260805-2207-numeric-alert-config-inputs
 Status: OPEN
 Reviewer: Claude Code
@@ -22,7 +45,7 @@ new-check onboarding, that general approval is not overruled but correctly disti
 missing values, and that this belongs on the unattended completion checklist.
 
 ## RQ-20260805-2205-daily-completeness-runtime-gap
-Status: OPEN
+Status: REVIEWED
 Reviewer: Claude Code
 Class: A
 Artifact: commit `b1e3508`, terminal-result ordering correction `a6bc76e`, offline dispatcher
@@ -50,8 +73,15 @@ from post-import runtime; shared-vs-separate Apps Script packaging caveat; human
 completeness; rehearsal cases; and whether an existing live path already satisfies any claimed
 gap.
 
+Verdict: PASS — `docs/reviews/2026-08-06-a6bc76e-claude.md`. Claude independently confirmed DDL
+067 has no caller and is not live, traced the irreversible early-snapshot hazard to the procedure's
+immutable replay guard, and proved a post-import child run ID cannot substitute for the original
+outbound pipeline ID. The corrected terminal ordering, HUMAN_ACTION failure treatment, separation
+from post-import activation, and rehearsal matrix passed. Claude reran the real Apps Script source
+in the Node VM: 11 assertions passed. No production mutation occurred.
+
 ## RQ-20260805-2202-monthly-cutoff-automation-gap
-Status: OPEN
+Status: REVIEWED
 Reviewer: Claude Code
 Class: A
 Artifact: commit `9c61d17`;
@@ -71,6 +101,13 @@ table/procedure/calendar/workflow/scheduler/job/GCS/Gmail/SAP state changed. Rev
 completeness, distinction between current-month daily operation and cross-month automation,
 cutoff ownership, no-inference/fail-closed conclusion, minimal design/ordering, checklist wording,
 and whether any already-reviewed component actually closes this gap.
+
+Verdict: PASS — `docs/reviews/2026-08-06-9c61d17-claude.md`. Claude independently expanded the
+source search to the entire repository, confirmed `sp_close_open_period` has no caller, verified
+the exact four-argument signature and recorded July/August cutoff values, and confirmed the
+finding correctly scopes the gap to cross-month transition rather than ordinary within-month
+daily operation. The no-inference/fail-closed conclusion and minimal append-only registry +
+delegating transition design passed. No production or source mutation occurred in the review.
 
 ## RQ-20260805-2149-v3-delivery-control-plane-gate
 Status: REVIEWED

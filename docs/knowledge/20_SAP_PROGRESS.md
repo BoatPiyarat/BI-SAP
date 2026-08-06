@@ -1,5 +1,24 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-06 21:32 ICT — daily completeness runtime-gap review PASSED
+
+Claude confirmed DDL 067's immutable snapshot procedure has no caller and is not live. For nonzero
+delivery, snapshotting before terminal SAP reconciliation would permanently freeze
+`PENDING_ACK`; the procedure refuses replay. The post-import child pipeline ID also cannot replace
+the original outbound ID because it has no Units 2–5 evidence. The corrected ordering and
+rehearsal design passed, and Claude reran 11/11 Apps Script contract assertions.
+Review: `docs/reviews/2026-08-06-a6bc76e-claude.md`. This confirms the gap/design; deployment and
+the explicit original-run binding still need implementation and separate review.
+
+## 2026-08-06 21:31 ICT — monthly cutoff automation gap review PASSED
+
+Claude independently searched the whole repository and confirmed `sp_close_open_period` has no
+caller, so unattended daily operation cannot cross a monthly cutoff even though within-month
+nightly operation can continue. The exact procedure signature, July/August cutoffs, Finance
+ownership, no-inference rule, and minimal append-only calendar/transition design all passed.
+Review: `docs/reviews/2026-08-06-9c61d17-claude.md`. This approves the finding/design direction,
+not a deployment; the calendar/procedure/workflow source still has to be built and reviewed.
+
 ## 2026-08-06 21:23 ICT — default-SA workaround recorded; administrator path retired
 
 Boat confirmed `data@rabbit.co.th` and `piyaratt@rabbit.co.th` are not administrators and directed

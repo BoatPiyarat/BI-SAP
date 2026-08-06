@@ -1,5 +1,22 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-06 21:32 ICT — daily completeness runtime-gap review PASSED
+
+- Added Claude PASS review `docs/reviews/2026-08-06-a6bc76e-claude.md`.
+- Confirmed DDL 067 has no caller and an early immutable snapshot permanently records
+  `PENDING_ACK`.
+- Confirmed the original outbound pipeline-run binding remains an implementation requirement.
+- Claude reran the Apps Script Node VM suite: 11 assertions passed.
+- No DDL/CALL/Apps Script/email/BigQuery/workflow/scheduler/GCS/SAP mutation occurred.
+
+## 2026-08-06 21:31 ICT — monthly cutoff automation gap review PASSED
+
+- Added Claude PASS review `docs/reviews/2026-08-06-9c61d17-claude.md`.
+- Whole-repository search confirmed no caller exists for `sp_close_open_period`.
+- Finding remains accurately scoped: daily operation works within an OPEN month, but automatic
+  cross-month transition is not built.
+- No table/procedure/calendar/workflow/scheduler/BigQuery/GCS/Gmail/SAP mutation occurred.
+
 ## 2026-08-06 21:23 ICT — replace unavailable administrator path with default SA
 
 - Recorded Boat's binding instruction to use
