@@ -1,5 +1,19 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-06 00:05 ICT — V3 delivery control-plane runbook: PASS WITH REQUIRED NOTE
+
+`RQ-20260805-2149-v3-delivery-control-plane-gate` reviewed —
+`docs/reviews/2026-08-06-90e6fd5-claude.md`. Ran `check_v3_delivery_control_plane.ps1` myself:
+it crashes on every invocation because `gcloud workflows get-iam-policy` (added in delta `90e6fd5`)
+does not exist as a subcommand — confirmed via `gcloud workflows --help`. Every other gcloud call
+in the script is individually valid; the runbook's actual administrator commands never grant a
+workflow-resource-level IAM binding (only project-level, already covered by the script's separate,
+working project-policy check), so this is very likely fixable by deleting the broken fetch, but
+that requires its own delta and re-review. The runbook itself (bucket-binding minimality for the
+promoter's actual GCS calls, custom-role scoping, scheduler create-pause-update race safety, nested
+execution-argument encoding) checked out against patterns already independently verified elsewhere
+this session. Does not block the PASS; does block relying on the checker until fixed.
+
 ## 2026-08-05 22:20 ICT — two-name delivery result contract: Class-A review PASSED
 
 `RQ-20260805-2136-two-name-delivery-result-contract` reviewed and passed —

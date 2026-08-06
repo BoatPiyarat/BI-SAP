@@ -73,7 +73,7 @@ cutoff ownership, no-inference/fail-closed conclusion, minimal design/ordering, 
 and whether any already-reviewed component actually closes this gap.
 
 ## RQ-20260805-2149-v3-delivery-control-plane-gate
-Status: OPEN
+Status: REVIEWED
 Reviewer: Claude Code
 Class: A
 Artifact: commit `344e74d`, production metadata-read correction `2cfcffc`, trigger-IAM checker
@@ -81,6 +81,17 @@ delta `90e6fd5`;
 `docs/design/V3_DELIVERY_CONTROL_PLANE.md`;
 `scripts/check_v3_delivery_control_plane.ps1`.
 Opened: 2026-08-05T21:49:30+07:00
+Verdict: PASS WITH REQUIRED NOTE — `docs/reviews/2026-08-06-90e6fd5-claude.md`. Ran the checker
+myself: it crashes on every invocation because `gcloud workflows get-iam-policy` (added in
+`90e6fd5`) does not exist — confirmed via `gcloud workflows --help`. Every other gcloud call in
+the script is individually valid. The runbook's own commands never grant a workflow-resource-level
+IAM binding (only project-level, already covered by the script's separate, working
+`$projectPolicy` check), so the fix is almost certainly to delete the `$workflowPolicy` fetch —
+but that needs its own delta and re-review. The runbook itself (bucket-binding minimality,
+custom-role scoping, create→pause→update race safety, nested execution-argument shape, rollback)
+checked out against patterns already verified elsewhere this session. Does not block this PASS;
+does block relying on the checker until fixed.
+
 Claim: The source-only administrator runbook safely prepares, but does not activate, the exact
 delivery control plane: a private promoter on a dedicated identity, conditional archive-read and
 production-create/read bucket IAM, exact workflow invoker, narrow scheduler execution creator,

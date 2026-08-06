@@ -1,5 +1,14 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-06 00:05 ICT — V3 delivery control-plane runbook review: PASS WITH REQUIRED NOTE
+
+- `RQ-20260805-2149-v3-delivery-control-plane-gate` reviewed —
+  `docs/reviews/2026-08-06-90e6fd5-claude.md`.
+- Ran the checker myself: confirmed fatal bug (`gcloud workflows get-iam-policy` does not exist);
+  every other gcloud call in the script individually re-verified as valid.
+- Runbook's own IAM/bucket/scheduler design checked out against already-verified sibling patterns.
+- No deploy, IAM, scheduler, GCS, workflow execution, or SAP action occurred in this review.
+
 ## 2026-08-05 22:20 ICT — two-name delivery result contract review PASSED
 
 - `RQ-20260805-2136-two-name-delivery-result-contract` reviewed PASS —
