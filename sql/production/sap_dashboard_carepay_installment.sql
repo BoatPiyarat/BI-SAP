@@ -10,6 +10,16 @@
 -- 26/12/2024 Update query 1.PaymentChannel , PaymentMethod 2.Order NONMOTOR RCL create on CareOS -> InsuranceGroup
 -- 07/02/2025 Update case InterestEIRThisPeriod **UCCESS yet by Petch data eng.
 -- 19/Jul/2025 Piyarat fixed ExpectedReceived of multiple payment per period
+-- 06/Aug/2026 Piyarat: (1) charges LEFT JOIN was silently turned into an INNER JOIN by a WHERE
+--   filter on the joined (nullable) service_provider column -- unpaid installment periods were
+--   dropped entirely (e.g. L77833033-V1 showed period 1 of 6 only). Moved the filter into the
+--   JOIN ON clause, and zeroed ActualReceived when charge_rank IS NULL instead of falling back
+--   to the expected payment amount. (2) PaymentChannel had no branch for non-motor (Health/CI)
+--   products, so QR_CODE installments auto-charged via the generic RABBIT_LENDING gateway were
+--   mislabeled 'RCL-Omise QR Prompt Pay-BAY' instead of '...-Health' (Root Cause 8, CI Order
+--   Health list). Added an InsuranceGroup != 'products/car-insurance' branch ahead of the
+--   generic BAY branch. (3) re-commented the follow_ups.transaction_id IS NOT NULL WHERE filter
+--   -- same LEFT-JOIN-turned-INNER pattern as (1) -- to match the query's actual live state.
 -------------------------------------------------------------------------------------------------------------------------
 WITH
 charges AS (
@@ -176,7 +186,8 @@ END AS InvoiceNo,
       WHEN transaction_snapshot_installment_details.period = 1 THEN ROUND(ROUND((1 / 100) * transaction_snapshot_installment_details.payment_amount,2) - ROUND((1 / 100) * transaction_snapshot_installment_details.add_ons,2),2)
       ELSE ROUND((1 / 100) * transaction_snapshot_installment_details.payment_amount,2)
     END AS ExpectedReceived,
- CASE WHEN charge_rank = 1 THEN ROUND(ROUND((1 / 100) * charges.amount,2)- ROUND((1 / 100) * transaction_snapshot_installment_details.add_ons,2),2)
+ CASE WHEN charge_rank IS NULL THEN 0  -- 2026-08-06: no charge yet for this period -> nothing actually received
+ WHEN charge_rank = 1 THEN ROUND(ROUND((1 / 100) * charges.amount,2)- ROUND((1 / 100) * transaction_snapshot_installment_details.add_ons,2),2)
  ELSE ROUND((1 / 100) * COALESCE(charges.amount,transaction_snapshot_installment_details.payment_amount),2) END AS ActualReceived,
     CASE WHEN charge_rank <> 1 THEN 0
       WHEN transaction_snapshot_price_summaries.interest_amount = 0 OR transaction_snapshots.number_of_installment - 1 = 0 THEN 0
@@ -243,9 +254,10 @@ END AS InvoiceNo,
   LEFT JOIN transaction_snapshot_installment_details
     ON transaction_snapshot_installment_details.snapshot_id = transaction_snapshots.id
   LEFT JOIN charges
-    ON charges.transaction_id = transactions.id 
-    AND charges.installment_number = transaction_snapshot_installment_details.period 
+    ON charges.transaction_id = transactions.id
+    AND charges.installment_number = transaction_snapshot_installment_details.period
     AND charges.status NOT IN ('FAILED','PENDING')
+    AND charges.service_provider = 'RABBIT_LENDING'  -- 2026-08-06: moved from WHERE -- was silently turning this LEFT JOIN into an INNER JOIN
   LEFT JOIN order_items
     ON order_items.order_id = orders.id
   LEFT JOIN refunds
@@ -259,8 +271,8 @@ END AS InvoiceNo,
  WHERE 
   (transaction_snapshot_installment_details.id IS NOT NULL OR transactions.installments > 1)
    AND (order_items.motor_item_type != 'MOTOR_TYPE_COMPULSORY' OR order_items.motor_item_type IS NULL)  -- P0/A2 fix 2026-07-24: NULL motor_item_type silently dropped NonMotor rows (10,559 real rows confirmed NULL)
-   AND (follow_ups.transaction_id IS NOT NULL)
-   --AND charges.service_provider = 'RABBIT_LENDING' 
+   --AND (follow_ups.transaction_id IS NOT NULL)  -- 2026-08-06: re-commented -- same LEFT-JOIN-turned-INNER issue as charges below, was dropping periods with no follow_up row yet
+   --AND charges.service_provider = 'RABBIT_LENDING'  -- 2026-08-06: moved up into the charges JOIN ON clause instead
 ),
 --------------------------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------
@@ -523,6 +535,7 @@ case
   END AS PaymentMethod,
   CASE WHEN PaymentMethod ='DIRECT_PAYMENT'and PaymentChannel ='SERVICE_PROVIDER_UNSPECIFIED' THEN 'RCL-DIRECT PAYMENT'
     WHEN InsuranceType = 'MOTOR_TYPE_COMPULSORY' THEN 'RCL-CMI-channel'
+    WHEN InsuranceGroup != 'products/car-insurance' AND PaymentMethod = 'QR_CODE' THEN 'RCL-Omise QR Prompt Pay-Health'  -- 2026-08-06 Root Cause 8: keep CI/Health channel stable regardless of which gateway processed this installment
     WHEN PaymentMethod = 'CASH' THEN 'RCL-Transfer-อื่นๆ'
     WHEN PaymentMethod = 'QR_CODE' AND PaymentChannel = 'RABBIT_LENDING' THEN 'RCL-Omise QR Prompt Pay-BAY'
     WHEN PaymentMethod = 'DIRECT_DEBIT' AND PaymentChannel = 'RABBIT_LENDING' THEN 'RCL-Direct Debit'
