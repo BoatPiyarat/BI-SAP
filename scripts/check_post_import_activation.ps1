@@ -13,13 +13,11 @@ $pushSubscriptionName = 'sap-post-import-refresh-push'
 $watchdogSchedulerName = 'sap-post-import-watchdog'
 $inputTopicName = "projects/$project/topics/sap-post-import-refresh"
 $deadLetterTopicName = "projects/$project/topics/sap-post-import-refresh-dlq"
-$dispatcherServiceAccount =
-  'sap-post-import-dispatch@pacific-plating-282708.iam.gserviceaccount.com'
-$watchdogServiceAccount =
-  'sap-post-import-watchdog@pacific-plating-282708.iam.gserviceaccount.com'
-$pushServiceAccountEmail =
-  'sap-post-import-push@pacific-plating-282708.iam.gserviceaccount.com'
-$pushServiceAccount = "serviceAccount:$pushServiceAccountEmail"
+$defaultServiceAccount =
+  '919786098205-compute@developer.gserviceaccount.com'
+$dispatcherServiceAccount = $defaultServiceAccount
+$watchdogServiceAccount = $defaultServiceAccount
+$pushServiceAccountEmail = $defaultServiceAccount
 
 function Invoke-GcloudJson {
   param(
@@ -80,16 +78,9 @@ $watchdogExecutionSpec = $watchdog.spec.template.spec
 $watchdogTaskSpec = $watchdogExecutionSpec.template.spec
 $watchdogEnv = Get-EnvMap $watchdogTaskSpec.containers[0].env
 $dispatcherMembers = @()
-$dispatcherInvokerMembers = @()
 if ($dispatcherPolicy.PSObject.Properties.Name -contains 'bindings') {
   $dispatcherMembers = @(
     $dispatcherPolicy.bindings |
-      ForEach-Object { $_.members } |
-      Where-Object { $_ }
-  )
-  $dispatcherInvokerMembers = @(
-    $dispatcherPolicy.bindings |
-      Where-Object { $_.role -eq 'roles/run.invoker' } |
       ForEach-Object { $_.members } |
       Where-Object { $_ }
   )
@@ -152,9 +143,6 @@ foreach ($topic in @(
 }
 
 $readinessBlockers = @()
-if ($dispatcherInvokerMembers -notcontains $pushServiceAccount) {
-  $readinessBlockers += 'push identity lacks dispatcher run.invoker'
-}
 if ($pushSubscription.Count -ne 1) {
   $readinessBlockers += 'authenticated push subscription is absent'
 }
@@ -210,6 +198,8 @@ else {
 [pscustomobject]@{
   checked_at = (Get-Date).ToUniversalTime().ToString('o')
   project = $project
+  activation_model = 'existing-default-compute-service-account-no-iam-mutation'
+  default_service_account = $defaultServiceAccount
   workflow_revision = $workflow.revisionId
   dispatcher_revision = $dispatcher.status.latestReadyRevisionName
   dispatcher_environment = $dispatcherEnv
@@ -218,5 +208,6 @@ else {
   safety_passed = ($safetyFailures.Count -eq 0)
   safety_failures = $safetyFailures
   rehearsal_ready = ($safetyFailures.Count -eq 0 -and $readinessBlockers.Count -eq 0)
+  permission_rehearsal_required = $true
   readiness_blockers = $readinessBlockers
 } | ConvertTo-Json -Depth 6

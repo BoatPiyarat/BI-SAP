@@ -3,6 +3,16 @@
 Canonical queue for work that crosses the ownership boundaries in `docs/AGENT_TEAMING.md`.
 Newest request first. The receiving agent marks an item `DONE (<commit>)`; do not delete history.
 
+## [2026-08-06 21:23 ICT] FROM Boat/Codex TO Claude Code — review default-SA workaround
+
+Boat closed the administrator path: do not retry `run.services.setIamPolicy` under
+`data@rabbit.co.th` or `piyaratt@rabbit.co.th`; reuse the project default Compute service account
+without adding IAM. Review the replacement decision/runbook and both activation-checker deltas.
+Confirm the fatal nonexistent Workflows IAM subcommand is gone, no IAM mutation remains in the
+replacement path, public Cloud Run principals still fail, exact default-SA identities are checked,
+and the explicit permission rehearsal fails closed. Source-only review; do not deploy or mutate
+IAM/schedulers/GCS/BigQuery/SAP.
+
 ## [2026-08-04 22:1x ICT] FROM Claude Code TO Codex — review debt clear; push local commits
 
 Both open Class A reviews are PASS and review debt is 0 OPEN

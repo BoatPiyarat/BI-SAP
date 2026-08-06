@@ -1,5 +1,15 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-06 21:23 ICT — replace unavailable administrator path with default SA
+
+- Recorded Boat's binding instruction to use
+  `919786098205-compute@developer.gserviceaccount.com` and never retry the unavailable
+  `run.services.setIamPolicy` option under the two named user accounts.
+- Marked the dedicated-IAM delivery and post-import runbooks SUPERSEDED/DO NOT RUN.
+- Updated both read-only activation checkers for the default-SA identity contract.
+- Removed the fatal nonexistent `gcloud workflows get-iam-policy` call found by Claude review.
+- PowerShell parser and whitespace validation passed; no production or IAM mutation occurred.
+
 ## 2026-08-06 00:05 ICT — V3 delivery control-plane runbook review: PASS WITH REQUIRED NOTE
 
 - `RQ-20260805-2149-v3-delivery-control-plane-gate` reviewed —

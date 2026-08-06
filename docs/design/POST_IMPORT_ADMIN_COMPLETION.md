@@ -1,8 +1,12 @@
 # Post-import administrator completion
 
-Status: source-only administrator handoff. These commands mutate IAM and runtime configuration.
-Do not run until this artifact passes Class-A review. Do not set the Apps Script
-`POST_IMPORT_REFRESH_TOPIC` in this runbook.
+> **SUPERSEDED 2026-08-06 — DO NOT RUN.** Boat confirmed the available user accounts do not have
+> `run.services.setIamPolicy` and directed the project to use its default Compute service account
+> without retrying the administrator path. This file is retained as history only. The binding
+> replacement is `docs/design/DEFAULT_COMPUTE_SA_AUTOMATION_WORKAROUND.md`.
+
+Status: superseded administrator handoff. These commands mutate IAM and runtime configuration.
+Do not execute them. Do not set the Apps Script `POST_IMPORT_REFRESH_TOPIC` from this runbook.
 
 ## Fixed resources
 

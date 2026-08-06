@@ -1,5 +1,18 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-06 21:23 ICT — default-SA workaround recorded; administrator path retired
+
+Boat confirmed `data@rabbit.co.th` and `piyaratt@rabbit.co.th` are not administrators and directed
+the unattended interface to reuse the project default Compute service account without retrying
+`run.services.setIamPolicy`. Added the binding workaround, marked both dedicated-IAM runbooks
+SUPERSEDED/DO NOT RUN, and changed both activation checkers to validate the exact default-SA
+identity instead of impossible dedicated identities/bindings. The delivery checker no longer
+calls the nonexistent `gcloud workflows get-iam-policy` command found by Claude review. Both
+PowerShell files parse with zero errors and the changed tree passes `git diff --check`.
+No IAM, deploy, scheduler, workflow execution, GCS, BigQuery, email, or SAP mutation occurred.
+The default SA's effective permissions still require a controlled fail-closed rehearsal; missing
+permission must not be “fixed” by making Cloud Run public.
+
 ## 2026-08-06 00:05 ICT — V3 delivery control-plane runbook: PASS WITH REQUIRED NOTE
 
 `RQ-20260805-2149-v3-delivery-control-plane-gate` reviewed —

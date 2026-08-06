@@ -10,18 +10,10 @@ $region = 'asia-southeast1'
 $workflowName = 'v3-nightly-orchestrator'
 $promoterName = 'sap-delivery-promoter'
 $schedulerName = 'v3-nightly-orchestrator'
-$promoterServiceAccountEmail =
-  'sap-delivery-promoter@pacific-plating-282708.iam.gserviceaccount.com'
-$triggerServiceAccountEmail =
-  'v3-nightly-trigger@pacific-plating-282708.iam.gserviceaccount.com'
-$promoterMember = "serviceAccount:$promoterServiceAccountEmail"
-$triggerMember = "serviceAccount:$triggerServiceAccountEmail"
-$workflowPrefix =
-  "projects/$projectNumber/locations/$region/workflows/$workflowName"
-$archivePrefix =
-  'projects/_/buckets/rcb-bronze-zone/objects/sap-interface-archive/'
-$productionPrefix =
-  'projects/_/buckets/interface-file/objects/RCB_MOTOR/'
+$defaultServiceAccountEmail =
+  '919786098205-compute@developer.gserviceaccount.com'
+$promoterServiceAccountEmail = $defaultServiceAccountEmail
+$triggerServiceAccountEmail = $defaultServiceAccountEmail
 $executionUri =
   "https://workflowexecutions.googleapis.com/v1/projects/$project/locations/$region/" +
   "workflows/$workflowName/executions"
@@ -48,30 +40,6 @@ function Get-EnvMap {
     $result[$variable.name] = $variable.value
   }
   return $result
-}
-
-function Test-ConditionalBinding {
-  param(
-    [Parameter(Mandatory)] $Policy,
-    [Parameter(Mandatory)] [string]$Role,
-    [Parameter(Mandatory)] [string]$Member,
-    [Parameter(Mandatory)] [string]$RequiredPrefix
-  )
-
-  foreach ($binding in @($Policy.bindings)) {
-    if ($binding.role -ne $Role -or @($binding.members) -notcontains $Member) {
-      continue
-    }
-    if (-not ($binding.PSObject.Properties.Name -contains 'condition')) {
-      continue
-    }
-    $expression = [string]$binding.condition.expression
-    if ($expression.Contains("resource.name.startsWith('$RequiredPrefix')") -or
-        $expression.Contains("resource.name.startsWith(`"$RequiredPrefix`")")) {
-      return $true
-    }
-  }
-  return $false
 }
 
 function ConvertFrom-Base64Json {
@@ -102,33 +70,10 @@ $schedulers = @(
     'scheduler', 'jobs', 'list', "--project=$project", "--location=$region"
   )
 )
-$archivePolicy = Invoke-GcloudJson @(
-  'storage', 'buckets', 'get-iam-policy', 'gs://rcb-bronze-zone',
-  "--project=$project"
-)
-$productionPolicy = Invoke-GcloudJson @(
-  'storage', 'buckets', 'get-iam-policy', 'gs://interface-file',
-  "--project=$project"
-)
-$triggerRoles = @(
-  Invoke-GcloudJson @(
-  'iam', 'roles', 'list',
-  "--project=$project"
-  )
-)
-$projectPolicy = Invoke-GcloudJson @(
-  'projects', 'get-iam-policy', $project
-)
-$workflowPolicy = Invoke-GcloudJson @(
-  'workflows', 'get-iam-policy', $workflowName,
-  "--project=$project", "--location=$region"
-)
-
 $workflowSource = [string]$workflow.sourceContents
 $workflowServiceAccountEmail = ([string]$workflow.serviceAccount).Replace(
   'projects/-/serviceAccounts/', ''
 )
-$workflowMember = "serviceAccount:$workflowServiceAccountEmail"
 $promoterSummary = @(
   $services |
     Where-Object { $_.metadata.name -eq $promoterName }
@@ -139,13 +84,6 @@ $schedulerSummary = @(
       $_.name -eq "projects/$project/locations/$region/jobs/$schedulerName"
     }
 )
-$triggerRoleSummary = @(
-  $triggerRoles |
-    Where-Object {
-      $_.name -eq "projects/$project/roles/nightlyWorkflowCreator"
-    }
-)
-
 $safetyFailures = @()
 if ($workflow.state -ne 'ACTIVE') {
   $safetyFailures += "workflow state is $($workflow.state), not ACTIVE"
@@ -153,6 +91,9 @@ if ($workflow.state -ne 'ACTIVE') {
 if ($workflowSource -notmatch '(?m)^\s*-\s+delivery_enabled:\s*false\s*$' -or
     $workflowSource -match '(?m)^\s*-\s+delivery_enabled:\s*true\s*$') {
   $safetyFailures += 'workflow must remain delivery-disabled before cutover'
+}
+if ($workflowServiceAccountEmail -ne $defaultServiceAccountEmail) {
+  $safetyFailures += 'workflow does not use the approved default Compute service account'
 }
 foreach ($marker in @(
   'production_file_name',
@@ -195,13 +136,6 @@ else {
       ForEach-Object { $_.members } |
       Where-Object { $_ }
   )
-  $promoterInvokers = @(
-    $promoterPolicy.bindings |
-      Where-Object { $_.role -eq 'roles/run.invoker' } |
-      ForEach-Object { $_.members } |
-      Where-Object { $_ }
-  )
-
   if ($promoter.metadata.annotations.'run.googleapis.com/ingress' -ne 'internal') {
     $readinessBlockers += 'promoter ingress is not internal'
   }
@@ -217,62 +151,11 @@ else {
       $promoterMembers -contains 'allAuthenticatedUsers') {
     $readinessBlockers += 'promoter permits a public invocation principal'
   }
-  if ($promoterInvokers -notcontains $workflowMember) {
-    $readinessBlockers += 'workflow identity lacks promoter run.invoker'
-  }
   if ($promoterEnv.ARCHIVE_BUCKET -ne 'rcb-bronze-zone' -or
       $promoterEnv.PRODUCTION_BUCKET -ne 'interface-file' -or
       $promoterEnv.PRODUCTION_PREFIX -ne 'RCB_MOTOR') {
     $readinessBlockers += 'promoter bucket/prefix environment differs from the closed contract'
   }
-}
-
-if (-not (Test-ConditionalBinding `
-    -Policy $archivePolicy `
-    -Role 'roles/storage.objectViewer' `
-    -Member $promoterMember `
-    -RequiredPrefix $archivePrefix)) {
-  $readinessBlockers += 'promoter lacks prefix-scoped archive objectViewer'
-}
-if (-not (Test-ConditionalBinding `
-    -Policy $productionPolicy `
-    -Role 'roles/storage.objectCreator' `
-    -Member $promoterMember `
-    -RequiredPrefix $productionPrefix)) {
-  $readinessBlockers += 'promoter lacks prefix-scoped production objectCreator'
-}
-if (-not (Test-ConditionalBinding `
-    -Policy $productionPolicy `
-    -Role 'roles/storage.objectViewer' `
-    -Member $promoterMember `
-    -RequiredPrefix $productionPrefix)) {
-  $readinessBlockers += 'promoter lacks prefix-scoped production objectViewer'
-}
-if ($triggerRoleSummary.Count -ne 1) {
-  $readinessBlockers += 'nightlyWorkflowCreator custom role is absent'
-}
-elseif (@($triggerRoleSummary[0].includedPermissions).Count -ne 1 -or
-    @($triggerRoleSummary[0].includedPermissions) -notcontains 'workflows.executions.create' -or
-    $triggerRoleSummary[0].stage -ne 'GA') {
-  $readinessBlockers +=
-    'nightlyWorkflowCreator must be GA with only workflows.executions.create'
-}
-if (-not (Test-ConditionalBinding `
-    -Policy $projectPolicy `
-    -Role "projects/$project/roles/nightlyWorkflowCreator" `
-    -Member $triggerMember `
-    -RequiredPrefix $workflowPrefix)) {
-  $readinessBlockers += 'trigger lacks execution-create binding on only the V3 workflow'
-}
-$broadTriggerBindings = @(
-  @($projectPolicy.bindings) + @($workflowPolicy.bindings) |
-    Where-Object {
-      $_.role -eq 'roles/workflows.invoker' -and
-      @($_.members) -contains $triggerMember
-    }
-)
-if ($broadTriggerBindings.Count -ne 0) {
-  $readinessBlockers += 'trigger has the broader predefined Workflows Invoker role'
 }
 
 if ($schedulerSummary.Count -ne 1) {
@@ -316,6 +199,8 @@ else {
   checked_at = [DateTimeOffset]::UtcNow.ToString('o')
   project = $project
   project_number = $projectNumber
+  activation_model = 'existing-default-compute-service-account-no-iam-mutation'
+  default_service_account = $defaultServiceAccountEmail
   workflow_revision = $workflow.revisionId
   workflow_service_account = $workflowServiceAccountEmail
   delivery_enabled = $false
@@ -334,5 +219,6 @@ else {
   control_plane_ready = (
     $safetyFailures.Count -eq 0 -and $readinessBlockers.Count -eq 0
   )
+  permission_rehearsal_required = $true
   readiness_blockers = $readinessBlockers
 } | ConvertTo-Json -Depth 6

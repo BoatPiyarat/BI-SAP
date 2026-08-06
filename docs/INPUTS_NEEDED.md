@@ -1,12 +1,27 @@
 # INPUTS NEEDED — things only Boat / Aware / Attila / Finance can answer
 
+## CLOSED 2026-08-06 — unavailable Cloud Run IAM administrators
+
+Boat confirmed that `data@rabbit.co.th` and `piyaratt@rabbit.co.th` are not administrators and do
+not have `run.services.setIamPolicy`. Do not retry that option under either account.
+
+Binding workaround: reuse
+`919786098205-compute@developer.gserviceaccount.com`, the project's default Compute service
+account, for the unattended V3 runtime/caller identities and rely only on its pre-existing
+permissions. No new IAM grant is authorized. A denied permission must fail closed and be recorded;
+it must not be worked around with a public Cloud Run principal. See
+`docs/design/DEFAULT_COMPUTE_SA_AUTOMATION_WORKAROUND.md`.
+
 Created 2026-07-27 per `TASK_V3_GAP_CLOSURE_v2.md` (A0, A5, Housekeeping — "keep this current").
 Nothing here blocks build work that doesn't depend on the specific answer; each item notes what
 IS being done in the meantime.
 
-## Boat + GCP IAM administrator — post-import runtime activation
+## SUPERSEDED — dedicated-IAM post-import runtime activation
 
-**Boat decision required:** explicitly approve or reject table-level
+The 2026-08-06 default-SA decision above closes this administrator path. The historical inputs
+below are retained for provenance and must not be pursued under the available user accounts.
+
+**Historical Boat decision required:** explicitly approve or reject table-level
 `roles/bigquery.dataEditor` for both dedicated runtime identities on only
 `sap_integration_v3.v3_post_import_refresh_outbox`:
 

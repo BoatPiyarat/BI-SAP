@@ -1,8 +1,11 @@
 # V3 outbound delivery control plane
 
-Status: source-only administrator handoff. This prepares an inert private promoter and a PAUSED
-recurring trigger. It does not enable delivery, execute the workflow, write GCS, change SAP, or
-replace the Gmail/post-import activation sequence.
+> **SUPERSEDED 2026-08-06 — DO NOT RUN.** Boat confirmed the available user accounts do not have
+> `run.services.setIamPolicy` and directed the project to use its default Compute service account
+> without retrying the administrator path. This file is retained as history only. The binding
+> replacement is `docs/design/DEFAULT_COMPUTE_SA_AUTOMATION_WORKAROUND.md`.
+
+Status: superseded administrator handoff. The commands below are not authorized for execution.
 
 Run only after the two-name delivery/result contract passes Class-A review. The deployment review
 must cover the exact source commit and the commands below before an administrator runs them.
