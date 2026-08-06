@@ -27,11 +27,17 @@ dedicated-IAM readiness checks does not overclaim effective permission; the rehe
 fails closed; and the checker bug is actually removed. Source-only review—do not deploy.
 
 ## RQ-20260805-2207-numeric-alert-config-inputs
-Status: OPEN
+Status: REVIEWED
 Reviewer: Claude Code
 Class: A
 Artifact: commit `81c7f9a`; canonical input/checklist clarification.
 Opened: 2026-08-05T22:07:03+07:00
+Verdict: PASS — `docs/reviews/2026-08-06-81c7f9a-claude.md` (confirmed DDL 066/068 seed no
+threshold rows, confirmed no production numeric artifact exists anywhere in the repo, and
+confirmed the "obsolete global >60" reference is a real legacy value still present in
+`029_validation_regression_alert.sql`, not a strawman. Required input shape matches both table
+schemas and existing onboarding language. No mutation.)
+
 Claim: Boat's general approval of alert thresholds/config does not provide executable numeric rows.
 Reviewed DDL 066/068 deliberately seed none, and repository search found no production
 `max_record_increase`/`max_order_increase` values. The canonical input list now names the exact

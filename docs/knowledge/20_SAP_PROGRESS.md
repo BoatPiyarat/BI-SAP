@@ -1,5 +1,14 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-06 21:33 ICT — numeric alert-input clarification review PASSED
+
+Claude confirmed DDL 066/068 intentionally contain no numeric configuration rows and found no
+production threshold artifact anywhere in the repository. The legacy global `>60` is real but
+obsolete and cannot be reused as per-status/per-check policy. The requested effective dates and
+two numeric increases per key match the live source schemas and onboarding rule.
+Review: `docs/reviews/2026-08-06-81c7f9a-claude.md`. Numeric values remain a genuine human input;
+no threshold/config/alert/BigQuery/SAP state changed.
+
 ## 2026-08-06 21:32 ICT — daily completeness runtime-gap review PASSED
 
 Claude confirmed DDL 067's immutable snapshot procedure has no caller and is not live. For nonzero
