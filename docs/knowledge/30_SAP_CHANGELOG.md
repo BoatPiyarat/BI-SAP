@@ -1,5 +1,48 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-07 07:10 ICT — drafted action plan for RCL Motor export reliability + VMI recovery
+
+- New: `docs/tasks/TASK_FIX_RCL_MOTOR_EXPORT_RELIABILITY_20260807.md` — A/B/C/D plan (unblock
+  notification crash, rotate SMTP credential, fix the 540s ceiling for real, verify SAP-side then
+  recover the backlog), matching the existing `TASK_V2_HOTFIX.md` shadow→dry-run→pilot-batch
+  pattern for the recovery step.
+- Pulled the deployed Cloud Function source read-only (`gcloud functions describe` → Cloud Build
+  → GCS source zip) rather than relying on logs alone: confirmed `main.py` writes all 8 CSVs
+  directly to the real `gs://interface-file/RCB_MOTOR/...` path before the unguarded
+  `send_email(...)` call that has crashed the function twice this week. Also confirms this repo
+  is missing `06_RCL_Motor_process_2_newpayment.sql` (the Motor newpayment query) and the
+  function's `main.py`/`mailer.py` entirely — flagged as a baseline-capture gap.
+- **Important nuance added**: in both incidents checked, the steps relevant to VMI (05/06) logged
+  a successful GCS write *before* the crash/timeout. These are confirmed real bugs, but not yet
+  proven to be the specific cause of the 3 orders' missing data — `sap_import_result_header_v3`
+  returned 0 rows for these filenames and doesn't close the gap. Task doc's step D requires
+  checking the actual SAP-side import log before assuming attribution.
+- Addendum added to `docs/FINDINGS_VMI_MISSING_EXPORT_PIPELINE_20260807.md` with this detail.
+- No Cloud Function/GCS/BigQuery mutation occurred; source pull was read-only.
+
+## 2026-08-07 06:44 ICT — corrected Item 5 root cause: missing VMI is an export-function reliability bug, not a RCL_MOTOR.sql defect
+
+- Investigated missing VMI for `L78794968`, `L78583606`, `L78786429` per Piyarat's request.
+  New doc: `docs/FINDINGS_VMI_MISSING_EXPORT_PIPELINE_20260807.md`. Correction note added atop
+  Item 5 in `docs/FINDINGS_MOTOR_MISROUTING_AND_MISSING_INTERFACE_20260805.md`.
+- Confirmed live (`bq show --view`, byte-identical to repo) that `RCL_MOTOR.sql`'s
+  `rcb_voluntary_installment_details`/`rcl_voluntary_installment_details` split is complementary
+  and does reclaim paid periods; the live `RCL_MOTOR`, `sap_dashboard_carepay_installment`, and
+  `RCL_Motor_process_1_create` all currently return complete, correct rows for all 3 orders.
+  Item 5's original diagnosis (a WHERE-clause exclusion silently dropping paid periods with no
+  reclaim branch) is refuted for current live behavior.
+- Real cause found instead: Cloud Function `rcb-motor-order-payment-sap-bucket-1` (the actual
+  Motor interface file producer, per `SAP_SCHEDULER_INVENTORY.md` row 7) crashed on an uncaught
+  `smtplib.SMTPAuthenticationError` on 2026-07-31 and hit its 540s timeout on 2026-08-06, both
+  after all 8 CSV exports had already been written — a known, still-open defect from 2026-07-26,
+  not newly introduced.
+- Verified none of the 3 order items appear in `sap_excluded_records`/`sap_validation_error`/
+  `sap_import_error_detail_v3` — a genuine silent drop, not a logged exclusion.
+- Logged as OPEN in `docs/INPUTS_NEEDED.md` (needs Boat/IT with Cloud Function source access —
+  this repo does not hold that function's Python source).
+- No RCL_MOTOR.sql/production SQL change made — editing it per the old Item 5 proposal would be a
+  no-op to code that isn't broken. No DDL/CALL/deploy/GCS/email/scheduler mutation occurred.
+
 ## 2026-08-06 21:45 ICT — default-SA activation workaround review: PASS WITH REQUIRED NOTE
 
 - `RQ-20260806-2123-default-compute-sa-activation-workaround` reviewed —

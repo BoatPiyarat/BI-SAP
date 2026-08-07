@@ -1,5 +1,27 @@
 # INPUTS NEEDED — things only Boat / Aware / Attila / Finance can answer
 
+## OPEN 2026-08-07 — `rcb-motor-order-payment-sap-bucket-1` unreliable, real customer payments not reaching SAP
+
+Root cause of missing VMI for `L78794968`, `L78583606`, `L78786429` traced to this Cloud Function
+(the real RCL/RCB Motor interface file producer), not to any BigQuery view — see
+`docs/FINDINGS_VMI_MISSING_EXPORT_PIPELINE_20260807.md`. Two confirmed failure modes in the last
+week alone: an uncaught `smtplib.SMTPAuthenticationError` crash on 2026-07-31 (bad Gmail
+app-password in its post-run notification step) and a hard 540s timeout on 2026-08-06, both after
+all 8 CSV exports had already been written. This was already flagged as an open, unresolved defect
+in `docs/SAP_SCHEDULER_INVENTORY.md` row 7 on 2026-07-26 — it is still not fixed 12 days later.
+This repo does not hold this function's Python source (only its `sql/sap_view/*.sql` query
+files), so a source fix cannot be prepared here without first pulling that source.
+
+**Needs Boat/IT with `cloudfunctions.functions.update`/source access**: (1) fix or rotate the
+Gmail credential and make the notification step non-fatal to the export, (2) resolve the
+recurring timeout for real (parallelize the 8 sequential queries / split the batch / more
+CPU-memory), not another ceiling bump. Until fixed, expect continued sporadic silent drops of
+paid installment periods from the daily Motor interface, recoverable only via manual/month-end
+backfill. Full action plan: `docs/tasks/TASK_FIX_RCL_MOTOR_EXPORT_RELIABILITY_20260807.md`.
+Note: pulling the actual function source confirmed the CSV writes complete before both observed
+failures, so this is not yet proven to be the sole cause for these 3 orders — the plan's step D
+covers checking the SAP-side import log to close that gap.
+
 ## CLOSED 2026-08-06 — unavailable Cloud Run IAM administrators
 
 Boat confirmed that `data@rabbit.co.th` and `piyaratt@rabbit.co.th` are not administrators and do
