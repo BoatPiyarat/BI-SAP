@@ -3,6 +3,42 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+## RQ-20260810-1918-period-cutoff-calendar-source
+Status: OPEN — request Class A review AND a live dry-run before this is treated as
+deploy-ready (see the DRY-RUN NOT OBTAINED note below).
+Reviewer: Codex (per `docs/AGENT_REVIEW_PROTOCOL.md` reciprocity)
+Class: A
+Artifact: `sql/ddl/075_v3_period_cutoff_calendar.sql` (new file, source only).
+Opened: 2026-08-10T19:18:00+07:00
+
+Claim: implements the exact "smallest safe implementation" from
+`docs/FINDINGS_MONTHLY_CUTOFF_AUTOMATION_GAP_20260805.md` (already PASSed,
+`docs/reviews/2026-08-06-9c61d17-claude.md` / `RQ-20260805-2202`): a new append-only
+`sap_period_cutoff_calendar` table, `sp_register_period_cutoff` (insert-only, rejects
+non-month-aligned periods, blank approver/source, a cutoff not later than period_start, and any
+duplicate period_start — no UPDATE/correction path is built, per the finding's own gate that the
+correction policy isn't yet confirmed with Finance), and `sp_transition_due_period_from_calendar`
+(requires exactly one OPEN period with calendar/state `closing_at` equality, no-ops before the
+cutoff, and only at/after cutoff resolves the next period's calendar row and delegates to the
+already-reviewed `sp_close_open_period` from `053_v3_unit4_period_state_machine.sql`). Nothing in
+this file seeds the calendar, registers a cutoff, calls the transition procedure, or wires it into
+the nightly workflow — those are separate, later, Codex-executed mutations per SINGLE DEPLOYER.
+
+**DRY-RUN NOT OBTAINED — real gap, not a formality skipped:** the mandatory
+`scripts/bq_safe_query.sh --dry-run-only` failed with `ReauthUnattendedError` — the `bq` CLI's
+legacy credential store requires an interactive reauthentication step this non-interactive session
+cannot complete. `bash scripts/bq_safe_query.sh --self-test` passed (7/7, confirming the wrapper
+script itself is healthy); the failure is purely environmental credential state, not a wrapper or
+SQL defect signal. A crude local structural check (`BEGIN`/`END;` counts, 2/2, matching the two
+procedure bodies) is not a substitute and is only mentioned for transparency. **Do not treat this
+as deploy-ready or even review-complete until a real dry-run runs clean** — either Codex has a
+working authenticated session, or this needs a fresh `bq`/`gcloud` interactive reauth first.
+Review: table/procedure grain and column contract against the finding's exact spec, the
+insert-only/no-correction-path decision, the before/at/after-cutoff branching and fail-closed
+missing/mismatched-calendar assertions, delegation argument correctness to `sp_close_open_period`,
+and — separately — actually run the dry-run and report the result before any deployment
+conversation starts.
+
 ## RQ-20260810-1459-post-import-permission-narrowing
 Status: OPEN — request Class A review of the `testIamPermissions` evidence, whether the
 permission-to-blocker mapping is correct, and the flagged tension with

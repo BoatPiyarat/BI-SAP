@@ -1,5 +1,26 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-10 19:18 ICT — monthly cutoff automation source drafted (dry-run blocked)
+
+- New: `sql/ddl/075_v3_period_cutoff_calendar.sql` — source-only implementation of the exact
+  minimal design already PASSed in `docs/FINDINGS_MONTHLY_CUTOFF_AUTOMATION_GAP_20260805.md`
+  (`RQ-20260805-2202`): `sap_period_cutoff_calendar` (append-only, one row per month-aligned
+  `period_start`), `sp_register_period_cutoff` (insert-only, rejects duplicates/misalignment/blank
+  approver/source/non-later cutoff — no correction path, since Finance hasn't confirmed the
+  correction policy yet), and `sp_transition_due_period_from_calendar` (fails closed on any
+  missing/mismatched calendar row, no-ops before the cutoff, delegates to the already-reviewed
+  `sp_close_open_period` at/after it). Closes the "nightly source contains no call that would
+  perform the transition" gap from the finding — as source. Does not seed the calendar, register
+  July/August, call the transition procedure, or touch the nightly workflow; those remain separate
+  Codex-executed mutations after review.
+- **Environment blocker, disclosed rather than worked around**: could not obtain the mandatory
+  dry-run — `scripts/bq_safe_query.sh --dry-run-only` failed with `ReauthUnattendedError` (the
+  `bq` CLI's legacy credential needs an interactive reauth step unavailable in this session). The
+  wrapper's own `--self-test` passed 7/7, so this is a credential-state problem, not a script or
+  SQL defect signal. Recorded plainly in the review request
+  (`RQ-20260810-1918-period-cutoff-calendar-source`) rather than skipped or claimed done.
+- New review request: `RQ-20260810-1918-period-cutoff-calendar-source`, `Reviewer: Codex`.
+
 ## 2026-08-10 14:59 ICT — post-import IAM blocker narrowed to one action, not three
 
 - Investigated (read-only): does `data@rabbit.co.th` already hold the permissions the three

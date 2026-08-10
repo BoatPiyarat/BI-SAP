@@ -1,5 +1,16 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-10 19:18 ICT — monthly cutoff automation source drafted, dry-run pending
+
+New `sql/ddl/075_v3_period_cutoff_calendar.sql` implements the exact minimal design already
+PASSed in the monthly-cutoff-automation-gap finding (`RQ-20260805-2202`) — calendar table plus
+insert-only register procedure plus fail-closed transition procedure delegating to the existing
+`sp_close_open_period`. Source only; nothing seeded or called. The mandatory dry-run could not be
+obtained this session (`bq` CLI needs an interactive reauth this session can't do) — disclosed
+explicitly in the review request rather than skipped. New review request:
+`RQ-20260810-1918-period-cutoff-calendar-source`, `Reviewer: Codex`, and logged in
+`docs/HANDOFF_QUEUE.md`.
+
 ## 2026-08-10 14:59 ICT — post-import IAM blocker narrowed to one action
 
 Live `testIamPermissions` evidence (read-only, no mutation) against the real dispatcher Cloud Run
