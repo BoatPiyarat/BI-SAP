@@ -1,5 +1,26 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-10 12:22 ICT — fixed delivery checker's workflow-identity false-positive
+
+- Fixed: `scripts/check_v3_delivery_control_plane.ps1` — the workflow-service-account
+  normalization used `.Replace('projects/-/serviceAccounts/', '')`, a literal wildcard-dash
+  string the real `gcloud workflows describe` field never contains
+  (`projects/pacific-plating-282708/serviceAccounts/919786098205-compute@...`). It was a
+  permanent no-op, so the checker could never confirm the workflow uses the approved default
+  Compute service account even when it does. Replaced with a regex strip of
+  `^projects/[^/]+/serviceAccounts/` (matches both project-ID and project-number forms, same
+  approach already reviewed/fixed for DDL 072's execution-name binding). Bug was originally found
+  and disclosed as a REQUIRED NOTE in `docs/reviews/2026-08-06-8e045ad-claude.md`
+  (`RQ-20260806-2123`); this closes it.
+- Verified live, read-only: re-ran the checker against the real workflow. `workflow_service_account`
+  now correctly resolves to `919786098205-compute@developer.gserviceaccount.com`, matching
+  `default_service_account`; the false safety failure is gone. `safety_passed` is still `false`
+  only for pre-existing, unrelated, expected reasons (two-name delivery markers not yet in this
+  workflow revision), and `control_plane_ready`/`readiness_blockers` are unchanged
+  (promoter/scheduler still absent — separate cutover work, not this bug).
+- No deploy, IAM, GCS, scheduler, or SAP mutation performed; source-only fix plus a read-only
+  verification run.
+
 ## 2026-08-07 07:10 ICT — drafted action plan for RCL Motor export reliability + VMI recovery
 
 - New: `docs/tasks/TASK_FIX_RCL_MOTOR_EXPORT_RELIABILITY_20260807.md` — A/B/C/D plan (unblock

@@ -1,5 +1,18 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-10 12:22 ICT — delivery checker workflow-identity false-positive fixed
+
+Closed the REQUIRED NOTE from `RQ-20260806-2123-default-compute-sa-activation-workaround`
+(`docs/reviews/2026-08-06-8e045ad-claude.md`). `scripts/check_v3_delivery_control_plane.ps1`'s
+workflow-service-account comparison could never pass (literal-string `.Replace` targeted a
+wildcard pattern the live field never contains); replaced with a regex prefix strip. Ran the
+checker live: `workflow_service_account` now matches `default_service_account` and that specific
+safety failure no longer appears. Remaining `safety_failures`/`readiness_blockers` (missing
+two-name delivery markers in this workflow revision, promoter/scheduler not yet deployed) are
+pre-existing and unrelated — separate cutover work tracked elsewhere in `AS_BUILT_V3.md`/
+`INPUTS_NEEDED.md`. New review requested: `RQ-20260810-1222-delivery-checker-identity-fix`.
+No deploy/IAM/GCS/scheduler/SAP mutation.
+
 ## 2026-08-06 21:45 ICT — default-SA activation workaround: PASS WITH REQUIRED NOTE
 
 `RQ-20260806-2123-default-compute-sa-activation-workaround` reviewed —

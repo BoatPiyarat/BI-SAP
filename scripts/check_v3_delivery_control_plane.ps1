@@ -71,8 +71,8 @@ $schedulers = @(
   )
 )
 $workflowSource = [string]$workflow.sourceContents
-$workflowServiceAccountEmail = ([string]$workflow.serviceAccount).Replace(
-  'projects/-/serviceAccounts/', ''
+$workflowServiceAccountEmail = ([string]$workflow.serviceAccount) -replace (
+  '^projects/[^/]+/serviceAccounts/', ''
 )
 $promoterSummary = @(
   $services |

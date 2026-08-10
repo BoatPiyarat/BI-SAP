@@ -3,6 +3,35 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+## RQ-20260810-1222-delivery-checker-identity-fix
+Status: OPEN — request Class A review of the regex correctness (does it match every real
+project-ID/project-number `serviceAccounts/` shape and reject anything that should fail), whether
+it changes any other checker behavior, and whether the live re-run evidence is sufficient.
+Reviewer: (unassigned)
+Class: A
+Artifact: `scripts/check_v3_delivery_control_plane.ps1` (one-line normalization fix).
+Opened: 2026-08-10T12:22:00+07:00
+
+Claim: closes the REQUIRED NOTE from `RQ-20260806-2123` (`docs/reviews/2026-08-06-8e045ad-claude.md`).
+The workflow-service-account normalization previously did `.Replace('projects/-/serviceAccounts/', '')`,
+a literal wildcard-dash string the real `gcloud workflows describe` field never contains
+(confirmed live shape: `projects/pacific-plating-282708/serviceAccounts/919786098205-compute@...`),
+so it was a permanent no-op and the safety check could never pass. Replaced with
+`-replace '^projects/[^/]+/serviceAccounts/', ''`, which strips the prefix for both project-ID and
+project-number forms (consistent with the project-number handling already reviewed for DDL 072's
+execution-name binding, `RQ-20260805-2058`). No other line in the file changed.
+Evidence: PowerShell parser (`[System.Management.Automation.Language.Parser]::ParseFile`) passed
+with zero errors; `git diff --check` passed (only a pre-existing LF/CRLF notice, no content
+issue). Live read-only re-run at `2026-08-10T05:22:00.4886901+00:00` (`gcloud` account
+`data@rabbit.co.th`, project `pacific-plating-282708`) shows `workflow_service_account:
+919786098205-compute@developer.gserviceaccount.com` now equal to `default_service_account`, and
+the previous `workflow does not use the approved default Compute service account` failure is
+absent from `safety_failures`. `delivery_enabled` remains `false`; `control_plane_ready` remains
+`false` only for the same pre-existing, unrelated reasons already tracked (missing two-name
+delivery markers in this workflow revision, promoter/scheduler not yet deployed). No IAM, deploy,
+GCS write, scheduler, workflow execution, BigQuery, Gmail, or SAP mutation occurred — this is a
+read-only checker script fix plus a read-only verification run.
+
 ## RQ-20260806-2123-default-compute-sa-activation-workaround
 Status: REVIEWED
 Reviewer: Claude Code
