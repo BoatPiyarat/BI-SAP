@@ -7,7 +7,9 @@ review history; link the completed review and record its verdict.
 Status: OPEN — request Class A review of the `testIamPermissions` evidence, whether the
 permission-to-blocker mapping is correct, and the flagged tension with
 `DEFAULT_COMPUTE_SA_AUTOMATION_WORKAROUND.md`'s no-`run.invoker`-needed claim.
-Reviewer: (unassigned)
+Reviewer: Codex (per `docs/AGENT_REVIEW_PROTOCOL.md` reciprocity — Codex reviews Claude Code's
+investigations; this is a Claude-Code-authored live-permission investigation, not eligible for
+Claude Code self-review).
 Class: A
 Artifact: `docs/INPUTS_NEEDED.md` (post-import activation section, 2026-08-10 addendum).
 Opened: 2026-08-10T14:59:00+07:00
@@ -39,7 +41,9 @@ run.invoker binding" claim before anyone treats that design doc as settling the 
 Status: OPEN — request Class A review of the regex correctness (does it match every real
 project-ID/project-number `serviceAccounts/` shape and reject anything that should fail), whether
 it changes any other checker behavior, and whether the live re-run evidence is sufficient.
-Reviewer: (unassigned)
+Reviewer: Codex (per `docs/AGENT_REVIEW_PROTOCOL.md` reciprocity — Codex reviews Claude Code's
+deployments/investigations; this is a Claude-Code-authored script fix, not eligible for Claude
+Code self-review).
 Class: A
 Artifact: `scripts/check_v3_delivery_control_plane.ps1` (one-line normalization fix).
 Opened: 2026-08-10T12:22:00+07:00
