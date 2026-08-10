@@ -3,6 +3,38 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+## RQ-20260810-1459-post-import-permission-narrowing
+Status: OPEN — request Class A review of the `testIamPermissions` evidence, whether the
+permission-to-blocker mapping is correct, and the flagged tension with
+`DEFAULT_COMPUTE_SA_AUTOMATION_WORKAROUND.md`'s no-`run.invoker`-needed claim.
+Reviewer: (unassigned)
+Class: A
+Artifact: `docs/INPUTS_NEEDED.md` (post-import activation section, 2026-08-10 addendum).
+Opened: 2026-08-10T14:59:00+07:00
+
+Claim: `data@rabbit.co.th` already holds sufficient permission for 2 of the 3 documented
+post-import readiness blockers (authenticated Pub/Sub push subscription; watchdog Cloud Scheduler
+job), and for redeploying the dispatcher/watchdog Cloud Run services under the new identity. Only
+the dispatcher `run.invoker` IAM binding remains genuinely administrator-gated
+(`run.services.setIamPolicy` absent and unable to be self-granted).
+Evidence: live read-only Google Cloud `testIamPermissions` calls (no state mutation possible via
+that API) — Cloud Run `services.testIamPermissions` on `sap-post-import-dispatcher` directly
+returned only `run.services.getIamPolicy`/`run.services.update`/`run.services.delete`, not
+`run.services.setIamPolicy`; Cloud Resource Manager `projects.testIamPermissions` returned
+`cloudscheduler.jobs.create`/`.update`, `pubsub.subscriptions.create`/`.update`, but not
+`pubsub.subscriptions.setIamPolicy`, `pubsub.topics.setIamPolicy`,
+`resourcemanager.projects.setIamPolicy`, or `iam.roles.create`; IAM `serviceAccounts.testIamPermissions`
+on the default Compute SA returned `iam.serviceAccounts.actAs`. Also compared against
+`sap-extract-job`'s (legacy) IAM policy, which is empty — confirming the legacy Cloud Run Job
+pattern (Scheduler OAuth, `run.jobs.run`-class permission) does not require or demonstrate the
+Cloud Run Service `run.invoker` binding this dispatcher needs, since Jobs and Services use
+different authorization paths. No IAM, deploy, GCS, scheduler, workflow, or SAP mutation occurred.
+Review whether the permission set tested is complete (e.g., whether the push subscription also
+needs any permission not tested), whether the conclusion "2 of 3 blockers can proceed now" is
+safe to act on without further confirmation, and resolve or escalate the tension with
+`DEFAULT_COMPUTE_SA_AUTOMATION_WORKAROUND.md`'s "no longer require...a Cloud Run service-level
+run.invoker binding" claim before anyone treats that design doc as settling the question.
+
 ## RQ-20260810-1222-delivery-checker-identity-fix
 Status: OPEN — request Class A review of the regex correctness (does it match every real
 project-ID/project-number `serviceAccounts/` shape and reject anything that should fail), whether

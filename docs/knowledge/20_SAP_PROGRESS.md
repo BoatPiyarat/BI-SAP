@@ -1,5 +1,19 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-10 14:59 ICT — post-import IAM blocker narrowed to one action
+
+Live `testIamPermissions` evidence (read-only, no mutation) against the real dispatcher Cloud Run
+service, the project, and the target service account shows `data@rabbit.co.th` already has
+sufficient permission for 2 of the 3 documented post-import readiness blockers: the authenticated
+Pub/Sub push subscription and the watchdog Cloud Scheduler job (also confirmed it can redeploy the
+dispatcher/watchdog services under the new identity). It lacks, and cannot self-grant,
+`run.services.setIamPolicy` — so only the dispatcher `run.invoker` binding remains genuinely
+administrator-gated. `docs/INPUTS_NEEDED.md` updated with the exact permission breakdown and a
+flagged tension against `DEFAULT_COMPUTE_SA_AUTOMATION_WORKAROUND.md`'s claim that a Cloud Run
+`run.invoker` binding is no longer needed under this workaround — the live checker still reports
+it as blocking, so that claim needs reconciliation, not yet resolved. New review request:
+`RQ-20260810-1459-post-import-permission-narrowing`.
+
 ## 2026-08-10 12:22 ICT — delivery checker workflow-identity false-positive fixed
 
 Closed the REQUIRED NOTE from `RQ-20260806-2123-default-compute-sa-activation-workaround`

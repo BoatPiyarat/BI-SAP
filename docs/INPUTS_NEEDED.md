@@ -67,6 +67,27 @@ The live activation checker currently passes safety and reports exactly three re
 dispatcher `run.invoker`, authenticated push subscription, and watchdog scheduler. The current
 `data@rabbit.co.th` account cannot complete the administrator-owned policy changes.
 
+**2026-08-10 permission narrowing (Claude Code, read-only `testIamPermissions` evidence, no
+mutation):** only one of the three blockers actually requires an administrator. Live, authoritative
+permission tests against the real resources found `data@rabbit.co.th` already holds
+`pubsub.subscriptions.create` + `iam.serviceAccounts.actAs` on the default Compute SA (sufficient
+to create the authenticated push subscription), `cloudscheduler.jobs.create`/`.update` (also holds
+`roles/cloudscheduler.admin` outright — sufficient for the watchdog scheduler), and
+`run.services.update` (sufficient to redeploy the dispatcher/watchdog services under the new
+identity). The account does **not** hold `run.services.setIamPolicy` on `sap-post-import-dispatcher`
+(confirmed via the Cloud Run `testIamPermissions` API directly on that resource) or
+`resourcemanager.projects.setIamPolicy`/`iam.roles.create` at the project level (confirmed via
+Resource Manager `testIamPermissions`, empty result) — so it cannot self-grant this either. The
+`run.invoker` binding on the dispatcher Cloud Run service remains the one genuinely
+administrator-gated action; the push subscription and watchdog scheduler creation do not need to
+wait for that administrator action and can proceed under the current account once reviewed.
+**Note:** `docs/design/DEFAULT_COMPUTE_SA_AUTOMATION_WORKAROUND.md` states the workaround "no
+longer require[s] ... a Cloud Run service-level `run.invoker` binding" — that appears to be a
+design intent not yet matched by the live checker, which still reports `run.invoker` as an active
+blocker. Needs reconciliation: either the design doc's claim needs correcting, or an as-yet-unbuilt
+call path avoids the binding. Do not treat the push-subscription/scheduler pieces as blocked on
+that reconciliation; they are independently unblocked per the permissions above.
+
 ## Boat / Google Apps Script owner — Unit 6 project identity and authorization
 
 **Needed to finish daily automation:** provide or create the Apps Script project that will own

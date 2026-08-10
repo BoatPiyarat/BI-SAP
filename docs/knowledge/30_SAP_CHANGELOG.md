@@ -1,5 +1,33 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-10 14:59 ICT — post-import IAM blocker narrowed to one action, not three
+
+- Investigated (read-only): does `data@rabbit.co.th` already hold the permissions the three
+  post-import readiness blockers need, given legacy jobs already run in this project. Used the
+  live `testIamPermissions` API directly against the real resources (Cloud Run service, project,
+  target service account) rather than inferring from role docs — no mutation possible via that
+  call.
+- Finding: the account already holds `pubsub.subscriptions.create` + `iam.serviceAccounts.actAs`
+  (default Compute SA) for the authenticated push subscription, `cloudscheduler.jobs.create`/
+  `.update` (+ outright `roles/cloudscheduler.admin`) for the watchdog scheduler, and
+  `run.services.update` to redeploy the dispatcher/watchdog under the new identity. It does
+  **not** hold `run.services.setIamPolicy` on `sap-post-import-dispatcher` (tested directly) or
+  `resourcemanager.projects.setIamPolicy`/`iam.roles.create` at project level (tested directly,
+  empty result — confirms it cannot self-grant). Only the dispatcher `run.invoker` binding is
+  genuinely administrator-gated; the other two blockers do not need to wait on that.
+- Confirmed why legacy jobs don't demonstrate this permission exists: checked
+  `sap-extract-job`'s IAM policy directly — it's empty. Legacy nightly extraction is a Cloud Run
+  **Job** invoked via Scheduler OAuth (no invoker binding needed, uses general `run.jobs.run`-class
+  permission), not a Cloud Run **Service** receiving Pub/Sub push calls, which is a materially
+  different, narrower-permissioned authorization path.
+- Flagged an unreconciled tension: `docs/design/DEFAULT_COMPUTE_SA_AUTOMATION_WORKAROUND.md`
+  claims the workaround "no longer require[s] ... a Cloud Run service-level `run.invoker`
+  binding," but the live checker still reports it as an active blocker. Recorded in
+  `docs/INPUTS_NEEDED.md` for reconciliation rather than resolved here.
+- Recorded in `docs/INPUTS_NEEDED.md` under the post-import activation section. New review
+  request: `RQ-20260810-1459-post-import-permission-narrowing`. No IAM, deploy, GCS, scheduler,
+  workflow, or SAP mutation performed.
+
 ## 2026-08-10 12:22 ICT — fixed delivery checker's workflow-identity false-positive
 
 - Fixed: `scripts/check_v3_delivery_control_plane.ps1` — the workflow-service-account
