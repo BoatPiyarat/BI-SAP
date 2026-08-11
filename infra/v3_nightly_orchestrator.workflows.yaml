@@ -324,14 +324,6 @@ main:
                               alert_topic: ${alert_topic}
                               step: "POST_IMPORT_RECONCILIATION"
                               reason: '${"row conservation left " + string(post_import_reconciliation.pending_rows) + " PENDING_ACK identities for LogID " + post_import_log_id}'
-              - complete_post_import_success:
-                  call: complete_post_import
-                  args:
-                    project: ${project}
-                    log_id: ${post_import_log_id}
-                    workflow_execution_name: ${workflow_execution_name}
-                    terminal_status: "SUCCEEDED"
-                    error_template: null
               # pending_rows==0 here means DDL 073 already reached a terminal manifest
               # (ACKNOWLEDGED/PARTIAL_REJECT/REJECTED), so the deferred nonzero-export snapshot
               # (docs/FINDINGS_DAILY_COMPLETENESS_RUNTIME_GAP_20260805.md step 2) is now safe.
@@ -354,6 +346,18 @@ main:
                     step: "DAILY_COMPLETENESS_SNAPSHOT"
                     statement: '${"CALL `pacific-plating-282708.sap_integration_v3.sp_build_v3_daily_completeness_snapshot`(\u0027" + original_pipeline_run_id + "\u0027);"}'
                     timeout_seconds: ${bq_call_timeout_seconds}
+              # Codex review docs/reviews/2026-08-11-28686d6-codex.md: this used to run before
+              # origin resolution/snapshot dispatch, so a later failure there could leave a
+              # contradictory SUCCEEDED outbox record next to a never-built snapshot. Moved here,
+              # after both have actually succeeded.
+              - complete_post_import_success:
+                  call: complete_post_import
+                  args:
+                    project: ${project}
+                    log_id: ${post_import_log_id}
+                    workflow_execution_name: ${workflow_execution_name}
+                    terminal_status: "SUCCEEDED"
+                    error_template: null
               - return_post_import:
                   return: ${run_id}
     # Units 2-5 share this exact run_id. The SQL wrapper evaluates notification and release gates
@@ -378,6 +382,7 @@ main:
         args:
           project: ${project}
           run_id: ${run_id}
+          alert_topic: ${alert_topic}
         result: export_run_count
     - maybe_snapshot_healthy_zero:
         switch:
@@ -568,7 +573,7 @@ reconcile_post_import:
 # 067_v3_daily_completeness_snapshot.sql's own _exports CTE exactly (order_item, period, charge_id,
 # payload_hash) so these pre-checks can never disagree with what the procedure itself computes.
 count_export_runs_for_pipeline:
-  params: [project, run_id]
+  params: [project, run_id, alert_topic]
   steps:
     - count_exports:
         call: googleapis.bigquery.v2.jobs.query
@@ -585,8 +590,38 @@ count_export_runs_for_pipeline:
                 parameterType: { type: "STRING" }
                 parameterValue: { value: '${run_id}' }
         result: export_count_query
+    # Codex review docs/reviews/2026-08-11-28686d6-codex.md: this previously dereferenced rows[0]
+    # without checking jobComplete or row shape, bypassing the required fail_closed contract on an
+    # async/malformed result. Both gates now route through fail_closed like every other CALL step.
+    - gate_complete:
+        switch:
+          - condition: ${not default(map.get(export_count_query, "jobComplete"), false)}
+            steps:
+              - fail_incomplete:
+                  call: fail_closed
+                  args:
+                    project: ${project}
+                    run_id: ${run_id}
+                    alert_topic: ${alert_topic}
+                    step: "DAILY_COMPLETENESS_EXPORT_COUNT"
+                    reason: "export-run count query did not complete synchronously"
+    - read_rows:
+        assign:
+          - count_rows: ${default(map.get(export_count_query, "rows"), [])}
+    - require_one_row:
+        switch:
+          - condition: ${len(count_rows) != 1}
+            steps:
+              - fail_shape:
+                  call: fail_closed
+                  args:
+                    project: ${project}
+                    run_id: ${run_id}
+                    alert_topic: ${alert_topic}
+                    step: "DAILY_COMPLETENESS_EXPORT_COUNT"
+                    reason: '${"export-run count query returned an unexpected row count: " + string(len(count_rows))}'
     - out:
-        return: ${int(export_count_query.rows[0].f[0].v)}
+        return: ${int(count_rows[0].f[0].v)}
 
 derive_original_pipeline_run_id:
   params: [project, run_id, alert_topic, export_run_id]
@@ -606,6 +641,20 @@ derive_original_pipeline_run_id:
                 parameterType: { type: "STRING" }
                 parameterValue: { value: '${export_run_id}' }
         result: origin_query
+    # Codex review docs/reviews/2026-08-11-28686d6-codex.md: cardinality was checked but
+    # jobComplete was not, so an async/incomplete result could bypass fail_closed.
+    - gate_complete:
+        switch:
+          - condition: ${not default(map.get(origin_query, "jobComplete"), false)}
+            steps:
+              - fail_incomplete:
+                  call: fail_closed
+                  args:
+                    project: ${project}
+                    run_id: ${run_id}
+                    alert_topic: ${alert_topic}
+                    step: "DAILY_COMPLETENESS_ORIGIN_LOOKUP"
+                    reason: "original pipeline_run_id lookup query did not complete synchronously"
     - read_rows:
         assign:
           - origin_rows: ${default(map.get(origin_query, "rows"), [])}

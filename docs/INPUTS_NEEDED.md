@@ -1,5 +1,25 @@
 # INPUTS NEEDED — things only Boat / Aware / Attila / Finance can answer
 
+## OPEN 2026-08-11 — Finance: `sap_period_cutoff_calendar` correction/registry policy
+
+`sql/ddl/075_v3_period_cutoff_calendar.sql` (monthly cutoff automation source, PASS-pending
+Class-A review) deliberately builds no UPDATE/correction path for a wrong cutoff row —
+`sp_register_period_cutoff` is insert-only and rejects re-registration for an already-registered
+`period_start`. This matches the governing finding's own gate
+(`docs/FINDINGS_MONTHLY_CUTOFF_AUTOMATION_GAP_20260805.md`, "Gates before implementation" #1):
+*"Confirm the registry/correction policy with Finance; do not assume cutoffs always occur on the
+first day or at a fixed hour."* That confirmation has never been requested as its own tracked
+item — recording it here now (flagged in Codex's review `docs/reviews/2026-08-11-a82409d-codex.md`
+as still outstanding).
+
+**Ask**: if a registered cutoff is later found wrong (wrong date/hour, wrong approver), what is the
+correction mechanism — a superseding row with an explicit link back to the original, a formal
+correction artifact reviewed like any other production change, something else? Do not assume a
+fixed first-of-month/fixed-hour pattern; the design must accept whatever cutoff timing Finance
+actually uses. Until this is answered, the calendar can only ever be appended to, never corrected,
+and `sp_register_period_cutoff` will keep hard-rejecting any second attempt at the same
+`period_start` — which is the deliberately conservative default, not a bug.
+
 ## OPEN 2026-08-07 — `rcb-motor-order-payment-sap-bucket-1` unreliable, real customer payments not reaching SAP
 
 Root cause of missing VMI for `L78794968`, `L78583606`, `L78786429` traced to this Cloud Function

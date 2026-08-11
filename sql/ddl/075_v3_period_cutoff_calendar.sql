@@ -41,13 +41,22 @@ BEGIN
   ASSERT NULLIF(TRIM(p_source_reference),'') IS NOT NULL AS 'source_reference is required';
   ASSERT p_closing_at>TIMESTAMP(p_period_start)
     AS 'closing_at must be later than period_start';
-  ASSERT (SELECT COUNT(*) FROM `pacific-plating-282708.sap_integration_v3.sap_period_cutoff_calendar`
-    WHERE period_start=p_period_start)=0
-    AS 'period_start already has a registered cutoff; corrections need a reviewed correction artifact, not re-registration';
 
-  INSERT INTO `pacific-plating-282708.sap_integration_v3.sap_period_cutoff_calendar`
+  -- Atomic insert-only guard (Codex review docs/reviews/2026-08-11-a82409d-codex.md: a separate
+  -- ASSERT COUNT(*)=0 then INSERT is not atomic, so two concurrent calls can both pass the assert
+  -- and both insert). MERGE...WHEN NOT MATCHED THEN INSERT is a single atomic DML statement,
+  -- mirroring the exact established idiom in 071_v3_post_import_refresh_outbox.sql's
+  -- sp_enqueue_v3_post_import_refresh. Unlike that idempotent-retry case (ASSERT @@row_count IN
+  -- (0,1)), a duplicate period_start here must be a hard failure, not a silent no-op — registration
+  -- is meant to reject re-registration, so @@row_count must be exactly 1.
+  MERGE `pacific-plating-282708.sap_integration_v3.sap_period_cutoff_calendar` t
+  USING (SELECT p_period_start AS period_start) s
+  ON t.period_start=s.period_start
+  WHEN NOT MATCHED THEN INSERT
     (period_start,closing_at,approved_by,source_reference,recorded_at)
-  VALUES (p_period_start,p_closing_at,p_approved_by,p_source_reference,CURRENT_TIMESTAMP());
+    VALUES (p_period_start,p_closing_at,p_approved_by,p_source_reference,CURRENT_TIMESTAMP());
+  ASSERT @@row_count=1
+    AS 'period_start already has a registered cutoff; corrections need a reviewed correction artifact, not re-registration';
 END;
 
 CREATE OR REPLACE PROCEDURE `pacific-plating-282708.sap_integration_v3.sp_transition_due_period_from_calendar`(

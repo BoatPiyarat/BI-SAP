@@ -1,5 +1,49 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-11 18:45 ICT — closed both BLOCK-verdict deltas from Codex's review
+
+Codex reviewed both prior deltas and returned BLOCK on each
+(`docs/reviews/2026-08-11-a82409d-codex.md`, `docs/reviews/2026-08-11-28686d6-codex.md`) — both
+credited the honest dry-run-blocked disclosure but found real correctness gaps. Fixed both:
+
+- **`sql/ddl/075_v3_period_cutoff_calendar.sql`**: `sp_register_period_cutoff`'s separate
+  `ASSERT COUNT(*)=0` then `INSERT` was not atomic (two concurrent calls could both pass and both
+  insert). Replaced with a single atomic `MERGE ... WHEN NOT MATCHED THEN INSERT` + `ASSERT
+  @@row_count=1`, mirroring the exact idiom already established in `071_v3_post_import_refresh_outbox.sql`'s
+  `sp_enqueue_v3_post_import_refresh` (adapted: a duplicate here must hard-fail, not silently
+  no-op, since registration is meant to reject re-registration).
+- New: `sql/adhoc/20260811_verify_period_cutoff_calendar.sql` — executable tests for
+  `sp_register_period_cutoff` (valid insert, duplicate rejection, misalignment, blank
+  approver/source, early-cutoff rejection) using obviously-synthetic year-2099 `period_start`
+  values, safe to run live since this procedure never touches `sap_period_state`. Plus a
+  TEMP-table rehearsal of `sp_transition_due_period_from_calendar`'s branching (NOT_DUE,
+  TRANSITIONED, and three distinct fail-closed scenarios), following the exact safe pattern
+  already established in `sql/adhoc/20260802_unit4_period_state_rehearsal.sql` — deliberately does
+  **not** call the real procedure or touch the real `sap_period_state`, since that table's
+  "exactly one OPEN period" invariant is live production state a test must never risk corrupting.
+  Disclosed two things this still doesn't cover (timezone — not applicable to this procedure's own
+  logic; rerun-after-transition — needs a dedicated isolated-fixture design like DDL 074's) rather
+  than silently claiming full coverage.
+- New `docs/INPUTS_NEEDED.md` entry: Finance's registry/correction-policy confirmation was flagged
+  by the finding but never tracked as its own ask — added now.
+- **`sql/ddl/067_v3_daily_completeness_snapshot.sql` + `infra/v3_nightly_orchestrator.workflows.yaml`**:
+  `count_export_runs_for_pipeline` and `derive_original_pipeline_run_id` used query results without
+  checking `jobComplete` first, bypassing the required `fail_closed` contract on an async or
+  malformed result. Added `gate_complete` steps to both, routed through `fail_closed` per the
+  reviewer's explicit instruction. Also reordered the post-import completion steps so the outbox
+  row is marked `SUCCEEDED` only after origin resolution and snapshot dispatch both succeed —
+  previously it was marked `SUCCEEDED` first, so a later dispatch failure could leave a
+  contradictory terminal-success record next to a never-built snapshot.
+- Re-verified: `bash scripts/bq_safe_query.sh --self-test` still 7/7; the mandatory dry-run on all
+  three SQL files (`075`, `067`, the new adhoc test) still fails with the same
+  `ReauthUnattendedError` as yesterday — genuinely unresolved on this machine, not re-attempted and
+  silently skipped. Re-validated the full workflow YAML structurally with PyYAML (parses clean, 14
+  top-level keys) and byte-checked (`od -c`) both modified `CALL` statement lines against the
+  file's established single-backslash escaping convention before committing, learning from
+  yesterday's self-caught escaping bug.
+- New delta review requests: `RQ-20260811-1845-period-cutoff-calendar-delta`,
+  `RQ-20260811-1845-daily-completeness-dispatch-delta`, both `Reviewer: Codex`.
+
 ## 2026-08-11 — Codex review debt cleared with four BLOCK verdicts
 
 - Added four Class A review records for `28686d6`, `a82409d`, `f0568d6`, and `0283605` and marked

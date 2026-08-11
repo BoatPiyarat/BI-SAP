@@ -1,5 +1,19 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-11 18:45 ICT — both BLOCK-verdict deltas fixed and re-submitted
+
+Fixed the concrete defects Codex found in both reviews: `sql/ddl/075_v3_period_cutoff_calendar.sql`
+now registers cutoffs via an atomic `MERGE` (was a non-atomic assert-then-insert) and gained
+executable tests (`sql/adhoc/20260811_verify_period_cutoff_calendar.sql`, live for the register
+procedure, TEMP-table rehearsal for the transition procedure — never touching real
+`sap_period_state`). `sql/ddl/067_...` + `infra/v3_nightly_orchestrator.workflows.yaml` now gate
+both new lookup subworkflows on `jobComplete` through `fail_closed`, and mark the post-import
+outbox row `SUCCEEDED` only after origin resolution and snapshot dispatch both succeed. Added the
+Finance registry/correction-policy ask to `docs/INPUTS_NEEDED.md` (wasn't tracked there before).
+The `bq` CLI dry-run is still blocked by the same `ReauthUnattendedError` — disclosed again, not
+silently retried and assumed fixed. New delta reviews: `RQ-20260811-1845-period-cutoff-calendar-delta`,
+`RQ-20260811-1845-daily-completeness-dispatch-delta`, `Reviewer: Codex`.
+
 ## 2026-08-11 — four Codex Class A reviews completed; all BLOCKED
 
 Codex completed the four genuinely open assigned reviews. Daily completeness wiring (`28686d6`)

@@ -3,6 +3,94 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+## RQ-20260811-1845-daily-completeness-dispatch-delta
+Status: OPEN — delta review of the two required corrections from the prior BLOCK.
+Reviewer: Codex (per `docs/AGENT_REVIEW_PROTOCOL.md` reciprocity)
+Class: A
+Artifact: `sql/ddl/067_v3_daily_completeness_snapshot.sql` (unchanged since the prior request) and
+`infra/v3_nightly_orchestrator.workflows.yaml` (delta on top of the artifact reviewed in
+`RQ-20260811-1015-daily-completeness-dispatch-wiring`, BLOCK verdict
+`docs/reviews/2026-08-11-28686d6-codex.md`).
+Opened: 2026-08-11T18:45:00+07:00
+
+Claim: closes both required corrections from the BLOCK verdict.
+1. `count_export_runs_for_pipeline` and `derive_original_pipeline_run_id` now each add a
+   `gate_complete` step checking `${not default(map.get(<query_result>, "jobComplete"), false)}`
+   before reading `rows`, routed through `fail_closed` (matching the reviewer's explicit
+   instruction, not the bare `raise` some sibling subworkflows use) with a distinct `step` label
+   per subworkflow (`DAILY_COMPLETENESS_EXPORT_COUNT`, `DAILY_COMPLETENESS_ORIGIN_LOOKUP`).
+   `count_export_runs_for_pipeline` also gained a row-shape gate (`len(count_rows) != 1`) it was
+   missing entirely, mirroring `derive_original_pipeline_run_id`'s pre-existing cardinality check.
+   `count_export_runs_for_pipeline` gained an `alert_topic` param (needed to call `fail_closed`);
+   its one call site was updated to pass it.
+2. The post-import completion steps are reordered: `resolve_original_pipeline_run_id` →
+   `dispatch_terminal_export_snapshot` → `complete_post_import_success` → `return_post_import`
+   (previously `complete_post_import_success` ran first). The outbox row can no longer be marked
+   `SUCCEEDED` while origin resolution or snapshot dispatch is still pending or has failed.
+
+Evidence: full workflow YAML re-parsed clean with the system Python's PyYAML (14 top-level keys,
+all named subworkflows present) after every edit. Both modified `CALL ...('" + expr + "');`
+statement-construction lines (line 347 unchanged-in-place, line 398 the pre-existing
+`sp_run_v3_units2_5` call used as the escaping reference) were byte-checked with `od -c` against
+the file's single-backslash `'` convention before committing — the exact class of bug caught
+and fixed in my own first attempt at this pattern in the prior request. Mandatory dry-run on
+`067_v3_daily_completeness_snapshot.sql` (unchanged) was re-attempted and still fails with the
+same `ReauthUnattendedError`; `scripts/bq_safe_query.sh --self-test` still passes 7/7. **This
+remains not deploy-ready pending a clean dry-run** — not re-claiming otherwise.
+Review: the two corrections against the reviewer's exact required-correction text, whether
+`fail_closed`'s five required args are correctly supplied at both new call sites, whether the
+reorder fully closes the contradictory-state risk (e.g., does `HUMAN_ACTION`'s existing ordering
+need the same treatment — it doesn't call the snapshot at all, so no equivalent risk exists there),
+and — separately — actually obtain the dry-run.
+
+## RQ-20260811-1845-period-cutoff-calendar-delta
+Status: OPEN — delta review of the two required corrections from the prior BLOCK (Finance policy
+decision remains outside this delta's scope; tracked separately in `docs/INPUTS_NEEDED.md`).
+Reviewer: Codex (per `docs/AGENT_REVIEW_PROTOCOL.md` reciprocity)
+Class: A
+Artifact: `sql/ddl/075_v3_period_cutoff_calendar.sql` (delta on top of the artifact reviewed in
+`RQ-20260810-1918-period-cutoff-calendar-source`, BLOCK verdict
+`docs/reviews/2026-08-11-a82409d-codex.md`) and new
+`sql/adhoc/20260811_verify_period_cutoff_calendar.sql`.
+Opened: 2026-08-11T18:45:00+07:00
+
+Claim: closes two of the three required corrections from the BLOCK verdict (Finance's policy
+confirmation is a human decision, not something this delta can close — added as its own tracked
+`docs/INPUTS_NEEDED.md` entry instead).
+1. **Concurrency**: `sp_register_period_cutoff` replaces the non-atomic `ASSERT COUNT(*)=0` then
+   `INSERT` with a single atomic `MERGE ... WHEN NOT MATCHED THEN INSERT` followed by
+   `ASSERT @@row_count=1`, mirroring `071_v3_post_import_refresh_outbox.sql`'s
+   `sp_enqueue_v3_post_import_refresh` idiom exactly, adapted so a duplicate is a hard failure
+   (not `071`'s idempotent `IN (0,1)` no-op) since re-registration must be rejected, not absorbed.
+2. **Executable tests**: new `sql/adhoc/20260811_verify_period_cutoff_calendar.sql`. Part 1 runs
+   six live `CALL`s against `sp_register_period_cutoff` using synthetic year-2099 `period_start`
+   values (never colliding with real July/August 2026 rows), covering valid insert, duplicate
+   rejection, non-month-aligned rejection, blank-approver rejection, blank-source rejection, and
+   early-cutoff rejection — safe to run live since this procedure only ever touches
+   `sap_period_cutoff_calendar`. Part 2 is a TEMP-table rehearsal of
+   `sp_transition_due_period_from_calendar`'s branching (NOT_DUE, TRANSITIONED, and three distinct
+   fail-closed scenarios — missing current-period calendar row, calendar/state closing_at
+   mismatch, missing next-period calendar row), following the exact safe pattern already
+   established and previously reviewed in `sql/adhoc/20260802_unit4_period_state_rehearsal.sql`.
+   It deliberately does **not** call the real procedure or touch the real `sap_period_state` —
+   that table's "exactly one OPEN period" invariant is live production state (`sp_close_open_period`
+   asserts it) a test must never risk corrupting, and a stored procedure's fully-qualified table
+   references cannot be redirected to a same-named TEMP table regardless. Two things this still
+   does not cover, disclosed rather than silently skipped: timezone handling (not applicable — the
+   procedure compares two absolute TIMESTAMP instants with no timezone conversion of its own) and
+   rerun-after-transition (needs a dedicated isolated-fixture design, like
+   `074_post_import_rehearsal_fixtures.sql` built for the analogous post-import case — follow-up
+   work, not in scope here).
+
+Evidence: `MERGE` syntax matches `071`'s already-reviewed-PASS pattern exactly. Mandatory dry-run
+on both files was re-attempted and still fails with the same `ReauthUnattendedError`;
+`scripts/bq_safe_query.sh --self-test` still passes 7/7. **This remains not deploy-ready pending a
+clean dry-run.**
+Review: MERGE correctness and atomicity claim, the row-count semantic (exactly 1, not `IN (0,1)`),
+each of the six live test assertions and five rehearsal scenarios against the procedures' actual
+predicates, whether the timezone/rerun disclosure is honest rather than a cop-out, and —
+separately — actually obtain the dry-run.
+
 ## RQ-20260811-1015-daily-completeness-dispatch-wiring
 Status: REVIEWED
 Verdict: BLOCK — `docs/reviews/2026-08-11-28686d6-codex.md`
