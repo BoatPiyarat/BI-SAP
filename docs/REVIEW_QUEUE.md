@@ -4,8 +4,8 @@ Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request firs
 review history; link the completed review and record its verdict.
 
 ## RQ-20260811-1015-daily-completeness-dispatch-wiring
-Status: OPEN — request Class A review AND a live dry-run before this is treated as
-deploy-ready (see the DRY-RUN NOT OBTAINED note below).
+Status: REVIEWED
+Verdict: BLOCK — `docs/reviews/2026-08-11-28686d6-codex.md`
 Reviewer: Codex (per `docs/AGENT_REVIEW_PROTOCOL.md` reciprocity)
 Class: A
 Artifact: `sql/ddl/067_v3_daily_completeness_snapshot.sql` (gate strengthening, in-place edit to
@@ -64,8 +64,8 @@ matches, whether `HUMAN_ACTION`-residual days correctly remain un-snapshotted, t
 exact terminal-status set, and — separately — actually run the dry-run and report the result.
 
 ## RQ-20260810-1918-period-cutoff-calendar-source
-Status: OPEN — request Class A review AND a live dry-run before this is treated as
-deploy-ready (see the DRY-RUN NOT OBTAINED note below).
+Status: REVIEWED
+Verdict: BLOCK — `docs/reviews/2026-08-11-a82409d-codex.md`
 Reviewer: Codex (per `docs/AGENT_REVIEW_PROTOCOL.md` reciprocity)
 Class: A
 Artifact: `sql/ddl/075_v3_period_cutoff_calendar.sql` (new file, source only).
@@ -100,9 +100,8 @@ and — separately — actually run the dry-run and report the result before any
 conversation starts.
 
 ## RQ-20260810-1459-post-import-permission-narrowing
-Status: OPEN — request Class A review of the `testIamPermissions` evidence, whether the
-permission-to-blocker mapping is correct, and the flagged tension with
-`DEFAULT_COMPUTE_SA_AUTOMATION_WORKAROUND.md`'s no-`run.invoker`-needed claim.
+Status: REVIEWED
+Verdict: BLOCK — `docs/reviews/2026-08-11-f0568d6-codex.md`
 Reviewer: Codex (per `docs/AGENT_REVIEW_PROTOCOL.md` reciprocity — Codex reviews Claude Code's
 investigations; this is a Claude-Code-authored live-permission investigation, not eligible for
 Claude Code self-review).
@@ -134,9 +133,8 @@ safe to act on without further confirmation, and resolve or escalate the tension
 run.invoker binding" claim before anyone treats that design doc as settling the question.
 
 ## RQ-20260810-1222-delivery-checker-identity-fix
-Status: OPEN — request Class A review of the regex correctness (does it match every real
-project-ID/project-number `serviceAccounts/` shape and reject anything that should fail), whether
-it changes any other checker behavior, and whether the live re-run evidence is sufficient.
+Status: REVIEWED
+Verdict: BLOCK — `docs/reviews/2026-08-11-0283605-codex.md`
 Reviewer: Codex (per `docs/AGENT_REVIEW_PROTOCOL.md` reciprocity — Codex reviews Claude Code's
 deployments/investigations; this is a Claude-Code-authored script fix, not eligible for Claude
 Code self-review).

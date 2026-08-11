@@ -1,5 +1,16 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-11 — four Codex Class A reviews completed; all BLOCKED
+
+Codex completed the four genuinely open assigned reviews. Daily completeness wiring (`28686d6`)
+is blocked on explicit lookup failure routing/control-state ordering plus the unavailable live
+dry-run. Period cutoff source (`a82409d`) is blocked on concurrency-safe monthly uniqueness,
+Finance's still-open correction-policy decision, executable gate tests, and the live dry-run.
+Post-import permission narrowing (`f0568d6`) is blocked because configuration-authoring
+permissions do not prove authenticated Pub/Sub/Scheduler runtime readiness. Delivery-checker
+normalization (`0283605`) is blocked because it discards rather than validates the project segment.
+Canonical reviews are under `docs/reviews/2026-08-11-*-codex.md`; no production mutation occurred.
+
 ## 2026-08-11 10:15 ICT — daily completeness snapshot wired into nightly path, dry-run pending
 
 Implemented steps 2–5 of the already-PASSed daily-completeness-runtime-gap finding

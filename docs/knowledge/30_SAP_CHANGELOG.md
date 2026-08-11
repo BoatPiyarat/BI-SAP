@@ -1,5 +1,15 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-11 — Codex review debt cleared with four BLOCK verdicts
+
+- Added four Class A review records for `28686d6`, `a82409d`, `f0568d6`, and `0283605` and marked
+  their queue entries REVIEWED.
+- Reproduced the BigQuery credential blocker through the mandatory wrapper: self-test 7/7 PASS;
+  both SQL dry-runs failed with `ReauthUnattendedError`.
+- Verified YAML structure, PowerShell parsing, regex edge cases, join-predicate parity, cutoff
+  delegation, and current official Google Cloud authenticated-push/Scheduler prerequisites.
+- No DDL, CALL, IAM, workflow, scheduler, GCS, email, or SAP state mutation occurred.
+
 ## 2026-08-11 10:15 ICT — daily completeness snapshot wired into nightly path (dry-run blocked)
 
 - Modified: `sql/ddl/067_v3_daily_completeness_snapshot.sql` — added a defense-in-depth gate
