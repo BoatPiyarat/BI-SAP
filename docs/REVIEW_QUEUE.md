@@ -3,6 +3,47 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+## RQ-20260811-2001-duplicate-qr-installment-finding
+Status: OPEN — request Class A review; this finding's own header already states it was never
+reviewed ("Not yet Class-A reviewed"), and it carries a real money-impact conclusion
+(฿1,078,326 total, ฿403,977 in July) that per this project's rules should not sit unreviewed
+indefinitely, even though no correction is authorized or being requested here.
+Reviewer: Codex (best-guess assignment per `docs/AGENT_REVIEW_PROTOCOL.md` reciprocity —
+investigations/quantifications are Codex's review lane; git blame shows this file committed under
+`piyaratt@rabbit.co.th`, not a Claude-Code- or Codex-attributed commit, so true authorship is not
+determinable from metadata. If this was actually Codex's own investigation, please redirect it
+back to Claude Code instead of self-reviewing.)
+Class: A
+Artifact: `docs/FINDINGS_DUPLICATE_QR_INSTALLMENT_20260804.md` (committed 2026-08-07, `d19eb9b`;
+no source-code delta, this is a pure findings/quantification document).
+Opened: 2026-08-11T20:01:00+07:00
+
+Claim: `L78611713-V1` and `L78803976-V1` (Mo Pawinee's reported orders) each show two independent,
+fully successful QR_CODE `careos_charges` on the same `(order_item, period, installment_number)`,
+85–121 minutes apart — a genuine CareOS payment-collection-layer double charge, not a SAP-export
+duplication (confirmed `expected_state` already collapses to one charge per period) and not
+INCIDENT-002a/002b (both orders have exactly one item, no CMI sibling, zero rows in all three
+credit-shell view variants). The same signature (exactly 2 events, same installment_number, same
+payment_method, both SUCCESSFUL, ≤6h apart, no other period affected on that order_item) is found
+across 100 order items June 1–July 30 2026 (฿1,078,326), 44 of them in July (฿403,977) matching
+Mo's window. A 22-of-100 subset has date-only `payment_date` (unconfirmed sub-day gap). A 31-row
+sub-pattern with one leg at exactly ฿645/651 is separated out as possibly a legitimate fee rather
+than the same defect, explicitly not folded into the 69-row "likely real duplicate" set.
+Evidence: population query included in the finding, run 2026-08-04 in `asia-southeast1`,
+~0.17 GiB actual against the `--maximum_bytes_billed=21474836480` cap; individual per-charge
+amounts re-run separately to isolate the ฿645/651 sub-pattern. No BigQuery mutation, correction,
+refund, or external notification — explicitly disclosed as read-only investigation throughout, and
+the finding itself lists four caveats (not yet reviewed; duplicated amount ≠ automatic correction
+amount; pattern predates the June–July window, deliberately excluded from this population; root
+cause of the double collection itself not investigated).
+Review: reproduce the population query and spot-check the 100-row/44-row/฿1,078,326/฿403,977
+figures; verify the INCIDENT-002a/002b exclusion reasoning (single-item orders, zero credit-shell
+rows) actually holds for both named orders; verify the ฿645/651 sub-pattern split is a reasonable,
+non-arbitrary separation rather than cherry-picking; confirm no correction, refund, or GCS/SAP/
+BigQuery mutation exists anywhere in or resulting from this artifact; and confirm the scope
+note (CareOS-layer, outside the V3 SAP-integration build) is accurate before this is cited as an
+approved population for any downstream correction work.
+
 ## RQ-20260811-1845-daily-completeness-dispatch-delta
 Status: OPEN — delta review of the two required corrections from the prior BLOCK.
 Reviewer: Codex (per `docs/AGENT_REVIEW_PROTOCOL.md` reciprocity)

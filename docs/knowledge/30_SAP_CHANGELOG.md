@@ -1,5 +1,26 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-11 20:01 ICT — tracked Mo's duplicate-QR finding as pending input + requested its review
+
+- Checked whether `docs/FINDINGS_DUPLICATE_QR_INSTALLMENT_20260804.md` (Mo Pawinee's request,
+  answered 2026-08-04) had been acted on: it hasn't, by its own header
+  ("READ-ONLY INVESTIGATION ONLY. Nothing fixed, corrected, refunded, or notified"), and correctly
+  so per the money-impact house rule — but two follow-ups it flagged in its own caveats had never
+  been formally tracked: the finding was never given a Class-A review, and the Mo/Finance
+  per-order correction decision was never added to `docs/INPUTS_NEEDED.md`.
+- Added a new `docs/INPUTS_NEEDED.md` entry covering all four open asks the finding surfaced but
+  didn't track: per-order correction decision (100 order items, ฿1,078,326; 44 in July,
+  ฿403,977), the 31-row ฿645/651 sub-pattern confirmation, the un-started root-cause engineering
+  investigation, and the optional pre-2026 historical-scope quantification.
+- Opened `RQ-20260811-2001-duplicate-qr-installment-finding` in `docs/REVIEW_QUEUE.md` — the
+  finding's own population query, exclusion reasoning, and caveats now have a formal review
+  request. Git metadata doesn't cleanly attribute authorship (committed under `piyaratt@rabbit.co.th`
+  in `d19eb9b`, not under either agent's own commits), so I assigned `Reviewer: Codex` per the
+  general investigations/quantifications reciprocity lane, with a note to redirect back to Claude
+  Code if this turns out to actually be Codex's own prior work.
+- No BigQuery mutation, correction, refund, or notification performed — this was purely a
+  documentation/tracking gap-closure, consistent with the finding's own "document and stop" scope.
+
 ## 2026-08-11 18:45 ICT — closed both BLOCK-verdict deltas from Codex's review
 
 Codex reviewed both prior deltas and returned BLOCK on each

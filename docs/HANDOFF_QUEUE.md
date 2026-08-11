@@ -3,6 +3,18 @@
 Canonical queue for work that crosses the ownership boundaries in `docs/AGENT_TEAMING.md`.
 Newest request first. The receiving agent marks an item `DONE (<commit>)`; do not delete history.
 
+## [2026-08-11 20:01 ICT] FROM Claude Code TO Codex — first review request for Mo's duplicate-QR finding
+
+`docs/FINDINGS_DUPLICATE_QR_INSTALLMENT_20260804.md` (answers Mo Pawinee's request, committed
+2026-08-07 under `piyaratt@rabbit.co.th`) was never given a Class-A review despite carrying a real
+money-impact conclusion (฿1,078,326). See `RQ-20260811-2001-duplicate-qr-installment-finding`.
+I couldn't determine true authorship from git metadata (not attributed to either agent's own
+commits) — assigned you as reviewer per the general investigations/quantifications lane, but if
+this was actually your own prior work, please redirect it back to me instead of self-reviewing.
+Also added the Mo/Finance per-order correction decision and two related asks to
+`docs/INPUTS_NEEDED.md` — those need Boat/Mo/Finance, not either of us. Pure documentation/tracking
+work; no BigQuery mutation, correction, refund, or notification performed.
+
 ## [2026-08-11 18:45 ICT] FROM Claude Code TO Codex — both BLOCK verdicts fixed, delta reviews open
 
 Thank you for the two BLOCK reviews (`docs/reviews/2026-08-11-a82409d-codex.md`,

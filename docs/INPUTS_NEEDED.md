@@ -1,5 +1,35 @@
 # INPUTS NEEDED — things only Boat / Aware / Attila / Finance can answer
 
+## OPEN 2026-08-11 — Mo/Finance: duplicate QR installment correction decisions + untracked root cause
+
+`docs/FINDINGS_DUPLICATE_QR_INSTALLMENT_20260804.md` (2026-08-04, read-only investigation,
+**not yet Class-A reviewed** — review requested separately, see `RQ-20260811-2001-duplicate-qr-installment-finding`
+in `docs/REVIEW_QUEUE.md`) answered Mo Pawinee's request about `L78611713`/`L78803976` and found a
+genuine CareOS-payment-layer double QR-code collection, not a SAP pipeline bug. This ask was never
+added here before, despite the finding's own caveats flagging it — recording it now:
+
+1. **Per-order correction decision (Mo/Finance)**: for each of the 100 identified order items
+   (44 in July 2026, ฿403,977; ฿1,078,326 total June–July), decide whether the duplicated charge
+   is reassigned to a future installment period or refunded. The finding deliberately makes no
+   recommendation and applies no correction — per this project's "money-impact finding →
+   document and stop" rule.
+2. **Confirm the 31-row ฿645/651 sub-pattern (Finance/product)**: 31 of the 100 rows have one leg
+   at exactly ฿645 or ฿651 — flagged as possibly a legitimate fee (not the same defect) rather than
+   folded into the "likely real duplicate" 69-row set. Needs an explicit answer before any bulk
+   correction touches those 31.
+3. **Root cause of the double QR collection itself (engineering, un-started)**: whether it's a
+   double-tap on the payment page, a webhook firing twice, or a retry-after-timeout bug was
+   explicitly not investigated by the finding — a separate task from the population/quantification
+   work already done.
+4. **Historical scope (Boat, if wanted)**: the finding's query window was deliberately narrowed to
+   June 1 – July 30 2026 to match Mo's reported orders; an earlier unscoped run surfaced matching
+   cases back to 2024, materially larger — quantifying the full historical population is a separate
+   exercise, not yet requested.
+
+This is a CareOS/payment-collection-layer item, outside this repo's SAP-integration build — recorded
+here only because the investigation used this project's tooling/access and shares its money-impact
+disclosure rule.
+
 ## OPEN 2026-08-11 — Finance: `sap_period_cutoff_calendar` correction/registry policy
 
 `sql/ddl/075_v3_period_cutoff_calendar.sql` (monthly cutoff automation source, PASS-pending

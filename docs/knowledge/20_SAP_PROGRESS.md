@@ -1,5 +1,14 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-11 20:01 ICT — Mo's duplicate-QR finding: tracked, not fixed (correctly)
+
+`docs/FINDINGS_DUPLICATE_QR_INSTALLMENT_20260804.md` remains unfixed/uncorrected by design
+(money-impact → document and stop). Closed the tracking gap around it instead: added a
+`docs/INPUTS_NEEDED.md` entry for the Mo/Finance per-order correction decision, the ฿645/651
+sub-pattern confirmation, and the un-started root-cause investigation; opened
+`RQ-20260811-2001-duplicate-qr-installment-finding` for its first Class-A review (previously
+never requested). This is a CareOS-payment-layer item, outside the V3 SAP-integration build.
+
 ## 2026-08-11 18:45 ICT — both BLOCK-verdict deltas fixed and re-submitted
 
 Fixed the concrete defects Codex found in both reviews: `sql/ddl/075_v3_period_cutoff_calendar.sql`
