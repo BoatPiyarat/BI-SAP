@@ -1,5 +1,18 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-11 10:15 ICT — daily completeness snapshot wired into nightly path, dry-run pending
+
+Implemented steps 2–5 of the already-PASSed daily-completeness-runtime-gap finding
+(`RQ-20260805-2205`): `sql/ddl/067_v3_daily_completeness_snapshot.sql` gains a defense-in-depth
+terminal-manifest gate; `infra/v3_nightly_orchestrator.workflows.yaml` gains two subworkflows and
+two call sites so a healthy-zero run snapshots immediately and a nonzero-export run snapshots once
+post-import reconciliation is terminal, correctly bound to the original outbound `pipeline_run_id`
+(not the post-import child's). Both dispatch through the existing `run_bq_call` alert path. Full
+YAML re-parsed clean with PyYAML. The mandatory BigQuery dry-run is still blocked by the same
+`bq` CLI reauth issue as yesterday's cutoff-calendar work — not yet resolved on this machine.
+New review request: `RQ-20260811-1015-daily-completeness-dispatch-wiring`, `Reviewer: Codex`,
+logged in `docs/HANDOFF_QUEUE.md`.
+
 ## 2026-08-10 19:18 ICT — monthly cutoff automation source drafted, dry-run pending
 
 New `sql/ddl/075_v3_period_cutoff_calendar.sql` implements the exact minimal design already

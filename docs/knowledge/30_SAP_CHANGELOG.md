@@ -1,5 +1,33 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-11 10:15 ICT — daily completeness snapshot wired into nightly path (dry-run blocked)
+
+- Modified: `sql/ddl/067_v3_daily_completeness_snapshot.sql` — added a defense-in-depth gate
+  (`IF v_export_runs > 0 THEN ASSERT ... terminal delivery manifest ...`) so a nonzero export can
+  only produce its immutable completeness snapshot once `export_file_manifest.delivery_status` is
+  terminal (`ACKNOWLEDGED`/`PARTIAL_REJECT`/`REJECTED`), never merely `DELIVERED`/`PICKED_UP`. Safe
+  to edit in place — this procedure was never deployed.
+- Modified: `infra/v3_nightly_orchestrator.workflows.yaml` — added `count_export_runs_for_pipeline`
+  and `derive_original_pipeline_run_id` subworkflows, and wired two new call sites implementing
+  `docs/FINDINGS_DAILY_COMPLETENESS_RUNTIME_GAP_20260805.md` steps 2–5 (already PASSed,
+  `RQ-20260805-2205`): a normal-mode run snapshots immediately after Units 2–5 only on a healthy
+  zero-export outcome; a post-import-mode run, once row reconciliation reaches `pending_rows=0`,
+  derives the ORIGINAL outbound `pipeline_run_id` from the delivered export (never the post-import
+  child's own run ID) and snapshots then. Both dispatch calls reuse the existing `run_bq_call`
+  persist→alert→raise helper — no new alerting mechanism.
+- Caught and fixed a real bug in my own editing before opening the review: my first two attempts at
+  writing the `'`-escaped CALL-statement string (matching this file's own established
+  convention for embedding a string arg) actually produced a double backslash on disk due to a
+  JSON-escaping round-trip through the edit tool. Verified byte-for-byte with `od -c` against the
+  file's pre-existing pattern before proceeding, and only committed once confirmed identical in
+  form. Full YAML also parsed cleanly with PyYAML (14 top-level keys, both new subworkflows
+  present) as a structural check.
+- **Same persistent environment blocker as the cutoff-calendar work**: could not obtain the
+  mandatory `bq_safe_query.sh` dry-run on the modified DDL 067 (`ReauthUnattendedError`, unresolved
+  since yesterday's session — see the open ask in `docs/HANDOFF_QUEUE.md`). Disclosed explicitly in
+  the review request rather than skipped.
+- New review request: `RQ-20260811-1015-daily-completeness-dispatch-wiring`, `Reviewer: Codex`.
+
 ## 2026-08-10 19:18 ICT — monthly cutoff automation source drafted (dry-run blocked)
 
 - New: `sql/ddl/075_v3_period_cutoff_calendar.sql` — source-only implementation of the exact

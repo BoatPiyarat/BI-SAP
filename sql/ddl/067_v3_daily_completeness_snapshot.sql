@@ -110,6 +110,18 @@ BEGIN
   ASSERT v_export_runs <= 1 AS 'one pipeline run resolved to multiple export runs';
   ASSERT v_manifests = v_export_runs
     AS 'nonzero export requires exactly one file manifest; healthy zero requires none';
+  -- Defense in depth per docs/FINDINGS_DAILY_COMPLETENESS_RUNTIME_GAP_20260805.md step 4: the
+  -- caller (the nightly workflow) is responsible for only invoking this for a healthy-zero run
+  -- or a nonzero run whose post-import row reconciliation already reached pending_rows=0, but this
+  -- procedure must not itself trust that discipline. A merely DELIVERED/PICKED_UP manifest is not
+  -- final; snapshotting it would immutably freeze evidence still showing PENDING_ACK.
+  IF v_export_runs > 0 THEN
+    ASSERT (SELECT COUNT(*)
+      FROM `pacific-plating-282708.sap_integration_v3.export_file_manifest` m
+      JOIN _exports e USING (export_run_id)
+      WHERE m.delivery_status IN ('ACKNOWLEDGED', 'PARTIAL_REJECT', 'REJECTED')) = v_manifests
+      AS 'nonzero export requires a terminal delivery manifest (ACKNOWLEDGED/PARTIAL_REJECT/REJECTED); a merely DELIVERED/PICKED_UP manifest is not yet final and must not produce an immutable snapshot';
+  END IF;
 
   INSERT INTO `pacific-plating-282708.sap_integration_v3.v3_daily_completeness_metric`
     (pipeline_run_id, metric_group, population_grain, metric_code,

@@ -3,6 +3,66 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+## RQ-20260811-1015-daily-completeness-dispatch-wiring
+Status: OPEN — request Class A review AND a live dry-run before this is treated as
+deploy-ready (see the DRY-RUN NOT OBTAINED note below).
+Reviewer: Codex (per `docs/AGENT_REVIEW_PROTOCOL.md` reciprocity)
+Class: A
+Artifact: `sql/ddl/067_v3_daily_completeness_snapshot.sql` (gate strengthening, in-place edit to
+never-deployed source) and `infra/v3_nightly_orchestrator.workflows.yaml` (two new subworkflows —
+`count_export_runs_for_pipeline`, `derive_original_pipeline_run_id` — plus two new call sites).
+Opened: 2026-08-11T10:15:00+07:00
+
+Claim: implements steps 2–5 of the "Required ordering" in the already-PASSed
+`docs/FINDINGS_DAILY_COMPLETENESS_RUNTIME_GAP_20260805.md` (`RQ-20260805-2205`,
+`docs/reviews/2026-08-06-a6bc76e-claude.md`), closing the gap where nothing in the nightly path
+ever calls `sp_build_v3_daily_completeness_snapshot`:
+
+- **Outcome-split timing** (step 2): a normal-mode run now calls the snapshot immediately after
+  `run_units_2_5` only when `count_export_runs_for_pipeline` returns 0 (healthy zero). A nonzero
+  export is deliberately NOT snapshotted here — it's deferred to the post-import branch.
+- **Original pipeline_run_id binding** (step 3): in post-import mode, once `reconcile_post_import`
+  reports `pending_rows == 0` (terminal manifest), `derive_original_pipeline_run_id` resolves the
+  ORIGINAL outbound `pipeline_run_id` from `post_import_binding.export_run_id` — never the
+  post-import child's own `run_id` — via the same `v3_unit5_payload_identity`/`export_archive`
+  join predicate (order_item, period, charge_id, payload_hash) that
+  `067_v3_daily_completeness_snapshot.sql`'s own `_exports` CTE uses internally, so the workflow's
+  zero/nonzero pre-check and DDL 067's own computation can never disagree. Fails closed
+  (`fail_closed`) if the lookup doesn't resolve to exactly one distinct `pipeline_run_id`.
+- **Gate strengthening** (step 4): added an `IF v_export_runs > 0` block to DDL 067 asserting the
+  associated `export_file_manifest.delivery_status` is terminal (`ACKNOWLEDGED`/`PARTIAL_REJECT`/
+  `REJECTED`) before allowing the (immutable, replay-refused) snapshot insert — defense in depth
+  independent of the workflow-level gating, since DDL 067 was never deployed and this is a
+  pre-deployment source revision, not a live-object replacement.
+- **Persist→alert→raise routing** (step 5): both new dispatch call sites reuse the existing
+  `run_bq_call` helper (dry-run → submit → poll → `write_run_log` on success, `fail_closed` on any
+  failure), the same wrapper every other nightly CALL step already uses — no new alerting
+  mechanism invented.
+- `HUMAN_ACTION` residual (`pending_rows > 0`) path is unchanged: it still only alerts via the
+  existing `fail_closed` call and does not attempt to snapshot an unresolved day.
+
+Explicitly NOT done in this delta: seeding/calling anything, changing `delivery_enabled`, touching
+steps 6–9 of the finding (recipient approval, Apps Script deployment, rehearsal, retention) — all
+separate, later, human/Codex-gated work.
+
+**DRY-RUN NOT OBTAINED — same persistent environment blocker as `RQ-20260810-1918`:**
+`scripts/bq_safe_query.sh --dry-run-only -f sql/ddl/067_v3_daily_completeness_snapshot.sql` still
+fails with `ReauthUnattendedError` (the `bq` CLI's legacy credential needs an interactive reauth
+this session can't complete — see the still-open ask in `docs/HANDOFF_QUEUE.md`). The workflow YAML
+was structurally validated instead: parsed cleanly with the system Python's PyYAML (14 top-level
+keys, both new subworkflows present), and the two new `CALL ...('" + expr + "');` string
+constructions were verified byte-for-byte against the file's own established pattern (e.g. line 369's
+`sp_run_v3_units2_5` call) using `od -c` after two failed attempts at typing the escape sequence
+directly introduced a real double-backslash bug — caught and fixed before this request was opened,
+not left in the artifact. This structural/textual verification is not a substitute for the mandatory
+BigQuery dry-run of the DDL 067 delta; **do not treat this as deploy-ready until that dry-run
+actually runs clean.**
+
+Review: the `_exports` join-predicate parity between the two new subworkflows and DDL 067's own CTE
+(must never diverge), the fail-closed behavior of `derive_original_pipeline_run_id` on zero/multiple
+matches, whether `HUMAN_ACTION`-residual days correctly remain un-snapshotted, the DDL 067 gate's
+exact terminal-status set, and — separately — actually run the dry-run and report the result.
+
 ## RQ-20260810-1918-period-cutoff-calendar-source
 Status: OPEN — request Class A review AND a live dry-run before this is treated as
 deploy-ready (see the DRY-RUN NOT OBTAINED note below).

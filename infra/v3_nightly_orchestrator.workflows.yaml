@@ -332,6 +332,28 @@ main:
                     workflow_execution_name: ${workflow_execution_name}
                     terminal_status: "SUCCEEDED"
                     error_template: null
+              # pending_rows==0 here means DDL 073 already reached a terminal manifest
+              # (ACKNOWLEDGED/PARTIAL_REJECT/REJECTED), so the deferred nonzero-export snapshot
+              # (docs/FINDINGS_DAILY_COMPLETENESS_RUNTIME_GAP_20260805.md step 2) is now safe.
+              # The snapshot must be built for the ORIGINAL outbound pipeline_run_id, not this
+              # post-import child's own run_id (step 3) — derive it from the delivered export.
+              - resolve_original_pipeline_run_id:
+                  call: derive_original_pipeline_run_id
+                  args:
+                    project: ${project}
+                    run_id: ${run_id}
+                    alert_topic: ${alert_topic}
+                    export_run_id: ${post_import_binding.export_run_id}
+                  result: original_pipeline_run_id
+              - dispatch_terminal_export_snapshot:
+                  call: run_bq_call
+                  args:
+                    project: ${project}
+                    run_id: ${run_id}
+                    alert_topic: ${alert_topic}
+                    step: "DAILY_COMPLETENESS_SNAPSHOT"
+                    statement: '${"CALL `pacific-plating-282708.sap_integration_v3.sp_build_v3_daily_completeness_snapshot`(\u0027" + original_pipeline_run_id + "\u0027);"}'
+                    timeout_seconds: ${bq_call_timeout_seconds}
               - return_post_import:
                   return: ${run_id}
     # Units 2-5 share this exact run_id. The SQL wrapper evaluates notification and release gates
@@ -346,6 +368,30 @@ main:
           step: "UNITS_2_5_ARCHIVE"
           statement: '${"CALL `pacific-plating-282708.sap_integration_v3.sp_run_v3_units2_5`(\u0027" + run_id + "\u0027);"}'
           timeout_seconds: ${bq_call_timeout_seconds}
+    # Healthy-zero daily-completeness snapshot dispatch (docs/FINDINGS_DAILY_COMPLETENESS_RUNTIME_GAP_20260805.md
+    # step 2). A nonzero export must NOT snapshot here -- it is deferred until post-import row
+    # reconciliation reaches a terminal manifest (see reconcile_post_import / dispatch_terminal_export_snapshot
+    # above). 067_v3_daily_completeness_snapshot.sql's own gate also fails closed if this is ever
+    # called for a nonzero, non-terminal export, independent of this pre-check.
+    - count_exports_for_snapshot:
+        call: count_export_runs_for_pipeline
+        args:
+          project: ${project}
+          run_id: ${run_id}
+        result: export_run_count
+    - maybe_snapshot_healthy_zero:
+        switch:
+          - condition: ${export_run_count == 0}
+            steps:
+              - dispatch_healthy_zero_snapshot:
+                  call: run_bq_call
+                  args:
+                    project: ${project}
+                    run_id: ${run_id}
+                    alert_topic: ${alert_topic}
+                    step: "DAILY_COMPLETENESS_SNAPSHOT"
+                    statement: '${"CALL `pacific-plating-282708.sap_integration_v3.sp_build_v3_daily_completeness_snapshot`(\u0027" + run_id + "\u0027);"}'
+                    timeout_seconds: ${bq_call_timeout_seconds}
     - maybe_promote_exact_archive:
         switch:
           - condition: ${delivery_enabled}
@@ -513,6 +559,70 @@ reconcile_post_import:
           rejected_rows: ${int(rows[0].f[2].v)}
           pending_rows: ${int(rows[0].f[3].v)}
           manifest_status: ${rows[0].f[4].v}
+
+# Unit 6 daily-completeness dispatch support (docs/FINDINGS_DAILY_COMPLETENESS_RUNTIME_GAP_20260805.md).
+# count_export_runs_for_pipeline decides whether a normal-mode run may snapshot immediately (zero
+# exports). derive_original_pipeline_run_id lets a post-import-mode run, once its reconciliation is
+# terminal, bind back to the ORIGINAL outbound pipeline_run_id (never the post-import child's own
+# run_id, per finding step 3) before calling the snapshot procedure. Both join predicates mirror
+# 067_v3_daily_completeness_snapshot.sql's own _exports CTE exactly (order_item, period, charge_id,
+# payload_hash) so these pre-checks can never disagree with what the procedure itself computes.
+count_export_runs_for_pipeline:
+  params: [project, run_id]
+  steps:
+    - count_exports:
+        call: googleapis.bigquery.v2.jobs.query
+        args:
+          projectId: ${project}
+          body:
+            query: "SELECT COUNT(DISTINCT a.export_run_id) FROM `pacific-plating-282708.sap_integration_v3.export_archive` a JOIN `pacific-plating-282708.sap_integration_v3.v3_unit5_payload_identity` i ON i.order_item=a.order_item AND i.period=a.period AND i.charge_id=a.charge_id AND i.payload_hash=a.payload_hash WHERE i.pipeline_run_id=@run_id"
+            useLegacySql: false
+            location: "asia-southeast1"
+            maximumBytesBilled: "21474836480"
+            parameterMode: "NAMED"
+            queryParameters:
+              - name: "run_id"
+                parameterType: { type: "STRING" }
+                parameterValue: { value: '${run_id}' }
+        result: export_count_query
+    - out:
+        return: ${int(export_count_query.rows[0].f[0].v)}
+
+derive_original_pipeline_run_id:
+  params: [project, run_id, alert_topic, export_run_id]
+  steps:
+    - lookup:
+        call: googleapis.bigquery.v2.jobs.query
+        args:
+          projectId: ${project}
+          body:
+            query: "SELECT DISTINCT i.pipeline_run_id FROM `pacific-plating-282708.sap_integration_v3.export_archive` a JOIN `pacific-plating-282708.sap_integration_v3.v3_unit5_payload_identity` i ON i.order_item=a.order_item AND i.period=a.period AND i.charge_id=a.charge_id AND i.payload_hash=a.payload_hash WHERE a.export_run_id=@export_run_id"
+            useLegacySql: false
+            location: "asia-southeast1"
+            maximumBytesBilled: "21474836480"
+            parameterMode: "NAMED"
+            queryParameters:
+              - name: "export_run_id"
+                parameterType: { type: "STRING" }
+                parameterValue: { value: '${export_run_id}' }
+        result: origin_query
+    - read_rows:
+        assign:
+          - origin_rows: ${default(map.get(origin_query, "rows"), [])}
+    - require_exactly_one:
+        switch:
+          - condition: ${len(origin_rows) != 1}
+            steps:
+              - fail_ambiguous_origin:
+                  call: fail_closed
+                  args:
+                    project: ${project}
+                    run_id: ${run_id}
+                    alert_topic: ${alert_topic}
+                    step: "DAILY_COMPLETENESS_ORIGIN_LOOKUP"
+                    reason: '${"expected exactly one original pipeline_run_id for export_run_id " + export_run_id + "; found " + string(len(origin_rows))}'
+    - out:
+        return: ${origin_rows[0].f[0].v}
 
 # Exact-generation production promotion. Zero archive rows is a healthy no-file night. Any
 # ambiguous ledger/object or copy mismatch fails closed before DELIVERED is persisted.
