@@ -1,5 +1,17 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-14 20:57 ICT — daily recon MTD email report built (source only, awaiting Codex deploy)
+
+Boat asked for a quick single-step daily SAP↔CareOS reconcile with a 06:00 ICT month-to-date
+email. Reused the existing `recon_careos_charges` table (already refreshed nightly at 21:00 ICT —
+no new reconciliation logic built). Source ready: `workflows/daily_recon_mtd_report.gs` +
+`workflows/test_daily_recon_mtd_report.js` + `workflows/DAILY_RECON_MTD_REPORT_DEPLOYMENT.md`.
+Per `AGENT_RULES.md` single-deployer rule, Claude Code cannot deploy or install the trigger —
+handed to Codex via `docs/HANDOFF_QUEUE.md`. Blocked on Boat confirming primary/fallback
+recipients (`docs/INPUTS_NEEDED.md`) before the trigger can be installed. Note: this is a report on
+top of the existing nightly recon, not a new reconciliation job — the actual SAP/CareOS diff logic
+(`sp_recon_all_charges`) already runs daily and is unchanged.
+
 ## 2026-08-11 20:01 ICT — Mo's duplicate-QR finding: tracked, not fixed (correctly)
 
 `docs/FINDINGS_DUPLICATE_QR_INSTALLMENT_20260804.md` remains unfixed/uncorrected by design

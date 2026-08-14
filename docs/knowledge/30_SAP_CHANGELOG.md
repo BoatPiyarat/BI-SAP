@@ -1,5 +1,25 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-14 20:57 ICT — source-only daily recon MTD email report, handed to Codex
+
+- Boat asked directly for a quick single-step daily SAP↔CareOS reconciliation with a 06:00 ICT
+  morning email covering month-to-date. Built `workflows/daily_recon_mtd_report.gs`
+  (`sendDailyReconMtdReport`) reusing the existing `recon_careos_charges` table (built nightly by
+  `sp_recon_all_charges` inside `sp_nightly_state_and_recon_refresh`, 21:00 ICT) — no new
+  reconciliation logic, per Simplicity First and AS_BUILT_V3's "check before building" rule.
+- Report groups current-month `recon_careos_charges` rows by `recon_status`
+  (`IN_SAP`/`MISSING_FROM_SAP`/`NO_ORDER_ITEM`) into counts + THB, mirrors the primary→fallback
+  mail pattern from `workflows/v3_daily_completeness_report.gs`. Added
+  `workflows/test_daily_recon_mtd_report.js` (offline VM harness, no BQ/mail/network) and
+  `workflows/DAILY_RECON_MTD_REPORT_DEPLOYMENT.md` (source-only contract + rehearsal steps).
+  Could not run the offline test in this session — no `node` on this machine; flagged for Codex
+  to run before deploying, not just read.
+- No BigQuery query, `gs://**` write, or scheduler/production mutation performed — per
+  AGENT_RULES.md single-deployer rule (Codex), this stays source-only until reviewed and deployed.
+  Logged `docs/HANDOFF_QUEUE.md` (deploy request) and `docs/INPUTS_NEEDED.md` (Boat: confirm
+  primary/fallback recipient — request came from a personal Gmail address, existing convention
+  uses `piyaratt@rabbit.co.th`).
+
 ## 2026-08-11 20:01 ICT — tracked Mo's duplicate-QR finding as pending input + requested its review
 
 - Checked whether `docs/FINDINGS_DUPLICATE_QR_INSTALLMENT_20260804.md` (Mo Pawinee's request,

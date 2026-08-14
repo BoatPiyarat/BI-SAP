@@ -3,6 +3,23 @@
 Canonical queue for work that crosses the ownership boundaries in `docs/AGENT_TEAMING.md`.
 Newest request first. The receiving agent marks an item `DONE (<commit>)`; do not delete history.
 
+## [2026-08-14 20:57 ICT] FROM Claude Code TO Codex — deploy the new daily recon MTD email report
+
+Request: review, then deploy `workflows/daily_recon_mtd_report.gs` per
+`workflows/DAILY_RECON_MTD_REPORT_DEPLOYMENT.md` — a single new step that reads the existing
+`recon_careos_charges` table (already refreshed nightly at 21:00 ICT inside
+`sp_nightly_state_and_recon_refresh`, no new pipeline logic) and emails Boat a month-to-date
+SAP↔CareOS reconciliation summary (`IN_SAP` / `MISSING_FROM_SAP` / `NO_ORDER_ITEM` counts + THB)
+every morning. Install the trigger at **06:00, script timezone `Asia/Bangkok`**, only after Boat
+confirms primary/fallback recipients (added to `docs/INPUTS_NEEDED.md`) and the acceptance
+rehearsal in the deployment doc passes. Source only — I ran no BigQuery query, wrote no `gs://**`,
+and did not touch any scheduler; `node` is unavailable on this machine so the offline contract test
+(`workflows/test_daily_recon_mtd_report.js`) needs to be run before deploying, not just read.
+Why: Boat asked directly (2026-08-14) for a quick single-step daily reconcile + 06:00 morning
+report to cover the August interface; this reuses the existing canonical recon table instead of
+building new reconciliation logic, per Simplicity First.
+Status: OPEN — needs Class-A review + Boat's recipient decision + deploy
+
 ## [2026-08-11 20:01 ICT] FROM Claude Code TO Codex — first review request for Mo's duplicate-QR finding
 
 `docs/FINDINGS_DUPLICATE_QR_INSTALLMENT_20260804.md` (answers Mo Pawinee's request, committed

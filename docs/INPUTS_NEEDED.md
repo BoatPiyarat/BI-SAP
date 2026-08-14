@@ -1,5 +1,16 @@
 # INPUTS NEEDED — things only Boat / Aware / Attila / Finance can answer
 
+## OPEN 2026-08-14 — Boat: recipient(s) for the new daily recon MTD email report
+
+Boat asked (2026-08-14) for a daily 06:00 ICT email with the SAP↔CareOS month-to-date
+reconciliation summary. Source is ready (`workflows/daily_recon_mtd_report.gs`, handoff logged in
+`docs/HANDOFF_QUEUE.md`), but per the same rule used for the completeness report, deployment
+needs a confirmed primary recipient **and** an independent fallback (they must differ;
+`data@rabbit.co.th` alone is not sufficient). The request came from `p.toomsap@gmail.com` —
+confirm whether that personal address is primary, or whether `piyaratt@rabbit.co.th` (the existing
+alert-recipient convention, see `20_SAP_PROGRESS.md` "Current state 2026-07-29") should be
+primary with the personal address as fallback.
+
 ## OPEN 2026-08-11 — Mo/Finance: duplicate QR installment correction decisions + untracked root cause
 
 `docs/FINDINGS_DUPLICATE_QR_INSTALLMENT_20260804.md` (2026-08-04, read-only investigation,
