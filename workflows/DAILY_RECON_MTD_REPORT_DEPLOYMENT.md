@@ -42,9 +42,7 @@ Install a **daily time-driven trigger at 06:00, script timezone `Asia/Bangkok`**
    (visible in Apps Script execution log / any failure-notification wiring already in place).
 3. Only then install the 06:00 ICT trigger.
 
-## Open item for Boat
-Confirm the primary + fallback recipient addresses (this request came from
-`p.toomsap@gmail.com` — confirm whether that personal address should be primary, or whether it
-should be `piyaratt@rabbit.co.th`/`data@rabbit.co.th` per the existing alert-recipient convention
-in `docs/knowledge/20_SAP_PROGRESS.md` "Current state 2026-07-29", with the personal address as
-fallback). Logged in `docs/INPUTS_NEEDED.md`.
+## Recipients (confirmed by Boat, 2026-08-14)
+Primary `piyaratt@rabbit.co.th`, fallback `data@rabbit.co.th` — set as `RECON_MTD_RECIPIENT` /
+`RECON_MTD_FALLBACK_RECIPIENT` Script Properties. See `docs/INPUTS_NEEDED.md` (resolved) for the
+decision record. No further recipient input needed before deploying.

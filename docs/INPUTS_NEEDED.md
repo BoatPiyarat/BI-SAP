@@ -1,15 +1,12 @@
 # INPUTS NEEDED — things only Boat / Aware / Attila / Finance can answer
 
-## OPEN 2026-08-14 — Boat: recipient(s) for the new daily recon MTD email report
+## RESOLVED 2026-08-14 — Boat: recipient(s) for the new daily recon MTD email report
 
 Boat asked (2026-08-14) for a daily 06:00 ICT email with the SAP↔CareOS month-to-date
-reconciliation summary. Source is ready (`workflows/daily_recon_mtd_report.gs`, handoff logged in
-`docs/HANDOFF_QUEUE.md`), but per the same rule used for the completeness report, deployment
-needs a confirmed primary recipient **and** an independent fallback (they must differ;
-`data@rabbit.co.th` alone is not sufficient). The request came from `p.toomsap@gmail.com` —
-confirm whether that personal address is primary, or whether `piyaratt@rabbit.co.th` (the existing
-alert-recipient convention, see `20_SAP_PROGRESS.md` "Current state 2026-07-29") should be
-primary with the personal address as fallback.
+reconciliation summary. Boat confirmed recipients same session: primary `piyaratt@rabbit.co.th`,
+fallback `data@rabbit.co.th`. Codex should set Script Properties `RECON_MTD_RECIPIENT=piyaratt@rabbit.co.th`
+and `RECON_MTD_FALLBACK_RECIPIENT=data@rabbit.co.th` per `workflows/DAILY_RECON_MTD_REPORT_DEPLOYMENT.md`
+and proceed with review/rehearsal/deploy — no further input needed on this item.
 
 ## OPEN 2026-08-11 — Mo/Finance: duplicate QR installment correction decisions + untracked root cause
 
