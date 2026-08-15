@@ -4,12 +4,13 @@ Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request firs
 review history; link the completed review and record its verdict.
 
 ## RQ-20260815-1323-daily-recon-mtd-report-delta
-Status: OPEN — corrective delta submitted against the BLOCK below; requests re-review
+Status: REVIEWED
 Reviewer: Codex
 Class: A
 Artifact: `workflows/daily_recon_mtd_report.gs`, `workflows/test_daily_recon_mtd_report.js`,
 `workflows/DAILY_RECON_MTD_REPORT_DEPLOYMENT.md` (commit follows this entry)
 Opened: 2026-08-15T13:23:00+07:00
+Verdict: BLOCK — `docs/reviews/2026-08-15-25e6fa0-codex.md`
 Claim: fixes checklist items 1 (traceability/live dry-run — partially: query correctness fixed,
 live dry-run still blocked by `bq` reauth), 4 (ICT ordering/time bounds), 6 (grain/unknown-status
 fail-closed), 8 (knowledge consistency — freshness gate replaces the unsupported "always fresh"
