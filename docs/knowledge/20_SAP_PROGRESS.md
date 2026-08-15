@@ -1,5 +1,31 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-15 13:23 ICT — daily recon MTD report: corrective delta submitted, re-review pending
+
+Fixed the answerable half of Codex's BLOCK (`docs/reviews/2026-08-14-ff1db18-codex.md`) in
+`workflows/daily_recon_mtd_report.gs`: correct ICT month bounds (was UTC-midnight-misinterpreted,
+now `TIMESTAMP(DATETIME, 'Asia/Bangkok')` + explicit `<= now` upper bound), build failures now
+reach the fallback mail channel (not just mail-send failures), BigQuery async-completion polling +
+pagination added, unknown `recon_status` fails closed instead of vanishing, recipient check
+normalized, and a `MAX(recon_checked_at)` freshness gate added (fails closed if >15h stale,
+partition-filtered — no new unfiltered scan). Test suite expanded to match. Two items remain
+genuinely blocked on Codex's environment, not on this delta: the live SQL dry-run (`bq` reauth,
+`docs/INPUTS_NEEDED.md`) and the exact Apps Script project/trigger/rollback runbook (templated
+with `<...>` placeholders in `workflows/DAILY_RECON_MTD_REPORT_DEPLOYMENT.md`, not filled in — no
+browser/clasp session here). `RQ-20260815-1323-daily-recon-mtd-report-delta` opened. Still source
+only: no BigQuery mutation, `gs://**` write, or scheduler change.
+
+## 2026-08-14 21:23 ICT — daily recon MTD report Class-A BLOCK; no rehearsal/trigger
+
+Codex reviewed `ff1db18` + recipient decision `9376cc1`. Offline source syntax and all 10 contract
+assertions passed, but the production artifact is BLOCKED: wrong ICT month boundary and missing
+upper bound; BigQuery/build failures bypass fallback; asynchronous query completion is unsupported;
+unknown statuses disappear; freshness/rollback and exact Apps Script project/deploy instructions
+are absent. The exact SQL dry-run also remains blocked by legacy `bq 2.0.92` reauthentication.
+Recipients are confirmed (primary `piyaratt@rabbit.co.th`, fallback `data@rabbit.co.th`); they are
+no longer the blocker. Review: `docs/reviews/2026-08-14-ff1db18-codex.md`. No email, Apps Script,
+trigger, scheduler, BigQuery, GCS, or SAP mutation occurred.
+
 ## 2026-08-14 20:57 ICT — daily recon MTD email report built (source only, awaiting Codex deploy)
 
 Boat asked for a quick single-step daily SAP↔CareOS reconcile with a 06:00 ICT month-to-date
@@ -7,8 +33,8 @@ email. Reused the existing `recon_careos_charges` table (already refreshed night
 no new reconciliation logic built). Source ready: `workflows/daily_recon_mtd_report.gs` +
 `workflows/test_daily_recon_mtd_report.js` + `workflows/DAILY_RECON_MTD_REPORT_DEPLOYMENT.md`.
 Per `AGENT_RULES.md` single-deployer rule, Claude Code cannot deploy or install the trigger —
-handed to Codex via `docs/HANDOFF_QUEUE.md`. Blocked on Boat confirming primary/fallback
-recipients (`docs/INPUTS_NEEDED.md`) before the trigger can be installed. Note: this is a report on
+handed to Codex via `docs/HANDOFF_QUEUE.md`. Recipients were confirmed in `9376cc1`; the artifact
+is now blocked on the corrective Class-A delta recorded above. Note: this is a report on
 top of the existing nightly recon, not a new reconciliation job — the actual SAP/CareOS diff logic
 (`sp_recon_all_charges`) already runs daily and is unchanged.
 

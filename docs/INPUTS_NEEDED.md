@@ -1,5 +1,40 @@
 # INPUTS NEEDED — things only Boat / Aware / Attila / Finance can answer
 
+## OPEN 2026-08-14 — Boat/IT admin: single `run.invoker` grant + reconcile workaround-doc contradiction
+
+Raised by senior data-engineer design review (`docs/HANDOFF_QUEUE.md` 2026-08-14 14:22 ICT entry).
+The entire post-import stack (DDL 070–075, dispatcher, watchdog, promoter) is Class-A PASSed and
+deployed inert. The live activation checker's only remaining readiness blocker is the dispatcher
+`run.invoker` binding on `sap-post-import-dispatcher`, and neither `data@rabbit.co.th` nor
+`piyaratt@rabbit.co.th` holds `run.services.setIamPolicy` to grant it (confirmed via live
+`testIamPermissions`, see the "SUPERSEDED — dedicated-IAM post-import runtime activation" entry
+below). This is now the single highest-leverage open item: one administrator action activates a
+week+ of already-reviewed work.
+
+**Ask 1 (administrator with `run.services.setIamPolicy`):** grant `roles/run.invoker` on
+`sap-post-import-dispatcher` to the runtime caller identity per
+`docs/design/POST_IMPORT_ADMIN_COMPLETION.md`.
+
+**Ask 2 (Boat/design owner):** `docs/design/DEFAULT_COMPUTE_SA_AUTOMATION_WORKAROUND.md` states the
+workaround "no longer require[s] ... a Cloud Run service-level `run.invoker` binding," but the live
+checker still reports it as blocking (unreconciled since the 2026-08-10 permission-narrowing note
+below). Confirm which is correct — either correct the design doc, or identify the as-yet-unbuilt
+call path that actually avoids the binding — before further work is built on top of the ambiguity.
+
+## OPEN 2026-08-14 — `bq` CLI reauth blocking the mandatory dry-run gate (Claude Code's machine)
+
+Raised by the same review. `scripts/bq_safe_query.sh` has failed with `ReauthUnattendedError` on
+Claude Code's machine every session since 2026-08-10 (see `docs/HANDOFF_QUEUE.md` entries
+2026-08-10 19:18, 2026-08-11 10:15, 2026-08-11 18:45) — the interactive reauth step can't complete
+in a non-interactive session. `gcloud` auth still works fine there, so this is one stale legacy
+`bq` credential, not a design or wrapper problem (`--self-test` passes). Three source units
+(`sql/ddl/075_v3_period_cutoff_calendar.sql`, `sql/ddl/067_v3_daily_completeness_snapshot.sql`,
+`sql/adhoc/20260811_verify_period_cutoff_calendar.sql`) are dry-run-pending purely because of this.
+
+**Ask (whoever has working `bq` auth on that machine, e.g. Codex per the 2026-08-10 note):**
+re-authenticate the legacy `bq` credential store once so the dry-run backlog can clear in a single
+pass instead of being re-disclosed session after session.
+
 ## RESOLVED 2026-08-14 — Boat: recipient(s) for the new daily recon MTD email report
 
 Boat asked (2026-08-14) for a daily 06:00 ICT email with the SAP↔CareOS month-to-date

@@ -3,6 +3,64 @@
 Canonical queue for work that crosses the ownership boundaries in `docs/AGENT_TEAMING.md`.
 Newest request first. The receiving agent marks an item `DONE (<commit>)`; do not delete history.
 
+## [2026-08-15 13:23 ICT] FROM Claude Code TO Codex — corrective delta for the recon MTD report BLOCK, requests re-review
+
+Fixed everything in `docs/reviews/2026-08-14-ff1db18-codex.md` that doesn't require your `bq`/`clasp`
+environment: (1) ICT month boundary now converts via `TIMESTAMP(DATETIME, 'Asia/Bangkok')` instead
+of the UTC-midnight-misinterpreted `TIMESTAMP(DATE)`, plus an explicit `<= now` upper bound;
+(2) `buildReconMtdReport_()` moved inside the mail `try` so query/API/JSON/unknown-status failures
+reach the fallback recipient, not just primary-mail-send failures; (3) `reconMtdQuery_` now polls
+`jobs.getQueryResults` on `jobComplete:false` and paginates via `pageToken`; (4) unknown
+`recon_status` values fail closed instead of being silently dropped; (5) recipient distinctness
+compares trimmed/lower-cased values; (6) added a freshness gate — the report refuses to send if
+`recon_careos_charges`' `MAX(recon_checked_at)` (partition-filtered to the same month bound, no
+new unfiltered scan) is older than 15h, replacing the unsupported "always same-night data" claim.
+Added test coverage for all of the above in `workflows/test_daily_recon_mtd_report.js`.
+**Still open, needs you**: the exact-SQL live dry-run (same `bq` `ReauthUnattendedError` blocker —
+`docs/INPUTS_NEEDED.md`) and the exact Apps Script project/manifest/trigger/rollback runbook — I
+templated the runbook in `workflows/DAILY_RECON_MTD_REPORT_DEPLOYMENT.md` with `<...>` placeholders
+since no browser/clasp session is available on this machine; fill in real IDs, don't treat the
+template as done. Also: neither `node` nor `bq` is available on this machine this session, so the
+updated offline contract test is itself unverified by me — please run it before trusting it.
+Opened `RQ-20260815-1323-daily-recon-mtd-report-delta` in `docs/REVIEW_QUEUE.md`.
+Status: OPEN — needs delta Class-A review; rehearsal/trigger install still prohibited until PASS
+
+## [2026-08-14 14:22 ICT] FROM Senior Data Engineer Review TO Boat/Codex/Claude Code — priority escalation: unblock the post-import stack + fix recurring bq reauth
+
+Design/status review across `docs/knowledge/20_SAP_PROGRESS.md`, `docs/HANDOFF_QUEUE.md`, and
+`docs/INPUTS_NEEDED.md`. Review debt is 0 OPEN (`scripts/review_status.sh`) — process discipline is
+fine. Three items are costing more than they should relative to effort to fix; raising them as their
+own priority rather than leaving them as buried notes:
+
+**1. One IAM grant is blocking a fully-reviewed post-import stack (highest leverage item open).**
+DDL 070–075, the dispatcher, watchdog, and promoter are all Class-A PASSed but inert. The live
+activation checker's sole remaining readiness blocker is the dispatcher `run.invoker` binding,
+gated on an administrator neither `data@rabbit.co.th` nor `piyaratt@rabbit.co.th` has (see
+`docs/INPUTS_NEEDED.md` "SUPERSEDED — dedicated-IAM post-import runtime activation", 2026-08-10
+narrowing note). Separately, `docs/design/DEFAULT_COMPUTE_SA_AUTOMATION_WORKAROUND.md` claims this
+binding is no longer needed under the default-SA workaround, but the live checker still reports it
+as blocking — that contradiction has sat unreconciled since 2026-08-10. Request: get this named
+as one explicit administrator action (not a queued line item), and force a decision on which
+document is correct before any more work is built on top of the ambiguity. New tracked ask added
+to `docs/INPUTS_NEEDED.md` below.
+
+**2. `bq` CLI reauth has stalled the mandatory dry-run gate on Claude Code's machine since
+2026-08-10** (see the 2026-08-10 19:18, 2026-08-11 10:15, and 2026-08-11 18:45 entries below — same
+`ReauthUnattendedError`, re-disclosed three times rather than fixed once). `gcloud` auth still
+works on that machine, so this is a one-time legacy-credential refresh, not a design problem.
+Request: whoever has working `bq` auth (Codex, per the 2026-08-10 entry) re-authenticates it once
+on that machine so the backlog of dry-run-pending source (period-cutoff calendar delta, daily
+completeness dispatch wiring) can clear in one pass instead of blocking session after session.
+
+**3. Re-sequencing note, no new information:** the two open Finance decisions
+(duplicate-QR correction policy, period-cutoff registry/correction policy — both OPEN since
+2026-08-11) and the VMI export reliability bug (`FINDINGS_VMI_MISSING_EXPORT_PIPELINE_20260807.md`,
+OPEN since 2026-08-07, actively dropping paid installment periods from the daily Motor interface)
+remain the next-highest items after 1 and 2 — the VMI item in particular is live data loss, not
+backlog, and is now the oldest unresolved item in `INPUTS_NEEDED.md`.
+
+Status: OPEN — no code/DDL/deploy change in this entry; documentation/prioritization only.
+
 ## [2026-08-14 20:57 ICT] FROM Claude Code TO Codex — deploy the new daily recon MTD email report
 
 Request: review, then deploy `workflows/daily_recon_mtd_report.gs` per
@@ -19,7 +77,8 @@ not touch any scheduler; `node` is unavailable on this machine so the offline co
 Why: Boat asked directly (2026-08-14) for a quick single-step daily reconcile + 06:00 morning
 report to cover the August interface; this reuses the existing canonical recon table instead of
 building new reconciliation logic, per Simplicity First.
-Status: OPEN — recipients confirmed; needs Class-A review + deploy
+Status: Class-A BLOCK in `docs/reviews/2026-08-14-ff1db18-codex.md`; corrective delta now
+submitted, see the 2026-08-15 13:23 ICT entry above (`RQ-20260815-1323-daily-recon-mtd-report-delta`)
 
 ## [2026-08-11 20:01 ICT] FROM Claude Code TO Codex — first review request for Mo's duplicate-QR finding
 

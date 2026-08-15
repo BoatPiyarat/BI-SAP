@@ -1,5 +1,39 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-15 13:23 ICT — corrective delta for the daily recon MTD report BLOCK
+
+- Fixed everything answerable without live BigQuery/Apps Script access from Codex's BLOCK
+  (`docs/reviews/2026-08-14-ff1db18-codex.md`): ICT month conversion via
+  `TIMESTAMP(DATETIME, 'Asia/Bangkok')` plus an explicit `<= now` upper bound (was
+  `TIMESTAMP(DATE)`, UTC-midnight-misinterpreted, excluding 00:00–06:59 ICT on the 1st); moved
+  `buildReconMtdReport_()` inside the mail `try` so build failures reach the fallback, not just
+  mail-send failures; added `jobs.getQueryResults` polling + `pageToken` pagination to
+  `reconMtdQuery_`; unknown `recon_status` values now throw (`RECON_MTD_UNKNOWN_RECON_STATUS`)
+  instead of being silently dropped; recipient distinctness now trims/lower-cases; added a
+  `MAX(recon_checked_at)` freshness gate (15h threshold, partition-filtered to the same month
+  bound as the report query, no new unfiltered scan) that fails closed instead of asserting
+  freshness unconditionally.
+- Expanded `workflows/test_daily_recon_mtd_report.js` to cover all of the above. Could not run it
+  or `node --check` — no `node` on this machine, same gap Codex's review flagged for the live SQL
+  dry-run (`bq` `ReauthUnattendedError`, tracked in `docs/INPUTS_NEEDED.md`).
+- Templated the exact deployment runbook (Script ID, manifest/timezone check, property-set
+  commands, trigger install with a stated 06:00–07:00 window rather than an exact-instant claim,
+  and a <5-minute rollback) in `workflows/DAILY_RECON_MTD_REPORT_DEPLOYMENT.md` with explicit
+  `<...>` placeholders — could not fill real values without a browser/clasp session.
+- Opened `RQ-20260815-1323-daily-recon-mtd-report-delta` in `docs/REVIEW_QUEUE.md` and logged the
+  delta in `docs/HANDOFF_QUEUE.md`; no BigQuery mutation, `gs://**` write, or scheduler change
+  performed — stays source-only pending Codex's re-review and eventual deploy.
+
+## 2026-08-14 21:23 ICT — daily recon MTD Class-A review BLOCKED
+
+- Added `docs/reviews/2026-08-14-ff1db18-codex.md` and canonical review request
+  `RQ-20260814-2059-daily-recon-mtd-report`.
+- Exact offline source syntax and contract harness passed (10 assertions).
+- Blocked incorrect ICT MTD bounds, incomplete failure routing/BigQuery completion, silent unknown
+  statuses, missing freshness/deploy/rollback contract, and unavailable exact SQL dry-run.
+- Did not run the real-email rehearsal or install a trigger against a known-wrong report. No
+  Apps Script, email, trigger, scheduler, BigQuery, GCS, or SAP mutation occurred.
+
 ## 2026-08-14 20:57 ICT — source-only daily recon MTD email report, handed to Codex
 
 - Boat asked directly for a quick single-step daily SAP↔CareOS reconciliation with a 06:00 ICT

@@ -3,6 +3,37 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+## RQ-20260815-1323-daily-recon-mtd-report-delta
+Status: OPEN — corrective delta submitted against the BLOCK below; requests re-review
+Reviewer: Codex
+Class: A
+Artifact: `workflows/daily_recon_mtd_report.gs`, `workflows/test_daily_recon_mtd_report.js`,
+`workflows/DAILY_RECON_MTD_REPORT_DEPLOYMENT.md` (commit follows this entry)
+Opened: 2026-08-15T13:23:00+07:00
+Claim: fixes checklist items 1 (traceability/live dry-run — partially: query correctness fixed,
+live dry-run still blocked by `bq` reauth), 4 (ICT ordering/time bounds), 6 (grain/unknown-status
+fail-closed), 8 (knowledge consistency — freshness gate replaces the unsupported "always fresh"
+claim), plus Spec §1 (async polling), §2 (unknown-status), §3 (recipient normalization) from
+`docs/reviews/2026-08-14-ff1db18-codex.md`. Does NOT close checklist items 3/10/11 (exact live
+dry-run, exact trigger ID/rollback capture, cost-hygiene dry-run) — those need Codex's `bq`/`clasp`
+access; runbook template left in the deployment doc with explicit `<...>` placeholders instead of
+guessed values.
+Evidence: inline delta description in `docs/HANDOFF_QUEUE.md` 2026-08-15 13:23 ICT entry; new test
+cases named in the same entry (month boundary, stale-data, unknown-status, async polling,
+pagination, recipient normalization, build-failure-reaches-fallback). Not yet run in this
+session — no `node` on this machine.
+
+## RQ-20260814-2059-daily-recon-mtd-report
+Status: REVIEWED
+Reviewer: Codex
+Class: A
+Artifact: commits `ff1db18`, `9376cc1`; `workflows/daily_recon_mtd_report.gs`, test, deployment contract
+Opened: 2026-08-14T20:59:46+07:00
+Verdict: BLOCK — `docs/reviews/2026-08-14-ff1db18-codex.md`
+Claim: send a read-only Bangkok-month-to-date SAP↔CareOS reconciliation email each morning, with
+primary/fallback delivery, after acceptance rehearsal, then install a 06:00 ICT Apps Script trigger.
+Evidence: source/test/deployment artifacts and DDL 005/AS_BUILT table-refresh contract.
+
 ## RQ-20260811-2001-duplicate-qr-installment-finding
 Status: OPEN — request Class A review; this finding's own header already states it was never
 reviewed ("Not yet Class-A reviewed"), and it carries a real money-impact conclusion
