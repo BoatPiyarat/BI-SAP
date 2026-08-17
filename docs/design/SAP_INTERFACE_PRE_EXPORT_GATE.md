@@ -57,6 +57,9 @@ Boat on 2026-08-17.
 12. The destination is a shadow prefix unless Boat explicitly says `deploy OK` in the current
     session. Production filenames/folders must match the reviewed routing contract and must never
     be used to infer business flow.
+13. Before delivery, reconcile the exact candidate against prior user-reported and SAP-import
+    errors applicable to the same flow/operation. A previously observed error family without a
+    preventive assertion or reviewed disposition blocks the file.
 
 ## RCL installment checks
 

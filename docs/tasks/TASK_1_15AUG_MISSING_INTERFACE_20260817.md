@@ -163,6 +163,15 @@ counts overlap). Dry-run: 1,975,689,358 bytes; real query job
 `sql/adhoc/20260817_verify_mo_1-15aug_missing_from_sap.sql`. No empty or partial-row file was
 created; no BigQuery mutation or GCS write occurred.
 
+**Scoped production approval, 2026-08-17:** Boat authorized production-bucket delivery only for
+Mo-list files that pass the complete gate, with the goal of closing the gap by the morning of
+2026-08-18. This approval does not permit non-Mo rows, failed/unknown items, partial spines, or a
+gate bypass. Before delivery, compare the exact candidate against prior user/import-error evidence.
+At minimum it must regress the confirmed RCL Motor NEWPAYMENT incidents: LogID 21178 (584/584
+rejected for incomplete period sequence plus wrong basename) and corrected LogID 21183 (full spine,
+terminal success, 558/558 delivered identities later Paid in the refreshed mirror). The basename
+must begin `INSURANCE_RCB_`; `RCB_MOTOR` belongs only in the bucket folder.
+
 ---
 
 ## Order of work
