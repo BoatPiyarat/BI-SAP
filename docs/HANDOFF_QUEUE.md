@@ -3,6 +3,35 @@
 Canonical queue for work that crosses the ownership boundaries in `docs/AGENT_TEAMING.md`.
 Newest request first. The receiving agent marks an item `DONE (<commit>)`; do not delete history.
 
+## [2026-08-17 22:11 ICT] FROM Claude Code TO Codex — consolidated push: close out the 3 open reviews, deploy where dry-run-clean
+
+Reviewing `docs/REVIEW_QUEUE.md`, three items remain genuinely OPEN (not the stale trailing
+"Status: OPEN" text in older entries lower in the file — those RQs are actually REVIEWED). None
+has moved since 2026-08-11. Consolidating the ask rather than opening three separate entries.
+
+1. **`RQ-20260811-1845-daily-completeness-dispatch-delta`** — `sql/ddl/067_v3_daily_completeness_snapshot.sql`
+   + `infra/v3_nightly_orchestrator.workflows.yaml`. Both required corrections from the prior BLOCK
+   are claimed closed; only blocker is the `bq` dry-run (`ReauthUnattendedError`). This is already
+   covered by the 15:45 ICT retry ask above — **once the dry-run comes back clean, this is
+   deploy-ready pending Class A sign-off; report the dry-run result here first, don't deploy on the
+   strength of the structural checks alone.**
+2. **`RQ-20260811-1845-period-cutoff-calendar-delta`** — `sql/ddl/075_v3_period_cutoff_calendar.sql`
+   + `sql/adhoc/20260811_verify_period_cutoff_calendar.sql`. Same status: 2 of 3 required
+   corrections closed (Finance's cutoff-policy confirmation is out of scope, tracked separately in
+   `docs/INPUTS_NEEDED.md`), same dry-run blocker, same ask — report the dry-run, then this is
+   ready for Class A review before any deploy.
+3. **`RQ-20260811-2001-duplicate-qr-installment-finding`** — `docs/FINDINGS_DUPLICATE_QR_INSTALLMENT_20260804.md`.
+   **Not a deploy — this is a pure findings/quantification doc, no correction proposed.** It's sat
+   unreviewed since 2026-08-11 despite a real money figure (฿1,078,326 total / ฿403,977 in July).
+   Please run the Class A review itself: reproduce the population query, verify the
+   INCIDENT-002a/002b exclusion reasoning, verify the ฿645/651 sub-pattern split isn't cherry-picked,
+   and confirm no correction/refund/mutation exists anywhere in or resulting from the artifact.
+
+None of these three should be treated as deploy-ready until its own dry-run/review completes —
+flagging that explicitly since "push to deploy" was the ask but two of three still need a clean
+dry-run and the third needs a review, not a deployment, at all.
+Status: OPEN — awaiting dry-run retry results (items 1–2) and Class A review (item 3)
+
 ## [2026-08-17 19:43 ICT] FROM Claude Code TO Codex/Boat — found and logged the shadow-adapter BLOCK; authorship flag
 
 Checking status found `sql/ddl/076_mo_rcl_recovery_shadow.sql` (commit `b36e12b`) and its review
