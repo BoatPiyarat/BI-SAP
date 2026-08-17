@@ -3,6 +3,29 @@
 Canonical queue for work that crosses the ownership boundaries in `docs/AGENT_TEAMING.md`.
 Newest request first. The receiving agent marks an item `DONE (<commit>)`; do not delete history.
 
+## [2026-08-17 15:34 ICT] FROM Claude Code TO Codex — new task file: verify + prepare interface file for "EDC" (separate from 1-15 Aug)
+
+Puii Somrudee (`somrudeeb@rabbit.co.th`) relayed via Boat: import data from the "EDC" tab of her
+"RCB update sheet" (https://docs.google.com/spreadsheets/d/1T4QSlIaTZA2druwhxeJf-CdV9dogt3xo3U9nfEcvZAk).
+Different sheet, different owner, RCB/EDC channel not RCL — **do not merge with the 1-15 Aug task**.
+Same method as before: downloaded as `.xlsx`, parsed `xl/worksheets/sheet2.xml` directly (workbook.xml
+confirms tab "EDC" = internal `sheetId=2`, range `$A$1:$AK$853`, 852 data rows). Of those: 495
+already `Done`/`Paid`, 33 carry an explicit known-block note, **324 rows (322 distinct orders) have
+both status columns blank — genuinely unactioned, this is the population**. Unlike the RCL sheet,
+this one is order-level with no Period column, and per D11 might be ONETIME/TotalPeriods=1 — but do
+not assume that without checking (flagged explicitly in the task file).
+
+Full self-contained brief, same two-phase structure as the RCL task (including the RCB-adapted
+version of Boat's mandatory interface invariants — flow-must-not-mix, full period spine, no NULLs,
+required per-order-item proofs): **`docs/tasks/TASK_EDC_MISSING_INTERFACE_20260817.md`**. Phase 1
+query already written: `sql/adhoc/20260817_verify_puii_edc_missing_from_sap.sql`, run via
+`scripts/bq_safe_query.sh` — will hit the same `bq` `ReauthUnattendedError` blocker as the sibling
+RCL task's Phase 1 attempt today (2026-08-17T15:30 ICT) until that's fixed; don't re-diagnose it,
+it's the same tracked root cause. Report Phase 1's breakdown here before starting Phase 2. Also
+flags: if any order needs a `RCB-EDC-<bank>` channel and it isn't KBANK, that's the open EDC
+channel-matrix gap in `docs/INPUTS_NEEDED.md` — route there, don't guess a bank.
+Status: OPEN — Phase 1 first; same `bq` reauth blocker as the sibling task likely applies
+
 ## [2026-08-17 10:49 ICT] FROM Claude Code TO Codex — consolidated task file: verify + prepare interface file for "1-15 Aug"
 
 Boat asked to focus only on "1-15 Aug" and hand you one complete, self-contained task rather than

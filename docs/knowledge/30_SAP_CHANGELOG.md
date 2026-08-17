@@ -1,5 +1,32 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-17 15:34 ICT — EDC missing-from-SAP task: extracted population, wrote verification query and task file
+
+- Puii Somrudee (`somrudeeb@rabbit.co.th`) asked Boat to import data from the "EDC" tab of her
+  "RCB update sheet" (https://docs.google.com/spreadsheets/d/1T4QSlIaTZA2druwhxeJf-CdV9dogt3xo3U9nfEcvZAk,
+  "RCB_missing_order", modified 2026-08-17T06:44:32Z) — a separate sheet/owner/channel from the
+  Mo/RCL "1-15 Aug" task, not merged with it per Boat's instruction to keep 1-15 Aug focused.
+- Downloaded as `.xlsx`, parsed `xl/workbook.xml` + `xl/worksheets/sheet2.xml` directly (Drive's
+  text-export flattens all 12 tabs together). Confirmed: tab "EDC" = `sheetId=2`,
+  `_xlnm._FilterDatabase` range `$A$1:$AK$853` → 852 data rows, order-level (no Period column,
+  columns A=order, B=payment date, D=CareOS status, E=SAP status, F=Progress).
+- Classified all 852: 495 `Progress=Done`/`SAP status=Paid` (resolved); 33 carry an explicit
+  Progress note citing a known block (23 no-CareOS-order-yet, 6 no-order-number-yet, 3 no-order-
+  number, 1 explicit wrong-insurer cancellation); **324 rows (322 distinct orders after dedup)
+  have both status columns blank — the real, unactioned population**. Payment-date range
+  2026-07-15 to 2026-08-15. Noted a data-quality wrinkle in column D (inconsistent/mixed content,
+  not used for classification).
+- Wrote `sql/adhoc/20260817_verify_puii_edc_missing_from_sap.sql` (322 order IDs, classifies
+  against live `sap_integration_v3` at order_item grain — no Period column to key on, per D11
+  caveat does not assume `TotalPeriods=1`) and
+  `docs/tasks/TASK_EDC_MISSING_INTERFACE_20260817.md` (mirrors
+  `TASK_1_15AUG_MISSING_INTERFACE_20260817.md`'s two-phase structure, including an RCB-adapted
+  version of Boat's mandatory interface invariants — flow-must-not-mix now asserting RCB not RCL,
+  full period spine, no NULLs, required per-order-item proofs).
+- Handed to Codex (`docs/HANDOFF_QUEUE.md` 15:34 ICT) — flagged it will hit the identical `bq`
+  `ReauthUnattendedError` blocker as the RCL task's 15:30 ICT attempt today until that's fixed.
+- No BigQuery query, `gs://**` write, or import performed.
+
 ## 2026-08-17 10:49 ICT — consolidated 1-15 Aug handoff into a single task file
 
 - Added `docs/tasks/TASK_1_15AUG_MISSING_INTERFACE_20260817.md` per Boat's instruction to focus

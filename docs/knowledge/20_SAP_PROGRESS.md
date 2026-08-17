@@ -1,5 +1,18 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-17 15:34 ICT — new task: EDC missing-from-SAP population, separate from 1-15 Aug
+
+Puii Somrudee relayed via Boat: import the "EDC" tab of her "RCB update sheet" (different sheet,
+different owner, RCB/EDC channel — not the RCL 1-15 Aug task). Downloaded as `.xlsx`, parsed the
+worksheet XML directly (same method as the RCL task). Confirmed: 852 data rows, order-level (no
+Period column) — 495 already Done/Paid, 33 carry an explicit known-block note, **324 rows
+(322 distinct orders) have both status columns blank — the real population**. Wrote
+`sql/adhoc/20260817_verify_puii_edc_missing_from_sap.sql` and
+`docs/tasks/TASK_EDC_MISSING_INTERFACE_20260817.md` (same two-phase structure as the RCL task,
+including an RCB-adapted version of Boat's mandatory interface invariants). Handed to Codex
+(`docs/HANDOFF_QUEUE.md` 15:34 ICT) — will hit the same `bq` reauth blocker as the RCL task's
+15:30 ICT attempt until that's fixed.
+
 ## 2026-08-17 10:49 ICT — consolidated 1-15 Aug work into one task file, scope narrowed per Boat
 
 Boat asked to focus only on "1-15 Aug" and give Codex one complete handoff instead of two sprawling
