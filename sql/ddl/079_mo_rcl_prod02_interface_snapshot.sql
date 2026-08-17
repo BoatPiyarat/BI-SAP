@@ -81,16 +81,16 @@ BEGIN
   CREATE TEMP TABLE _event_union AS
   SELECT charge_id,order_item,period,third_party_id,charge_time,amount,payment_option,
     payment_method_source,payment_channel_source
-  FROM `pacific-plating-282708.sap_integration_v3.stg_payment_events`
+  FROM `pacific-plating-282708.sap_integration_v3.stg_payment_events` e
   WHERE DATE(charge_time) BETWEEN DATE '2000-01-01' AND DATE '2026-08-15'
-    AND EXISTS (SELECT 1 FROM _scoped_charge_id s WHERE s.charge_id=stg_payment_events.charge_id)
+    AND EXISTS (SELECT 1 FROM _scoped_charge_id s WHERE s.charge_id=e.charge_id)
   UNION ALL
   SELECT charge_id,order_item,period,third_party_id,charge_time,amount,payment_option,
     payment_method_source,payment_channel_source
-  FROM `pacific-plating-282708.sap_integration_v3.mo_rcl_recovery_event_snapshot`
+  FROM `pacific-plating-282708.sap_integration_v3.mo_rcl_recovery_event_snapshot` e
   WHERE source_request_id='MO-RCL-20260817-PROD-01'
     AND EXISTS (SELECT 1 FROM _scoped_charge_id s
-      WHERE s.charge_id=mo_rcl_recovery_event_snapshot.charge_id);
+      WHERE s.charge_id=e.charge_id);
 
   CREATE TEMP TABLE _event_charge AS
   SELECT charge_id,ARRAY_AGG(STRUCT(order_item,period,third_party_id,charge_time,amount,payment_option,
