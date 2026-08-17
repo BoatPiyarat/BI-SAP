@@ -68,18 +68,29 @@ BEGIN
   FROM `pacific-plating-282708.sap_integration_v3.mo_rcl_recovery_mapping`
   WHERE request_id=v_request_id;
 
+  CREATE TEMP TABLE _scoped_charge_id AS
+  SELECT DISTINCT charge_id FROM (
+    SELECT charge_id,order_item FROM `pacific-plating-282708.sap_integration_v3.stg_payment_events`
+    WHERE DATE(charge_time) BETWEEN DATE '2000-01-01' AND DATE '2026-08-15'
+    UNION ALL
+    SELECT charge_id,order_item
+    FROM `pacific-plating-282708.sap_integration_v3.mo_rcl_recovery_event_snapshot`
+    WHERE source_request_id='MO-RCL-20260817-PROD-01'
+  ) e WHERE EXISTS (SELECT 1 FROM _mapped_items m WHERE m.order_item=e.order_item);
+
   CREATE TEMP TABLE _event_union AS
   SELECT charge_id,order_item,period,third_party_id,charge_time,amount,payment_option,
     payment_method_source,payment_channel_source
   FROM `pacific-plating-282708.sap_integration_v3.stg_payment_events`
   WHERE DATE(charge_time) BETWEEN DATE '2000-01-01' AND DATE '2026-08-15'
-    AND EXISTS (SELECT 1 FROM _mapped_items m WHERE m.order_item=stg_payment_events.order_item)
+    AND EXISTS (SELECT 1 FROM _scoped_charge_id s WHERE s.charge_id=stg_payment_events.charge_id)
   UNION ALL
   SELECT charge_id,order_item,period,third_party_id,charge_time,amount,payment_option,
     payment_method_source,payment_channel_source
   FROM `pacific-plating-282708.sap_integration_v3.mo_rcl_recovery_event_snapshot`
   WHERE source_request_id='MO-RCL-20260817-PROD-01'
-    AND EXISTS (SELECT 1 FROM _mapped_items m WHERE m.order_item=mo_rcl_recovery_event_snapshot.order_item);
+    AND EXISTS (SELECT 1 FROM _scoped_charge_id s
+      WHERE s.charge_id=mo_rcl_recovery_event_snapshot.charge_id);
 
   CREATE TEMP TABLE _event_charge AS
   SELECT charge_id,ARRAY_AGG(STRUCT(order_item,period,third_party_id,charge_time,amount,payment_option,
@@ -91,7 +102,8 @@ BEGIN
   CREATE TEMP TABLE _charge_conflict_item AS
   SELECT DISTINCT u.order_item
   FROM _event_union u JOIN _event_charge c USING(charge_id)
-  WHERE c.charge_versions>1;
+  WHERE c.charge_versions>1
+    AND EXISTS (SELECT 1 FROM _mapped_items m WHERE m.order_item=u.order_item);
 
   CREATE TEMP TABLE _events AS
   SELECT * EXCEPT(rn) FROM (
@@ -171,7 +183,7 @@ BEGIN
   WHERE EXISTS (SELECT 1 FROM _mapped_items m WHERE m.order_item=s.order_item);
 
   CREATE TEMP TABLE _financial AS
-  SELECT s.transaction_id,
+  SELECT * EXCEPT(financial_rn) FROM (SELECT s.transaction_id,
     ROUND(IFNULL(ps.processing_fee_amount,0)/100*100/103.3,2) canonical_processing_fee,
     ROUND(IFNULL(ps.processing_fee_amount,0)/100-
       ROUND(IFNULL(ps.processing_fee_amount,0)/100*100/103.3,2),2) canonical_processing_fee_vat,
@@ -181,14 +193,16 @@ BEGIN
     ROUND(IFNULL(ps.shipment_fee,0)/100*100/107,2) canonical_shipping_fee,
     ROUND(IFNULL(ps.shipment_fee,0)/100-
       ROUND(IFNULL(ps.shipment_fee,0)/100*100/107,2),2) canonical_shipping_fee_vat,
-    ROUND(IFNULL(ps.discount_amount,0)/100,2) canonical_discount
+    ROUND(IFNULL(ps.discount_amount,0)/100,2) canonical_discount,
+    COUNT(ps.snapshot_id) OVER(PARTITION BY s.transaction_id) canonical_financial_source_count,
+    ROW_NUMBER() OVER(PARTITION BY s.transaction_id ORDER BY ps.snapshot_id) financial_rn
   FROM (SELECT * EXCEPT(rn) FROM (
     SELECT *,ROW_NUMBER() OVER(PARTITION BY transaction_id ORDER BY update_time DESC,id DESC) rn
     FROM `pacific-plating-282708.careos.carepay_transaction_snapshots` ts
     WHERE EXISTS (SELECT 1 FROM _target_transaction t WHERE t.transaction_id=ts.transaction_id)
     ) WHERE rn=1) s
   LEFT JOIN `pacific-plating-282708.careos.carepay_transaction_snapshot_price_summaries` ps
-    ON ps.snapshot_id=s.id;
+    ON ps.snapshot_id=s.id) WHERE financial_rn=1;
 
   CREATE TEMP TABLE _candidate AS
   SELECT
@@ -227,7 +241,8 @@ BEGIN
     oi.net_premium canonical_gross_premium,oi.stamp_duty canonical_stamp_duty,
     oi.vat_amount canonical_vat,oi.gross_premium canonical_total_premium,
     f.canonical_processing_fee,f.canonical_processing_fee_vat,f.canonical_total_eir,
-    f.canonical_total_sbt,f.canonical_shipping_fee,f.canonical_shipping_fee_vat,f.canonical_discount
+    f.canonical_total_sbt,f.canonical_shipping_fee,f.canonical_shipping_fee_vat,f.canonical_discount,
+    f.canonical_financial_source_count
   FROM `pacific-plating-282708.sap_integration_v3.stg_schedule` sc
   JOIN _mapped_items m ON m.order_item=sc.order_item
   LEFT JOIN _source_ranked s ON s.OrderItem=sc.order_item AND s.Period=sc.period
@@ -314,7 +329,8 @@ BEGIN
         charge_versions,invalid_mapping_events,mapping_versions,exclusion_rule,validation_rule,sap_status,
         canonical_gross_premium,canonical_stamp_duty,canonical_vat,canonical_total_premium,
         canonical_processing_fee,canonical_processing_fee_vat,canonical_total_eir,canonical_total_sbt,
-        canonical_shipping_fee,canonical_shipping_fee_vat,canonical_discount))),r':null|:"NULL"')
+        canonical_shipping_fee,canonical_shipping_fee_vat,canonical_discount,
+        canonical_financial_source_count))),r':null|:"NULL"')
       OR NULLIF(TRIM(CompanyDB),'') IS NULL OR NULLIF(TRIM(OrderID),'') IS NULL
       OR NULLIF(TRIM(OrderItem),'') IS NULL OR NULLIF(TRIM(InsurerCode),'') IS NULL
       OR NULLIF(TRIM(OrderDate),'') IS NULL OR NULLIF(TRIM(InsuredID),'') IS NULL
@@ -353,6 +369,10 @@ BEGIN
       OR ABS(SAFE_CAST(ShippingFee AS NUMERIC)-canonical_shipping_fee)>0.005
       OR ABS(SAFE_CAST(ShippingFeeVat AS NUMERIC)-canonical_shipping_fee_vat)>0.005
       OR ABS(SAFE_CAST(Discount AS NUMERIC)-canonical_discount)>0.005)>0
+    UNION ALL
+    SELECT OrderItem,'CANONICAL_FINANCIAL_SOURCE_MISSING_OR_AMBIGUOUS',
+      'latest transaction snapshot must have exactly one price summary'
+    FROM _candidate GROUP BY OrderItem HAVING IFNULL(MAX(canonical_financial_source_count),0)!=1
   );
 
   ASSERT (SELECT COUNT(*) FROM _candidate WHERE TransactionStatus NOT IN ('Paid','Pending'))=0
