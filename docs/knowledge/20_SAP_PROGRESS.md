@@ -1,5 +1,22 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-17 23:06 ICT — Mo recovery reached reviewed immutable gate; first gate result BLOCK, no upload
+
+Codex completed the exact Mo recovery lineage through request `MO-RCL-20260817-PROD-02`: 2,295
+input pairs conserved as 2,122 mapped pairs / 173 classified holds, covering 2,112 mapped items
+with zero mapped/held item overlap. The reviewed historical-event snapshot contributed 316
+qualified events and retained 9 qualification holds without mutating shared staging. The final
+56-column, complete-spine, item-quarantine builder passed independent Standards and Spec review;
+its successful runtime job `bqjob_rdb6edbc0b449f21_000001a01075dd5d_1` committed an immutable
+`BLOCK_NO_READY_ROWS` manifest: 0 rows, 0 items, 2,112 held items, candidate hash `EMPTY`, schema
+hash `c4659cb3e47f12588cef912fa661346477966197e5e05cdf8f5f8d05c981a265`. No GCS object was written.
+
+The universal hold was caused by SQL NULLs in reviewed optional/non-applicable legacy fields, not
+by missing spines alone. Commit `f3882d3` changes only those optional representations to canonical
+empty strings or `0.00`; both review axes PASS. Rerun is waiting for Boat's explicit approval to
+delete only the blocked PROD-02 hold and manifest rows (the ready table is empty), as required by
+the destructive-action rule. PII-bearing payload rows are not stored in OneDrive.
+
 ## 2026-08-17 19:45 ICT — Mo RCL pass-only recheck found zero eligible complete items
 
 Boat confirmed item-level quarantine for the Mo recovery file: reject an invalid OrderItem spine

@@ -1,5 +1,23 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-17 23:06 ICT — built and reviewed Mo immutable gate; retained blocked first-run evidence
+
+- Cloned and classified exact request `MO-RCL-20260817-PROD-02`, bound immutably to the reviewed
+  `PROD-01` event snapshot: 2,122 mapped pairs, 173 held pairs, 2,112 mapped items, zero overlap,
+  and all 2,295 source pairs conserved.
+- Added `sql/ddl/079_mo_rcl_prod02_interface_snapshot.sql`, an exact 56-column RCL NEWPAYMENT
+  snapshot with complete `1..N` spines, exact Paid/Pending status, mirror-first InvoiceNo,
+  effective-dated approved mappings, canonical `/100` and `/103.3` financial reconciliation,
+  item-level quarantine, full charge conservation, lock serialization, and payload/schema hashes.
+- Both Class-A axes passed after runtime compatibility corrections. The successful builder job
+  `bqjob_rdb6edbc0b449f21_000001a01075dd5d_1` produced an immutable
+  `BLOCK_NO_READY_ROWS` manifest (0 rows; 2,112 held items); no GCS object was written.
+- Root cause of the universal first-run hold was optional legacy SQL NULLs. Commit `f3882d3`
+  canonicalizes only reviewed optional text/refund fields; Standards and Spec both PASS. Awaiting
+  explicit approval to remove only the blocked attempt's hold/manifest rows before rerun.
+- No PII-bearing interface data was written to OneDrive; only source and aggregate evidence were
+  recorded.
+
 ## 2026-08-17 19:45 ICT — confirmed item quarantine; pass-only RCL population is empty
 
 - Recorded Boat's confirmation that the Mo RCL recovery may quarantine invalid complete items and
