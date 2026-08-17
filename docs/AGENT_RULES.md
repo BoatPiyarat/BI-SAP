@@ -191,6 +191,10 @@ require constant clarification.
 - Test customers: exact match `LOWER(TRIM(FirstName|LastName)) = 'test'` only. Phone `0999999999` = corroborating signal, **report-only** for now.
 - PolicyNo > 50 chars = BLOCK (never truncate) + report in the morning email.
 - Date fields: exactly 8 chars and parseable; empty allowed **only** for PaymentDate on pending rows.
+- Boat 2026-08-17 — recovery/interface candidates must fail closed on RCL/RCB mixing. Every RCL
+  installment order must interface its complete `1..TotalPeriods` spine, with exactly one row per
+  period and status exactly `Paid` or `Pending`. Required interface values must not be SQL NULL or
+  the literal `"NULL"`; only Pending `PaymentDate` may be represented by the canonical empty string.
 - Validation failure policy: item-level quarantine (rest continues) — provisional, pending Boat's final word.
 
 ## Current state (2026-07-29)

@@ -82,6 +82,31 @@ query with dry-run evidence, not from the sheet.
 Scope: **only** the `STILL_MISSING_SILENT_DROP` population confirmed in Phase 1 (re-excluding
 `L80416399` if Phase 1 shows it's actually already resolved).
 
+### Boat's mandatory interface invariants (2026-08-17)
+
+These are hard, fail-closed acceptance gates. A candidate that violates any gate must be
+quarantined with its reason and must not enter the shadow file.
+
+1. **RCL and RCB must never mix.** Classify every candidate from canonical source attributes before
+   projection. Each `(order_item, period)` must resolve to exactly one flow, and every order_item in
+   this task must resolve to RCL. Reject a candidate if RCL/RCB indicators conflict, if the flow is
+   unknown/NULL, or if one order_item spans both flows. Produce an explicit pre-export assertion
+   proving zero mixed/unknown candidates; do not infer the flow from the destination filename.
+2. **RCL always interfaces the full period spine.** For each included order_item with
+   `TotalPeriods = N`, emit exactly one row for every integer period `1..N`, including already-paid
+   periods and not-yet-paid periods. A partial subset such as only period 6 of 6 is prohibited.
+   Paid periods remain `Paid`; unpaid periods remain `Pending`.
+3. **No NULL interface values.** Before export, assert zero SQL NULLs and zero literal `"NULL"`
+   values in every required interface column, including period, TotalPeriods, status, flow/channel,
+   identifiers, dates, and amounts. The one canonical exception is representation, not data loss:
+   `PaymentDate` may be the empty string only on a `Pending` row, as already defined in
+   `docs/AGENT_RULES.md`; it must never be SQL NULL or the literal `"NULL"`. Any other empty required
+   value is a validation failure.
+4. **Required proof per order_item.** Assert `MIN(period)=1`, `MAX(period)=TotalPeriods`,
+   `COUNT(*)=TotalPeriods`, `COUNT(DISTINCT period)=TotalPeriods`, every period is in `1..N`, and
+   every status is exactly `Paid` or `Pending`. Also assert one canonical flow per order_item and
+   reconcile the candidate row count to `SUM(TotalPeriods)` across the accepted order_items.
+
 **Steps**
 1. Determine routing: this likely overlaps either the existing V3 export effort (`delta_export`,
    Phase B/C — currently **ON HOLD** per `docs/knowledge/20_SAP_PROGRESS.md`, "V3 produces no
@@ -99,15 +124,18 @@ Scope: **only** the `STILL_MISSING_SILENT_DROP` population confirmed in Phase 1 
    - Through the validation stage — **never bypass validation before export, including urgent
      work.** Anything that fails validation goes to `sap_validation_error`/`sap_excluded_records`
      with its reason, not silently dropped or silently included.
+   - Apply and retain evidence for all four mandatory interface invariants above before writing the
+     shadow candidate.
 3. **Write only to a shadow `gs://` prefix.** Never `gs://interface-file/**` — that is production,
    SAP pulls it every 15 minutes.
 4. Stop. Present dry-run evidence + a one-paragraph change summary in `docs/HANDOFF_QUEUE.md`.
    **Do not write to `gs://interface-file/**` without Boat's explicit "deploy OK" in that session**
    — this task file is not that approval.
 
-**Acceptance:** a shadow-written, validated candidate interface file covering exactly the
-Phase-1-confirmed `STILL_MISSING_SILENT_DROP` population, with dry-run evidence and a change
-summary ready for Boat's review — no production write.
+**Acceptance:** a shadow-written, validated RCL-only candidate interface file covering exactly the
+accepted Phase-1-confirmed `STILL_MISSING_SILENT_DROP` order_items at their complete `1..N` period
+spines, with Paid/Pending status per period, no prohibited NULL/`"NULL"` values, invariant-query
+results, dry-run evidence, and a change summary ready for Boat's review — no production write.
 
 ---
 

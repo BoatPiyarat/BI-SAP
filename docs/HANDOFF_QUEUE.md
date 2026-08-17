@@ -18,6 +18,10 @@ before starting Phase 2.
 Status: OPEN — Phase 1 attempted 2026-08-17T15:30+07:00; mandatory safe-wrapper dry-run failed
 before execution with legacy `bq 2.0.92` `ReauthUnattendedError`. No query or GCS write occurred.
 Restore working non-interactive BigQuery authentication, then rerun Phase 1 first.
+Boat added Phase-2 hard gates on 2026-08-17: RCL/RCB cannot mix; every accepted RCL order_item must
+emit the complete `1..TotalPeriods` spine with Paid/Pending per period; required interface values
+cannot be SQL NULL or literal `"NULL"` (Pending PaymentDate may use the canonical empty string).
+The consolidated task file now contains the exact fail-closed assertions and acceptance evidence.
 
 ## [2026-08-17 10:45 ICT] FROM Claude Code TO Codex — Boat asked: verify the 1-15 Aug population live, then prepare (not deploy) the interface file
 
