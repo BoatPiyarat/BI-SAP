@@ -438,14 +438,21 @@ BEGIN
       (SELECT COUNT(DISTINCT order_item) FROM `pacific-plating-282708.sap_integration_v3.mo_rcl_prod02_interface_hold`
         WHERE request_id=v_request_id) AS 'mapped item conservation failed';
 
-    ASSERT (SELECT COUNT(*) FROM _event_charge)=
-      (SELECT COUNT(*) FROM _event_charge ec JOIN `pacific-plating-282708.sap_integration_v3.mo_rcl_prod02_ready` r
-        ON r.OrderItem=ec.event.order_item AND SAFE_CAST(r.Period AS INT64)=ec.event.period
-        AND r.TransactionStatus='Paid')+
-      (SELECT COUNT(*) FROM _event_charge ec WHERE EXISTS (
-        SELECT 1 FROM `pacific-plating-282708.sap_integration_v3.mo_rcl_prod02_interface_hold` h
-        WHERE h.request_id=v_request_id AND h.order_item=ec.event.order_item))
-      AS 'successful-charge candidate/hold conservation failed';
+    ASSERT (SELECT COUNT(*) FROM _event_charge ec WHERE
+      (ec.charge_versions=1 AND NOT (
+        EXISTS (SELECT 1 FROM `pacific-plating-282708.sap_integration_v3.mo_rcl_prod02_ready` r
+          WHERE r.OrderItem=ec.event.order_item AND SAFE_CAST(r.Period AS INT64)=ec.event.period
+            AND r.TransactionStatus='Paid')
+        OR EXISTS (SELECT 1
+          FROM `pacific-plating-282708.sap_integration_v3.mo_rcl_prod02_interface_hold` h
+          WHERE h.request_id=v_request_id AND h.order_item=ec.event.order_item)))
+      OR (ec.charge_versions>1 AND EXISTS (
+        SELECT 1 FROM _event_union u JOIN _mapped_items m ON m.order_item=u.order_item
+        WHERE u.charge_id=ec.charge_id AND NOT EXISTS (
+          SELECT 1 FROM `pacific-plating-282708.sap_integration_v3.mo_rcl_prod02_interface_hold` h
+          WHERE h.request_id=v_request_id AND h.order_item=u.order_item
+            AND h.rule_code='EVENT_CHARGE_VERSION_CONFLICT'))))=0
+      AS 'every distinct successful charge must map to Paid or all implicated mapped items held';
 
     INSERT INTO `pacific-plating-282708.sap_integration_v3.mo_rcl_prod02_gate_manifest`
     SELECT v_request_id,'MO-RCL-20260817-PROD-01','RCL','NEWPAYMENT','RCB_MOTOR',
