@@ -3,6 +3,62 @@
 Canonical queue for work that crosses the ownership boundaries in `docs/AGENT_TEAMING.md`.
 Newest request first. The receiving agent marks an item `DONE (<commit>)`; do not delete history.
 
+## [2026-08-17 10:45 ICT] FROM Claude Code TO Codex — Boat asked: verify the 1-15 Aug population live, then prepare (not deploy) the interface file
+
+Went past the flattened Drive text-export from my last entry: downloaded Mo's sheet as `.xlsx` and
+parsed `xl/worksheets/sheet6.xml` directly (workbook.xml confirms sheet "1-15 Aug" = internal
+`sheetId=6`, `state="visible"`, its own `_xlnm._FilterDatabase` range is `$A$4:$W$2305`). This
+resolves the ambiguity from my last entry with certainty, not a guess:
+
+- **2301 total data rows** (rows 5-2305) — this literally is Mo's "2,301 Orders" figure; it's a
+  real row count in her sheet, not a fabricated number.
+- **2295 of those rows** have the sheet's own status column marked literally `"not on SAP"` —
+  these are the systematic population.
+- **6 rows are a different, non-standard shape**: order IDs already carry an item suffix
+  (`L80544270-M1` etc., no separate Period column value), 4-of-6 annotated `"paid + cc"` — a
+  distinct known edge case (looks like a credit-card timing issue on compulsory items), not part
+  of the systematic list, needs separate manual triage: `L80544270-M1`, `L80519533-M1`,
+  `L80489663-M1`, `L80541540-M1` (appears twice in the sheet — dedupe), `L80498125-M1`.
+- **1 of the 2295** (`L80416399`, period 1) carries a free-text note suggesting Mo believes it may
+  already be resolved — left in the population below since its status cell still says "not on
+  SAP", but flagged so it isn't silently trusted either way.
+- 2288 distinct orders across the 2301 rows (some orders have >1 missing period); no duplicate
+  (order_item, period) pairs among the 2295.
+
+**Boat's ask, two phases — Phase 1 first, do not skip to Phase 2:**
+
+**Phase 1 (verify, read-only)**: I wrote `sql/adhoc/20260817_verify_mo_1-15aug_missing_from_sap.sql`
+— it embeds the exact 2295 `(order_item, period)` pairs from the sheet and classifies each against
+live `sap_integration_v3` into `ALREADY_IN_SAP_NOW` (sheet stale), `LEGITIMATELY_EXCLUDED` (already
+in `sap_excluded_records`, not a bug), `QUARANTINED_VALIDATION_ERROR` (already in
+`sap_validation_error`, known and logged), or `STILL_MISSING_SILENT_DROP` (the real, actionable
+population — per this project's charge-driven principle, every successful charge must end in SAP
+or in one of the two logged tables above; anything left over is the genuine silent-drop bug this
+sheet is trying to surface). Run it through `scripts/bq_safe_query.sh -f
+sql/adhoc/20260817_verify_mo_1-15aug_missing_from_sap.sql` (dry-run first, per COST_CONTROL.md —
+it's ~2300 small literal rows joined against clustered/partitioned tables, should be cheap, but
+don't skip the dry-run). The file's trailing comment has the follow-up query to get the exact
+order+period list for `STILL_MISSING_SILENT_DROP` once you have the aggregate counts. Report the
+classification breakdown back in this queue before Phase 2.
+
+**Phase 2 (prepare, NOT deploy, the interface file)**: for the confirmed `STILL_MISSING_SILENT_DROP`
+population only (excluding the 6 non-standard rows and re-checking the 1 flagged-note row's live
+state from Phase 1 before including it) — prepare an interface file per the existing production
+conventions: exact positional column order (verify via `INFORMATION_SCHEMA.COLUMNS`, never
+`SELECT * EXCEPT(...)`, use `SELECT * REPLACE(...)`), `DDMMYYYY` date strings, satang/100 amounts
+rounded to 2dp, `InvoiceNo` via `fn_invoice_no` only (never invented, never touched if the row was
+ever Paid/Cancelled), through the validation stage (no bypassing it, "including urgent work" per
+`AGENT_RULES.md`). **Write only to a shadow `gs://` prefix — never `gs://interface-file/**`,
+that's production and SAP pulls it every 15 minutes.** This almost certainly overlaps the existing
+V3 export effort (`delta_export`, Phase B/C — currently ON HOLD per `20_SAP_PROGRESS.md`) or the
+legacy `sap_view.RCL_MOTOR` path (the only thing that actually produces real interface files
+today) — use your judgment on which path this should route through rather than inventing a third;
+flag it explicitly if routing through V3 means touching something that's currently on hold.
+**Stop after the shadow write** and present dry-run evidence + a one-paragraph change summary here;
+the actual `gs://interface-file/**` write needs Boat's explicit "deploy OK" in a session, per the
+DEPLOY GATE — I'm not giving that approval by relaying this request, only Boat can.
+Status: OPEN — Phase 1 verification first, Phase 2 is prepare-only pending Boat's live-numbers review
+
 ## [2026-08-17 10:27 ICT] FROM Claude Code TO Codex — Mo's sheet is real and accessible; here's the link and what I could/couldn't confirm from it
 
 Boat provided the actual sheet Mo referenced:

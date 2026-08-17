@@ -1,5 +1,38 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-17 10:45 ICT — confirmed 1-15 Aug population from sheet XML; wrote verification query, tasked Codex
+
+- Downloaded Mo's "RCL_missing order" sheet as `.xlsx` (via `mcp__claude_ai_Google_Drive__download_file_content`,
+  `exportMimeType=application/vnd.openxmlformats-officedocument.spreadsheetml.sheet`) and parsed
+  `xl/workbook.xml` + `xl/worksheets/sheet6.xml` + `xl/sharedStrings.xml` directly with Python's
+  stdlib `zipfile`/`xml.etree` — the Drive text-export tool used at 10:27 ICT flattens all 8 tabs
+  together with no gid/name boundary, so this went straight to the source XML instead.
+- Confirmed: sheet "1-15 Aug" = internal `sheetId=6`, `state="visible"`,
+  `_xlnm._FilterDatabase` range `$A$4:$W$2305` → **2301 total data rows — this is literally Mo's
+  2,301 figure**, a real row count in a real sheet. 2295 rows have status column `"not on SAP"`
+  (the systematic population, no duplicate order_item+period pairs); 6 rows are a non-standard
+  shape (order IDs already suffixed `-M1`, no separate Period value, 4-of-6 annotated "paid + cc")
+  — a distinct known edge case, excluded from the systematic list, needs separate manual triage:
+  `L80544270-M1`, `L80519533-M1`, `L80489663-M1`, `L80541540-M1` (duplicated in the sheet),
+  `L80498125-M1`. 1 of the 2295 (`L80416399` period 1) carries a note suggesting possible stale
+  status — left in, flagged.
+- Wrote `sql/adhoc/20260817_verify_mo_1-15aug_missing_from_sap.sql`: embeds the exact 2295
+  `(order_item, period)` pairs as a literal `UNNEST([STRUCT...])`, classifies each against live
+  `sap_integration_v3` (reusing `sql/ddl/005_recon_all_charges.sql`'s "real invoice" definition for
+  `sap_invoiced`) into `ALREADY_IN_SAP_NOW` / `LEGITIMATELY_EXCLUDED` (`sap_excluded_records`) /
+  `QUARANTINED_VALIDATION_ERROR` (`sap_validation_error`) / `STILL_MISSING_SILENT_DROP` — read-only,
+  no write, must run through `scripts/bq_safe_query.sh`. Could not run it myself — no `bq`/BigQuery
+  access this session.
+- Handed Codex a two-phase task (`docs/HANDOFF_QUEUE.md` 10:45 ICT): Phase 1, run the verification
+  query and report the classification breakdown; Phase 2, for the confirmed
+  `STILL_MISSING_SILENT_DROP` population only, prepare (build, validate, shadow-`gs://` write) an
+  interface file following existing production conventions — explicitly NOT authorized to write
+  `gs://interface-file/**`, that still needs Boat's explicit deploy OK per the DEPLOY GATE.
+- Also flagged to Boat (`docs/INPUTS_NEEDED.md`): "urgent_for refund to cust" is a
+  refund-routing problem (`FULL_PAYMENT` orders synced to the wrong channel), not a SAP-import gap
+  — possibly needs its own tracked finding.
+- No BigQuery query, `gs://**` write, or import performed.
+
 ## 2026-08-17 10:27 ICT — read Mo's RCL_missing-order sheet via Drive connector; count unconfirmed
 
 - Boat gave the sheet link Mo referenced (`1BVnd49n_kxVQhqHIou70n_GbpRV-hlbXXQjscS5-upA`, "RCL_missing

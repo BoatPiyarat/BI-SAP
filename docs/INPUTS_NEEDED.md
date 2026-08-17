@@ -8,24 +8,31 @@ Mo Pawinee reported to Boat (chat, 2026-08-17, not yet independently verified �
 the order hasn't reached SAP, excluding new orders created via a changed order; plus a separate
 "urgent_for refund to cust" tab.
 
-1. **RESOLVED — sheet link**: Boat provided it —
+1. **RESOLVED — sheet link and exact "1-15 Aug" population**: Boat provided the link —
    https://docs.google.com/spreadsheets/d/1BVnd49n_kxVQhqHIou70n_GbpRV-hlbXXQjscS5-upA
-   (title "RCL_missing order", owner `pawineet@rabbit.co.th`, last modified 2026-08-17, the "1-15
-   Aug" tab is `gid=235486908`). I read it via the Drive connector: it's a real, actively-maintained
-   workbook, not a one-off — it contains **8 tabs following the same "compare data between SAP and
-   Omise Report" template** (order + period rows, each with ready-made CareOS/SAP/BigQuery filter
-   fragments, "excl. changed order" noted explicitly in each tab's own header, matching Mo's
-   description), plus a separately-structured tab matching "urgent_for refund to cust" (rows
+   (title "RCL_missing order", owner `pawineet@rabbit.co.th`, last modified 2026-08-17T03:05:30Z).
+   Downloaded as `.xlsx` and parsed the sheet XML directly (the Drive text-export tool flattens all
+   8 tabs together with no gid/name boundary, so this went past that limitation from my last
+   entry). Confirmed with certainty: sheet "1-15 Aug" = internal `sheetId=6`, `state="visible"`,
+   `_xlnm._FilterDatabase` range `$A$4:$W$2305` = **2301 total data rows, which literally is Mo's
+   2,301 figure** — a real row count, not a fabricated number. 2295 of those rows have the sheet's
+   own status column marked `"not on SAP"`; 6 are a different, non-standard shape (order IDs
+   already suffixed `-M1`, no Period column, mostly annotated `"paid + cc"` — a distinct edge case
+   needing separate triage, not folded into the systematic population); 1 of the 2295
+   (`L80416399`, period 1) carries a note suggesting it may already be resolved despite its status
+   cell. Full detail and the extracted `(order_item, period)` list are in
+   `sql/adhoc/20260817_verify_mo_1-15aug_missing_from_sap.sql`, handed to Codex
+   (`docs/HANDOFF_QUEUE.md` 2026-08-17 10:45 ICT) to classify against live `sap_integration_v3`
+   before anything is prepared for interface-file generation. This closes the "sheet link" input —
+   the only remaining human decision on this item is Boat reviewing Codex's live classification
+   numbers once Phase 1 comes back, and the "urgent_for refund to cust" tab is a *different*
+   problem than originally assumed (see below), also needing a decision.
+   **Also found**: "urgent_for refund to cust" is a small (10-row) separately-structured tab, rows
    flagged `metadata_FULL_PAYMENT`, annotated "MAY-June, FULL PAYMENT but sync to omise RCL >
-   refund to RCB" — orders that paid in full but got routed to RCL/synced to Omise and now need a
-   refund to RCB). **I could not reliably isolate exactly which of the 8 templated tabs is
-   `gid=235486908` or reproduce her 2,301 count from the flattened text export** — the export tool
-   concatenates all tabs without preserving tab names/gids, and rough pattern-counting across the
-   whole workbook only found ~594 order-period rows total (undercounts due to formatting
-   variance, not a real contradiction of her number). Per this project's verification discipline,
-   I'm not citing any count from this scrape — Codex should query BigQuery directly (each row
-   already carries a usable filter fragment) or ask Mo to export just the `gid=235486908` tab as
-   CSV for exact comparison.
+   refund to RCB" — these are orders that paid in full but got routed/synced to the wrong channel
+   and now need a refund back to RCB. **This is a refund-routing problem, not a SAP-import gap** —
+   confirm with Mo/Finance whether this needs its own tracked finding (money-impact, likely small
+   population but real customer-facing refunds) separate from the "1-15 Aug" interface-file work.
 2. **Cancel-import scope (Boat)**: Mo asked to "import Cancel for CareOS-cancelled orders per
    Mandatory/Voluntary as it should be." The canonical cancellation rule already exists (D1,
    revised 2026-07-29: `careos.careos_order_items.is_cancelled IS TRUE OR cancel_time IS NOT

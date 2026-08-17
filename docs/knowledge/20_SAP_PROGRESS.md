@@ -1,5 +1,22 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-17 10:45 ICT — 1-15 Aug population confirmed via sheet XML; verification + interface-file prep handed to Codex
+
+Went past the flattened Drive export from 10:27 ICT: downloaded the sheet as `.xlsx`, parsed
+`xl/worksheets/sheet6.xml` directly. Confirmed with certainty: "1-15 Aug" tab = 2301 data rows
+(literally Mo's 2,301 figure — real, not fabricated), 2295 marked "not on SAP" (the systematic
+population), 6 non-standard exception rows (order-suffixed IDs, "paid + cc" notes, needs separate
+triage), 1 row with a note suggesting possible stale status. Wrote
+`sql/adhoc/20260817_verify_mo_1-15aug_missing_from_sap.sql` — embeds the exact 2295
+(order_item, period) pairs, classifies each against live `sap_integration_v3` into
+already-in-SAP-now / legitimately-excluded / quarantined-validation-error / still-missing
+(the real actionable population). Handed Codex a two-phase task (`docs/HANDOFF_QUEUE.md`
+10:45 ICT): Phase 1 run the verification query; Phase 2, for the confirmed still-missing
+population only, prepare (shadow-write, validated, NOT deployed) an interface file — production
+`gs://interface-file/**` write still needs Boat's explicit deploy OK, not given here. Also
+surfaced that "urgent_for refund to cust" is a refund-routing problem (FULL_PAYMENT synced to the
+wrong channel), not a SAP-import gap — flagged to Boat as possibly needing its own finding.
+
 ## 2026-08-17 10:27 ICT — read Mo's "RCL_missing order" sheet; couldn't confirm her 2,301 count
 
 Boat shared the actual sheet link. Confirmed real/current (owned by `pawineet@rabbit.co.th`,
