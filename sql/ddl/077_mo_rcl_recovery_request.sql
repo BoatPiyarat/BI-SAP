@@ -114,6 +114,8 @@ BEGIN
   DECLARE v_source_request_id STRING DEFAULT TRIM(p_source_request_id);
   ASSERT NULLIF(v_request_id,'') IS NOT NULL AND NULLIF(v_source_request_id,'') IS NOT NULL
     AS 'request_id and source_request_id are required';
+  ASSERT NULLIF(TRIM(p_requested_by),'') IS NOT NULL AS 'requested_by is required';
+  ASSERT NULLIF(TRIM(p_source_reference),'') IS NOT NULL AS 'source_reference is required';
   ASSERT (SELECT COUNT(*) FROM `pacific-plating-282708.sap_integration_v3.mo_rcl_recovery_request`
     WHERE request_id=v_source_request_id AND expected_pair_count=2295 AND request_status='CLASSIFIED')=1
     AS 'source request must be the immutable classified Mo request';
