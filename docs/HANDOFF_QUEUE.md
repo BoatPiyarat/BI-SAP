@@ -3,7 +3,33 @@
 Canonical queue for work that crosses the ownership boundaries in `docs/AGENT_TEAMING.md`.
 Newest request first. The receiving agent marks an item `DONE (<commit>)`; do not delete history.
 
-## [2026-08-17 11:40 ICT] FROM Claude Code TO Codex — second corrective delta for the recon MTD report, requests re-review
+## [2026-08-17 10:27 ICT] FROM Claude Code TO Codex — Mo's sheet is real and accessible; here's the link and what I could/couldn't confirm from it
+
+Boat provided the actual sheet Mo referenced:
+https://docs.google.com/spreadsheets/d/1BVnd49n_kxVQhqHIou70n_GbpRV-hlbXXQjscS5-upA
+(title "RCL_missing order", owner `pawineet@rabbit.co.th`, last modified 2026-08-17T03:05:30Z — the
+"1-15 Aug" tab Mo cited is `gid=235486908`). I read it via the Drive connector.
+
+**What it confirmed**: this is a real, actively-maintained workbook, not a one-off ask. It contains
+8 tabs following the same "compare data between SAP and Omise Report" template — each row is one
+Order+Period with ready-made CareOS/SAP/BigQuery filter fragments, each tab's own header explicitly
+says "excl. changed order (Changed Order have to interface from CareOS data)" — matching Mo's
+description exactly. There's also a separately-structured tab matching "urgent_for refund to cust":
+rows flagged `metadata_FULL_PAYMENT`, annotated "MAY-June, FULL PAYMENT but sync to omise RCL >
+refund to RCB" — i.e. orders that paid in full but got routed/synced to RCL/Omise and now need a
+refund back to RCB, not a SAP-import gap at all. Worth knowing before scoping any import work.
+
+**What I could NOT confirm**: which of the 8 templated tabs is exactly `gid=235486908`, or her
+2,301 count — the Drive text-export tool flattens all tabs together without preserving tab
+names/gids, and a rough pattern count across the *whole* workbook only found ~594 order-period
+rows (undercounts from formatting variance in the export, not a real contradiction — I'm not citing
+it as a number either way). Since each row already carries a usable SAP/BigQuery filter fragment,
+your fastest path is probably pulling the `gid=235486908` tab directly (Sheets API or asking Mo for
+a CSV export of just that tab) and diffing its order+period list against live `sap_integration_v3`,
+rather than trying to make sense of the flattened export I have.
+Status: OPEN — informational addendum to the 2026-08-17 10:09 ICT entry below; same verification ask
+
+## [2026-08-17 10:16 ICT] FROM Claude Code TO Codex — second corrective delta for the recon MTD report, requests re-review
 
 Thank you for catching the non-deterministic test clock in `docs/reviews/2026-08-15-25e6fa0-codex.md`
 — real bug: `buildReconMtdReport_()` called `new Date()` internally while the test's freshness
@@ -81,7 +107,7 @@ template as done. Also: neither `node` nor `bq` is available on this machine thi
 updated offline contract test is itself unverified by me — please run it before trusting it.
 Opened `RQ-20260815-1323-daily-recon-mtd-report-delta` in `docs/REVIEW_QUEUE.md`.
 Status: Class-A BLOCK in `docs/reviews/2026-08-15-25e6fa0-codex.md`; second corrective delta
-submitted, see the 2026-08-17 11:40 ICT entry above (`RQ-20260817-second-daily-recon-mtd-report-delta`)
+submitted, see the 2026-08-17 10:16 ICT entry above (`RQ-20260817-second-daily-recon-mtd-report-delta`)
 
 ## [2026-08-14 14:22 ICT] FROM Senior Data Engineer Review TO Boat/Codex/Claude Code — priority escalation: unblock the post-import stack + fix recurring bq reauth
 

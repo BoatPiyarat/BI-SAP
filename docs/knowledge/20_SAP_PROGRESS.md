@@ -1,6 +1,18 @@
 # 20_SAP_PROGRESS.md
 
-## 2026-08-17 11:40 ICT — daily recon MTD report: second corrective delta, re-review pending
+## 2026-08-17 10:27 ICT — read Mo's "RCL_missing order" sheet; couldn't confirm her 2,301 count
+
+Boat shared the actual sheet link. Confirmed real/current (owned by `pawineet@rabbit.co.th`,
+modified today) and structurally matches her description: 8 tabs on a shared "compare SAP vs
+Omise, excl. changed order" template (order+period rows with ready-made query fragments), plus a
+separate refund tab (`metadata_FULL_PAYMENT`, "sync to omise RCL > refund to RCB" — a refund
+routing issue, not a SAP-import gap). Could not map the "1-15 Aug" tab to a specific block or
+reproduce her 2,301 figure from the Drive text export (tabs aren't separated in that format,
+rough whole-workbook counting only found ~594 rows — not cited as contradicting her number, just
+unreliable). Passed the link + these findings to Codex (`docs/HANDOFF_QUEUE.md` 10:27 ICT) —
+still needs a live BigQuery diff against `gid=235486908`, not a repeat of this text-scrape attempt.
+
+## 2026-08-17 10:16 ICT — daily recon MTD report: second corrective delta, re-review pending
 
 Codex's re-review (`docs/reviews/2026-08-15-25e6fa0-codex.md`) BLOCKed the first delta again, but
 for good reasons — caught a real bug (the offline test used the live clock while its freshness

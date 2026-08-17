@@ -1,6 +1,28 @@
 # 30_SAP_CHANGELOG.md
 
-## 2026-08-17 11:40 ICT — second corrective delta for the daily recon MTD report BLOCK
+## 2026-08-17 10:27 ICT — read Mo's RCL_missing-order sheet via Drive connector; count unconfirmed
+
+- Boat gave the sheet link Mo referenced (`1BVnd49n_kxVQhqHIou70n_GbpRV-hlbXXQjscS5-upA`, "RCL_missing
+  order", owner `pawineet@rabbit.co.th`, modified 2026-08-17). Read it via
+  `mcp__claude_ai_Google_Drive__read_file_content`.
+- Confirmed structure matches Mo's description: 8 tabs share a "compare data between SAP and Omise
+  Report" template (order+period rows, CareOS/SAP/BigQuery filter fragments per row, each header
+  explicitly says "excl. changed order"); a separately-structured tab matches "urgent_for refund to
+  cust" (`metadata_FULL_PAYMENT` rows annotated "MAY-June, FULL PAYMENT but sync to omise RCL >
+  refund to RCB" — a refund-routing issue, not a SAP-import gap).
+- Could not isolate the "1-15 Aug" tab (`gid=235486908`) from the other 7, or reproduce her 2,301
+  count — the Drive export flattens all tabs without preserving names/gids; a rough whole-workbook
+  count found ~594 rows (not cited as a real number, just noted as unreliable). Per verification
+  discipline, did not report any count as confirmed either way.
+- Logged findings + link to Codex (`docs/HANDOFF_QUEUE.md`) and resolved the sheet-link half of
+  the `docs/INPUTS_NEEDED.md` entry — the scoping/verification half stays open.
+- Also corrected three timestamps in the prior 10:16 ICT entries (`HANDOFF_QUEUE.md`,
+  `20_SAP_PROGRESS.md` here) from a guessed "11:40 ICT" to the actual commit time `10:16:16+07:00`
+  (`git show -s --format=%aI 9722688`) — should have run `date` before writing them the first time,
+  per `AGENT_RULES.md` "never guess the date."
+- No BigQuery query, `gs://**` write, or mutation performed.
+
+## 2026-08-17 10:16 ICT — second corrective delta for the daily recon MTD report BLOCK
 
 - Codex's re-review of the first delta (`docs/reviews/2026-08-15-25e6fa0-codex.md`) BLOCKed again:
   caught that the offline test was non-deterministic (`buildReconMtdReport_()` read the live clock

@@ -8,9 +8,24 @@ Mo Pawinee reported to Boat (chat, 2026-08-17, not yet independently verified �
 the order hasn't reached SAP, excluding new orders created via a changed order; plus a separate
 "urgent_for refund to cust" tab.
 
-1. **Sheet link (Boat/Mo)**: I don't have the spreadsheet Mo referenced (tabs "1-15 Aug" and
-   "urgent_for refund to cust") — need the link before anyone can see her actual row-level data
-   instead of just her summary count.
+1. **RESOLVED — sheet link**: Boat provided it —
+   https://docs.google.com/spreadsheets/d/1BVnd49n_kxVQhqHIou70n_GbpRV-hlbXXQjscS5-upA
+   (title "RCL_missing order", owner `pawineet@rabbit.co.th`, last modified 2026-08-17, the "1-15
+   Aug" tab is `gid=235486908`). I read it via the Drive connector: it's a real, actively-maintained
+   workbook, not a one-off — it contains **8 tabs following the same "compare data between SAP and
+   Omise Report" template** (order + period rows, each with ready-made CareOS/SAP/BigQuery filter
+   fragments, "excl. changed order" noted explicitly in each tab's own header, matching Mo's
+   description), plus a separately-structured tab matching "urgent_for refund to cust" (rows
+   flagged `metadata_FULL_PAYMENT`, annotated "MAY-June, FULL PAYMENT but sync to omise RCL >
+   refund to RCB" — orders that paid in full but got routed to RCL/synced to Omise and now need a
+   refund to RCB). **I could not reliably isolate exactly which of the 8 templated tabs is
+   `gid=235486908` or reproduce her 2,301 count from the flattened text export** — the export tool
+   concatenates all tabs without preserving tab names/gids, and rough pattern-counting across the
+   whole workbook only found ~594 order-period rows total (undercounts due to formatting
+   variance, not a real contradiction of her number). Per this project's verification discipline,
+   I'm not citing any count from this scrape — Codex should query BigQuery directly (each row
+   already carries a usable filter fragment) or ask Mo to export just the `gid=235486908` tab as
+   CSV for exact comparison.
 2. **Cancel-import scope (Boat)**: Mo asked to "import Cancel for CareOS-cancelled orders per
    Mandatory/Voluntary as it should be." The canonical cancellation rule already exists (D1,
    revised 2026-07-29: `careos.careos_order_items.is_cancelled IS TRUE OR cancel_time IS NOT
