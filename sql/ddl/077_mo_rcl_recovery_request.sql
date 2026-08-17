@@ -132,17 +132,23 @@ BEGIN
     SELECT DISTINCT U_OrderItem, U_Period
     FROM `pacific-plating-282708.sap_integration_v3.stg_sap_state`
     WHERE NULLIF(TRIM(U_InvoiceNo),'') IS NOT NULL
+  ), recovery_events AS (
+    SELECT charge_id,order_item,order_id,period
+    FROM `pacific-plating-282708.sap_integration_v3.stg_payment_events`
+    UNION ALL
+    SELECT charge_id,order_item,order_id,period
+    FROM `pacific-plating-282708.sap_integration_v3.mo_rcl_recovery_event_snapshot`
   ), item_resolution AS (
     SELECT sc.order_id,sc.reported_period,
       ARRAY_AGG(DISTINCT p.order_item IGNORE NULLS) order_items
     FROM `pacific-plating-282708.sap_integration_v3.mo_rcl_recovery_scope` sc
-    LEFT JOIN `pacific-plating-282708.sap_integration_v3.stg_payment_events` p
+    LEFT JOIN recovery_events p
       ON p.order_id=sc.order_id AND p.period=sc.reported_period
     WHERE sc.request_id=v_request_id
     GROUP BY sc.order_id,sc.reported_period
   ), qualified_events AS (
     SELECT p.order_id,p.period,p.order_item,p.charge_id
-    FROM `pacific-plating-282708.sap_integration_v3.stg_payment_events` p
+    FROM recovery_events p
     JOIN `pacific-plating-282708.careos.carepay_charges` c
       ON c.id=p.charge_id AND c.status='SUCCESSFUL'
   ), successful_resolution AS (
