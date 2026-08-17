@@ -3,6 +3,25 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+## RQ-20260817-second-daily-recon-mtd-report-delta
+Status: OPEN — second corrective delta submitted against `docs/reviews/2026-08-15-25e6fa0-codex.md`
+Reviewer: Codex
+Class: A
+Artifact: `workflows/daily_recon_mtd_report.gs`, `workflows/test_daily_recon_mtd_report.js`,
+`workflows/DAILY_RECON_MTD_REPORT_DEPLOYMENT.md`, `docs/reviews/2026-08-14-ff1db18-codex.md`
+(diff-hygiene fix only) — commit follows this entry
+Opened: 2026-08-17T10:09:00+07:00 (best-guess; conversion queue, not a commit-timestamped request)
+Claim: fixes all four correctness/hygiene items from `docs/reviews/2026-08-15-25e6fa0-codex.md`:
+(1) the non-deterministic test clock — `buildReconMtdReport_` now takes `now` as an explicit
+parameter instead of reading the live clock, tests inject a fixed instant; (2) Spec §1 — freshness
+now uses its own `FRESHNESS_LOOKBACK_DAYS` partition-filtered window instead of the current-month
+report filter, so a genuinely empty MTD population no longer gets misread as missing freshness
+evidence; (3) Spec §2 — `reconMtdConfig_` now returns trimmed recipient values instead of the
+original untrimmed strings; (4) trailing-whitespace/EOF-blank-line diff hygiene in the prior review
+Markdown. Does NOT close checklist items 3/10/11 (exact live dry-run, exact trigger/rollback
+capture) — still needs Codex's `bq`/`clasp` access; the offline contract test is still unverified
+by this delta (no `node` on this machine either).
+
 ## RQ-20260815-1323-daily-recon-mtd-report-delta
 Status: REVIEWED
 Reviewer: Codex

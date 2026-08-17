@@ -1,5 +1,44 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-17 11:40 ICT — second corrective delta for the daily recon MTD report BLOCK
+
+- Codex's re-review of the first delta (`docs/reviews/2026-08-15-25e6fa0-codex.md`) BLOCKed again:
+  caught that the offline test was non-deterministic (`buildReconMtdReport_()` read the live clock
+  internally while the test's freshness fixture assumed a fixed instant — a real bug, correctly
+  found), plus two Spec gaps (freshness tied to the current-month filter would misread a genuinely
+  empty MTD population as missing evidence and block a legitimate zero-count report; recipient
+  config validated trimmed values but returned untrimmed ones to `MailApp`) and a diff-hygiene
+  complaint about the prior review Markdown.
+- Fixed all four: `buildReconMtdReport_(config, now)` takes `now` explicitly, `now.toISOString()`
+  no longer implicit; freshness moved to its own `FRESHNESS_LOOKBACK_DAYS` (35-day)
+  partition-filtered window decoupled from the report's month boundary; `reconMtdConfig_` returns
+  trimmed recipient values; fixed trailing whitespace + extra EOF blank line in
+  `docs/reviews/2026-08-14-ff1db18-codex.md`.
+- Added tests for the empty-MTD-population case and for config returning trimmed recipients.
+  Neither `node` nor `bq` is available on this machine, so this delta's own test claims remain
+  unverified by me — said so explicitly in the handoff rather than asserting a pass.
+- Opened `RQ-20260817-second-daily-recon-mtd-report-delta`; logged the delta in
+  `docs/HANDOFF_QUEUE.md`. No BigQuery mutation, `gs://**` write, or scheduler change performed.
+
+## 2026-08-17 10:09 ICT — tracked Mo's 1-15 Aug RCL pending-interface report as pending input
+
+- Boat relayed Mo Pawinee's request: ~2,301 orders (unverified, her count) paid to Omise 1-15 Aug
+  2026 but not yet in SAP (excluding changed-order-originated new orders), a separate
+  "urgent_for refund to cust" tab I don't have a link to, and two production import asks — Cancel
+  for CareOS-cancelled orders, and Changed Order rows (Omise's view doesn't surface them).
+- Could not verify or investigate: no working BigQuery access this session
+  (`claude.ai Google Cloud BigQuery` MCP unauthenticated). Added
+  `docs/HANDOFF_QUEUE.md` entry asking Codex to quantify the population and check whether it's the
+  same defect class as `FINDINGS_VMI_MISSING_EXPORT_PIPELINE_20260807.md` /
+  `FINDINGS_MOTOR_MISROUTING_AND_MISSING_INTERFACE_20260805.md`, or new.
+- Added `docs/INPUTS_NEEDED.md` entry for the sheet link and two scoping questions (Cancel-import
+  vs. existing D1 rule; Changed-order semantics) — human decisions, not derivable from data.
+- Separately, confirmed via Gmail search that an unrelated "SAP daily digest" automation has
+  failed daily since 2026-08-14 with the same "no GCP credentials for `pacific-plating-282708`"
+  symptom — not something either agent built, owning mechanism not yet identified, flagged to Boat
+  directly (not logged as its own findings doc yet pending identifying what it actually is).
+- No BigQuery query, `gs://**` write, or import/mutation performed.
+
 ## 2026-08-15 13:23 ICT — corrective delta for the daily recon MTD report BLOCK
 
 - Fixed everything answerable without live BigQuery/Apps Script access from Codex's BLOCK

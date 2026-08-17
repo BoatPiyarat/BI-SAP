@@ -4,8 +4,9 @@ Covers Boat's 2026-08-14 request: one daily step that reconciles SAP and CareOS 
 month-to-date summary every morning. The source does not authorize deployment, a trigger, a
 mailbox change, or a BigQuery mutation.
 
-**Status: corrective delta applied 2026-08-15 against Codex BLOCK
-`docs/reviews/2026-08-14-ff1db18-codex.md`.** Re-review required before rehearsal/install.
+**Status: second corrective delta applied 2026-08-17 against Codex BLOCK
+`docs/reviews/2026-08-15-25e6fa0-codex.md`** (itself a response to the first BLOCK,
+`docs/reviews/2026-08-14-ff1db18-codex.md`). Re-review required before rehearsal/install.
 
 ## What it does
 `sendDailyReconMtdReport()` reads the existing `recon_careos_charges` table (built by
@@ -39,7 +40,26 @@ Fixes items 1, 2, 5, and the Spec §1/§2/§3/§5 gaps from the BLOCK review, pl
    stale-data fail-closed, unknown-status fail-closed, async polling, pagination, recipient
    normalization, and report-build failures reaching the fallback (not just mail-send failures).
 
-**Not fixed here — requires Codex's environment (flagged explicitly in the .gs header, not hidden):**
+## Second corrective delta (2026-08-17) vs. `docs/reviews/2026-08-15-25e6fa0-codex.md`
+Codex's re-review of the first delta found the offline test itself was non-deterministic (it ran
+`buildReconMtdReport_()` against the real clock, `new Date()`, while the freshness fixture assumed
+a fixed instant — a real bug, correctly caught) plus two Spec gaps:
+1. **Test clock**: `buildReconMtdReport_` now takes `now` as an explicit parameter instead of
+   reading the live clock internally. `deliverReconMtdReport_` passes `new Date()` at the one real
+   call site; tests inject a fixed instant.
+2. **Freshness-vs-empty-month conflict (Spec §1)**: the freshness check previously reused the same
+   current-month filter as the report query, so a freshly rebuilt table with zero rows so far this
+   Bangkok month would report "no freshness evidence" and block an otherwise-legitimate zero-count
+   report. Freshness now uses its own `FRESHNESS_LOOKBACK_DAYS` (35) partition-filtered window,
+   decoupled from the report's month boundary — still cost-bounded/prunable, no full-table scan.
+3. **Untrimmed recipients reaching MailApp (Spec §2)**: `reconMtdConfig_` previously validated
+   trimmed/lower-cased distinctness but returned the *original* untrimmed strings. It now returns
+   the trimmed values, so a whitespace-padded Script Property can't reach `MailApp` unchanged.
+4. **Diff hygiene**: fixed trailing whitespace and an extra EOF blank line in
+   `docs/reviews/2026-08-14-ff1db18-codex.md` that Codex's `git diff --check` flagged.
+5. Added tests for the empty-MTD-population case and for config returning trimmed recipients.
+
+**Still not fixed here — requires Codex's environment (flagged explicitly in the .gs header, not hidden):**
 - Item 3 (live dry-run of the exact SQL): still blocked by the `bq` `ReauthUnattendedError` on this
   machine (`docs/INPUTS_NEEDED.md` "OPEN 2026-08-14 — `bq` CLI reauth..."). No `node` is available
   on this machine either, so the offline contract test below is untested by this delta — verify it

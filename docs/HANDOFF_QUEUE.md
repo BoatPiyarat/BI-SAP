@@ -3,6 +3,63 @@
 Canonical queue for work that crosses the ownership boundaries in `docs/AGENT_TEAMING.md`.
 Newest request first. The receiving agent marks an item `DONE (<commit>)`; do not delete history.
 
+## [2026-08-17 11:40 ICT] FROM Claude Code TO Codex — second corrective delta for the recon MTD report, requests re-review
+
+Thank you for catching the non-deterministic test clock in `docs/reviews/2026-08-15-25e6fa0-codex.md`
+— real bug: `buildReconMtdReport_()` called `new Date()` internally while the test's freshness
+fixture assumed a fixed instant, so the suite's actual pass/fail depended on when it happened to
+run. Fixed by making `now` an explicit parameter (`deliverReconMtdReport_` passes `new Date()` at
+the one real call site; tests inject a fixed instant). Also fixed both Spec gaps: (§1) freshness no
+longer reuses the current-month report filter — a genuinely empty MTD population (e.g. first hours
+of a new month) was getting misread as "no freshness evidence" and blocking a legitimate zero-count
+report; it now uses its own `FRESHNESS_LOOKBACK_DAYS` (35-day) partition-filtered window, decoupled
+from the report's month boundary. (§2) `reconMtdConfig_` now returns the trimmed recipient values
+instead of the original untrimmed strings. Also fixed the trailing-whitespace/EOF-blank-line diff
+hygiene you flagged in `docs/reviews/2026-08-14-ff1db18-codex.md`. Added tests for the empty-MTD
+case and for config returning trimmed recipients.
+**Still open, still needs you**: exact live SQL dry-run (`bq` reauth, unchanged) and the exact Apps
+Script runbook (still templated with `<...>` placeholders) — and please actually run
+`node workflows/test_daily_recon_mtd_report.js` this time before trusting my count of what passes;
+no `node` exists on this machine so I still can't verify it myself.
+Opened `RQ-20260817-second-daily-recon-mtd-report-delta` in `docs/REVIEW_QUEUE.md`.
+Status: OPEN — needs delta Class-A review; rehearsal/trigger install still prohibited until PASS
+
+## [2026-08-17 10:09 ICT] FROM Claude Code TO Codex — Mo's RCL 1-15 Aug pending-interface report needs live verification (I have no BigQuery access this session)
+
+Mo Pawinee reported to Boat (2026-08-17, via chat, not yet in this repo anywhere):
+1. **Tab "1-15 Aug"**: CareOS orders whose customer payment reached Omise 1–15 Aug 2026 but has
+   not reached SAP (explicitly excluding new orders created via a changed order) — her count:
+   **2,301 orders, UNVERIFIED, her number not mine — do not cite it as confirmed.**
+2. **Tab "urgent_for refund to cust"**: contents unknown to me — Mo referenced a spreadsheet tab I
+   don't have a link to; I haven't seen it. Ask Boat for the sheet link before scoping this.
+3. Two separate asks, both **production import requests, not read-only**: (a) import Cancel for
+   CareOS-cancelled orders — likely maps to the existing canonical D1 cancellation rule
+   (`careos.careos_order_items.is_cancelled IS TRUE OR cancel_time IS NOT NULL`, `AGENT_RULES.md`
+   "Confirmed decisions"), but needs explicit scoping against this 1-15 Aug population before any
+   DDL/export touches it; (b) import Changed Order rows, because Omise's view doesn't surface them
+   — likely related to the existing missing-interface class of defects
+   (`FINDINGS_VMI_MISSING_EXPORT_PIPELINE_20260807.md`,
+   `FINDINGS_MOTOR_MISROUTING_AND_MISSING_INTERFACE_20260805.md`) but not yet confirmed to be the
+   same root cause — do not assume it is without checking.
+
+**Why this is going to you and not being investigated by me first**: my session currently has no
+working BigQuery access (`claude.ai Google Cloud BigQuery` MCP connector is unauthenticated) — the
+same class of "no working GCP credentials for `pacific-plating-282708`" problem that's been
+silently failing the separate "SAP daily digest" automation every day since 2026-08-14 (4
+consecutive failures, confirmed via Gmail search, unrelated to anything either of us built —
+tracking that separately). I cannot verify Mo's 2,301 figure, quantify scope, or check whether
+this is the same defect class as the two findings above. Per this project's verification
+discipline, an unverified stakeholder-reported number must not be repeated as fact.
+
+**Ask**: if your `bq` auth is working, quantify the actual 1-15 Aug 2026 population (paid-to-Omise,
+not-in-SAP, excluding changed-order-originated new orders) against `sap_integration_v3` per this
+project's charge-driven principle, and check whether it's the same root cause as the VMI/motor-
+misrouting findings or a new defect. Do not import Cancel or Changed Order rows yet — that's a
+production mutation requiring the usual dry-run + Class-A review + Boat's explicit deploy OK, and
+the cancellation/changed-order scoping questions aren't resolved yet. I'm adding the human-decision
+half of this to `docs/INPUTS_NEEDED.md`.
+Status: OPEN — needs live BigQuery verification (Codex) + Boat's sheet link and scoping answers
+
 ## [2026-08-15 13:23 ICT] FROM Claude Code TO Codex — corrective delta for the recon MTD report BLOCK, requests re-review
 
 Fixed everything in `docs/reviews/2026-08-14-ff1db18-codex.md` that doesn't require your `bq`/`clasp`
@@ -23,7 +80,8 @@ since no browser/clasp session is available on this machine; fill in real IDs, d
 template as done. Also: neither `node` nor `bq` is available on this machine this session, so the
 updated offline contract test is itself unverified by me — please run it before trusting it.
 Opened `RQ-20260815-1323-daily-recon-mtd-report-delta` in `docs/REVIEW_QUEUE.md`.
-Status: OPEN — needs delta Class-A review; rehearsal/trigger install still prohibited until PASS
+Status: Class-A BLOCK in `docs/reviews/2026-08-15-25e6fa0-codex.md`; second corrective delta
+submitted, see the 2026-08-17 11:40 ICT entry above (`RQ-20260817-second-daily-recon-mtd-report-delta`)
 
 ## [2026-08-14 14:22 ICT] FROM Senior Data Engineer Review TO Boat/Codex/Claude Code — priority escalation: unblock the post-import stack + fix recurring bq reauth
 

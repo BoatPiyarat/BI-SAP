@@ -26,6 +26,18 @@
  *  6. Report states the freshness of the underlying table (MAX(recon_checked_at)) instead of
  *     unconditionally asserting "same-night data"; run is refused (fails closed, no email sent
  *     as if data were fine) when older than FRESHNESS_STALE_AFTER_HOURS.
+ *
+ * Second delta (2026-08-17, corrective to Codex BLOCK in docs/reviews/2026-08-15-25e6fa0-codex.md):
+ *  7. buildReconMtdReport_ now takes `now` as an explicit parameter (defaulting to `new Date()`
+ *     only at the real call site) instead of reading the live clock internally, so tests can
+ *     inject a fixed instant instead of racing the real clock.
+ *  8. Freshness check no longer reuses the current-month report filter — a freshly rebuilt table
+ *     with zero rows so far this Bangkok calendar month (e.g. the first hours of a new month)
+ *     used to return no freshness evidence and wrongly block a legitimate zero-count report.
+ *     It now uses its own FRESHNESS_LOOKBACK_DAYS partition-filtered window instead.
+ *  9. reconMtdConfig_ now returns trimmed recipient values (not the original untrimmed strings),
+ *     so a whitespace-padded Script Property can't reach MailApp unchanged even though it's
+ *     rejected as a duplicate when it collides with the other recipient.
  * Still NOT fixed here (requires Codex's environment): exact-SQL live dry-run (blocked by the
  * ongoing `bq` ReauthUnattendedError — see docs/INPUTS_NEEDED.md) and the exact Apps Script
  * project/manifest/trigger/rollback runbook (no browser/clasp session available on this machine).
@@ -37,6 +49,7 @@ const RECON_MTD = Object.freeze({
   TIMEZONE: 'Asia/Bangkok',
   KNOWN_STATUSES: ['IN_SAP', 'MISSING_FROM_SAP', 'NO_ORDER_ITEM'],
   FRESHNESS_STALE_AFTER_HOURS: 15,
+  FRESHNESS_LOOKBACK_DAYS: 35,
   MAX_POLL_ATTEMPTS: 10,
   POLL_INTERVAL_MS: 1000,
 });
@@ -51,7 +64,7 @@ function sendDailyReconMtdReport() {
 
 function deliverReconMtdReport_(config) {
   try {
-    const report = buildReconMtdReport_(config);
+    const report = buildReconMtdReport_(config, new Date());
     MailApp.sendEmail(config.primaryRecipient, `SAP↔CareOS daily reconciliation — MTD ${report.monthLabel}`, report.body);
   } catch (error) {
     const message = reconMtdSanitize_(error);
@@ -66,22 +79,28 @@ function deliverReconMtdReport_(config) {
   }
 }
 
-function buildReconMtdReport_(config) {
-  const now = new Date();
-  // Same (month_start, now] partition filter on both queries below — recon_careos_charges is
-  // PARTITION BY DATE(first_paid_time), and sp_recon_all_charges rebuilds the whole table with a
-  // single CURRENT_TIMESTAMP() per run, so MAX(recon_checked_at) scoped to this month's rows is
-  // an equally valid freshness signal while staying partition-pruned (cost-control rule).
-  const boundParams = [
+/** `now` is an explicit parameter (not read from the live clock internally) so tests can inject a
+ *  fixed instant; the real call site (deliverReconMtdReport_) always passes `new Date()`. */
+function buildReconMtdReport_(config, now) {
+  const monthParams = [
     reconMtdParam_('month_start', 'TIMESTAMP', reconMtdIctMonthStart_(now)),
     reconMtdParam_('now', 'TIMESTAMP', now.toISOString()),
   ];
-  const filterSql = 'WHERE first_paid_time >= @month_start AND first_paid_time <= @now';
+  const monthFilterSql = 'WHERE first_paid_time >= @month_start AND first_paid_time <= @now';
 
+  // Freshness is intentionally NOT scoped to the current-month population above: a freshly
+  // rebuilt table with zero rows so far this Bangkok month (e.g. the first hours of a new month)
+  // would otherwise return no freshness evidence and wrongly block a legitimate zero-count
+  // report. Use a separate, still partition-filtered lookback window instead — sp_recon_all_charges
+  // rebuilds the whole table with a single CURRENT_TIMESTAMP() per run, so any row in the lookback
+  // window carries the same recon_checked_at as the current-month rows.
+  const freshnessParams = [
+    reconMtdParam_('lookback_start', 'TIMESTAMP', reconMtdDaysAgo_(now, RECON_MTD.FRESHNESS_LOOKBACK_DAYS)),
+  ];
   const freshness = reconMtdQuery_(config,
     `SELECT MAX(recon_checked_at) AS latest
      FROM \`${config.projectId}.${config.dataset}.recon_careos_charges\`
-     ${filterSql}`, boundParams).rows || [];
+     WHERE first_paid_time >= @lookback_start`, freshnessParams).rows || [];
   const latestCheckedAt = freshness.length ? freshness[0].f[0].v : null;
   if (!latestCheckedAt) throw new Error('RECON_MTD_NO_FRESHNESS_EVIDENCE');
   const ageHours = (now.getTime() - Number(latestCheckedAt) * 1000) / 3600000;
@@ -92,9 +111,9 @@ function buildReconMtdReport_(config) {
   const rows = reconMtdQuery_(config,
     `SELECT recon_status, COUNT(*) AS n, ROUND(SUM(total_amount_thb), 2) AS thb
      FROM \`${config.projectId}.${config.dataset}.recon_careos_charges\`
-     ${filterSql}
+     ${monthFilterSql}
      GROUP BY recon_status
-     ORDER BY recon_status`, boundParams).rows || [];
+     ORDER BY recon_status`, monthParams).rows || [];
 
   const byStatus = {};
   const unknownStatuses = [];
@@ -146,11 +165,10 @@ function reconMtdIctMonthStart_(now) {
 function reconMtdConfig_() {
   const properties = PropertiesService.getScriptProperties();
   const projectId = properties.getProperty('PROJECT_ID');
-  const primaryRecipient = properties.getProperty('RECON_MTD_RECIPIENT');
-  const fallbackRecipient = properties.getProperty('RECON_MTD_FALLBACK_RECIPIENT');
-  const normalize = (value) => (value || '').trim().toLowerCase();
+  const primaryRecipient = (properties.getProperty('RECON_MTD_RECIPIENT') || '').trim();
+  const fallbackRecipient = (properties.getProperty('RECON_MTD_FALLBACK_RECIPIENT') || '').trim();
   if (!projectId || !primaryRecipient || !fallbackRecipient
-      || normalize(primaryRecipient) === normalize(fallbackRecipient)) {
+      || primaryRecipient.toLowerCase() === fallbackRecipient.toLowerCase()) {
     throw new Error('Distinct PROJECT_ID, RECON_MTD_RECIPIENT, and RECON_MTD_FALLBACK_RECIPIENT are required');
   }
   return { projectId, primaryRecipient, fallbackRecipient, dataset: properties.getProperty('BQ_DATASET') || RECON_MTD.DATASET };
@@ -191,6 +209,11 @@ function reconMtdQuery_(config, sql, parameters) {
     pageToken = page.pageToken;
   }
   return { rows };
+}
+
+/** Returns the ISO instant `days` before `now`, in UTC. */
+function reconMtdDaysAgo_(now, days) {
+  return new Date(now.getTime() - days * 86400000).toISOString();
 }
 
 function reconMtdParam_(name, type, value) { return { name, parameterType: { type }, parameterValue: { value } }; }

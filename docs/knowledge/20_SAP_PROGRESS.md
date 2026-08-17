@@ -1,5 +1,31 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-17 11:40 ICT — daily recon MTD report: second corrective delta, re-review pending
+
+Codex's re-review (`docs/reviews/2026-08-15-25e6fa0-codex.md`) BLOCKed the first delta again, but
+for good reasons — caught a real bug (the offline test used the live clock while its freshness
+fixture assumed a fixed instant, so pass/fail depended on when it ran) plus two genuine Spec gaps.
+Fixed: `buildReconMtdReport_` now takes `now` as an explicit parameter instead of reading the live
+clock; freshness now uses its own 35-day partition-filtered lookback window instead of the
+current-month report filter (was misreading a genuinely empty MTD population as "no freshness
+evidence" and blocking a legitimate zero-count report); `reconMtdConfig_` now returns trimmed
+recipient values instead of the original untrimmed strings; fixed the diff-hygiene issue in the
+prior review file. `RQ-20260817-second-daily-recon-mtd-report-delta` opened. Still blocked on
+Codex's `bq`/`clasp` access for the live dry-run and exact runbook — unchanged from before.
+
+## 2026-08-17 10:09 ICT — Mo's 1-15 Aug RCL pending-interface report tracked, not verified
+
+Mo Pawinee reported ~2,301 orders (her count, **unverified**) paid to Omise 1-15 Aug 2026 but not
+yet in SAP, plus a separate refund-urgent tab and two production import asks (Cancel,
+Changed Order). Could not investigate myself — this session has no working BigQuery access
+(`claude.ai Google Cloud BigQuery` MCP unauthenticated), the same "no GCP credentials for
+`pacific-plating-282708`" class of failure that's been silently breaking the unrelated "SAP daily
+digest" automation daily since 2026-08-14 (4 straight failures, found via Gmail search — not
+something either agent built, flagged to Boat separately, not yet added to a tracking doc since
+its owning routine/mechanism is still unidentified). Logged the investigation request to Codex
+(`docs/HANDOFF_QUEUE.md` 2026-08-17 10:09 ICT) and the sheet-link/scoping questions to Boat/Mo
+(`docs/INPUTS_NEEDED.md`). No query run, no import performed, no number cited as confirmed.
+
 ## 2026-08-15 13:23 ICT — daily recon MTD report: corrective delta submitted, re-review pending
 
 Fixed the answerable half of Codex's BLOCK (`docs/reviews/2026-08-14-ff1db18-codex.md`) in

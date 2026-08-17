@@ -38,23 +38,28 @@ const config = {
   primaryRecipient: 'primary@example.test',
   fallbackRecipient: 'fallback@example.test',
 };
-const NOW_EPOCH_SECONDS = Math.floor(new Date('2026-08-15T06:00:00Z').getTime() / 1000);
+// buildReconMtdReport_ now takes `now` as an explicit parameter (no live-clock read inside it),
+// so every test below injects this fixed instant instead of racing the real clock.
+const FIXED_NOW = new Date('2026-08-15T06:00:00Z');
+const NOW_EPOCH_SECONDS = Math.floor(FIXED_NOW.getTime() / 1000);
 
-// --- ICT month boundary: query must use parameterized bounds, not a raw TIMESTAMP(DATE) cast ---
+// --- ICT month boundary + freshness lookback: correct SQL shapes, both partition-filtered ---
 {
   const context = freshContext();
   let calls = 0;
   context.reconMtdQuery_ = (_config, sql, parameters) => {
     calls += 1;
     assert.doesNotMatch(sql, /TIMESTAMP\(DATE_TRUNC/, 'must not use the UTC-midnight-misinterpreted form');
-    assert.match(sql, /@month_start/, 'both freshness and grouped queries must stay partition-filtered');
+    if (calls === 1) {
+      assert.match(sql, /MAX\(recon_checked_at\)/);
+      assert.match(sql, /@lookback_start/, 'freshness must stay partition-filtered but independent of the MTD population');
+      assert.equal(parameters[0].name, 'lookback_start');
+      return { rows: [{ f: [{ v: String(NOW_EPOCH_SECONDS - 3600) }] }] }; // 1h old: fresh
+    }
+    assert.match(sql, /@month_start/);
     assert.match(sql, /@now/);
     assert.equal(parameters[0].name, 'month_start');
     assert.equal(parameters[1].name, 'now');
-    if (calls === 1) {
-      assert.match(sql, /MAX\(recon_checked_at\)/);
-      return { rows: [{ f: [{ v: String(NOW_EPOCH_SECONDS - 3600) }] }] }; // 1h old: fresh
-    }
     return {
       rows: [
         { f: [{ v: 'IN_SAP' }, { v: '100' }, { v: '5000.5' }] },
@@ -62,7 +67,7 @@ const NOW_EPOCH_SECONDS = Math.floor(new Date('2026-08-15T06:00:00Z').getTime() 
       ],
     };
   };
-  const report = context.buildReconMtdReport_(config);
+  const report = context.buildReconMtdReport_(config, FIXED_NOW);
   assert.equal(report.monthLabel, '2026-08');
   assert.match(report.body, /IN_SAP: 100 periods, 5000\.50 THB/);
   assert.match(report.body, /MISSING_FROM_SAP: 3 periods, 150\.00 THB/);
@@ -71,11 +76,26 @@ const NOW_EPOCH_SECONDS = Math.floor(new Date('2026-08-15T06:00:00Z').getTime() 
   assert.equal(report.body.includes('primary@example.test'), false);
 }
 
+// --- empty MTD population must NOT be mistaken for missing freshness evidence ---
+{
+  const context = freshContext();
+  let calls = 0;
+  context.reconMtdQuery_ = () => {
+    calls += 1;
+    if (calls === 1) return { rows: [{ f: [{ v: String(NOW_EPOCH_SECONDS - 3600) }] }] }; // freshness: fresh
+    return { rows: [] }; // grouped query: zero rows so far this month
+  };
+  const report = context.buildReconMtdReport_(config, FIXED_NOW);
+  assert.match(report.body, /IN_SAP: 0 periods, 0\.00 THB/);
+  assert.match(report.body, /MISSING_FROM_SAP: 0 periods, 0\.00 THB/);
+  assert.match(report.body, /NO_ORDER_ITEM: 0 periods, 0\.00 THB/);
+}
+
 // --- freshness gate: stale table must fail closed instead of silently claiming fresh data ---
 {
   const context = freshContext();
   context.reconMtdQuery_ = () => ({ rows: [{ f: [{ v: String(NOW_EPOCH_SECONDS - 20 * 3600) }] }] }); // 20h old
-  assert.throws(() => context.buildReconMtdReport_(config), /RECON_MTD_STALE_DATA/);
+  assert.throws(() => context.buildReconMtdReport_(config, FIXED_NOW), /RECON_MTD_STALE_DATA/);
 }
 
 // --- unknown recon_status must fail closed, not be silently dropped ---
@@ -87,7 +107,7 @@ const NOW_EPOCH_SECONDS = Math.floor(new Date('2026-08-15T06:00:00Z').getTime() 
     if (calls === 1) return { rows: [{ f: [{ v: String(NOW_EPOCH_SECONDS - 3600) }] }] };
     return { rows: [{ f: [{ v: 'SOME_NEW_STATUS' }, { v: '1' }, { v: '1' }] }] };
   };
-  assert.throws(() => context.buildReconMtdReport_(config), /RECON_MTD_UNKNOWN_RECON_STATUS/);
+  assert.throws(() => context.buildReconMtdReport_(config, FIXED_NOW), /RECON_MTD_UNKNOWN_RECON_STATUS/);
 }
 
 // --- async jobComplete:false must be polled, not thrown on ---
@@ -159,6 +179,22 @@ const NOW_EPOCH_SECONDS = Math.floor(new Date('2026-08-15T06:00:00Z').getTime() 
   assert.throws(() => context.reconMtdConfig_(), /Distinct PROJECT_ID/);
 }
 
+// --- config must return trimmed recipients, not the original whitespace-padded strings ---
+{
+  const context = freshContext();
+  context.PropertiesService = {
+    getScriptProperties: () => ({
+      getProperty: (key) => ({
+        PROJECT_ID: 'p',
+        RECON_MTD_RECIPIENT: '  padded@example.test  ',
+        RECON_MTD_FALLBACK_RECIPIENT: 'fallback@example.test',
+      }[key]),
+    }),
+  };
+  const resolved = context.reconMtdConfig_();
+  assert.equal(resolved.primaryRecipient, 'padded@example.test', 'MailApp must never receive an untrimmed address');
+}
+
 // --- report-build failure (not just primary-mail failure) must reach the fallback channel ---
 {
   const context = freshContext();
@@ -201,4 +237,4 @@ const NOW_EPOCH_SECONDS = Math.floor(new Date('2026-08-15T06:00:00Z').getTime() 
   assert.deepEqual(events, ['mail:primary@example.test', 'mail:fallback@example.test']);
 }
 
-console.log('daily_recon_mtd_report local contract tests: 26 assertions passed');
+console.log('daily_recon_mtd_report local contract tests: 30 assertions passed');

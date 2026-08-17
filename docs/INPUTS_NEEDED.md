@@ -1,5 +1,33 @@
 # INPUTS NEEDED — things only Boat / Aware / Attila / Finance can answer
 
+## OPEN 2026-08-17 — Boat/Mo: sheet link + scope for the 1-15 Aug RCL pending-interface report
+
+Mo Pawinee reported to Boat (chat, 2026-08-17, not yet independently verified — see
+`docs/HANDOFF_QUEUE.md` 2026-08-17 10:09 ICT entry for the investigation request to Codex):
+2,301 orders (her count, unverified) where the customer's Omise payment landed 1–15 Aug 2026 but
+the order hasn't reached SAP, excluding new orders created via a changed order; plus a separate
+"urgent_for refund to cust" tab.
+
+1. **Sheet link (Boat/Mo)**: I don't have the spreadsheet Mo referenced (tabs "1-15 Aug" and
+   "urgent_for refund to cust") — need the link before anyone can see her actual row-level data
+   instead of just her summary count.
+2. **Cancel-import scope (Boat)**: Mo asked to "import Cancel for CareOS-cancelled orders per
+   Mandatory/Voluntary as it should be." The canonical cancellation rule already exists (D1,
+   revised 2026-07-29: `careos.careos_order_items.is_cancelled IS TRUE OR cancel_time IS NOT
+   NULL`, never `careos_orders.is_cancelled`, never fanned to active siblings) — confirm whether
+   Mo's ask is just "apply the existing D1 rule to this population" or something new about
+   Mandatory-vs-Voluntary handling specifically that D1 doesn't already cover.
+3. **Changed-order import scope (Boat)**: Mo asked to import Changed Order rows because Omise's
+   view doesn't surface them. Confirm whether this is the same defect class as
+   `FINDINGS_VMI_MISSING_EXPORT_PIPELINE_20260807.md` /
+   `FINDINGS_MOTOR_MISROUTING_AND_MISSING_INTERFACE_20260805.md` (both already open, both about
+   real payments not reaching SAP) or a genuinely separate gap — needs Codex's live-data check
+   first, but the business-rule question of how a changed order's SAP row should differ from a
+   normal one is a human answer, not something derivable from data alone.
+
+Both import asks are production mutations and are **not authorized** by this entry — they need the
+usual dry-run + Class-A review + Boat's explicit deploy OK once scoped, per `AGENT_RULES.md`.
+
 ## OPEN 2026-08-14 — Boat/IT admin: single `run.invoker` grant + reconcile workaround-doc contradiction
 
 Raised by senior data-engineer design review (`docs/HANDOFF_QUEUE.md` 2026-08-14 14:22 ICT entry).
