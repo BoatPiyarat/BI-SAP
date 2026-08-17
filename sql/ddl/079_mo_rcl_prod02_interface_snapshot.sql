@@ -79,9 +79,10 @@ BEGIN
   ) e WHERE EXISTS (SELECT 1 FROM _mapped_items m WHERE m.order_item=e.order_item);
 
   CREATE TEMP TABLE _event_union AS
-  SELECT charge_id,order_item,period,third_party_id,charge_time,amount,payment_option,
-    payment_method_source,payment_channel_source
+  SELECT e.charge_id,e.order_item,e.period,e.third_party_id,e.charge_time,e.amount,e.payment_option,
+    c.payment_method payment_method_source,c.service_provider payment_channel_source
   FROM `pacific-plating-282708.sap_integration_v3.stg_payment_events` e
+  JOIN `pacific-plating-282708.careos.carepay_charges` c ON c.id=e.charge_id
   WHERE DATE(charge_time) BETWEEN DATE '2000-01-01' AND DATE '2026-08-15'
     AND EXISTS (SELECT 1 FROM _scoped_charge_id s WHERE s.charge_id=e.charge_id)
   UNION ALL
