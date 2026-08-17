@@ -138,7 +138,7 @@ BEGIN
   ) GROUP BY order_item;
 
   CREATE TEMP TABLE _source_ranked AS
-  SELECT * EXCEPT(rn),source_count FROM (
+  SELECT * EXCEPT(rn) FROM (
     SELECT
       CAST(CompanyDB AS STRING) CompanyDB,CAST(OrderID AS STRING) OrderID,
       CAST(OrderItem AS STRING) OrderItem,CAST(InvoiceNo AS STRING) InvoiceNo,
