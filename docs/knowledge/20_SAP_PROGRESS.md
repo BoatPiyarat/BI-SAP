@@ -1,5 +1,15 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-17 19:45 ICT — Mo RCL pass-only recheck found zero eligible complete items
+
+Boat confirmed item-level quarantine for the Mo recovery file: reject an invalid OrderItem spine
+in full while allowing other items only if they pass every applicable gate. A read-only,
+whole-item recheck of the 1,873 mapped RCL items found 0 passing items / 0 rows. Every item has an
+out-of-vocabulary source status and at least one SQL NULL; 160 also have incomplete spines (overlap
+allowed). Dry-run 1,975,689,358 bytes; job
+`bqjob_r545633b42247a377_000001a00fc08987_1`. No interface file was written because there are no
+passing rows and a partial period spine is prohibited.
+
 ## 2026-08-17 19:43 ICT — 1-15 Aug: Phase 1 done, Phase 2 correctly blocked; found + logged a shadow-adapter BLOCK
 
 Status refresh found real progress since the reauth: Codex ran 1-15 Aug Phase 1 live — all 2,295

@@ -153,6 +153,16 @@ unambiguous RCL items, but their canonical installment-source candidate failed t
 160 incomplete spines, 3,894 non-Paid/Pending rows, and 9,396 required-field SQL NULL rows. See
 `docs/HANDOFF_QUEUE.md` for job IDs and byte evidence. No GCS object was written.
 
+**Pass-only recheck, 2026-08-17 19:45 ICT: zero eligible items.** Boat confirmed item-level
+quarantine: an invalid complete OrderItem spine may be held while other fully valid items continue.
+The conservative whole-item recheck still found `0` passing items / `0` passing rows among the
+1,873 mapped RCL items. All 1,873 items contain a status outside exact `Paid`/`Pending`, all 1,873
+contain at least one SQL NULL in the source payload, and 160 also have incomplete spines (reason
+counts overlap). Dry-run: 1,975,689,358 bytes; real query job
+`bqjob_r545633b42247a377_000001a00fc08987_1`. Source query:
+`sql/adhoc/20260817_verify_mo_1-15aug_missing_from_sap.sql`. No empty or partial-row file was
+created; no BigQuery mutation or GCS write occurred.
+
 ---
 
 ## Order of work

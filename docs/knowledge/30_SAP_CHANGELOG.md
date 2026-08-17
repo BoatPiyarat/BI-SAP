@@ -1,5 +1,15 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-17 19:45 ICT — confirmed item quarantine; pass-only RCL population is empty
+
+- Recorded Boat's confirmation that the Mo RCL recovery may quarantine invalid complete items and
+  continue only with items passing every applicable pre-export gate.
+- Extended the exact-list read-only verifier to evaluate complete item spines conservatively.
+- BigQuery dry-run was 1,975,689,358 bytes; real job
+  `bqjob_r545633b42247a377_000001a00fc08987_1` returned 0 passing items / 0 passing rows from 1,873
+  mapped RCL items. All items failed exact status and SQL-NULL gates; 160 also failed completeness.
+- No BigQuery mutation, procedure call, GCS object, or SAP interface file was created.
+
 ## 2026-08-17 19:43 ICT — logged the shadow-adapter review, flagged possible self-review
 
 - Status-check found `sql/ddl/076_mo_rcl_recovery_shadow.sql` (commit `b36e12b`, a follow-up

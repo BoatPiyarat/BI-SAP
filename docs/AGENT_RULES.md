@@ -199,7 +199,9 @@ require constant clarification.
   installment order must interface its complete `1..TotalPeriods` spine, with exactly one row per
   period and status exactly `Paid` or `Pending`. Required interface values must not be SQL NULL or
   the literal `"NULL"`; only Pending `PaymentDate` may be represented by the canonical empty string.
-- Validation failure policy: item-level quarantine (rest continues) — provisional, pending Boat's final word.
+- Validation failure policy: item-level quarantine; only order_items that pass every applicable
+  pre-export gate may continue, while every rejected item is retained with its reason. Confirmed
+  by Boat on 2026-08-17 for the Mo RCL recovery interface.
 
 ## Current state (2026-07-29)
 - V3 produces **no** interface file yet. All files SAP receives still come from the legacy `sap_view.*` path.

@@ -19,6 +19,11 @@ The gate has one small interface:
 
 It returns PASS plus evidence, or raises before any file write. There is no warning-only result.
 
+For the Mo RCL recovery interface, validation is applied at complete `OrderItem` spine grain.
+An invalid item is quarantined in full with its reasons; other items may continue only when the
+file-level gates (including one declared flow and exact physical schema) also pass. Confirmed by
+Boat on 2026-08-17.
+
 ## Universal checks — every file
 
 1. Candidate grain is unique at the operation's canonical key; new-payment/installment files are

@@ -2350,22 +2350,104 @@ classified AS (
     ON excl.order_item = m.order_item AND excl.period = m.period
   LEFT JOIN `pacific-plating-282708.sap_integration_v3.sap_validation_error` val
     ON val.order_item = m.order_item AND val.period = m.period
+),
+
+-- Phase 2 eligibility is deliberately item-grained. A reported pair may select an OrderItem,
+-- but that OrderItem passes only when its complete 1..N RCL spine passes together.
+missing_pairs AS (
+  SELECT order_item AS order_id, period
+  FROM classified
+  WHERE NOT now_in_sap AND excluded_rule_code IS NULL AND validation_check_name IS NULL
+),
+pair_mapping AS (
+  SELECT m.order_id, m.period AS reported_period, p.order_item,
+    COUNT(DISTINCT p.order_item) OVER (PARTITION BY m.order_id, m.period) AS item_count,
+    STRING_AGG(DISTINCT s.flow, ',' ORDER BY s.flow) AS reported_flows
+  FROM missing_pairs m
+  LEFT JOIN `pacific-plating-282708.sap_integration_v3.stg_payment_events` p
+    ON p.order_id=m.order_id AND p.period=m.period
+  LEFT JOIN `pacific-plating-282708.sap_integration_v3.stg_schedule` s
+    ON s.order_item=p.order_item AND s.period=p.period
+  GROUP BY m.order_id, m.period, p.order_item
+),
+mapped_rcl_items AS (
+  SELECT DISTINCT order_item
+  FROM pair_mapping
+  WHERE order_item IS NOT NULL AND item_count=1 AND reported_flows='RCL'
+),
+candidate AS (
+  SELECT d.*
+  FROM `pacific-plating-282708.sap_data_engineer.sap_dashboard_carepay_installment` d
+  JOIN mapped_rcl_items m ON m.order_item=d.OrderItem
+),
+item_gate AS (
+  SELECT c.OrderItem,
+    COUNT(*) AS row_count,
+    COUNT(DISTINCT SAFE_CAST(c.Period AS INT64)) AS period_count,
+    MIN(SAFE_CAST(c.Period AS INT64)) AS first_period,
+    MAX(SAFE_CAST(c.Period AS INT64)) AS last_period,
+    COUNT(DISTINCT SAFE_CAST(c.TotalPeriods AS INT64)) AS total_versions,
+    MAX(SAFE_CAST(c.TotalPeriods AS INT64)) AS total_periods,
+    COUNTIF(c.TransactionStatus NOT IN ('Paid','Pending') OR c.TransactionStatus IS NULL)
+      AS invalid_status_rows,
+    COUNTIF(REGEXP_CONTAINS(TO_JSON_STRING(c),r':null(?:,|})')) AS sql_null_rows,
+    COUNTIF(REGEXP_CONTAINS(UPPER(TO_JSON_STRING(c)),r'"NULL"')) AS literal_null_rows,
+    COUNTIF(UPPER(IFNULL(CAST(c.PaymentChannel AS STRING),'')) LIKE '%RCB%') AS rcb_rows,
+    COUNTIF(LENGTH(IFNULL(CAST(c.PolicyNo AS STRING),''))>50) AS long_policy_rows,
+    COUNTIF(c.TransactionStatus='Paid' AND (
+      NULLIF(TRIM(CAST(c.InvoiceNo AS STRING)),'') IS NULL
+      OR LENGTH(IFNULL(CAST(c.PaymentDate AS STRING),''))!=8
+      OR SAFE.PARSE_DATE('%d%m%Y',CAST(c.PaymentDate AS STRING)) IS NULL)) AS paid_required_rows,
+    COUNTIF(c.TransactionStatus='Pending' AND IFNULL(CAST(c.PaymentDate AS STRING),'')!='')
+      AS pending_date_rows,
+    COUNTIF(LENGTH(IFNULL(CAST(c.OrderDate AS STRING),''))!=8
+      OR SAFE.PARSE_DATE('%d%m%Y',CAST(c.OrderDate AS STRING)) IS NULL
+      OR LENGTH(IFNULL(CAST(c.PolicyDate AS STRING),''))!=8
+      OR SAFE.PARSE_DATE('%d%m%Y',CAST(c.PolicyDate AS STRING)) IS NULL
+      OR LENGTH(IFNULL(CAST(c.ExpectedDate AS STRING),''))!=8
+      OR SAFE.PARSE_DATE('%d%m%Y',CAST(c.ExpectedDate AS STRING)) IS NULL) AS invalid_date_rows
+  FROM candidate c
+  GROUP BY c.OrderItem
+),
+full_spine_flow AS (
+  SELECT g.OrderItem,
+    STRING_AGG(DISTINCT IFNULL(s.flow,'__NULL__'),',' ORDER BY IFNULL(s.flow,'__NULL__')) AS flows
+  FROM item_gate g
+  LEFT JOIN `pacific-plating-282708.sap_integration_v3.stg_schedule` s
+    ON s.order_item=g.OrderItem
+  GROUP BY g.OrderItem
+),
+gate_result AS (
+  SELECT g.*,
+    f.flows,
+    g.total_versions=1 AND g.total_periods>=1 AND g.first_period=1
+      AND g.last_period=g.total_periods AND g.row_count=g.total_periods
+      AND g.period_count=g.total_periods AS complete_spine,
+    f.flows='RCL' AS rcl_only,
+    g.invalid_status_rows=0 AND g.sql_null_rows=0 AND g.literal_null_rows=0
+      AND g.rcb_rows=0 AND g.long_policy_rows=0 AND g.paid_required_rows=0
+      AND g.pending_date_rows=0 AND g.invalid_date_rows=0 AS row_contract_pass
+  FROM item_gate g
+  JOIN full_spine_flow f USING(OrderItem)
 )
 
 SELECT
-  CASE
-    WHEN now_in_sap THEN 'ALREADY_IN_SAP_NOW'            -- sheet is stale; imported since 03:05 ICT today, or the sheet's own status was wrong
-    WHEN excluded_rule_code IS NOT NULL THEN 'LEGITIMATELY_EXCLUDED'  -- EXCLUDED != DELETED, per rule_code - not a bug
-    WHEN validation_check_name IS NOT NULL THEN 'QUARANTINED_VALIDATION_ERROR'  -- known, logged, not a silent drop
-    ELSE 'STILL_MISSING_SILENT_DROP'                      -- the real actionable population for the interface file
-  END AS classification,
-  COUNT(*) AS n,
-  COUNT(DISTINCT order_item) AS n_distinct_orders
-FROM classified
-GROUP BY classification
-ORDER BY classification;
+  COUNT(*) AS mapped_rcl_items,
+  COUNTIF(complete_spine AND rcl_only AND row_contract_pass) AS preliminary_pass_items,
+  SUM(IF(complete_spine AND rcl_only AND row_contract_pass,row_count,0)) AS preliminary_pass_rows,
+  COUNTIF(NOT complete_spine) AS quarantined_incomplete_spine_items,
+  COUNTIF(NOT rcl_only) AS quarantined_mixed_or_unknown_flow_items,
+  COUNTIF(invalid_status_rows>0) AS quarantined_status_items,
+  COUNTIF(sql_null_rows>0) AS quarantined_sql_null_items,
+  COUNTIF(literal_null_rows>0) AS quarantined_literal_null_items,
+  COUNTIF(rcb_rows>0) AS quarantined_rcb_items,
+  COUNTIF(long_policy_rows>0) AS quarantined_long_policy_items,
+  COUNTIF(paid_required_rows>0) AS quarantined_paid_required_items,
+  COUNTIF(pending_date_rows>0) AS quarantined_pending_date_items,
+  COUNTIF(invalid_date_rows>0) AS quarantined_date_items
+FROM gate_result;
 
--- Follow-up (run only after the above, same session): to get the exact order+period list for the
--- STILL_MISSING_SILENT_DROP bucket (the population the interface file should cover), rerun with
--- `SELECT order_item, period FROM classified WHERE NOT now_in_sap AND excluded_rule_code IS NULL
--- AND validation_check_name IS NULL ORDER BY order_item, period` in place of the aggregate SELECT.
+-- This result is preliminary only. A nonzero population still requires exact 56-column
+-- name/type/ordinal validation, InvoiceNo immutability, numeric/source reconciliation, master and
+-- exclusion checks, successful-charge conservation, immutable snapshot hashing, and Class-A PASS
+-- before any shadow GCS write.
