@@ -11,6 +11,17 @@ CREATE TABLE IF NOT EXISTS `pacific-plating-282708.sap_integration_v3.mo_rcl_rec
 )
 CLUSTER BY request_id;
 
+CREATE TABLE IF NOT EXISTS `pacific-plating-282708.sap_integration_v3.mo_rcl_recovery_lock` (
+  lock_name STRING NOT NULL,
+  claim_epoch INT64 NOT NULL,
+  claimed_at TIMESTAMP NOT NULL
+);
+
+MERGE `pacific-plating-282708.sap_integration_v3.mo_rcl_recovery_lock` t
+USING (SELECT 'MO_RCL_RECOVERY' lock_name) s ON t.lock_name=s.lock_name
+WHEN NOT MATCHED THEN INSERT(lock_name,claim_epoch,claimed_at)
+VALUES(s.lock_name,0,TIMESTAMP '2000-01-01 00:00:00+00');
+
 CREATE TABLE IF NOT EXISTS `pacific-plating-282708.sap_integration_v3.mo_rcl_recovery_scope` (
   request_id STRING NOT NULL,
   order_id STRING NOT NULL,
@@ -47,38 +58,48 @@ CREATE OR REPLACE PROCEDURE `pacific-plating-282708.sap_integration_v3.sp_seed_m
   p_source_reference STRING
 )
 BEGIN
+  DECLARE v_request_id STRING DEFAULT TRIM(p_request_id);
+  DECLARE v_scope_hash STRING;
   ASSERT NULLIF(TRIM(p_request_id),'') IS NOT NULL AS 'request_id is required';
   ASSERT NULLIF(TRIM(p_requested_by),'') IS NOT NULL AS 'requested_by is required';
   ASSERT NULLIF(TRIM(p_source_reference),'') IS NOT NULL AS 'source_reference is required';
-  ASSERT ARRAY_LENGTH(IFNULL(p_pairs,[]))>0 AS 'at least one pair is required';
+  ASSERT ARRAY_LENGTH(IFNULL(p_pairs,[]))=2295 AS 'scope must contain exactly 2,295 Mo pairs';
   ASSERT (SELECT COUNT(*) FROM UNNEST(p_pairs)
     WHERE NULLIF(TRIM(order_id),'') IS NULL OR period IS NULL OR period<1)=0
     AS 'scope contains a blank OrderID or invalid period';
   ASSERT (SELECT COUNT(*) FROM (
     SELECT TRIM(order_id),period,COUNT(*) n FROM UNNEST(p_pairs)
     GROUP BY 1,2 HAVING n!=1))=0 AS 'scope contains duplicate pairs';
-  ASSERT (SELECT COUNT(*)
-    FROM `pacific-plating-282708.sap_integration_v3.mo_rcl_recovery_request`
-    WHERE request_id=p_request_id)=0 AS 'request_id is immutable and already exists';
-  ASSERT (SELECT COUNT(*)
-    FROM `pacific-plating-282708.sap_integration_v3.mo_rcl_recovery_scope`
-    WHERE request_id=p_request_id)=0 AS 'request scope already exists';
+  SET v_scope_hash=(SELECT LOWER(TO_HEX(SHA256(STRING_AGG(
+    CONCAT(TRIM(order_id),'|',CAST(period AS STRING)),CHR(10)
+    ORDER BY TRIM(order_id),period)))) FROM UNNEST(p_pairs));
+  ASSERT v_scope_hash='33b91e08b301d3e37e3aa6acdf77d51cfb7f0fedda58862c92f8ddb3799cd9a8'
+    AS 'scope does not equal the exact reviewed Mo 2,295-pair allowlist';
 
   BEGIN TRANSACTION;
+    UPDATE `pacific-plating-282708.sap_integration_v3.mo_rcl_recovery_lock`
+    SET claim_epoch=claim_epoch+1,claimed_at=CURRENT_TIMESTAMP()
+    WHERE lock_name='MO_RCL_RECOVERY';
+    ASSERT @@row_count=1 AS 'recovery lock is missing or duplicated';
+    ASSERT (SELECT COUNT(*)
+      FROM `pacific-plating-282708.sap_integration_v3.mo_rcl_recovery_request`
+      WHERE request_id=v_request_id)=0 AS 'request_id is immutable and already exists';
+    ASSERT (SELECT COUNT(*)
+      FROM `pacific-plating-282708.sap_integration_v3.mo_rcl_recovery_scope`
+      WHERE request_id=v_request_id)=0 AS 'request scope already exists';
     INSERT INTO `pacific-plating-282708.sap_integration_v3.mo_rcl_recovery_request`
       (request_id,requested_by,source_reference,expected_pair_count,request_status,created_at)
-    VALUES (TRIM(p_request_id),TRIM(p_requested_by),TRIM(p_source_reference),
+    VALUES (v_request_id,TRIM(p_requested_by),TRIM(p_source_reference),
       ARRAY_LENGTH(p_pairs),'SEEDED',CURRENT_TIMESTAMP());
 
     INSERT INTO `pacific-plating-282708.sap_integration_v3.mo_rcl_recovery_scope`
       (request_id,order_id,reported_period,captured_at)
-    SELECT TRIM(p_request_id),TRIM(order_id),period,CURRENT_TIMESTAMP()
+    SELECT v_request_id,TRIM(order_id),period,CURRENT_TIMESTAMP()
     FROM UNNEST(p_pairs);
+    ASSERT (SELECT COUNT(*)
+      FROM `pacific-plating-282708.sap_integration_v3.mo_rcl_recovery_scope`
+      WHERE request_id=v_request_id)=ARRAY_LENGTH(p_pairs) AS 'seed conservation failed';
   COMMIT TRANSACTION;
-
-  ASSERT (SELECT COUNT(*)
-    FROM `pacific-plating-282708.sap_integration_v3.mo_rcl_recovery_scope`
-    WHERE request_id=p_request_id)=ARRAY_LENGTH(p_pairs) AS 'seed conservation failed';
 END;
 
 CREATE OR REPLACE PROCEDURE `pacific-plating-282708.sap_integration_v3.sp_classify_mo_rcl_recovery`(
@@ -86,24 +107,25 @@ CREATE OR REPLACE PROCEDURE `pacific-plating-282708.sap_integration_v3.sp_classi
 )
 BEGIN
   DECLARE v_expected INT64;
+  DECLARE v_request_id STRING DEFAULT TRIM(p_request_id);
 
   ASSERT NULLIF(TRIM(p_request_id),'') IS NOT NULL AS 'request_id is required';
   ASSERT (SELECT COUNT(*)
     FROM `pacific-plating-282708.sap_integration_v3.mo_rcl_recovery_request`
-    WHERE request_id=p_request_id AND request_status='SEEDED')=1
+    WHERE request_id=v_request_id AND request_status='SEEDED')=1
     AS 'classification requires one immutable SEEDED request';
   SET v_expected=(SELECT expected_pair_count
     FROM `pacific-plating-282708.sap_integration_v3.mo_rcl_recovery_request`
-    WHERE request_id=p_request_id);
+    WHERE request_id=v_request_id);
   ASSERT (SELECT COUNT(*)
     FROM `pacific-plating-282708.sap_integration_v3.mo_rcl_recovery_scope`
-    WHERE request_id=p_request_id)=v_expected AS 'request scope count changed';
+    WHERE request_id=v_request_id)=v_expected AS 'request scope count changed';
   ASSERT (SELECT COUNT(*)
     FROM `pacific-plating-282708.sap_integration_v3.mo_rcl_recovery_mapping`
-    WHERE request_id=p_request_id)=0 AS 'request mapping already exists';
+    WHERE request_id=v_request_id)=0 AS 'request mapping already exists';
   ASSERT (SELECT COUNT(*)
     FROM `pacific-plating-282708.sap_integration_v3.mo_rcl_recovery_hold`
-    WHERE request_id=p_request_id)=0 AS 'request holds already exist';
+    WHERE request_id=v_request_id)=0 AS 'request holds already exist';
 
   CREATE TEMP TABLE _classified AS
   WITH real_sap AS (
@@ -117,7 +139,9 @@ BEGIN
     FROM `pacific-plating-282708.sap_integration_v3.mo_rcl_recovery_scope` sc
     LEFT JOIN `pacific-plating-282708.sap_integration_v3.stg_payment_events` p
       ON p.order_id=sc.order_id AND p.period=sc.reported_period
-    WHERE sc.request_id=p_request_id
+    LEFT JOIN `pacific-plating-282708.careos.carepay_charges` c
+      ON c.id=p.charge_id AND c.status='SUCCESSFUL'
+    WHERE sc.request_id=v_request_id AND (p.charge_id IS NULL OR c.id IS NOT NULL)
     GROUP BY sc.order_id,sc.reported_period
   ), one_pair AS (
     SELECT order_id,reported_period,ARRAY_LENGTH(order_items) item_count,
@@ -129,7 +153,11 @@ BEGIN
       STRING_AGG(DISTINCT IFNULL(s.flow,'__NULL__'),',' ORDER BY IFNULL(s.flow,'__NULL__'))
         reported_flows,
       STRING_AGG(DISTINCT IFNULL(full_s.flow,'__NULL__'),',' ORDER BY IFNULL(full_s.flow,'__NULL__'))
-        full_spine_flows
+        full_spine_flows,
+      COUNT(DISTINCT full_s.period) spine_period_count,
+      MIN(full_s.period) first_period,MAX(full_s.period) last_period,
+      COUNT(DISTINCT full_s.total_periods) total_period_versions,
+      MAX(full_s.total_periods) total_periods
     FROM one_pair p
     LEFT JOIN `pacific-plating-282708.sap_integration_v3.stg_schedule` s
       ON s.order_item=p.order_item AND s.period=p.reported_period
@@ -141,17 +169,18 @@ BEGIN
       STRING_AGG(DISTINCT x.rule_code,',' ORDER BY x.rule_code) exclusion_rule
     FROM one_pair p
     LEFT JOIN `pacific-plating-282708.sap_integration_v3.sap_excluded_records` x
-      ON x.order_item=p.order_item AND x.period=p.reported_period
+      ON x.order_item=p.order_item
     GROUP BY p.order_id,p.reported_period
   ), validations AS (
     SELECT p.order_id,p.reported_period,
       STRING_AGG(DISTINCT v.check_name,',' ORDER BY v.check_name) validation_rule
     FROM one_pair p
     LEFT JOIN `pacific-plating-282708.sap_integration_v3.sap_validation_error` v
-      ON v.order_item=p.order_item AND (v.period=p.reported_period OR v.period IS NULL)
+      ON v.order_item=p.order_item
     GROUP BY p.order_id,p.reported_period
   )
-  SELECT p.*,f.reported_flows,f.full_spine_flows,
+  SELECT p.*,f.reported_flows,f.full_spine_flows,f.spine_period_count,f.first_period,
+    f.last_period,f.total_period_versions,f.total_periods,
     sap.U_OrderItem IS NOT NULL already_in_sap,x.exclusion_rule,v.validation_rule
   FROM one_pair p
   LEFT JOIN schedule_flow f USING(order_id,reported_period)
@@ -167,20 +196,36 @@ BEGIN
     WHEN already_in_sap THEN 'ALREADY_IN_SAP_NOW'
     WHEN exclusion_rule IS NOT NULL THEN 'EXCLUDED_RULE'
     WHEN validation_rule IS NOT NULL THEN 'VALIDATION_RULE'
-    WHEN reported_flows!='RCL' THEN 'REPORTED_PERIOD_NOT_RCL'
-    WHEN full_spine_flows!='RCL' THEN 'FULL_SPINE_NOT_RCL'
+    WHEN reported_flows IS NULL OR reported_flows!='RCL' THEN 'REPORTED_PERIOD_NOT_RCL'
+    WHEN full_spine_flows IS NULL OR full_spine_flows!='RCL' THEN 'FULL_SPINE_NOT_RCL'
+    WHEN total_period_versions!=1 OR total_periods IS NULL OR total_periods<1
+      OR first_period!=1 OR last_period!=total_periods OR spine_period_count!=total_periods
+      THEN 'INCOMPLETE_PERIOD_SPINE'
     ELSE 'ACCEPT_MAPPING' END decision
   FROM _classified;
 
+  ASSERT (SELECT COUNT(*) FROM _decision)=v_expected AS 'decision count conservation failed';
+  ASSERT (SELECT COUNT(*) FROM (
+    SELECT order_id,reported_period,COUNT(*) n FROM _decision GROUP BY 1,2 HAVING n!=1))=0
+    AS 'decision key is not unique';
+
   BEGIN TRANSACTION;
+    UPDATE `pacific-plating-282708.sap_integration_v3.mo_rcl_recovery_lock`
+    SET claim_epoch=claim_epoch+1,claimed_at=CURRENT_TIMESTAMP()
+    WHERE lock_name='MO_RCL_RECOVERY';
+    ASSERT @@row_count=1 AS 'recovery lock is missing or duplicated';
+    ASSERT (SELECT COUNT(*)
+      FROM `pacific-plating-282708.sap_integration_v3.mo_rcl_recovery_request`
+      WHERE request_id=v_request_id AND request_status='SEEDED')=1
+      AS 'request state changed before classification claim';
     INSERT INTO `pacific-plating-282708.sap_integration_v3.mo_rcl_recovery_mapping`
       (request_id,order_id,reported_period,order_item,charge_id,mapped_at)
-    SELECT p_request_id,order_id,reported_period,order_item,charge_id,CURRENT_TIMESTAMP()
+    SELECT v_request_id,order_id,reported_period,order_item,charge_id,CURRENT_TIMESTAMP()
     FROM _decision WHERE decision='ACCEPT_MAPPING';
 
     INSERT INTO `pacific-plating-282708.sap_integration_v3.mo_rcl_recovery_hold`
       (request_id,order_id,reported_period,order_item,rule_code,detail,detected_at)
-    SELECT p_request_id,order_id,reported_period,order_item,decision,
+    SELECT v_request_id,order_id,reported_period,order_item,decision,
       FORMAT('item_count=%d; charge_count=%d; reported_flows=%s; full_spine_flows=%s; exclusion=%s; validation=%s',
         item_count,charge_count,IFNULL(reported_flows,'NULL'),IFNULL(full_spine_flows,'NULL'),
         IFNULL(exclusion_rule,'NULL'),IFNULL(validation_rule,'NULL')),CURRENT_TIMESTAMP()
@@ -188,12 +233,12 @@ BEGIN
 
     UPDATE `pacific-plating-282708.sap_integration_v3.mo_rcl_recovery_request`
     SET request_status='CLASSIFIED'
-    WHERE request_id=p_request_id AND request_status='SEEDED';
+    WHERE request_id=v_request_id AND request_status='SEEDED';
+    ASSERT @@row_count=1 AS 'classification state transition failed';
+    ASSERT (SELECT COUNT(*)
+      FROM `pacific-plating-282708.sap_integration_v3.mo_rcl_recovery_mapping`
+      WHERE request_id=v_request_id)+(SELECT COUNT(*)
+      FROM `pacific-plating-282708.sap_integration_v3.mo_rcl_recovery_hold`
+      WHERE request_id=v_request_id)=v_expected AS 'classification conservation failed';
   COMMIT TRANSACTION;
-
-  ASSERT (SELECT COUNT(*)
-    FROM `pacific-plating-282708.sap_integration_v3.mo_rcl_recovery_mapping`
-    WHERE request_id=p_request_id)+(SELECT COUNT(*)
-    FROM `pacific-plating-282708.sap_integration_v3.mo_rcl_recovery_hold`
-    WHERE request_id=p_request_id)=v_expected AS 'classification conservation failed';
 END;
