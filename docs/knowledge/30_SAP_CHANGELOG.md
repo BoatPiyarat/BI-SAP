@@ -1,5 +1,20 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-17 10:49 ICT — consolidated 1-15 Aug handoff into a single task file
+
+- Added `docs/tasks/TASK_1_15AUG_MISSING_INTERFACE_20260817.md` per Boat's instruction to focus
+  only on "1-15 Aug" and hand Codex one complete brief instead of two sprawling `HANDOFF_QUEUE.md`
+  entries with tangents (refund tab, Cancel/Changed-order asks) mixed in. Contains: confirmed facts
+  from the sheet XML (2301 rows / 2295 systematic / 6 exceptions / 1 flagged), Phase 1 (live
+  verification via `sql/adhoc/20260817_verify_mo_1-15aug_missing_from_sap.sql`), Phase 2
+  (prepare-only interface file, explicit no-`gs://interface-file/**`-write guardrail), acceptance
+  criteria for each phase, and an order-of-work footer.
+- Marked the 2026-08-17 10:27 and 10:45 ICT `HANDOFF_QUEUE.md` entries SUPERSEDED (content kept,
+  not deleted, per convention) and pointed both to the task file. Marked the 10:09 ICT entry
+  PARTIALLY SUPERSEDED — its 1-15-Aug-verification ask moved to the task file; its
+  Cancel-import/Changed-order-import scoping questions remain open and out of scope for this task.
+- No BigQuery query, `gs://**` write, or mutation performed.
+
 ## 2026-08-17 10:45 ICT — confirmed 1-15 Aug population from sheet XML; wrote verification query, tasked Codex
 
 - Downloaded Mo's "RCL_missing order" sheet as `.xlsx` (via `mcp__claude_ai_Google_Drive__download_file_content`,

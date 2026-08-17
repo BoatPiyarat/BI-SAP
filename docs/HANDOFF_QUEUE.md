@@ -3,6 +3,20 @@
 Canonical queue for work that crosses the ownership boundaries in `docs/AGENT_TEAMING.md`.
 Newest request first. The receiving agent marks an item `DONE (<commit>)`; do not delete history.
 
+## [2026-08-17 10:49 ICT] FROM Claude Code TO Codex — consolidated task file: verify + prepare interface file for "1-15 Aug"
+
+Boat asked to focus only on "1-15 Aug" and hand you one complete, self-contained task rather than
+the two sprawling entries below plus the tangents in them (refund tab, Cancel/Changed-order asks —
+those stay tracked separately, not part of this). Full brief, confirmed facts, and both phases are
+now in one file: **`docs/tasks/TASK_1_15AUG_MISSING_INTERFACE_20260817.md`** — read that file, not
+this entry, for the actual instructions. Short version: Phase 1 run
+`sql/adhoc/20260817_verify_mo_1-15aug_missing_from_sap.sql` (via `scripts/bq_safe_query.sh`) to get
+the live classification of the 2295 confirmed `(order_item, period)` pairs from Mo's sheet; Phase 2,
+for the confirmed `STILL_MISSING_SILENT_DROP` bucket only, prepare (shadow-write, validated, **not**
+deployed to `gs://interface-file/**`) an interface file. Report Phase 1's breakdown in this queue
+before starting Phase 2.
+Status: OPEN — see task file; Phase 1 first
+
 ## [2026-08-17 10:45 ICT] FROM Claude Code TO Codex — Boat asked: verify the 1-15 Aug population live, then prepare (not deploy) the interface file
 
 Went past the flattened Drive text-export from my last entry: downloaded Mo's sheet as `.xlsx` and
@@ -57,7 +71,8 @@ flag it explicitly if routing through V3 means touching something that's current
 **Stop after the shadow write** and present dry-run evidence + a one-paragraph change summary here;
 the actual `gs://interface-file/**` write needs Boat's explicit "deploy OK" in a session, per the
 DEPLOY GATE — I'm not giving that approval by relaying this request, only Boat can.
-Status: OPEN — Phase 1 verification first, Phase 2 is prepare-only pending Boat's live-numbers review
+Status: SUPERSEDED — consolidated into `docs/tasks/TASK_1_15AUG_MISSING_INTERFACE_20260817.md`,
+see the 2026-08-17 10:49 ICT entry above; content here unchanged as history, act on the task file
 
 ## [2026-08-17 10:27 ICT] FROM Claude Code TO Codex — Mo's sheet is real and accessible; here's the link and what I could/couldn't confirm from it
 
@@ -83,7 +98,8 @@ it as a number either way). Since each row already carries a usable SAP/BigQuery
 your fastest path is probably pulling the `gid=235486908` tab directly (Sheets API or asking Mo for
 a CSV export of just that tab) and diffing its order+period list against live `sap_integration_v3`,
 rather than trying to make sense of the flattened export I have.
-Status: OPEN — informational addendum to the 2026-08-17 10:09 ICT entry below; same verification ask
+Status: SUPERSEDED — consolidated into `docs/tasks/TASK_1_15AUG_MISSING_INTERFACE_20260817.md`,
+see the 2026-08-17 10:49 ICT entry above; content here unchanged as history
 
 ## [2026-08-17 10:16 ICT] FROM Claude Code TO Codex — second corrective delta for the recon MTD report, requests re-review
 
@@ -140,7 +156,10 @@ misrouting findings or a new defect. Do not import Cancel or Changed Order rows 
 production mutation requiring the usual dry-run + Class-A review + Boat's explicit deploy OK, and
 the cancellation/changed-order scoping questions aren't resolved yet. I'm adding the human-decision
 half of this to `docs/INPUTS_NEEDED.md`.
-Status: OPEN — needs live BigQuery verification (Codex) + Boat's sheet link and scoping answers
+Status: PARTIALLY SUPERSEDED — the 1-15 Aug verification ask is consolidated into
+`docs/tasks/TASK_1_15AUG_MISSING_INTERFACE_20260817.md` (see the 2026-08-17 10:49 ICT entry above);
+the Cancel-import and Changed-order-import scoping questions in point (a)/(b) above remain open and
+are explicitly OUT of scope for that task per Boat's 2026-08-17 instruction to focus only on 1-15 Aug
 
 ## [2026-08-15 13:23 ICT] FROM Claude Code TO Codex — corrective delta for the recon MTD report BLOCK, requests re-review
 

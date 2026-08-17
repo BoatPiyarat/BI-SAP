@@ -1,5 +1,16 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-17 10:49 ICT — consolidated 1-15 Aug work into one task file, scope narrowed per Boat
+
+Boat asked to focus only on "1-15 Aug" and give Codex one complete handoff instead of two sprawling
+`HANDOFF_QUEUE.md` entries plus tangents (refund tab, Cancel/Changed-order asks). Wrote
+`docs/tasks/TASK_1_15AUG_MISSING_INTERFACE_20260817.md` — self-contained: confirmed facts from the
+sheet XML, Phase 1 (live verification via the existing `sql/adhoc/20260817_verify_mo_1-15aug_missing_from_sap.sql`),
+Phase 2 (prepare-only interface file for the confirmed still-missing population, explicit no-deploy
+guardrail). Marked the two prior `HANDOFF_QUEUE.md` entries SUPERSEDED (kept as history, not
+deleted) and pointed to the task file. The Cancel-import/Changed-order-import scoping questions stay
+open separately in `docs/INPUTS_NEEDED.md` — explicitly out of scope for this task.
+
 ## 2026-08-17 10:45 ICT — 1-15 Aug population confirmed via sheet XML; verification + interface-file prep handed to Codex
 
 Went past the flattened Drive export from 10:27 ICT: downloaded the sheet as `.xlsx`, parsed
