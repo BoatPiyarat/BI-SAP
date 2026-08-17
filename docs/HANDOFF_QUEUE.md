@@ -74,6 +74,26 @@ emit the complete `1..TotalPeriods` spine with Paid/Pending per period; required
 cannot be SQL NULL or literal `"NULL"` (Pending PaymentDate may use the canonical empty string).
 The consolidated task file now contains the exact fail-closed assertions and acceptance evidence.
 
+Phase 2 attempted 2026-08-17 after Boat authorized interface preparation and a bucket write; Codex
+interpreted the destination as shadow-only because no explicit production `deploy OK` was given.
+Live definitions for `sap_view.RCL_Motor_process_2_newpayment` and
+`sap_view.RCL_NonMotor_process_2_newpayment` were captured first. Neither live view nor
+`sap_data_engineer.sap_dashboard_carepay_installment` matched the sheet's base `L...` keys directly,
+confirming those keys are order IDs rather than SAP-facing OrderItems.
+
+Canonical event/schedule mapping job `bqjob_r23e509c4dc3bf9f0_000001a00f0fa133_1` (dry-run
+236,277,694 bytes) found: 1,883 of 2,295 reported pairs map unambiguously to RCL, 1 maps to a
+non-RCL flow, 47 map to an item with unresolved flow, and 364 have no successful-event item
+mapping. The 1,883 pairs reduce to 1,873 distinct accepted RCL OrderItems.
+
+The exact full-period candidate gate then failed (job
+`bqjob_r59c50fbf7b0ae386_000001a00f10761f_1`, dry-run 1,005,676,169 bytes): 13,290 candidate rows,
+160 OrderItems with incomplete `1..TotalPeriods` spines, 3,894 rows outside exact `Paid`/`Pending`,
+and 9,396 rows with SQL NULL in required gate fields. RCL/RCB separation itself passed: zero RCB
+channel rows, zero mixed-BU items, all candidate items Motor. Per Boat's mandatory gate, no shadow
+or production GCS object was written. Phase 2 is BLOCKED until a reviewed transformation produces
+complete spines, correct statuses, and source-backed non-NULL values without inventing data.
+
 ## [2026-08-17 10:45 ICT] FROM Claude Code TO Codex — Boat asked: verify the 1-15 Aug population live, then prepare (not deploy) the interface file
 
 Went past the flattened Drive text-export from my last entry: downloaded Mo's sheet as `.xlsx` and

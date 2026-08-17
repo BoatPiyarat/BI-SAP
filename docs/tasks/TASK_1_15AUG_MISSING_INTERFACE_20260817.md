@@ -148,6 +148,11 @@ accepted Phase-1-confirmed `STILL_MISSING_SILENT_DROP` order_items at their comp
 spines, with Paid/Pending status per period, no prohibited NULL/`"NULL"` values, invariant-query
 results, dry-run evidence, and a change summary ready for Boat's review — no production write.
 
+**Phase-2 gate result, 2026-08-17: BLOCKED.** Order-to-item mapping yielded 1,873 distinct
+unambiguous RCL items, but their canonical installment-source candidate failed the mandatory gate:
+160 incomplete spines, 3,894 non-Paid/Pending rows, and 9,396 required-field SQL NULL rows. See
+`docs/HANDOFF_QUEUE.md` for job IDs and byte evidence. No GCS object was written.
+
 ---
 
 ## Order of work
