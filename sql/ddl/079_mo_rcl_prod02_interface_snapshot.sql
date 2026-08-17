@@ -43,6 +43,8 @@ CREATE OR REPLACE PROCEDURE `pacific-plating-282708.sap_integration_v3.sp_build_
 BEGIN
   DECLARE v_request_id STRING DEFAULT TRIM(p_request_id);
   DECLARE v_batch_date DATE DEFAULT CURRENT_DATE('Asia/Bangkok');
+  DECLARE v_period_start DATE;
+  DECLARE v_period_end DATE;
 
   ASSERT v_request_id='MO-RCL-20260817-PROD-02'
     AS 'This immutable builder is scoped only to MO-RCL-20260817-PROD-02';
@@ -54,6 +56,12 @@ BEGIN
     AS 'PROD-02 ready snapshot is immutable and already exists';
   ASSERT (SELECT COUNT(*) FROM `pacific-plating-282708.sap_integration_v3.mo_rcl_prod02_interface_hold`
     WHERE request_id=v_request_id)=0 AS 'PROD-02 interface holds already exist';
+  ASSERT (SELECT COUNT(*) FROM `pacific-plating-282708.sap_integration_v3.sap_period_state`
+    WHERE status='OPEN')=1 AS 'exactly one SAP period must be OPEN';
+  SET (v_period_start,v_period_end)=(SELECT AS STRUCT period_start,period_end
+    FROM `pacific-plating-282708.sap_integration_v3.sap_period_state` WHERE status='OPEN');
+  ASSERT v_batch_date>=v_period_start AND v_batch_date<v_period_end
+    AS 'build date is outside the approved OPEN SAP period';
 
   CREATE TEMP TABLE _mapped_items AS
   SELECT DISTINCT order_item
@@ -79,6 +87,11 @@ BEGIN
     COUNT(DISTINCT TO_JSON_STRING(STRUCT(order_item,period,third_party_id,charge_time,amount,
       payment_option,payment_method_source,payment_channel_source))) charge_versions
   FROM _event_union GROUP BY charge_id;
+
+  CREATE TEMP TABLE _charge_conflict_item AS
+  SELECT DISTINCT u.order_item
+  FROM _event_union u JOIN _event_charge c USING(charge_id)
+  WHERE c.charge_versions>1;
 
   CREATE TEMP TABLE _events AS
   SELECT * EXCEPT(rn) FROM (
@@ -152,6 +165,11 @@ BEGIN
     WHERE EXISTS (SELECT 1 FROM _mapped_items m WHERE m.order_item=CAST(s.OrderItem AS STRING))
   ) WHERE rn=1;
 
+  CREATE TEMP TABLE _target_transaction AS
+  SELECT DISTINCT transaction_id
+  FROM `pacific-plating-282708.sap_integration_v3.stg_schedule` s
+  WHERE EXISTS (SELECT 1 FROM _mapped_items m WHERE m.order_item=s.order_item);
+
   CREATE TEMP TABLE _financial AS
   SELECT s.transaction_id,
     ROUND(IFNULL(ps.processing_fee_amount,0)/100*100/103.3,2) canonical_processing_fee,
@@ -166,15 +184,16 @@ BEGIN
     ROUND(IFNULL(ps.discount_amount,0)/100,2) canonical_discount
   FROM (SELECT * EXCEPT(rn) FROM (
     SELECT *,ROW_NUMBER() OVER(PARTITION BY transaction_id ORDER BY update_time DESC,id DESC) rn
-    FROM `pacific-plating-282708.careos.carepay_transaction_snapshots`) WHERE rn=1) s
+    FROM `pacific-plating-282708.careos.carepay_transaction_snapshots` ts
+    WHERE EXISTS (SELECT 1 FROM _target_transaction t WHERE t.transaction_id=ts.transaction_id)
+    ) WHERE rn=1) s
   LEFT JOIN `pacific-plating-282708.careos.carepay_transaction_snapshot_price_summaries` ps
     ON ps.snapshot_id=s.id;
 
   CREATE TEMP TABLE _candidate AS
   SELECT
     s.CompanyDB,s.OrderID,sc.order_item OrderItem,
-    CASE WHEN sap.TransactionStatus IN ('Paid','paid')
-        AND NULLIF(TRIM(sap.U_InvoiceNo),'') IS NOT NULL THEN sap.U_InvoiceNo
+    CASE WHEN NULLIF(TRIM(sap.U_InvoiceNo),'') IS NOT NULL THEN sap.U_InvoiceNo
       WHEN e.charge_id IS NULL THEN ''
       ELSE `pacific-plating-282708.sap_integration_v3.fn_invoice_no`(e.third_party_id) END InvoiceNo,
     s.OrderDate,COALESCE(NULLIF(TRIM(s.InsuredID),''),'-') InsuredID,s.Title,s.FirstName,s.LastName,
@@ -245,6 +264,9 @@ BEGIN
     SELECT OrderItem,'SUCCESSFUL_CHARGE_AMBIGUOUS','period has more than one qualified successful charge'
     FROM _candidate GROUP BY OrderItem HAVING MAX(event_count)>1 OR MAX(charge_versions)>1
     UNION ALL
+    SELECT order_item,'EVENT_CHARGE_VERSION_CONFLICT','item is implicated by conflicting versions of one charge'
+    FROM _charge_conflict_item
+    UNION ALL
     SELECT OrderItem,'UPSTREAM_EXCLUSION_OR_VALIDATION','item has a current exclusion or validation error'
     FROM _candidate GROUP BY OrderItem HAVING COUNTIF(exclusion_rule IS NOT NULL OR validation_rule IS NOT NULL)>0
     UNION ALL
@@ -278,6 +300,14 @@ BEGIN
       OR LENGTH(BatchRunDate)!=8 OR SAFE.PARSE_DATE('%d%m%Y',BatchRunDate) IS NULL
       OR (PaymentDate!='' AND (LENGTH(PaymentDate)!=8 OR SAFE.PARSE_DATE('%d%m%Y',PaymentDate) IS NULL)))>0
     UNION ALL
+    SELECT OrderItem,'OPEN_PERIOD_INVALID','BatchRunDate or newly recovered payment lies outside OPEN SAP period'
+    FROM _candidate GROUP BY OrderItem HAVING COUNTIF(
+      SAFE.PARSE_DATE('%d%m%Y',BatchRunDate)<v_period_start
+      OR SAFE.PARSE_DATE('%d%m%Y',BatchRunDate)>=v_period_end
+      OR (sap_status IS NULL AND PaymentDate!=''
+        AND (SAFE.PARSE_DATE('%d%m%Y',PaymentDate)<v_period_start
+          OR SAFE.PARSE_DATE('%d%m%Y',PaymentDate)>=v_period_end)))>0
+    UNION ALL
     SELECT OrderItem,'REQUIRED_VALUE_NULL_OR_LITERAL_NULL','required interface value is SQL/literal NULL or blank'
     FROM _candidate GROUP BY OrderItem HAVING COUNTIF(
       REGEXP_CONTAINS(TO_JSON_STRING((SELECT AS STRUCT c.* EXCEPT(flow,payment_option,source_count,event_count,
@@ -308,6 +338,10 @@ BEGIN
     FROM _candidate GROUP BY OrderItem HAVING COUNTIF(
       canonical_gross_premium IS NULL OR canonical_stamp_duty IS NULL OR canonical_vat IS NULL
       OR canonical_total_premium IS NULL
+      OR canonical_processing_fee IS NULL OR canonical_processing_fee_vat IS NULL
+      OR canonical_total_eir IS NULL OR canonical_total_sbt IS NULL
+      OR canonical_shipping_fee IS NULL OR canonical_shipping_fee_vat IS NULL
+      OR canonical_discount IS NULL
       OR ABS(SAFE_CAST(GrossPremium AS NUMERIC)-SAFE_CAST(canonical_gross_premium AS NUMERIC))>0.005
       OR ABS(SAFE_CAST(StampDuty AS NUMERIC)-SAFE_CAST(canonical_stamp_duty AS NUMERIC))>0.005
       OR ABS(SAFE_CAST(VAT AS NUMERIC)-SAFE_CAST(canonical_vat AS NUMERIC))>0.005
