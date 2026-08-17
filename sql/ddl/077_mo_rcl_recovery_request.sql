@@ -7,9 +7,13 @@ CREATE TABLE IF NOT EXISTS `pacific-plating-282708.sap_integration_v3.mo_rcl_rec
   source_reference STRING NOT NULL,
   expected_pair_count INT64 NOT NULL,
   request_status STRING NOT NULL,
+  source_request_id STRING,
   created_at TIMESTAMP NOT NULL
 )
 CLUSTER BY request_id;
+
+ALTER TABLE `pacific-plating-282708.sap_integration_v3.mo_rcl_recovery_request`
+ADD COLUMN IF NOT EXISTS source_request_id STRING;
 
 CREATE TABLE IF NOT EXISTS `pacific-plating-282708.sap_integration_v3.mo_rcl_recovery_lock` (
   lock_name STRING NOT NULL,
@@ -102,12 +106,45 @@ BEGIN
   COMMIT TRANSACTION;
 END;
 
+CREATE OR REPLACE PROCEDURE `pacific-plating-282708.sap_integration_v3.sp_clone_mo_rcl_recovery_request`(
+  p_request_id STRING,p_source_request_id STRING,p_requested_by STRING,p_source_reference STRING
+)
+BEGIN
+  DECLARE v_request_id STRING DEFAULT TRIM(p_request_id);
+  DECLARE v_source_request_id STRING DEFAULT TRIM(p_source_request_id);
+  ASSERT NULLIF(v_request_id,'') IS NOT NULL AND NULLIF(v_source_request_id,'') IS NOT NULL
+    AS 'request_id and source_request_id are required';
+  ASSERT (SELECT COUNT(*) FROM `pacific-plating-282708.sap_integration_v3.mo_rcl_recovery_request`
+    WHERE request_id=v_source_request_id AND expected_pair_count=2295 AND request_status='CLASSIFIED')=1
+    AS 'source request must be the immutable classified Mo request';
+  ASSERT (SELECT COUNT(*) FROM `pacific-plating-282708.sap_integration_v3.mo_rcl_recovery_event_snapshot`
+    WHERE source_request_id=v_source_request_id)>0 AS 'source request has no reviewed event snapshot';
+  BEGIN TRANSACTION;
+    UPDATE `pacific-plating-282708.sap_integration_v3.mo_rcl_recovery_lock`
+    SET claim_epoch=claim_epoch+1,claimed_at=CURRENT_TIMESTAMP() WHERE lock_name='MO_RCL_RECOVERY';
+    ASSERT @@row_count=1 AS 'recovery lock is missing or duplicated';
+    ASSERT (SELECT COUNT(*) FROM `pacific-plating-282708.sap_integration_v3.mo_rcl_recovery_request`
+      WHERE request_id=v_request_id)=0 AS 'request_id is immutable and already exists';
+    INSERT INTO `pacific-plating-282708.sap_integration_v3.mo_rcl_recovery_request`
+      (request_id,requested_by,source_reference,expected_pair_count,request_status,source_request_id,created_at)
+    VALUES (v_request_id,TRIM(p_requested_by),TRIM(p_source_reference),2295,'SEEDED',
+      v_source_request_id,CURRENT_TIMESTAMP());
+    INSERT INTO `pacific-plating-282708.sap_integration_v3.mo_rcl_recovery_scope`
+      (request_id,order_id,reported_period,captured_at)
+    SELECT v_request_id,order_id,reported_period,CURRENT_TIMESTAMP()
+    FROM `pacific-plating-282708.sap_integration_v3.mo_rcl_recovery_scope`
+    WHERE request_id=v_source_request_id;
+    ASSERT @@row_count=2295 AS 'cloned Mo scope must contain exactly 2,295 pairs';
+  COMMIT TRANSACTION;
+END;
+
 CREATE OR REPLACE PROCEDURE `pacific-plating-282708.sap_integration_v3.sp_classify_mo_rcl_recovery`(
   p_request_id STRING
 )
 BEGIN
   DECLARE v_expected INT64;
   DECLARE v_request_id STRING DEFAULT TRIM(p_request_id);
+  DECLARE v_source_request_id STRING;
 
   ASSERT NULLIF(TRIM(p_request_id),'') IS NOT NULL AS 'request_id is required';
   ASSERT (SELECT COUNT(*)
@@ -115,6 +152,9 @@ BEGIN
     WHERE request_id=v_request_id AND request_status='SEEDED')=1
     AS 'classification requires one immutable SEEDED request';
   SET v_expected=(SELECT expected_pair_count
+    FROM `pacific-plating-282708.sap_integration_v3.mo_rcl_recovery_request`
+    WHERE request_id=v_request_id);
+  SET v_source_request_id=(SELECT source_request_id
     FROM `pacific-plating-282708.sap_integration_v3.mo_rcl_recovery_request`
     WHERE request_id=v_request_id);
   ASSERT (SELECT COUNT(*)
@@ -135,9 +175,11 @@ BEGIN
   ), recovery_events AS (
     SELECT charge_id,order_item,order_id,period
     FROM `pacific-plating-282708.sap_integration_v3.stg_payment_events`
+    WHERE DATE(charge_time) BETWEEN DATE '2026-08-01' AND DATE '2026-08-15'
     UNION ALL
     SELECT charge_id,order_item,order_id,period
     FROM `pacific-plating-282708.sap_integration_v3.mo_rcl_recovery_event_snapshot`
+    WHERE source_request_id=v_source_request_id
   ), item_resolution AS (
     SELECT sc.order_id,sc.reported_period,
       ARRAY_AGG(DISTINCT p.order_item IGNORE NULLS) order_items
