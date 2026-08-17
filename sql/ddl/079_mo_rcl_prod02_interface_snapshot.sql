@@ -345,11 +345,12 @@ BEGIN
       OR (TransactionStatus='Pending' AND PaymentDate!=''))>0
     UNION ALL
     SELECT OrderItem,'NUMERIC_CONTRACT_INVALID','numeric field is missing, non-finite, or not at scale 2'
-    FROM _candidate GROUP BY OrderItem HAVING COUNTIF(NOT REGEXP_CONTAINS(CONCAT_WS('|',
+    FROM _candidate GROUP BY OrderItem HAVING COUNTIF(NOT REGEXP_CONTAINS(ARRAY_TO_STRING([
       GrossPremium,StampDuty,VAT,TotalPremium,WHT,TotalEIR,TotalSBT,ProcessingFee,ProcessingFeeVat,
       ShippingFee,ShippingFeeVat,TotalAmount,Discount,ExpectedReceived,ActualReceived,
       InterestThisPeriod,PrincipleThisPeriod,InterestEIRThisPeriod,PrincipleEIRThisPeriod,
-      PendingPayment,RefundAmountBeforeFee,RefundAmountAfterFee),r'^(-?[0-9]+\.[0-9]{2}\|){20}-?[0-9]+\.[0-9]{2}$'))>0
+      PendingPayment,RefundAmountBeforeFee,RefundAmountAfterFee],'|'),
+      r'^(-?[0-9]+\.[0-9]{2}\|){21}-?[0-9]+\.[0-9]{2}$'))>0
     UNION ALL
     SELECT OrderItem,'CANONICAL_FINANCIAL_MISMATCH','premium fields do not reconcile to canonical CareOS order-item values'
     FROM _candidate GROUP BY OrderItem HAVING COUNTIF(
