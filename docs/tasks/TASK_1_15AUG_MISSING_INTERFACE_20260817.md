@@ -126,6 +126,9 @@ quarantined with its reason and must not enter the shadow file.
      with its reason, not silently dropped or silently included.
    - Apply and retain evidence for all four mandatory interface invariants above before writing the
      shadow candidate.
+   - Apply the complete canonical contract in
+     `docs/design/SAP_INTERFACE_PRE_EXPORT_GATE.md`; the task-specific four invariants strengthen
+     that contract and do not replace its universal or RCL checks.
 3. **Write only to a shadow `gs://` prefix.** Never `gs://interface-file/**` — that is production,
    SAP pulls it every 15 minutes.
 4. Stop. Present dry-run evidence + a one-paragraph change summary in `docs/HANDOFF_QUEUE.md`.

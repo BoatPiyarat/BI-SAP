@@ -74,6 +74,10 @@ require constant clarification.
 - **Repository is not live truth for legacy objects.** For `sap_view.*` and `sap_data_engineer.*`, files under `sql/production/` and `sql/sap_view/` are baseline captures that may drift. Before any claim about live behavior, read the current definition from `INFORMATION_SCHEMA.VIEWS` or `bq show --view`; cite the object and query/show timestamp. A repo-only conclusion must be labelled baseline-only, never live.
 - Never derive status or InvoiceNo from `SAP_LIVE`, `SAP_LIVE_2024`, `SAP_LIVE_2025`, or `SAP_LIVE_2026` directly; those are raw per-year shards unioned by `SAP_LIVE_FULL`.
 - **Never bypass validation before export.** Anything written to a production interface path must pass the validation stage, including urgent work.
+- **Every interface file must pass the canonical pre-export gate** in
+  `docs/design/SAP_INTERFACE_PRE_EXPORT_GATE.md` against the exact immutable rows and positional
+  schema that will be written. Confirmed universal rules plus the declared flow/operation rules
+  apply; a relevant unresolved rule blocks. Gate failure means no shadow or production file write.
 - **InvoiceNo is immutable in SAP.** Rows already Paid/Cancelled: mirror the stored value verbatim. Generate only via `fn_invoice_no`.
 - **Column ORDER matters** — SAP import is positional. Never use `SELECT * EXCEPT(col), expr AS col` (it moves the column to the end); use `SELECT * REPLACE(expr AS col)`. Verify with `INFORMATION_SCHEMA.COLUMNS` before deploying any interface-feeding view.
 - **Charge-driven principle:** every SUCCESSFUL charge must end in SAP or in `sap_validation_error` / `sap_excluded_records`. Silent drops are the #1 historical bug class.
