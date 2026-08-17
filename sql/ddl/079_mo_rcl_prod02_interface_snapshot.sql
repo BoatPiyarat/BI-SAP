@@ -380,9 +380,9 @@ BEGIN
   ASSERT (SELECT COUNT(*) FROM _candidate WHERE TransactionStatus NOT IN ('Paid','Pending'))=0
     AS 'status output is not exact Paid/Pending';
 
-  ASSERT (SELECT ARRAY_AGG(STRUCT(column_name,data_type,ordinal_position) ORDER BY ordinal_position)
+  ASSERT TO_JSON_STRING((SELECT ARRAY_AGG(STRUCT(column_name,data_type,ordinal_position) ORDER BY ordinal_position)
     FROM `pacific-plating-282708.sap_integration_v3.INFORMATION_SCHEMA.COLUMNS`
-    WHERE table_name='mo_rcl_prod02_ready') = [
+    WHERE table_name='mo_rcl_prod02_ready')) = TO_JSON_STRING([
       STRUCT('CompanyDB','STRING',1),STRUCT('OrderID','STRING',2),STRUCT('OrderItem','STRING',3),
       STRUCT('InvoiceNo','STRING',4),STRUCT('OrderDate','STRING',5),STRUCT('InsuredID','STRING',6),
       STRUCT('Title','STRING',7),STRUCT('FirstName','STRING',8),STRUCT('LastName','STRING',9),
@@ -401,7 +401,7 @@ BEGIN
       STRUCT('Period','STRING',46),STRUCT('TotalPeriods','STRING',47),STRUCT('PendingPayment','STRING',48),
       STRUCT('PaymentMethod','STRING',49),STRUCT('PaymentChannel','STRING',50),STRUCT('ExpectedDate','STRING',51),
       STRUCT('RefOrder','STRING',52),STRUCT('RefundAmountBeforeFee','STRING',53),STRUCT('RefundAmountAfterFee','STRING',54),
-      STRUCT('BillingAddress','STRING',55),STRUCT('BatchRunDate','STRING',56)]
+      STRUCT('BillingAddress','STRING',55),STRUCT('BatchRunDate','STRING',56)])
     AS 'exact 56-column name/type/ordinal contract mismatch';
 
   BEGIN TRANSACTION;
