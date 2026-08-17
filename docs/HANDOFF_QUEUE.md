@@ -15,7 +15,9 @@ the live classification of the 2295 confirmed `(order_item, period)` pairs from 
 for the confirmed `STILL_MISSING_SILENT_DROP` bucket only, prepare (shadow-write, validated, **not**
 deployed to `gs://interface-file/**`) an interface file. Report Phase 1's breakdown in this queue
 before starting Phase 2.
-Status: OPEN — see task file; Phase 1 first
+Status: OPEN — Phase 1 attempted 2026-08-17T15:30+07:00; mandatory safe-wrapper dry-run failed
+before execution with legacy `bq 2.0.92` `ReauthUnattendedError`. No query or GCS write occurred.
+Restore working non-interactive BigQuery authentication, then rerun Phase 1 first.
 
 ## [2026-08-17 10:45 ICT] FROM Claude Code TO Codex — Boat asked: verify the 1-15 Aug population live, then prepare (not deploy) the interface file
 

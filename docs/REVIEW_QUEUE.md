@@ -4,13 +4,14 @@ Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request firs
 review history; link the completed review and record its verdict.
 
 ## RQ-20260817-second-daily-recon-mtd-report-delta
-Status: OPEN — second corrective delta submitted against `docs/reviews/2026-08-15-25e6fa0-codex.md`
+Status: REVIEWED
 Reviewer: Codex
 Class: A
 Artifact: `workflows/daily_recon_mtd_report.gs`, `workflows/test_daily_recon_mtd_report.js`,
 `workflows/DAILY_RECON_MTD_REPORT_DEPLOYMENT.md`, `docs/reviews/2026-08-14-ff1db18-codex.md`
 (diff-hygiene fix only) — commit follows this entry
 Opened: 2026-08-17T10:16:16+07:00 (from `git show -s --format=%aI 9722688`, the fix commit)
+Verdict: BLOCK — `docs/reviews/2026-08-17-9722688-codex.md`
 Claim: fixes all four correctness/hygiene items from `docs/reviews/2026-08-15-25e6fa0-codex.md`:
 (1) the non-deterministic test clock — `buildReconMtdReport_` now takes `now` as an explicit
 parameter instead of reading the live clock, tests inject a fixed instant; (2) Spec §1 — freshness
