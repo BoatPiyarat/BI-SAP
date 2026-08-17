@@ -71,7 +71,7 @@ BEGIN
     SELECT TRIM(order_id),period,COUNT(*) n FROM UNNEST(p_pairs)
     GROUP BY 1,2 HAVING n!=1))=0 AS 'scope contains duplicate pairs';
   SET v_scope_hash=(SELECT LOWER(TO_HEX(SHA256(STRING_AGG(
-    CONCAT(TRIM(order_id),'|',CAST(period AS STRING)),CHR(10)
+    CONCAT(TRIM(order_id),'|',CAST(period AS STRING)),'\n'
     ORDER BY TRIM(order_id),period)))) FROM UNNEST(p_pairs));
   ASSERT v_scope_hash='33b91e08b301d3e37e3aa6acdf77d51cfb7f0fedda58862c92f8ddb3799cd9a8'
     AS 'scope does not equal the exact reviewed Mo 2,295-pair allowlist';
