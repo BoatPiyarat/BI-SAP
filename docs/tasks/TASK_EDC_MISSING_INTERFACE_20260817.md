@@ -79,53 +79,44 @@ query with dry-run evidence, not from the sheet.
 
 Scope: **only** the `STILL_MISSING_SILENT_DROP` population confirmed in Phase 1.
 
-### Mandatory interface invariants (mirrors Boat's 2026-08-17 gates on the sibling RCL task,
-adapted for RCB/EDC — see `TASK_1_15AUG_MISSING_INTERFACE_20260817.md` for the RCL original)
-
-These are hard, fail-closed acceptance gates. A candidate that violates any gate must be
-quarantined with its reason and must not enter the shadow file.
-
-1. **RCL and RCB must never mix.** Classify every candidate from canonical source attributes before
-   projection. Every order_item in this task must resolve to **RCB** (this is the EDC/RCB task, the
-   inverse of the sibling RCL task). Reject a candidate if RCL/RCB indicators conflict, if the flow
-   is unknown/NULL, or if one order_item spans both flows. Produce an explicit pre-export assertion
-   proving zero mixed/unknown/RCL-classified candidates; do not infer the flow from the destination
-   filename or from the "EDC" tab name alone.
-2. **RCB interfaces the full period spine.** Do not assume `TotalPeriods=1` for every row just
-   because this looks like an EDC/ONETIME tab (see the D11 caveat in Confirmed facts above) —
-   determine the real `TotalPeriods` per order_item from source data. For each included order_item
-   with `TotalPeriods = N`, emit exactly one row for every integer period `1..N`, including
-   already-paid and not-yet-paid periods. Paid periods remain `Paid`; unpaid periods remain
-   `Pending`.
-3. **No NULL interface values.** Before export, assert zero SQL NULLs and zero literal `"NULL"`
-   values in every required interface column, including period, TotalPeriods, status, flow/channel,
-   identifiers, dates, and amounts. The one canonical exception: `PaymentDate` may be the empty
-   string only on a `Pending` row, per `docs/AGENT_RULES.md`; it must never be SQL NULL or the
-   literal `"NULL"`. Any other empty required value is a validation failure.
-4. **Required proof per order_item.** Assert `MIN(period)=1`, `MAX(period)=TotalPeriods`,
-   `COUNT(*)=TotalPeriods`, `COUNT(DISTINCT period)=TotalPeriods`, every period is in `1..N`, and
-   every status is exactly `Paid` or `Pending`. Also assert one canonical flow (RCB) per order_item
-   and reconcile the candidate row count to `SUM(TotalPeriods)` across the accepted order_items.
+### Governing contract
+Apply the complete canonical gate at `docs/design/SAP_INTERFACE_PRE_EXPORT_GATE.md` (Boat,
+2026-08-17) in full — universal checks 1–12 plus the **"RCB / Onetime / EDC checks"** section
+specifically. Do not re-derive or duplicate it here; that doc supersedes the earlier draft
+invariants this file originally carried. Two points from it are worth restating because they
+directly resolve open caveats above:
+- **"Onetime and `CREDIT_CARD_INSTALLMENT` use exactly one SAP period (`1/1`)."** This resolves
+  the D11 caveat in Confirmed facts above — an EDC/Onetime row is period `1/1` by definition, not
+  a variable spine like RCL. What must still be verified per row (gate check #2) is that it
+  actually *is* EDC/Onetime by its real `PaymentMethod`/`PaymentChannel`, not merely because it
+  sits on this sheet's "EDC" tab — tab membership is not proof of flow.
+- **"Only confirmed EDC channel mappings may pass. Currently KBANK is confirmed; an unconfirmed
+  bank blocks instead of receiving a guessed `RCB-EDC-*` value."** If any order in the confirmed
+  population needs a non-KBANK channel, it blocks and routes to `docs/INPUTS_NEEDED.md` — do not
+  guess a bank.
+- Gate check #2 also applies directly here: `CREDIT_CARD_INSTALLMENT` is RCB, must never enter an
+  RCL installment spine, and every candidate's declared flow, source flow, PaymentMethod,
+  PaymentChannel, and BU folder must all agree — reject on conflict or unknown/NULL flow.
 
 **Steps**
 1. Determine routing (legacy `sap_view.RCL_MOTOR`/equivalent RCB path, or V3 `delta_export` — V3
-   Phase B/C is currently **ON HOLD**; flag rather than silently build on top of it). If any order
-   needs a channel assignment (`RCB-EDC-<bank>`) and the bank isn't KBANK, stop and route to
-   `docs/INPUTS_NEEDED.md` — the channel matrix gap is a human decision, not something to guess.
-2. Exact positional column order (`INFORMATION_SCHEMA.COLUMNS`, `SELECT * REPLACE(...)` never
-   `SELECT * EXCEPT(...)`), `DDMMYYYY` dates, satang/100 amounts rounded 2dp, `InvoiceNo` via
-   `fn_invoice_no` only (immutable if ever Paid/Cancelled), through the validation stage — never
-   bypassed, including urgent work. Apply and retain evidence for all four invariants above before
-   writing the shadow candidate.
+   Phase B/C is currently **ON HOLD**; flag rather than silently build on top of it).
+2. Build the candidate and pass it through the full pre-export gate (`docs/design/SAP_INTERFACE_PRE_EXPORT_GATE.md`)
+   before any shadow write — this covers column order/`INFORMATION_SCHEMA.COLUMNS`, `DDMMYYYY`
+   dates, satang/100 rounding, `fn_invoice_no`-only InvoiceNo, the validation stage (never
+   bypassed), and every check listed above. Retain the gate's evidence (dry-run bytes, row/key
+   counts, validation counts, candidate hash) per its "Required enforcement seam" section.
 3. **Write only to a shadow `gs://` prefix.** Never `gs://interface-file/**`.
-4. Stop. Present dry-run evidence + a one-paragraph change summary in `docs/HANDOFF_QUEUE.md`.
+4. Stop. Present the gate's evidence + a one-paragraph change summary in `docs/HANDOFF_QUEUE.md`.
    **Do not write to `gs://interface-file/**` without Boat's explicit "deploy OK"** — this task
-   file is not that approval.
+   file is not that approval. Per the gate doc's "Required enforcement seam," deployment is also
+   independently prohibited until its own stated preconditions are met (live view capture, dry-run,
+   fixtures, Class-A review) — this task doesn't waive those.
 
-**Acceptance:** a shadow-written, validated RCB-only candidate interface file covering exactly the
-accepted Phase-1-confirmed `STILL_MISSING_SILENT_DROP` order_items at their complete `1..N` period
-spines, with Paid/Pending status per period, no prohibited NULL/`"NULL"` values, invariant-query
-results, dry-run evidence, and a change summary ready for Boat's review — no production write.
+**Acceptance:** a shadow-written, gate-passed RCB-only candidate interface file covering exactly
+the accepted Phase-1-confirmed `STILL_MISSING_SILENT_DROP` order_items, each verified as genuinely
+EDC/Onetime flow (not assumed from tab membership) at period `1/1`, with the gate's full evidence
+retained and a change summary ready for Boat's review — no production write.
 
 ---
 

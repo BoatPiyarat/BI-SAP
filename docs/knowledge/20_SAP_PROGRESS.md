@@ -1,5 +1,18 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-17 15:45 ICT — `bq` reauthenticated; adopted the canonical pre-export gate in the EDC task
+
+Boat reauthenticated the `bq` CLI credential that's been blocking every mandatory dry-run since
+2026-08-10 (including today's 1-15 Aug Phase 1 attempt at 15:30 ICT). Marked
+`docs/INPUTS_NEEDED.md`'s reauth entry RESOLVED and asked Codex to retry Phase 1 on both open
+interface tasks plus the three older dry-run-pending files. Also updated
+`docs/tasks/TASK_EDC_MISSING_INTERFACE_20260817.md`'s Phase 2 to point at the new canonical
+`docs/design/SAP_INTERFACE_PRE_EXPORT_GATE.md` (Boat, 2026-08-17) instead of the hand-written
+RCB-adapted invariants it originally carried — the canonical doc corrects an open question in the
+task's own draft: EDC/Onetime rows are exactly period `1/1` by definition (not a variable spine),
+so long as the row's real PaymentMethod/PaymentChannel is verified as EDC/Onetime first, not
+assumed from tab membership alone.
+
 ## 2026-08-17 15:34 ICT — new task: EDC missing-from-SAP population, separate from 1-15 Aug
 
 Puii Somrudee relayed via Boat: import the "EDC" tab of her "RCB update sheet" (different sheet,

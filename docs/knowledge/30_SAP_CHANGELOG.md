@@ -1,5 +1,22 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-17 15:45 ICT — bq reauth resolved; EDC task realigned to the new canonical pre-export gate
+
+- Boat: "reauthenticated." Marked `docs/INPUTS_NEEDED.md`'s `bq` CLI reauth entry (open since
+  2026-08-14, blocking dry-runs since 2026-08-10) RESOLVED and listed every source unit it should
+  now unblock. Added a `docs/HANDOFF_QUEUE.md` entry asking Codex to retry Phase 1 on both
+  `docs/tasks/TASK_1_15AUG_MISSING_INTERFACE_20260817.md` and
+  `docs/tasks/TASK_EDC_MISSING_INTERFACE_20260817.md`, plus the three older dry-run-pending files.
+- Codex separately landed `docs/design/SAP_INTERFACE_PRE_EXPORT_GATE.md` (Boat, 2026-08-17) as the
+  canonical universal pre-export contract and referenced it from the 1-15 Aug task. Updated
+  `docs/tasks/TASK_EDC_MISSING_INTERFACE_20260817.md`'s Phase 2 to reference the same canonical
+  doc instead of its own hand-written RCB-adapted invariants (removed, to avoid drift between two
+  copies of the same rule) — the canonical doc's "RCB / Onetime / EDC checks" section directly
+  resolves this task's own D11 caveat: EDC/Onetime rows are exactly period `1/1`, not a variable
+  spine, but the row's real PaymentMethod/PaymentChannel must still be verified before treating it
+  as EDC/Onetime, not inferred from the sheet tab name.
+- No BigQuery query, `gs://**` write, or mutation performed.
+
 ## 2026-08-17 15:34 ICT — EDC missing-from-SAP task: extracted population, wrote verification query and task file
 
 - Puii Somrudee (`somrudeeb@rabbit.co.th`) asked Boat to import data from the "EDC" tab of her

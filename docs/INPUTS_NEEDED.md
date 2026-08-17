@@ -71,15 +71,22 @@ checker still reports it as blocking (unreconciled since the 2026-08-10 permissi
 below). Confirm which is correct — either correct the design doc, or identify the as-yet-unbuilt
 call path that actually avoids the binding — before further work is built on top of the ambiguity.
 
-## OPEN 2026-08-14 — `bq` CLI reauth blocking the mandatory dry-run gate (Claude Code's machine)
+## RESOLVED 2026-08-17 — `bq` CLI reauth blocking the mandatory dry-run gate (Claude Code's machine)
 
-Raised by the same review. `scripts/bq_safe_query.sh` has failed with `ReauthUnattendedError` on
-Claude Code's machine every session since 2026-08-10 (see `docs/HANDOFF_QUEUE.md` entries
-2026-08-10 19:18, 2026-08-11 10:15, 2026-08-11 18:45) — the interactive reauth step can't complete
-in a non-interactive session. `gcloud` auth still works fine there, so this is one stale legacy
-`bq` credential, not a design or wrapper problem (`--self-test` passes). Three source units
-(`sql/ddl/075_v3_period_cutoff_calendar.sql`, `sql/ddl/067_v3_daily_completeness_snapshot.sql`,
-`sql/adhoc/20260811_verify_period_cutoff_calendar.sql`) are dry-run-pending purely because of this.
+Raised 2026-08-14 by the senior data-engineer review. `scripts/bq_safe_query.sh` had failed with
+`ReauthUnattendedError` on Claude Code's machine every session since 2026-08-10 (see
+`docs/HANDOFF_QUEUE.md` entries 2026-08-10 19:18, 2026-08-11 10:15, 2026-08-11 18:45, and the
+1-15-Aug Phase 1 attempt at 2026-08-17T15:30 ICT) — the interactive reauth step couldn't complete
+in a non-interactive session. Boat reauthenticated the credential 2026-08-17. This should now
+unblock every source unit that was dry-run-pending purely because of this:
+`sql/ddl/075_v3_period_cutoff_calendar.sql`, `sql/ddl/067_v3_daily_completeness_snapshot.sql`,
+`sql/adhoc/20260811_verify_period_cutoff_calendar.sql`,
+`sql/adhoc/20260817_verify_mo_1-15aug_missing_from_sap.sql`, and
+`sql/adhoc/20260817_verify_puii_edc_missing_from_sap.sql`. **Codex should retry Phase 1 of both
+open interface tasks (`docs/tasks/TASK_1_15AUG_MISSING_INTERFACE_20260817.md`,
+`docs/tasks/TASK_EDC_MISSING_INTERFACE_20260817.md`) and the three older dry-run-pending files
+before assuming any of them are still blocked** — this entry is not itself proof the retry
+succeeded, only that the credential should no longer be the reason it fails.
 
 **Ask (whoever has working `bq` auth on that machine, e.g. Codex per the 2026-08-10 note):**
 re-authenticate the legacy `bq` credential store once so the dry-run backlog can clear in a single

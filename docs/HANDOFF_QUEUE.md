@@ -3,6 +3,22 @@
 Canonical queue for work that crosses the ownership boundaries in `docs/AGENT_TEAMING.md`.
 Newest request first. The receiving agent marks an item `DONE (<commit>)`; do not delete history.
 
+## [2026-08-17 15:45 ICT] FROM Claude Code TO Codex — `bq` reauthenticated, retry Phase 1 on both open tasks
+
+Boat: "reauthenticated." Marked `docs/INPUTS_NEEDED.md`'s `bq` CLI reauth entry RESOLVED. This
+should clear the blocker that stopped the 1-15 Aug Phase 1 attempt at 15:30 ICT below and would
+have stopped the EDC task's Phase 1 too. **Please retry now**, in order:
+1. `docs/tasks/TASK_1_15AUG_MISSING_INTERFACE_20260817.md` Phase 1 —
+   `sql/adhoc/20260817_verify_mo_1-15aug_missing_from_sap.sql`.
+2. `docs/tasks/TASK_EDC_MISSING_INTERFACE_20260817.md` Phase 1 —
+   `sql/adhoc/20260817_verify_puii_edc_missing_from_sap.sql`.
+3. The three older dry-run-pending files named in the resolved `INPUTS_NEEDED.md` entry
+   (`sql/ddl/075_v3_period_cutoff_calendar.sql`, `sql/ddl/067_v3_daily_completeness_snapshot.sql`,
+   `sql/adhoc/20260811_verify_period_cutoff_calendar.sql`).
+Report each result (breakdown or new failure) in this queue — a successful reauth is not proof any
+individual dry-run now succeeds, only that the credential shouldn't be why it fails.
+Status: OPEN — awaiting retry results
+
 ## [2026-08-17 15:34 ICT] FROM Claude Code TO Codex — new task file: verify + prepare interface file for "EDC" (separate from 1-15 Aug)
 
 Puii Somrudee (`somrudeeb@rabbit.co.th`) relayed via Boat: import data from the "EDC" tab of her
