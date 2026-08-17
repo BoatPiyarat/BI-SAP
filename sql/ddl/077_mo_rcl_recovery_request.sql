@@ -132,20 +132,30 @@ BEGIN
     SELECT DISTINCT U_OrderItem, U_Period
     FROM `pacific-plating-282708.sap_integration_v3.stg_sap_state`
     WHERE NULLIF(TRIM(U_InvoiceNo),'') IS NOT NULL
-  ), successful_events AS (
-    SELECT p.order_id,p.period,p.order_item,p.charge_id
-    FROM `pacific-plating-282708.sap_integration_v3.stg_payment_events` p
-    JOIN `pacific-plating-282708.careos.carepay_charges` c
-      ON c.id=p.charge_id AND c.status='SUCCESSFUL'
-  ), pair_resolution AS (
+  ), item_resolution AS (
     SELECT sc.order_id,sc.reported_period,
-      ARRAY_AGG(DISTINCT p.order_item IGNORE NULLS) order_items,
-      ARRAY_AGG(DISTINCT p.charge_id IGNORE NULLS) charge_ids
+      ARRAY_AGG(DISTINCT p.order_item IGNORE NULLS) order_items
     FROM `pacific-plating-282708.sap_integration_v3.mo_rcl_recovery_scope` sc
-    LEFT JOIN successful_events p
+    LEFT JOIN `pacific-plating-282708.sap_integration_v3.stg_payment_events` p
       ON p.order_id=sc.order_id AND p.period=sc.reported_period
     WHERE sc.request_id=v_request_id
     GROUP BY sc.order_id,sc.reported_period
+  ), qualified_events AS (
+    SELECT p.order_id,p.period,p.charge_id
+    FROM `pacific-plating-282708.sap_integration_v3.stg_payment_events` p
+    JOIN `pacific-plating-282708.careos.carepay_charges` c
+      ON c.id=p.charge_id AND c.status='SUCCESSFUL'
+  ), successful_resolution AS (
+    SELECT sc.order_id,sc.reported_period,
+      ARRAY_AGG(DISTINCT q.charge_id IGNORE NULLS) charge_ids
+    FROM `pacific-plating-282708.sap_integration_v3.mo_rcl_recovery_scope` sc
+    LEFT JOIN qualified_events q
+      ON q.order_id=sc.order_id AND q.period=sc.reported_period
+    WHERE sc.request_id=v_request_id
+    GROUP BY sc.order_id,sc.reported_period
+  ), pair_resolution AS (
+    SELECT i.order_id,i.reported_period,i.order_items,s.charge_ids
+    FROM item_resolution i JOIN successful_resolution s USING(order_id,reported_period)
   ), one_pair AS (
     SELECT order_id,reported_period,ARRAY_LENGTH(order_items) item_count,
       ARRAY_LENGTH(charge_ids) charge_count,order_items[SAFE_OFFSET(0)] order_item,
@@ -196,7 +206,8 @@ BEGIN
   SELECT *,CASE
     WHEN order_item IS NULL THEN 'NO_EVENT_ITEM_MAPPING'
     WHEN item_count!=1 THEN 'AMBIGUOUS_EVENT_ITEM_MAPPING'
-    WHEN charge_count!=1 THEN 'MULTIPLE_OR_MISSING_REPORTED_CHARGE'
+    WHEN charge_count=0 THEN 'NO_SUCCESSFUL_REPORTED_CHARGE'
+    WHEN charge_count>1 THEN 'MULTIPLE_SUCCESSFUL_REPORTED_CHARGES'
     WHEN already_in_sap THEN 'ALREADY_IN_SAP_NOW'
     WHEN exclusion_rule IS NOT NULL THEN 'EXCLUDED_RULE'
     WHEN validation_rule IS NOT NULL THEN 'VALIDATION_RULE'
