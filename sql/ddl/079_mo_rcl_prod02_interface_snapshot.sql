@@ -383,7 +383,8 @@ BEGIN
   ASSERT TO_JSON_STRING((SELECT ARRAY_AGG(STRUCT(column_name,data_type,ordinal_position) ORDER BY ordinal_position)
     FROM `pacific-plating-282708.sap_integration_v3.INFORMATION_SCHEMA.COLUMNS`
     WHERE table_name='mo_rcl_prod02_ready')) = TO_JSON_STRING([
-      STRUCT('CompanyDB','STRING',1),STRUCT('OrderID','STRING',2),STRUCT('OrderItem','STRING',3),
+      STRUCT('CompanyDB' AS column_name,'STRING' AS data_type,1 AS ordinal_position),
+      STRUCT('OrderID','STRING',2),STRUCT('OrderItem','STRING',3),
       STRUCT('InvoiceNo','STRING',4),STRUCT('OrderDate','STRING',5),STRUCT('InsuredID','STRING',6),
       STRUCT('Title','STRING',7),STRUCT('FirstName','STRING',8),STRUCT('LastName','STRING',9),
       STRUCT('InsurerCode','STRING',10),STRUCT('InsuranceGroup','STRING',11),STRUCT('InsuranceType','STRING',12),
