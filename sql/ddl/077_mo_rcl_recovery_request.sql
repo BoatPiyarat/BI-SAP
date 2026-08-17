@@ -132,16 +132,19 @@ BEGIN
     SELECT DISTINCT U_OrderItem, U_Period
     FROM `pacific-plating-282708.sap_integration_v3.stg_sap_state`
     WHERE NULLIF(TRIM(U_InvoiceNo),'') IS NOT NULL
+  ), successful_events AS (
+    SELECT p.order_id,p.period,p.order_item,p.charge_id
+    FROM `pacific-plating-282708.sap_integration_v3.stg_payment_events` p
+    JOIN `pacific-plating-282708.careos.carepay_charges` c
+      ON c.id=p.charge_id AND c.status='SUCCESSFUL'
   ), pair_resolution AS (
     SELECT sc.order_id,sc.reported_period,
       ARRAY_AGG(DISTINCT p.order_item IGNORE NULLS) order_items,
       ARRAY_AGG(DISTINCT p.charge_id IGNORE NULLS) charge_ids
     FROM `pacific-plating-282708.sap_integration_v3.mo_rcl_recovery_scope` sc
-    LEFT JOIN `pacific-plating-282708.sap_integration_v3.stg_payment_events` p
+    LEFT JOIN successful_events p
       ON p.order_id=sc.order_id AND p.period=sc.reported_period
-    LEFT JOIN `pacific-plating-282708.careos.carepay_charges` c
-      ON c.id=p.charge_id AND c.status='SUCCESSFUL'
-    WHERE sc.request_id=v_request_id AND (p.charge_id IS NULL OR c.id IS NOT NULL)
+    WHERE sc.request_id=v_request_id
     GROUP BY sc.order_id,sc.reported_period
   ), one_pair AS (
     SELECT order_id,reported_period,ARRAY_LENGTH(order_items) item_count,
@@ -155,6 +158,7 @@ BEGIN
       STRING_AGG(DISTINCT IFNULL(full_s.flow,'__NULL__'),',' ORDER BY IFNULL(full_s.flow,'__NULL__'))
         full_spine_flows,
       COUNT(DISTINCT full_s.period) spine_period_count,
+      COUNT(full_s.period) spine_row_count,
       MIN(full_s.period) first_period,MAX(full_s.period) last_period,
       COUNT(DISTINCT full_s.total_periods) total_period_versions,
       MAX(full_s.total_periods) total_periods
@@ -179,7 +183,7 @@ BEGIN
       ON v.order_item=p.order_item
     GROUP BY p.order_id,p.reported_period
   )
-  SELECT p.*,f.reported_flows,f.full_spine_flows,f.spine_period_count,f.first_period,
+  SELECT p.*,f.reported_flows,f.full_spine_flows,f.spine_period_count,f.spine_row_count,f.first_period,
     f.last_period,f.total_period_versions,f.total_periods,
     sap.U_OrderItem IS NOT NULL already_in_sap,x.exclusion_rule,v.validation_rule
   FROM one_pair p
@@ -188,7 +192,7 @@ BEGIN
   LEFT JOIN validations v USING(order_id,reported_period)
   LEFT JOIN real_sap sap ON sap.U_OrderItem=p.order_item AND sap.U_Period=p.reported_period;
 
-  CREATE TEMP TABLE _decision AS
+  CREATE TEMP TABLE _initial_decision AS
   SELECT *,CASE
     WHEN order_item IS NULL THEN 'NO_EVENT_ITEM_MAPPING'
     WHEN item_count!=1 THEN 'AMBIGUOUS_EVENT_ITEM_MAPPING'
@@ -200,9 +204,18 @@ BEGIN
     WHEN full_spine_flows IS NULL OR full_spine_flows!='RCL' THEN 'FULL_SPINE_NOT_RCL'
     WHEN total_period_versions!=1 OR total_periods IS NULL OR total_periods<1
       OR first_period!=1 OR last_period!=total_periods OR spine_period_count!=total_periods
+      OR spine_row_count!=total_periods
       THEN 'INCOMPLETE_PERIOD_SPINE'
     ELSE 'ACCEPT_MAPPING' END decision
   FROM _classified;
+
+  CREATE TEMP TABLE _decision AS
+  SELECT * EXCEPT(decision,item_has_hold),
+    IF(decision='ACCEPT_MAPPING' AND item_has_hold,'ITEM_SPINE_QUARANTINED',decision) decision
+  FROM (
+    SELECT d.*,COUNTIF(decision!='ACCEPT_MAPPING') OVER(PARTITION BY order_item)>0 item_has_hold
+    FROM _initial_decision d
+  );
 
   ASSERT (SELECT COUNT(*) FROM _decision)=v_expected AS 'decision count conservation failed';
   ASSERT (SELECT COUNT(*) FROM (
