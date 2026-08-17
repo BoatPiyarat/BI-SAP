@@ -3,6 +3,32 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+## RQ-20260817-1934-mo-rcl-recovery-shadow
+Status: REVIEWED (found already committed to the working tree, untracked, by Claude Code at 19:43
+ICT while checking status — not requested through the usual RQ-open flow; logging it now so the
+verdict isn't lost, not vouching for how it was produced)
+Reviewer: Codex (per filename `docs/reviews/2026-08-17-b36e12b-codex.md`)
+Class: A
+Artifact: `sql/ddl/076_mo_rcl_recovery_shadow.sql` — commit `b36e12b`
+Opened: 2026-08-17T19:34:48+07:00 (from `git show -s --format=%aI b36e12b`)
+Verdict: BLOCK — `docs/reviews/2026-08-17-b36e12b-codex.md`
+Claim: a shadow-only adapter (56-column-count table, request/hold tables, no GCS/SAP write) meant
+to move the blocked `TASK_1_15AUG_MISSING_INTERFACE_20260817.md` Phase 2 forward after the
+full-period-spine gate failed on the mapped population.
+**Authorship note (flagging, not accusing)**: git commit metadata cannot distinguish who authored
+`b36e12b` — every commit in this repo lands under the same shared `piyaratt@rabbit.co.th` identity
+regardless of which agent made it (same limitation noted for the 2026-08-11 duplicate-QR finding
+review assignment). If Codex both wrote `b36e12b` and reviewed it under their own name, that is a
+self-review and against `docs/AGENT_REVIEW_PROTOCOL.md`'s reciprocity rule — Boat should confirm
+who actually built this adapter before treating the BLOCK (or any future PASS on a delta) as an
+independent verdict.
+Required correction per the review: reuse the reviewed V3 event/mapping/InvoiceNo logic instead of
+treating the dashboard relation as an export contract; bind Phase-1 classification + validation
+evidence + the exact 56-column payload to one immutable request ID that export reads verbatim;
+implement the complete `docs/design/SAP_INTERFACE_PRE_EXPORT_GATE.md` contract, not a subset;
+retain exact dry-run/hash/count evidence; add positive and negative fixtures. Deployment, procedure
+calls, and all GCS writes remain prohibited until then.
+
 ## RQ-20260817-second-daily-recon-mtd-report-delta
 Status: REVIEWED
 Reviewer: Codex

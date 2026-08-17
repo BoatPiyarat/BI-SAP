@@ -1,5 +1,23 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-17 19:43 ICT — logged the shadow-adapter review, flagged possible self-review
+
+- Status-check found `sql/ddl/076_mo_rcl_recovery_shadow.sql` (commit `b36e12b`, a follow-up
+  attempt to unblock the 1-15 Aug Phase 2 gate that failed earlier today) already reviewed with
+  verdict **BLOCK** (`docs/reviews/2026-08-17-b36e12b-codex.md`), but the review file was
+  untracked/uncommitted and had no `REVIEW_QUEUE.md` entry.
+- Committed the review file and opened `RQ-20260817-1934-mo-rcl-recovery-shadow` in
+  `docs/REVIEW_QUEUE.md` recording the BLOCK and its required corrections (reuse the reviewed V3
+  event/mapping/InvoiceNo logic instead of the dashboard relation; bind classification + validation
+  evidence + payload to one immutable request ID; implement the complete
+  `docs/design/SAP_INTERFACE_PRE_EXPORT_GATE.md` contract, not a subset; add fixtures).
+- Flagged an authorship ambiguity in both the RQ entry and `docs/HANDOFF_QUEUE.md`: git commits in
+  this repo all land under the same shared identity regardless of which agent authored them (same
+  limitation previously hit on the 2026-08-11 duplicate-QR finding), so it's not verifiable from
+  metadata alone whether Codex reviewed their own commit here. Verdict is BLOCK, so nothing was
+  wrongly approved — flagged for Boat to confirm, not treated as a blocking problem in itself.
+- No BigQuery query, `gs://**` write, or mutation performed.
+
 ## 2026-08-17 15:45 ICT — bq reauth resolved; EDC task realigned to the new canonical pre-export gate
 
 - Boat: "reauthenticated." Marked `docs/INPUTS_NEEDED.md`'s `bq` CLI reauth entry (open since

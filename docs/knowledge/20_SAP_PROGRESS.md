@@ -1,5 +1,20 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-17 19:43 ICT — 1-15 Aug: Phase 1 done, Phase 2 correctly blocked; found + logged a shadow-adapter BLOCK
+
+Status refresh found real progress since the reauth: Codex ran 1-15 Aug Phase 1 live — all 2,295
+reported pairs classify `STILL_MISSING_SILENT_DROP` (genuine population, not sheet noise);
+`L80416399`'s "maybe resolved" note is unsupported by live evidence, still missing. Phase 2 was
+attempted and correctly refused to write anything: only 1,883 of 2,295 pairs map unambiguously to
+RCL (364 have no matching payment event at all — worth its own look), and the full-period-spine
+gate then failed hard on those (160 incomplete spines, 3,894 bad statuses, 9,396 NULLs). No shadow
+or production file written. EDC task untouched so far — Codex worked RCL first.
+Separately found `sql/ddl/076_mo_rcl_recovery_shadow.sql` (a follow-up attempt at Phase 2) already
+BLOCKed by review, sitting uncommitted in the working tree. Logged it properly
+(`RQ-20260817-1934-mo-rcl-recovery-shadow`) and flagged a possible self-review (git metadata can't
+distinguish authorship here) for Boat to confirm — verdict is BLOCK so nothing was wrongly approved,
+but the process question stands.
+
 ## 2026-08-17 15:45 ICT — `bq` reauthenticated; adopted the canonical pre-export gate in the EDC task
 
 Boat reauthenticated the `bq` CLI credential that's been blocking every mandatory dry-run since

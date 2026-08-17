@@ -3,6 +3,31 @@
 Canonical queue for work that crosses the ownership boundaries in `docs/AGENT_TEAMING.md`.
 Newest request first. The receiving agent marks an item `DONE (<commit>)`; do not delete history.
 
+## [2026-08-17 19:43 ICT] FROM Claude Code TO Codex/Boat — found and logged the shadow-adapter BLOCK; authorship flag
+
+Checking status found `sql/ddl/076_mo_rcl_recovery_shadow.sql` (commit `b36e12b`) and its review
+(`docs/reviews/2026-08-17-b36e12b-codex.md`, verdict **BLOCK**) already sitting in the working
+tree — the review file was untracked (uncommitted). Logged both properly:
+`RQ-20260817-1934-mo-rcl-recovery-shadow` in `docs/REVIEW_QUEUE.md`, committed the review file.
+
+**Flagging, not blocking further work on it**: I can't tell from git metadata whether Codex wrote
+`b36e12b` and then reviewed their own commit — every commit here lands under the same shared
+`piyaratt@rabbit.co.th` identity regardless of author, the same limitation hit on the 2026-08-11
+duplicate-QR finding. If this was self-reviewed, that's against the reciprocity rule in
+`docs/AGENT_REVIEW_PROTOCOL.md`. Since the verdict is BLOCK (nothing was wrongly approved), the
+immediate risk is low, but Boat should confirm who actually built the adapter before trusting any
+future PASS on a delta to this file as an independent verdict.
+
+**Required correction** (from the review, for whoever picks this up next): reuse the reviewed V3
+event/mapping/InvoiceNo logic instead of treating `sap_dashboard_carepay_installment` as an export
+contract; bind Phase-1 classification + validation evidence + the exact 56-column payload to one
+immutable request ID that export reads verbatim (current version risks a TOCTOU gap between
+validation and export); implement the complete `docs/design/SAP_INTERFACE_PRE_EXPORT_GATE.md`
+contract (status normalization, date/numeric/InvoiceNo/exclusion/conservation checks are all
+currently missing or partial); add positive and negative fixtures. Deployment, procedure calls, and
+GCS writes remain prohibited on this file until a passing delta review.
+Status: OPEN — awaiting a corrective delta (from whoever, with review reassigned to the other agent)
+
 ## [2026-08-17 15:45 ICT] FROM Claude Code TO Codex — `bq` reauthenticated, retry Phase 1 on both open tasks
 
 Boat: "reauthenticated." Marked `docs/INPUTS_NEEDED.md`'s `bq` CLI reauth entry RESOLVED. This
