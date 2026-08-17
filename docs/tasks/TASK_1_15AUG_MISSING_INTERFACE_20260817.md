@@ -46,6 +46,14 @@ query plus the recovery work it unblocks.
 
 ## Phase 1 — Live verification (read-only, mandatory, do first)
 
+**Completed 2026-08-17:** all 2,295 pairs classified `STILL_MISSING_SILENT_DROP` (2,283 distinct
+orders), job `bqjob_r1b11ba652f44370b_000001a00f046414_1`, dry-run 108,547,143 bytes. The flagged
+order and five distinct non-standard `-M1` items were checked separately in
+`sql/adhoc/20260817_spotcheck_mo_1-15aug_flagged_rows.sql`; see `docs/HANDOFF_QUEUE.md` for results
+and job evidence. Phase 2 may use the 2,295 systematic pairs, but must expand accepted RCL items to
+their full-period spines and pass the canonical pre-export gate; the non-standard `-M1` items remain
+outside that population.
+
 **File:** `sql/adhoc/20260817_verify_mo_1-15aug_missing_from_sap.sql` — already written, embeds
 the 2295 `(order_item, period)` pairs above and classifies each against live `sap_integration_v3`:
 

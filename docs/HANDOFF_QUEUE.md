@@ -54,9 +54,21 @@ the live classification of the 2295 confirmed `(order_item, period)` pairs from 
 for the confirmed `STILL_MISSING_SILENT_DROP` bucket only, prepare (shadow-write, validated, **not**
 deployed to `gs://interface-file/**`) an interface file. Report Phase 1's breakdown in this queue
 before starting Phase 2.
-Status: OPEN — Phase 1 attempted 2026-08-17T15:30+07:00; mandatory safe-wrapper dry-run failed
-before execution with legacy `bq 2.0.92` `ReauthUnattendedError`. No query or GCS write occurred.
-Restore working non-interactive BigQuery authentication, then rerun Phase 1 first.
+Status: PHASE 1 DONE — authentication restored with staged Google Cloud SDK `580.0.0` / `bq
+2.1.36`. At 2026-08-17 16:20 ICT the mandatory wrapper dry-run estimated 108,547,143 bytes
+(~0.101 GiB), then read-only job `bqjob_r1b11ba652f44370b_000001a00f046414_1` completed in
+`asia-southeast1`: all 2,295 pairs (2,283 distinct orders) classified
+`STILL_MISSING_SILENT_DROP`; the classification total reconciles exactly to 2,295. No other bucket
+was returned. No BigQuery mutation or GCS write occurred.
+
+Required spot check used `sql/adhoc/20260817_spotcheck_mo_1-15aug_flagged_rows.sql`: dry-run
+124,804,110 bytes (~0.116 GiB), job `bqjob_r66bad4ebbc8a2ca5_000001a00f05587c_1`. `L80416399`
+period 1 has no row in expected_state, stg_sap_state, recon, exclusion, or validation controls, so
+the sheet note that it may be resolved is not supported by live evidence and it remains in the
+systematic missing population. The six non-standard sheet rows reduce to five distinct `-M1`
+items: `L80489663-M1` has one expected-state row (`RCL_CMI`, period 1); the other four have no row
+in any checked control layer; none has SAP/exclusion/validation evidence. Keep all five outside
+the ordinary RCL Phase-2 population and triage separately.
 Boat added Phase-2 hard gates on 2026-08-17: RCL/RCB cannot mix; every accepted RCL order_item must
 emit the complete `1..TotalPeriods` spine with Paid/Pending per period; required interface values
 cannot be SQL NULL or literal `"NULL"` (Pending PaymentDate may use the canonical empty string).
