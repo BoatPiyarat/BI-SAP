@@ -309,7 +309,7 @@ BEGIN
       OR IFNULL(MAX(mapping_versions),0)!=1
     UNION ALL
     SELECT OrderItem,'DATE_FORMAT_INVALID','interface date is not valid DDMMYYYY'
-    FROM _candidate GROUP BY OrderItem HAVING COUNTIF(
+    FROM _candidate c GROUP BY OrderItem HAVING COUNTIF(
       LENGTH(IFNULL(OrderDate,''))!=8 OR SAFE.PARSE_DATE('%d%m%Y',OrderDate) IS NULL
       OR LENGTH(IFNULL(PolicyDate,''))!=8 OR SAFE.PARSE_DATE('%d%m%Y',PolicyDate) IS NULL
       OR LENGTH(IFNULL(ExpectedDate,''))!=8 OR SAFE.PARSE_DATE('%d%m%Y',ExpectedDate) IS NULL
@@ -325,7 +325,7 @@ BEGIN
           OR SAFE.PARSE_DATE('%d%m%Y',PaymentDate)>=v_period_end)))>0
     UNION ALL
     SELECT OrderItem,'REQUIRED_VALUE_NULL_OR_LITERAL_NULL','required interface value is SQL/literal NULL or blank'
-    FROM _candidate GROUP BY OrderItem HAVING COUNTIF(
+    FROM _candidate c GROUP BY OrderItem HAVING COUNTIF(
       REGEXP_CONTAINS(TO_JSON_STRING((SELECT AS STRUCT c.* EXCEPT(flow,payment_option,source_count,event_count,
         charge_versions,invalid_mapping_events,mapping_versions,exclusion_rule,validation_rule,sap_status,
         canonical_gross_premium,canonical_stamp_duty,canonical_vat,canonical_total_premium,
