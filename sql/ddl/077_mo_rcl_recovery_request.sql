@@ -158,9 +158,9 @@ BEGIN
     SELECT i.order_id,i.reported_period,i.order_items,s.charge_ids,s.qualified_order_items
     FROM item_resolution i JOIN successful_resolution s USING(order_id,reported_period)
   ), one_pair AS (
-    SELECT order_id,reported_period,ARRAY_LENGTH(order_items) item_count,
-      ARRAY_LENGTH(charge_ids) charge_count,
-      ARRAY_LENGTH(qualified_order_items) qualified_item_count,
+    SELECT order_id,reported_period,IFNULL(ARRAY_LENGTH(order_items),0) item_count,
+      IFNULL(ARRAY_LENGTH(charge_ids),0) charge_count,
+      IFNULL(ARRAY_LENGTH(qualified_order_items),0) qualified_item_count,
       order_items[SAFE_OFFSET(0)] order_item,
       qualified_order_items[SAFE_OFFSET(0)] qualified_order_item,
       charge_ids[SAFE_OFFSET(0)] charge_id
@@ -258,7 +258,7 @@ BEGIN
       (request_id,order_id,reported_period,order_item,rule_code,detail,detected_at)
     SELECT v_request_id,order_id,reported_period,order_item,decision,
       FORMAT('item_count=%d; charge_count=%d; reported_flows=%s; full_spine_flows=%s; exclusion=%s; validation=%s',
-        item_count,charge_count,IFNULL(reported_flows,'NULL'),IFNULL(full_spine_flows,'NULL'),
+        IFNULL(item_count,0),IFNULL(charge_count,0),IFNULL(reported_flows,'NULL'),IFNULL(full_spine_flows,'NULL'),
         IFNULL(exclusion_rule,'NULL'),IFNULL(validation_rule,'NULL')),CURRENT_TIMESTAMP()
     FROM _decision WHERE decision!='ACCEPT_MAPPING';
 
