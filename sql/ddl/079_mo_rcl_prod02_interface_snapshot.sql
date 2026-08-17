@@ -27,6 +27,16 @@ CREATE TABLE IF NOT EXISTS `pacific-plating-282708.sap_integration_v3.mo_rcl_pro
   BillingAddress STRING, BatchRunDate STRING
 );
 
+CREATE TABLE IF NOT EXISTS `pacific-plating-282708.sap_integration_v3.mo_rcl_prod02_gate_manifest` (
+  request_id STRING NOT NULL, source_request_id STRING NOT NULL, declared_flow STRING NOT NULL,
+  operation STRING NOT NULL, delivery_folder STRING NOT NULL, file_name STRING NOT NULL,
+  row_count INT64 NOT NULL, item_count INT64 NOT NULL, paid_count INT64 NOT NULL,
+  pending_count INT64 NOT NULL, hold_item_count INT64 NOT NULL, candidate_sha256 STRING NOT NULL,
+  schema_sha256 STRING NOT NULL, source_view_checked_at TIMESTAMP NOT NULL,
+  built_at TIMESTAMP NOT NULL, gate_status STRING NOT NULL
+)
+CLUSTER BY request_id,gate_status;
+
 CREATE OR REPLACE PROCEDURE `pacific-plating-282708.sap_integration_v3.sp_build_mo_rcl_prod02_interface`(
   p_request_id STRING
 )
@@ -55,15 +65,19 @@ BEGIN
     SELECT e.order_item,e.period,e.charge_id,e.third_party_id,DATE(e.charge_time) payment_date,
       ROW_NUMBER() OVER(PARTITION BY e.order_item,e.period ORDER BY e.charge_time,e.charge_id) rn,
       COUNT(*) OVER(PARTITION BY e.order_item,e.period) event_count
-    FROM (
+    FROM (SELECT * EXCEPT(source_rank) FROM (
+      SELECT *,ROW_NUMBER() OVER(PARTITION BY charge_id ORDER BY source_rank) source_winner
+      FROM (
       SELECT charge_id,order_item,period,third_party_id,charge_time
+        ,1 source_rank
       FROM `pacific-plating-282708.sap_integration_v3.stg_payment_events`
       WHERE DATE(charge_time) BETWEEN DATE '2026-08-01' AND DATE '2026-08-15'
       UNION ALL
       SELECT charge_id,order_item,period,third_party_id,charge_time
+        ,2 source_rank
       FROM `pacific-plating-282708.sap_integration_v3.mo_rcl_recovery_event_snapshot`
       WHERE source_request_id='MO-RCL-20260817-PROD-01'
-    ) e
+      )) WHERE source_winner=1) e
     JOIN `pacific-plating-282708.careos.carepay_charges` c
       ON c.id=e.charge_id AND c.status='SUCCESSFUL'
     WHERE EXISTS (SELECT 1 FROM _mapped_items m WHERE m.order_item=e.order_item)
@@ -112,9 +126,10 @@ BEGIN
 
   CREATE TEMP TABLE _candidate AS
   SELECT
-    s.CompanyDB,s.OrderID,s.OrderItem,
-    CASE WHEN e.charge_id IS NULL THEN ''
-      WHEN NULLIF(TRIM(sap.U_InvoiceNo),'') IS NOT NULL THEN sap.U_InvoiceNo
+    s.CompanyDB,s.OrderID,sc.order_item OrderItem,
+    CASE WHEN sap.TransactionStatus IN ('Paid','paid')
+        AND NULLIF(TRIM(sap.U_InvoiceNo),'') IS NOT NULL THEN sap.U_InvoiceNo
+      WHEN e.charge_id IS NULL THEN ''
       ELSE `pacific-plating-282708.sap_integration_v3.fn_invoice_no`(e.third_party_id) END InvoiceNo,
     s.OrderDate,COALESCE(NULLIF(TRIM(s.InsuredID),''),'-') InsuredID,s.Title,s.FirstName,s.LastName,
     s.InsurerCode,s.InsuranceGroup,s.InsuranceType,s.InsuranceProduct,s.ProductType,s.PolicyType,
@@ -125,21 +140,23 @@ BEGIN
     FORMAT('%.2f',s.TotalSBT) TotalSBT,FORMAT('%.2f',s.ProcessingFee) ProcessingFee,
     FORMAT('%.2f',s.ProcessingFeeVat) ProcessingFeeVat,FORMAT('%.2f',s.ShippingFee) ShippingFee,
     FORMAT('%.2f',s.ShippingFeeVat) ShippingFeeVat,FORMAT('%.2f',s.TotalAmount) TotalAmount,
-    FORMAT('%.2f',s.Discount) Discount,IF(e.charge_id IS NULL,'Pending','Paid') TransactionStatus,
+    FORMAT('%.2f',s.Discount) Discount,
+    IF(sap.TransactionStatus IN ('Paid','paid') OR e.charge_id IS NOT NULL,'Paid','Pending') TransactionStatus,
     s.SubmissionStatus,s.ApprovalStatus,s.PaymentStatus,
     FORMAT('%.2f',s.ExpectedReceived) ExpectedReceived,FORMAT('%.2f',s.ActualReceived) ActualReceived,
     FORMAT('%.2f',s.InterestThisPeriod) InterestThisPeriod,
     FORMAT('%.2f',s.PrincipleThisPeriod) PrincipleThisPeriod,
     FORMAT('%.2f',s.InterestEIRThisPeriod) InterestEIRThisPeriod,
     FORMAT('%.2f',s.PrincipleEIRThisPeriod) PrincipleEIRThisPeriod,
-    IF(e.charge_id IS NULL,'',FORMAT_DATE('%d%m%Y',e.payment_date)) PaymentDate,
+    CASE WHEN sap.TransactionStatus IN ('Paid','paid') THEN CAST(sap.PaymentDate AS STRING)
+      WHEN e.charge_id IS NOT NULL THEN FORMAT_DATE('%d%m%Y',e.payment_date) ELSE '' END PaymentDate,
     CAST(sc.period AS STRING) Period,CAST(sc.total_periods AS STRING) TotalPeriods,
     FORMAT('%.2f',s.PendingPayment) PendingPayment,s.PaymentMethod,s.PaymentChannel,s.ExpectedDate,
     s.RefOrder,FORMAT('%.2f',s.RefundAmountBeforeFee) RefundAmountBeforeFee,
     FORMAT('%.2f',s.RefundAmountAfterFee) RefundAmountAfterFee,s.BillingAddress,
     FORMAT_DATE('%d%m%Y',v_batch_date) BatchRunDate,
     sc.flow,sc.payment_option,s.source_count,IFNULL(e.event_count,0) event_count,
-    x.rule_code exclusion_rule,v.check_name validation_rule
+    x.rule_code exclusion_rule,v.check_name validation_rule,sap.TransactionStatus sap_status
   FROM `pacific-plating-282708.sap_integration_v3.stg_schedule` sc
   JOIN _mapped_items m ON m.order_item=sc.order_item
   LEFT JOIN _source_ranked s ON s.OrderItem=sc.order_item AND s.Period=sc.period
@@ -179,6 +196,29 @@ BEGIN
     SELECT OrderItem,'POLICYNO_TOO_LONG','PolicyNo exceeds 50 characters'
     FROM _candidate GROUP BY OrderItem HAVING COUNTIF(LENGTH(PolicyNo)>50)>0
     UNION ALL
+    SELECT OrderItem,'SAP_TERMINAL_STATUS_CONFLICT','Cancelled or other terminal SAP state cannot enter Paid/Pending NEWPAYMENT'
+    FROM _candidate GROUP BY OrderItem HAVING COUNTIF(sap_status NOT IN ('Paid','paid','Pending','pending')
+      AND sap_status IS NOT NULL)>0
+    UNION ALL
+    SELECT OrderItem,'SAP_IDENTIFIER_LENGTH_INVALID','InvoiceNo or OrderItem exceeds SAP 30-character limit'
+    FROM _candidate GROUP BY OrderItem HAVING COUNTIF(LENGTH(OrderItem)>30 OR LENGTH(InvoiceNo)>30)>0
+    UNION ALL
+    SELECT OrderItem,'COMPANY_DATABASE_INVALID','CompanyDB must be exactly RCB'
+    FROM _candidate GROUP BY OrderItem HAVING COUNTIF(CompanyDB!='RCB' OR CompanyDB IS NULL)>0
+    UNION ALL
+    SELECT OrderItem,'INSURER_MASTER_UNAPPROVED','InsurerCode is absent from the SAP-received insurer master'
+    FROM _candidate c GROUP BY OrderItem HAVING COUNTIF(NOT EXISTS (
+      SELECT 1 FROM `pacific-plating-282708.sap_integration_v3.sap_insurer_master` im
+      WHERE im.insurer_code=c.InsurerCode))>0
+    UNION ALL
+    SELECT OrderItem,'PAYMENT_MAPPING_UNAPPROVED','Payment method/channel is absent from approved RCL mappings'
+    FROM _candidate c GROUP BY OrderItem HAVING COUNTIF(NOT EXISTS (
+      SELECT 1 FROM `pacific-plating-282708.sap_integration_v3.payment_mapping_registry` pm
+      WHERE pm.flow='RCL' AND pm.approval_state='APPROVED'
+        AND pm.sap_payment_method=c.PaymentMethod AND pm.sap_payment_channel=c.PaymentChannel
+        AND v_batch_date>=pm.effective_start
+        AND v_batch_date<IFNULL(pm.effective_end,DATE '9999-12-31')))>0
+    UNION ALL
     SELECT OrderItem,'DATE_FORMAT_INVALID','interface date is not valid DDMMYYYY'
     FROM _candidate GROUP BY OrderItem HAVING COUNTIF(
       LENGTH(IFNULL(OrderDate,''))!=8 OR SAFE.PARSE_DATE('%d%m%Y',OrderDate) IS NULL
@@ -189,11 +229,12 @@ BEGIN
     UNION ALL
     SELECT OrderItem,'REQUIRED_VALUE_NULL_OR_LITERAL_NULL','required interface value is SQL/literal NULL or blank'
     FROM _candidate GROUP BY OrderItem HAVING COUNTIF(
-      REGEXP_CONTAINS(TO_JSON_STRING((SELECT AS STRUCT c.* EXCEPT(flow,payment_option,source_count,event_count,exclusion_rule,validation_rule))),r':null|:"NULL"')
+      REGEXP_CONTAINS(TO_JSON_STRING((SELECT AS STRUCT c.* EXCEPT(flow,payment_option,source_count,event_count,exclusion_rule,validation_rule,sap_status))),r':null|:"NULL"')
       OR NULLIF(TRIM(CompanyDB),'') IS NULL OR NULLIF(TRIM(OrderID),'') IS NULL
       OR NULLIF(TRIM(OrderItem),'') IS NULL OR NULLIF(TRIM(InsurerCode),'') IS NULL
       OR NULLIF(TRIM(PaymentMethod),'') IS NULL OR NULLIF(TRIM(PaymentChannel),'') IS NULL
-      OR (TransactionStatus='Paid' AND (NULLIF(TRIM(InvoiceNo),'') IS NULL OR PaymentDate='')))>0
+      OR (TransactionStatus='Paid' AND (NULLIF(TRIM(InvoiceNo),'') IS NULL OR PaymentDate=''))
+      OR (TransactionStatus='Pending' AND PaymentDate!=''))>0
     UNION ALL
     SELECT OrderItem,'NUMERIC_CONTRACT_INVALID','numeric field is missing, non-finite, or not at scale 2'
     FROM _candidate GROUP BY OrderItem HAVING COUNTIF(NOT REGEXP_CONTAINS(CONCAT_WS('|',
@@ -206,7 +247,40 @@ BEGIN
   ASSERT (SELECT COUNT(*) FROM _candidate WHERE TransactionStatus NOT IN ('Paid','Pending'))=0
     AS 'status output is not exact Paid/Pending';
 
+  ASSERT (SELECT ARRAY_AGG(STRUCT(column_name,data_type,ordinal_position) ORDER BY ordinal_position)
+    FROM `pacific-plating-282708.sap_integration_v3.INFORMATION_SCHEMA.COLUMNS`
+    WHERE table_name='mo_rcl_prod02_ready') = [
+      STRUCT('CompanyDB','STRING',1),STRUCT('OrderID','STRING',2),STRUCT('OrderItem','STRING',3),
+      STRUCT('InvoiceNo','STRING',4),STRUCT('OrderDate','STRING',5),STRUCT('InsuredID','STRING',6),
+      STRUCT('Title','STRING',7),STRUCT('FirstName','STRING',8),STRUCT('LastName','STRING',9),
+      STRUCT('InsurerCode','STRING',10),STRUCT('InsuranceGroup','STRING',11),STRUCT('InsuranceType','STRING',12),
+      STRUCT('InsuranceProduct','STRING',13),STRUCT('ProductType','STRING',14),STRUCT('PolicyType','STRING',15),
+      STRUCT('Endorse','STRING',16),STRUCT('PolicyDate','STRING',17),STRUCT('PolicyNo','STRING',18),
+      STRUCT('EndorsementNo','STRING',19),STRUCT('ChassisNo','STRING',20),STRUCT('LicensePlate','STRING',21),
+      STRUCT('GrossPremium','STRING',22),STRUCT('StampDuty','STRING',23),STRUCT('VAT','STRING',24),
+      STRUCT('TotalPremium','STRING',25),STRUCT('WHT','STRING',26),STRUCT('TotalEIR','STRING',27),
+      STRUCT('TotalSBT','STRING',28),STRUCT('ProcessingFee','STRING',29),STRUCT('ProcessingFeeVat','STRING',30),
+      STRUCT('ShippingFee','STRING',31),STRUCT('ShippingFeeVat','STRING',32),STRUCT('TotalAmount','STRING',33),
+      STRUCT('Discount','STRING',34),STRUCT('TransactionStatus','STRING',35),STRUCT('SubmissionStatus','STRING',36),
+      STRUCT('ApprovalStatus','STRING',37),STRUCT('PaymentStatus','STRING',38),STRUCT('ExpectedReceived','STRING',39),
+      STRUCT('ActualReceived','STRING',40),STRUCT('InterestThisPeriod','STRING',41),STRUCT('PrincipleThisPeriod','STRING',42),
+      STRUCT('InterestEIRThisPeriod','STRING',43),STRUCT('PrincipleEIRThisPeriod','STRING',44),STRUCT('PaymentDate','STRING',45),
+      STRUCT('Period','STRING',46),STRUCT('TotalPeriods','STRING',47),STRUCT('PendingPayment','STRING',48),
+      STRUCT('PaymentMethod','STRING',49),STRUCT('PaymentChannel','STRING',50),STRUCT('ExpectedDate','STRING',51),
+      STRUCT('RefOrder','STRING',52),STRUCT('RefundAmountBeforeFee','STRING',53),STRUCT('RefundAmountAfterFee','STRING',54),
+      STRUCT('BillingAddress','STRING',55),STRUCT('BatchRunDate','STRING',56)]
+    AS 'exact 56-column name/type/ordinal contract mismatch';
+
   BEGIN TRANSACTION;
+    UPDATE `pacific-plating-282708.sap_integration_v3.mo_rcl_recovery_lock`
+    SET claim_epoch=claim_epoch+1,claimed_at=CURRENT_TIMESTAMP() WHERE lock_name='MO_RCL_RECOVERY';
+    ASSERT @@row_count=1 AS 'recovery lock is missing or duplicated';
+    ASSERT (SELECT COUNT(*) FROM `pacific-plating-282708.sap_integration_v3.mo_rcl_prod02_ready`)=0
+      AS 'PROD-02 ready snapshot exists after claim';
+    ASSERT (SELECT COUNT(*) FROM `pacific-plating-282708.sap_integration_v3.mo_rcl_prod02_interface_hold`
+      WHERE request_id=v_request_id)=0 AS 'PROD-02 interface holds exist after claim';
+    ASSERT (SELECT COUNT(*) FROM `pacific-plating-282708.sap_integration_v3.mo_rcl_prod02_gate_manifest`
+      WHERE request_id=v_request_id)=0 AS 'PROD-02 manifest exists after claim';
     INSERT INTO `pacific-plating-282708.sap_integration_v3.mo_rcl_prod02_interface_hold`
       (request_id,order_item,rule_code,detail,detected_at)
     SELECT v_request_id,OrderItem,rule_code,detail,CURRENT_TIMESTAMP() FROM _item_rule;
@@ -232,8 +306,27 @@ BEGIN
       (SELECT COUNT(DISTINCT OrderItem) FROM `pacific-plating-282708.sap_integration_v3.mo_rcl_prod02_ready`)+
       (SELECT COUNT(DISTINCT order_item) FROM `pacific-plating-282708.sap_integration_v3.mo_rcl_prod02_interface_hold`
         WHERE request_id=v_request_id) AS 'mapped item conservation failed';
-  COMMIT TRANSACTION;
 
-  ASSERT (SELECT COUNT(*) FROM `pacific-plating-282708.sap_integration_v3.INFORMATION_SCHEMA.COLUMNS`
-    WHERE table_name='mo_rcl_prod02_ready')=56 AS 'ready snapshot must have exactly 56 columns';
+    ASSERT (SELECT COUNT(*) FROM _events)=
+      (SELECT COUNT(*) FROM _events e JOIN `pacific-plating-282708.sap_integration_v3.mo_rcl_prod02_ready` r
+        ON r.OrderItem=e.order_item AND SAFE_CAST(r.Period AS INT64)=e.period AND r.TransactionStatus='Paid')+
+      (SELECT COUNT(*) FROM _events e WHERE EXISTS (
+        SELECT 1 FROM `pacific-plating-282708.sap_integration_v3.mo_rcl_prod02_interface_hold` h
+        WHERE h.request_id=v_request_id AND h.order_item=e.order_item))
+      AS 'successful-charge candidate/hold conservation failed';
+
+    INSERT INTO `pacific-plating-282708.sap_integration_v3.mo_rcl_prod02_gate_manifest`
+    SELECT v_request_id,'MO-RCL-20260817-PROD-01','RCL','NEWPAYMENT','RCB_MOTOR',
+      'INSURANCE_RCB_06_MO_RCL_RECOVERY_20260817.csv',COUNT(*),COUNT(DISTINCT OrderItem),
+      COUNTIF(TransactionStatus='Paid'),COUNTIF(TransactionStatus='Pending'),
+      (SELECT COUNT(DISTINCT order_item)
+        FROM `pacific-plating-282708.sap_integration_v3.mo_rcl_prod02_interface_hold`
+        WHERE request_id=v_request_id),
+      TO_HEX(SHA256(STRING_AGG(TO_JSON_STRING(r),'\n' ORDER BY OrderItem,SAFE_CAST(Period AS INT64)))),
+      (SELECT TO_HEX(SHA256(STRING_AGG(CONCAT(column_name,'|',data_type,'|',ordinal_position),'\n'
+        ORDER BY ordinal_position)))
+       FROM `pacific-plating-282708.sap_integration_v3.INFORMATION_SCHEMA.COLUMNS`
+       WHERE table_name='mo_rcl_prod02_ready'),CURRENT_TIMESTAMP(),CURRENT_TIMESTAMP(),'PASS'
+    FROM `pacific-plating-282708.sap_integration_v3.mo_rcl_prod02_ready` r;
+  COMMIT TRANSACTION;
 END;
