@@ -1,5 +1,21 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-21 10:56 ICT — re-verified MO-RCL-PROD-02 export as still safe; handed refresh+execute+3 stalled items to Codex
+
+- Confirmed via `gsutil ls` that the 08-17 23:35-23:37 `sql/adhoc/20260817_export_mo_rcl_prod02.sql`
+  export was never executed (no matching object in `gs://interface-file/RCB_MOTOR/`).
+- Re-ran the gate manifest, staleness (0/939 items now in SAP), and cancellation (0/939 newly
+  cancelled) checks live; all unchanged since 08-17. Flagged that these checks used the mirror as
+  of the regular 08-20 20:30 ICT extract, not a fresh same-session pull.
+- Attempted to honor Boat's explicit override of the single-deployer rule (both editing
+  `AGENT_RULES.md` to record it and running `scripts/run_sap_sync_manual.ps1` directly); both were
+  blocked by the harness's own safety layer independent of in-chat authorization. Did not attempt to
+  route around the block.
+- Wrote `docs/HANDOFF_QUEUE.md` 2026-08-21 10:56 ICT: refresh-then-export the PROD-02 file, report
+  status on 3 items unreported since 08-17 22:11, retry the never-reported EDC/1-15Aug Phase 1
+  verifications, and flag 4 still-unscoped asks (refund routing, RCL pending cancel, Cancel import,
+  Changed Order import) that need population-scoping before any file is built.
+
 ## 2026-08-17 23:06 ICT — built and reviewed Mo immutable gate; retained blocked first-run evidence
 
 - Cloned and classified exact request `MO-RCL-20260817-PROD-02`, bound immutably to the reviewed

@@ -3,6 +3,61 @@
 Canonical queue for work that crosses the ownership boundaries in `docs/AGENT_TEAMING.md`.
 Newest request first. The receiving agent marks an item `DONE (<commit>)`; do not delete history.
 
+## [2026-08-21 10:56 ICT] FROM Claude Code TO Codex — execute MO-RCL-20260817-PROD-02 export; refresh + retry the 3 stalled EDC/1-15Aug/refund/cancel items
+
+Boat asked to push this job to completion. My tool cannot execute mutating BigQuery calls or GCS
+writes (blocked by the harness's own safety layer, independent of in-chat authorization), so
+everything below is prepared/verified but not executed. Re-authenticated `gcloud`/`bq` this session
+(both were in `ReauthUnattendedError` state) — Boat completed the interactive login.
+
+**1. Ready to ship: `MO-RCL-20260817-PROD-02`** (`sql/adhoc/20260817_export_mo_rcl_prod02.sql`,
+commits `75cb0ca`/`97e0e17`, never previously executed — confirmed via `gsutil ls` returning "no
+objects matched" on the target URI before this session).
+- Gate manifest re-checked live just now: still `gate_status='PASS'`, 6,093 rows / 939 items / 944
+  paid / 5,149 pending / 1,173 held, candidate hash `8ae11f13...`, schema hash `c4659cb3...` — all
+  unchanged since 2026-08-17.
+- Staleness re-check (job `bqjob_r7064c8b6658a62e3_000001a02275cd59_1`, 7,657,356,873 bytes): 0 of
+  the 939 ready `OrderItem`s are now present in `sap_integration_v2.SAP_LIVE_FULL` — zero
+  double-post risk.
+- Cancellation re-check (job `bqjob_r1bb4547127251d78_000001a022766aa7_1`, 30,658,367 bytes): 0 of
+  the 939 items have `careos_order_items.is_cancelled` or `cancel_time` set — zero newly-ineligible
+  items.
+- Caveat: both re-checks ran against the mirror as of the regular 2026-08-20 20:30 ICT extract
+  (`gs://rcb-bronze-zone/SAP/_extract_control/_watermark_state.json` last-modified
+  `2026-08-20T13:30:35Z`, i.e. ~14.5h old at check time), not a same-session live pull. **Before
+  exporting: run `scripts/run_sap_sync_manual.ps1` (PASSed review at `dc13a10`, safe outside the
+  20:30 ICT window) to refresh to current SAP state, then re-run the two checks above against the
+  refreshed mirror.** If both still return 0, run
+  `bq query --use_legacy_sql=false < sql/adhoc/20260817_export_mo_rcl_prod02.sql` to execute the
+  export exactly as written (its own ASSERTs re-verify the manifest/hashes at execution time).
+- After export: confirm via `gsutil ls -l gs://interface-file/RCB_MOTOR/INSURANCE_RCB_06_MO_RCL_RECOVERY_20260817_*.csv`,
+  record the job ID and row count here, and update `docs/knowledge/20_SAP_PROGRESS.md`.
+
+**2. Three items from the 2026-08-17 22:11 ICT handoff never got a result logged** — please report
+status on each, not just re-run blind:
+- `RQ-20260811-1845-daily-completeness-dispatch-delta` — dry-run result needed.
+- `RQ-20260811-1845-period-cutoff-calendar-delta` — dry-run result needed.
+- `RQ-20260811-2001-duplicate-qr-installment-finding` — Class A review needed (not a deploy).
+
+**3. EDC Phase 1 retry never got a result logged either** — the 2026-08-17 15:45 ICT ask to retry
+`sql/adhoc/20260817_verify_puii_edc_missing_from_sap.sql` (Puii's "EDC" tab, 324/322-order
+population) and `sql/adhoc/20260817_verify_mo_1-15aug_missing_from_sap.sql` (Mo's "1-15 Aug" tab,
+2,295 pairs) Phase 1 against live `sap_integration_v3` has no logged outcome in this file or in
+`20_SAP_PROGRESS.md` since the reauth. Boat has since asked about both again (chat, 2026-08-19/21)
+and Mo separately reports the "1-15 Aug" pending count dropped from 2,285 to 2,275 between her two
+messages — that 10-order delta is unverified and should come out of this Phase 1 rerun, not be
+assumed.
+
+**4. Still open, not started**: "urgent_for refund to cust" tab (flagged 2026-08-17 as a
+refund-routing problem, not a SAP-import gap — needs its own Finance-facing decision, see
+`docs/INPUTS_NEEDED.md`), "RCL_pending cancel" tab, Cancel-import-for-CareOS-cancelled-orders, and
+Changed-Order-import. None of these four have a task file yet. Do not build interface files for
+them without first pinning down source/population the same way the 1-15 Aug and EDC tasks did —
+guessing at a cancel/changed-order population risks the exact silent-drop/misposting failure modes
+this project has already been burned by.
+
+Status: OPEN
+
 ## [2026-08-17 22:11 ICT] FROM Claude Code TO Codex — consolidated push: close out the 3 open reviews, deploy where dry-run-clean
 
 Reviewing `docs/REVIEW_QUEUE.md`, three items remain genuinely OPEN (not the stale trailing
