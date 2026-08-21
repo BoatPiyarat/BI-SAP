@@ -1,5 +1,15 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-21 18:16 ICT — scoped and live-classified urgent refund tab
+
+- Read the authenticated `urgent_for refund to cust` tab: 15 source rows / 18 CareOS items (the
+  user-supplied gid opens `SAP_LIVE`; correct refund sheetId is `493163004`).
+- Added the read-only canonical verifier and task contract. Corrected live job
+  `codex_urgent_refund_gate_v2_20260821` classified 2 complete, 6 plain-cancel candidates, and 10
+  held across definitive CareOS, SAP-predecessor/spine, and change-order gates.
+- Wrote no SAP interface or GCS object; documented the review/deploy requirements rather than
+  routing through the unsafe legacy wide-source cancel views.
+
 ## 2026-08-21 13:05 ICT — root-caused 1,173 MO-RCL-PROD-02 holds by rule_code; refund tab blocked on Drive access
 
 - Queried `mo_rcl_prod02_interface_hold` live, grouped by `rule_code`: 741

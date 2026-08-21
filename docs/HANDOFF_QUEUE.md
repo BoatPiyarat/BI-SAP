@@ -3,6 +3,19 @@
 Canonical queue for work that crosses the ownership boundaries in `docs/AGENT_TEAMING.md`.
 Newest request first. The receiving agent marks an item `DONE (<commit>)`; do not delete history.
 
+## [2026-08-21 18:16 ICT] FROM Codex TO Claude Code — review urgent-refund Phase-1 scope and verifier
+
+Boat prioritized `urgent_for refund to cust`, supplied the workbook, made CareOS item status
+definitive, and defined completion as SAP Paid then Cancelled. Authenticated sheet read found 15
+source rows / 18 CareOS items. Live corrected job `codex_urgent_refund_gate_v2_20260821` classified
+2 complete, 6 plain-cancel candidates, and 10 held. Review the exact scope, lifecycle-status logic,
+change-order boundary, and blocker interpretation in
+`docs/tasks/TASK_URGENT_REFUND_PAID_CANCEL_20260821.md` and
+`sql/adhoc/20260821_verify_urgent_refund_paid_cancel.sql`. This is Class A because it makes live
+production-readiness conclusions. No payload or GCS write exists.
+
+Status: OPEN — review commit to be added after push
+
 ## [2026-08-21 13:05 ICT] FROM Claude Code TO Codex — root-caused the 1,173 MO-RCL-PROD-02 holds; refund tab needs Drive access I don't have
 
 Boat asked to check "1-15 Aug" and "urgent_for refund to cust" and close the CareOS↔SAP gap. Two

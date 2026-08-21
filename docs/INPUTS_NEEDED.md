@@ -1,5 +1,30 @@
 # INPUTS NEEDED — things only Boat / Aware / Attila / Finance can answer
 
+## OPEN 2026-08-21 — urgent refund: approvals needed after exact population/live classification
+
+Boat supplied the `RCL_missing order` workbook and decided that CareOS item status is definitive;
+completion means SAP Paid then Cancelled. The `urgent_for refund to cust` tab is sheetId
+`493163004` (the supplied gid opens `SAP_LIVE`) and currently has 15 populated rows resolving to
+18 CareOS items. Live Phase 1 is recorded in
+`docs/tasks/TASK_URGENT_REFUND_PAID_CANCEL_20260821.md`: 2 complete, 6 plain-cancel candidates,
+and 10 held.
+
+Human/vendor inputs still required before the six candidates can become a production file:
+
+1. Aware: confirm the applicable cancel-import rules still marked inferred in
+   `SAP_CANCEL_IMPORT_SPEC_INFERRED_v0.9.md`, especially current-document selection/InvoiceNo for
+   multi-document periods and required Pending-period values.
+2. Boat: after an immutable payload and Class-A PASS exist, give explicit scoped `deploy OK` in
+   the execution session. The priority instruction and completion definition do not by themselves
+   waive the production-write gate.
+3. Boat/Aware: separately decide the valid item-level Paid allocation/predecessor path for the six
+   held items whose successful charge is only provable at shared order grain. Do not infer M1/V1
+   allocation from that charge.
+
+The two items whose CareOS item flags are not cancelled remain ineligible under Boat's definitive
+rule. The incomplete-spine and change-order cases require their own reviewed routing, not an
+exception to plain cancellation.
+
 ## OPEN 2026-08-17 — Boat/Mo: sheet link + scope for the 1-15 Aug RCL pending-interface report
 
 Mo Pawinee reported to Boat (chat, 2026-08-17, not yet independently verified — see

@@ -1,5 +1,22 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-21 18:16 ICT — urgent-refund tab scoped; 6 plain-cancel candidates, 10 held, 2 complete
+
+Boat made CareOS item status definitive and defined completion as SAP Paid then Cancelled. Codex
+used authenticated Google Sheets access to resolve the supplied workbook's actual refund tab
+(`sheetId=493163004`; the supplied gid points to `SAP_LIVE`) and found 15 populated source rows,
+resolving to 18 CareOS items. Corrected live Phase-1 job
+`codex_urgent_refund_gate_v2_20260821` at `2026-08-21 11:15:45 UTC` (dry-run 146,712,322 bytes)
+classified: 2 already complete, 6 plain-cancel candidates with valid complete SAP spines, 2 not
+cancelled in CareOS, 6 without an item-level SAP Paid predecessor, 1 with an incomplete SAP spine,
+and 1 requiring change-order routing. Exact IDs and completion gates are in
+`docs/tasks/TASK_URGENT_REFUND_PAID_CANCEL_20260821.md`.
+
+No interface file was built or written. Production remains blocked until the six candidate rows
+have an immutable reviewed cancel payload, the still-inferred cancel contract's applicable rules
+are resolved, Class-A review passes, and Boat gives explicit scoped `deploy OK` in the execution
+session.
+
 ## 2026-08-21 13:05 ICT — root-caused the 1,173 remaining MO-RCL-PROD-02 holds; refund tab blocked on missing Drive access
 
 Boat asked to check "1-15 Aug" and "urgent_for refund to cust" and close the CareOS↔SAP gap.
