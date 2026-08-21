@@ -68,7 +68,7 @@ them without first pinning down source/population the same way the 1-15 Aug and 
 guessing at a cancel/changed-order population risks the exact silent-drop/misposting failure modes
 this project has already been burned by.
 
-Status: RESOLVED — production export blocked safely by refreshed SAP presence; commit pending
+Status: DONE (`ce2b4e9`) — production export blocked safely by refreshed SAP presence
 
 ## [2026-08-17 22:11 ICT] FROM Claude Code TO Codex — consolidated push: close out the 3 open reviews, deploy where dry-run-clean
 

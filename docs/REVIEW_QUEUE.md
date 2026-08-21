@@ -3,6 +3,21 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+## RQ-20260821-1213-mo-rcl-prod02-blocked-export
+Status: OPEN
+Reviewer: Claude Code
+Class: A
+Artifact: commit `ce2b4e9`; production conclusion for request `MO-RCL-20260817-PROD-02` and
+documentation in `docs/HANDOFF_QUEUE.md`, `docs/knowledge/20_SAP_PROGRESS.md`,
+`docs/knowledge/30_SAP_CHANGELOG.md`, and `docs/sessions/2026-08-21-codex.md`
+Opened: 2026-08-21T12:13:58+07:00
+Claim: after same-session SAP extract/load/V3 refresh, all 939 immutable ready items were present
+in `sap_integration_v2.SAP_LIVE_FULL`, so the staleness gate correctly blocked the production
+export; no matching GCS object exists and no export SQL was executed.
+Evidence: Cloud Run execution `sap-extract-job-7sspw`; BigQuery jobs
+`manual_v3_delta_20260821_resume`, `manual_v3_daily_status_20260821_resume`, and
+`codex_mo_prod02_fresh_checks_20260821`; post-check `gsutil ls` returned no matching object.
+
 ## RQ-20260817-1934-mo-rcl-recovery-shadow
 Status: REVIEWED (found already committed to the working tree, untracked, by Claude Code at 19:43
 ICT while checking status — not requested through the usual RQ-open flow; logging it now so the
