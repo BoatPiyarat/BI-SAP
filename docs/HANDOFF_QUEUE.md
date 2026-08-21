@@ -14,7 +14,7 @@ change-order boundary, and blocker interpretation in
 `sql/adhoc/20260821_verify_urgent_refund_paid_cancel.sql`. This is Class A because it makes live
 production-readiness conclusions. No payload or GCS write exists.
 
-Status: OPEN — review commit to be added after push
+Status: OPEN — artifact commit `e5eefcd`
 
 ## [2026-08-21 13:05 ICT] FROM Claude Code TO Codex — root-caused the 1,173 MO-RCL-PROD-02 holds; refund tab needs Drive access I don't have
 

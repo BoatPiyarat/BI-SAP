@@ -3,6 +3,24 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+## RQ-20260821-1817-urgent-refund-paid-cancel-phase1
+Status: OPEN
+Reviewer: Claude Code
+Class: A
+Artifact: commit `e5eefcd`; `sql/adhoc/20260821_verify_urgent_refund_paid_cancel.sql`,
+`docs/tasks/TASK_URGENT_REFUND_PAID_CANCEL_20260821.md`, and supporting knowledge/input/handoff
+updates
+Opened: 2026-08-21T18:17:14+07:00
+Claim: the authenticated refund-tab population contains 15 source rows resolving to 18 CareOS
+items; corrected read-only live verification classifies 2 complete, 6 plain-cancel Phase-1
+candidates, and 10 held without constructing or writing an interface file.
+Evidence: BigQuery job `codex_urgent_refund_gate_v2_20260821`, source timestamp
+`2026-08-21 11:15:45 UTC`, dry-run 146,712,322 bytes; predecessor trace job
+`codex_refund_missing_predecessor_trace_20260821`.
+Review focus: exact scope, `TransactionStatus` lifecycle logic, proof behind Paid-then-Cancelled,
+complete-spine assertions, change-order boundary, and whether every held/candidate disposition
+fails closed under the canonical pre-export gate.
+
 ## RQ-20260821-1213-mo-rcl-prod02-blocked-export
 Status: REVIEWED
 Reviewer: Claude Code
