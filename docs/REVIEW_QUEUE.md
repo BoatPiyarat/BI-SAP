@@ -4,7 +4,7 @@ Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request firs
 review history; link the completed review and record its verdict.
 
 ## RQ-20260821-1213-mo-rcl-prod02-blocked-export
-Status: OPEN
+Status: REVIEWED
 Reviewer: Claude Code
 Class: A
 Artifact: commit `ce2b4e9`; production conclusion for request `MO-RCL-20260817-PROD-02` and
@@ -17,6 +17,11 @@ export; no matching GCS object exists and no export SQL was executed.
 Evidence: Cloud Run execution `sap-extract-job-7sspw`; BigQuery jobs
 `manual_v3_delta_20260821_resume`, `manual_v3_daily_status_20260821_resume`, and
 `codex_mo_prod02_fresh_checks_20260821`; post-check `gsutil ls` returned no matching object.
+Verdict: PASS — `docs/reviews/2026-08-21-ce2b4e9-claude.md`. Independently re-verified 939/939 via
+`sap_mirror_state.U_OrderItem` (the correct join surface) and reconfirmed `gsutil ls` still finds
+no object. Also surfaced that the reviewer's own earlier 10:56 ICT staleness check used an invalid
+join key (`SAP_LIVE_FULL.DocEntry` cast against a CareOS `OrderItem` string) and is corrected in a
+follow-up doc entry — did not affect this artifact's PASS.
 
 ## RQ-20260817-1934-mo-rcl-recovery-shadow
 Status: REVIEWED (found already committed to the working tree, untracked, by Claude Code at 19:43

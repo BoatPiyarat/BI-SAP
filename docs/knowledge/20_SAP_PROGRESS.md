@@ -1,5 +1,24 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-21 12:25 ICT — reviewed and PASSed Codex's block; corrected own invalid staleness join
+
+Class-A review of `ce2b4e9` (`RQ-20260821-1213-mo-rcl-prod02-blocked-export`): **PASS** —
+`docs/reviews/2026-08-21-ce2b4e9-claude.md`. Independently reconfirmed 939/939 `MO-RCL-PROD-02`
+ready items now present in `sap_integration_v3.sap_mirror_state` (joined on `U_OrderItem`) and that
+`gsutil ls` still finds no export object; Codex's block conclusion, EDC 322/322, and 1-15 Aug
+2,295-pair/2,283-order counts all check out.
+
+**Correction to this session's own 10:56 ICT entry below**: the "0 of the 939 ready items are now
+present in `SAP_LIVE_FULL`" claim used an invalid join — `SAP_LIVE_FULL.DocEntry` (SAP's internal
+integer key) cast to STRING and compared directly against `mo_rcl_prod02_ready.OrderItem` (a
+CareOS order-item identifier). These two values are never comparable; that query would return 0
+regardless of true SAP state, so it never actually proved absence from SAP. The correct
+one-row-per-(OrderItem,Period) join surface per `AGENT_RULES.md` is `sap_mirror_state`/
+`stg_sap_state` on `U_OrderItem`, confirmed above. **Do not cite the 10:56 ICT "0/939" number as
+evidence of anything** — it is superseded by Codex's same-session refreshed check (939/939 now
+present) and this review's independent reconfirmation. The cancellation check (0/939, joined
+directly on `careos_order_items.id = OrderItem`) used a valid key and is not affected.
+
 ## 2026-08-21 12:13 ICT — refreshed SAP blocks MO-RCL-PROD-02; Phase-1 counts and stalled dry-runs resolved
 
 Codex ran the reviewed manual SAP synchronization. Cloud Run execution `sap-extract-job-7sspw`

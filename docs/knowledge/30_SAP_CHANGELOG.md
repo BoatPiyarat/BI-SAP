@@ -1,5 +1,16 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-21 12:25 ICT — reviewed `ce2b4e9` PASS; corrected an invalid join in my own earlier check
+
+- Cleared the one assigned OPEN review (`RQ-20260821-1213-mo-rcl-prod02-blocked-export`): PASS,
+  `docs/reviews/2026-08-21-ce2b4e9-claude.md`. Independently reran the staleness check with the
+  correct join (`sap_mirror_state.U_OrderItem`) and got 939/939, matching Codex's claim; reconfirmed
+  no GCS object exists.
+- Found and corrected a defect in my own 10:56 ICT entry: the original staleness query joined
+  `SAP_LIVE_FULL.DocEntry` (SAP integer key) directly to a CareOS `OrderItem` string — an invalid
+  comparison that would always return 0, not real evidence of absence from SAP. Flagged in the
+  review file and in `20_SAP_PROGRESS.md` rather than silently fixed.
+
 ## 2026-08-21 12:13 ICT — same-session SAP refresh blocked MO-RCL-PROD-02; no production file written
 
 - Completed the reviewed extract/load/V3 refresh sequence. `sap-extract-job-7sspw` succeeded;
