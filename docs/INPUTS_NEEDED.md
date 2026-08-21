@@ -46,8 +46,13 @@ the order hasn't reached SAP, excluding new orders created via a changed order; 
    real payments not reaching SAP) or a genuinely separate gap — needs Codex's live-data check
    first, but the business-rule question of how a changed order's SAP row should differ from a
    normal one is a human answer, not something derivable from data alone.
+4. **`RCL_pending cancel` tab scope (Boat/Mo)**: identify the exact workbook/tab snapshot,
+   canonical row grain, and whether it is a subset of the Cancel-import population above or a
+   distinct operational queue. Confirm the intended SAP operation and predecessor requirements
+   before writing a task file. Do not infer this population from the tab name and do not build an
+   interface file until the scoped task and pre-export gates are reviewed.
 
-Both import asks are production mutations and are **not authorized** by this entry — they need the
+These import asks are production mutations and are **not authorized** by this entry — they need the
 usual dry-run + Class-A review + Boat's explicit deploy OK once scoped, per `AGENT_RULES.md`.
 
 ## OPEN 2026-08-14 — Boat/IT admin: single `run.invoker` grant + reconcile workaround-doc contradiction

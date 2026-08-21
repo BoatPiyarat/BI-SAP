@@ -1,5 +1,39 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-21 12:13 ICT — refreshed SAP blocks MO-RCL-PROD-02; Phase-1 counts and stalled dry-runs resolved
+
+Codex ran the reviewed manual SAP synchronization. Cloud Run execution `sap-extract-job-7sspw`
+completed successfully at `2026-08-21T04:58:02Z`, the loader consumed the bronze object, and the
+extract watermark advanced to generation `1787288278010159` at `2026-08-21T04:57:58Z`. The local
+wrapper hit its 20-minute command ceiling after validation, so Codex did not rerun the extract;
+the two remaining reviewed steps were resumed dry-run-first and completed as
+`manual_v3_delta_20260821_resume` (113,453,881 bytes) and
+`manual_v3_daily_status_20260821_resume` (134,659,292 bytes).
+
+The refreshed, batched safety check `codex_mo_prod02_fresh_checks_20260821` at
+`2026-08-21 05:07:20 UTC` scanned 7,750,115,582 bytes and found **939/939** ready items now present
+in `sap_integration_v2.SAP_LIVE_FULL`; item-level cancellation remained **0/939** against
+`careos.careos_order_items.is_cancelled OR cancel_time IS NOT NULL`. The staleness gate therefore
+failed closed. `sql/adhoc/20260817_export_mo_rcl_prod02.sql` was not executed and `gsutil ls`
+confirmed no matching production object. The prior 0/939 result was valid only for the stale
+2026-08-20 mirror and is superseded by this same-session refresh.
+
+Phase 1 read-only results: EDC job `codex_verify_puii_edc_20260821` (source timestamp
+`2026-08-21T05:08:34Z`, 88,955,184 bytes) classified all **322/322 distinct orders** as
+`STILL_MISSING_SILENT_DROP`. The 1-15 Aug classification job
+`codex_classify_mo_1_15aug_20260821` (source timestamp `2026-08-21T05:10:40Z`, 109,076,832 bytes)
+classified all **2,295 pairs / 2,283 distinct order IDs** as `STILL_MISSING_SILENT_DROP`;
+Mo's separately reported 2,285 and 2,275 counts are both incorrect for the canonical embedded
+pair population. The current gate recheck `codex_verify_mo_1_15aug_20260821` found 1,861 mapped
+RCL items and zero preliminary pass items; no file was written.
+
+Stalled-item status: DDL 067 and DDL 075 now dry-run clean at 0 bytes, but
+`sql/adhoc/20260811_verify_period_cutoff_calendar.sql` still fails parsing because a `DECLARE` at
+line 116 occurs after executable statements. The duplicate-QR finding remains OPEN and unreviewed;
+no correction, refund, or mutation was performed. The refund, `RCL_pending cancel`, Cancel-import,
+and Changed-Order-import populations remain unscoped and blocked from file construction pending
+task files and human answers in `docs/INPUTS_NEEDED.md`.
+
 ## 2026-08-21 10:56 ICT — reauth restored; MO-RCL-PROD-02 re-verified clean and ready; handed refresh+export+3 stalled items to Codex
 
 Boat asked to push the queued interface work to completion (1-15 Aug RCL, EDC, urgent refund,

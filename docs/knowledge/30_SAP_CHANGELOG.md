@@ -1,5 +1,23 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-21 12:13 ICT — same-session SAP refresh blocked MO-RCL-PROD-02; no production file written
+
+- Completed the reviewed extract/load/V3 refresh sequence. `sap-extract-job-7sspw` succeeded;
+  resume jobs `manual_v3_delta_20260821_resume` and
+  `manual_v3_daily_status_20260821_resume` completed the two steps left after the local wrapper's
+  20-minute ceiling.
+- Batched refreshed check `codex_mo_prod02_fresh_checks_20260821` found 939/939 ready items now in
+  `sap_integration_v2.SAP_LIVE_FULL` and 0/939 newly cancelled. Failed closed: did not run the
+  export SQL; `gsutil ls` confirmed no target object.
+- EDC Phase 1: 322/322 distinct orders remain `STILL_MISSING_SILENT_DROP`
+  (`codex_verify_puii_edc_20260821`). 1-15 Aug Phase 1: 2,295/2,295 pairs, 2,283 distinct order
+  IDs, remain `STILL_MISSING_SILENT_DROP` (`codex_classify_mo_1_15aug_20260821`); neither 2,285
+  nor 2,275 is the canonical live count.
+- DDL 067 and DDL 075 dry-run clean at 0 bytes. The period-cutoff verification file remains
+  blocked by a line-116 declaration-order parse error. Duplicate-QR review remains OPEN.
+- Added the unscoped `RCL_pending cancel` population question to `docs/INPUTS_NEEDED.md`; no refund,
+  cancel, changed-order, or other interface file was built.
+
 ## 2026-08-21 10:56 ICT — re-verified MO-RCL-PROD-02 export as still safe; handed refresh+execute+3 stalled items to Codex
 
 - Confirmed via `gsutil ls` that the 08-17 23:35-23:37 `sql/adhoc/20260817_export_mo_rcl_prod02.sql`
