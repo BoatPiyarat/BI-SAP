@@ -1,5 +1,27 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-21 13:05 ICT — root-caused the 1,173 remaining MO-RCL-PROD-02 holds; refund tab blocked on missing Drive access
+
+Boat asked to check "1-15 Aug" and "urgent_for refund to cust" and close the CareOS↔SAP gap.
+Queried `sap_integration_v3.mo_rcl_prod02_interface_hold` (one targeted query per finding, all
+read-only, live) to break down why 1,173 of the 2,112 mapped items are still held after `f3882d3`:
+`REQUIRED_VALUE_NULL_OR_LITERAL_NULL` 741, `PAYMENT_MAPPING_UNAPPROVED` 426 (looks like a human
+mapping-approval gap, not a bug), `SOURCE_KEY_DUPLICATE` 144, `SUCCESSFUL_CHARGE_AMBIGUOUS` 137
+(possibly related to the still-unreviewed `FINDINGS_DUPLICATE_QR_INSTALLMENT_20260804.md`),
+`EVENT_CHARGE_VERSION_CONFLICT` 17, `FLOW_NOT_EXACT_RCL` 8 (correct behavior, not a bug),
+`OPEN_PERIOD_INVALID` 1. Full detail and sample order_items in
+`docs/HANDOFF_QUEUE.md` 2026-08-21 13:05 ICT. This is the honest current state of the 1-15 Aug
+gap: 939 items were already in SAP (12:13 ICT entry), 1,173 are genuinely still missing and none
+can ship without a source-data fix or a human mapping decision — "closing the gap" is not yet
+achievable without that follow-up work.
+
+Could not check "urgent_for refund to cust" — no Google Drive/Sheets access in this session
+(`WebFetch` 401s on the private sheet URL; the Drive-connector tool used by earlier sessions isn't
+available here). Did not attempt to reconstruct the 10-row population from CareOS without the
+sheet's exact order IDs, per this project's money-impact rule against guessing a population.
+Flagged in the handoff for Codex (which may have Drive access) or for Boat/Mo to paste the rows
+directly.
+
 ## 2026-08-21 12:25 ICT — reviewed and PASSed Codex's block; corrected own invalid staleness join
 
 Class-A review of `ce2b4e9` (`RQ-20260821-1213-mo-rcl-prod02-blocked-export`): **PASS** —

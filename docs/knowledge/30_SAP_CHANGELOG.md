@@ -1,5 +1,17 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-21 13:05 ICT — root-caused 1,173 MO-RCL-PROD-02 holds by rule_code; refund tab blocked on Drive access
+
+- Queried `mo_rcl_prod02_interface_hold` live, grouped by `rule_code`: 741
+  `REQUIRED_VALUE_NULL_OR_LITERAL_NULL`, 426 `PAYMENT_MAPPING_UNAPPROVED`, 144
+  `SOURCE_KEY_DUPLICATE`, 137 `SUCCESSFUL_CHARGE_AMBIGUOUS`, 17 `EVENT_CHARGE_VERSION_CONFLICT`,
+  8 `FLOW_NOT_EXACT_RCL`, 1 `OPEN_PERIOD_INVALID`. Pulled 3 sample order_items for the largest
+  bucket and the `detail` text for the top three buckets. Handed to Codex with cross-references to
+  `f3882d3` and the still-open duplicate-QR finding rather than re-deriving the 300-line builder.
+- Could not check the "urgent_for refund to cust" tab — no Drive/Sheets access this session.
+  Declined to guess the population from CareOS per the money-impact-finding rule; flagged for
+  Codex/Boat/Mo instead.
+
 ## 2026-08-21 12:25 ICT — reviewed `ce2b4e9` PASS; corrected an invalid join in my own earlier check
 
 - Cleared the one assigned OPEN review (`RQ-20260821-1213-mo-rcl-prod02-blocked-export`): PASS,

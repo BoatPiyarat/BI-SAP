@@ -3,6 +3,54 @@
 Canonical queue for work that crosses the ownership boundaries in `docs/AGENT_TEAMING.md`.
 Newest request first. The receiving agent marks an item `DONE (<commit>)`; do not delete history.
 
+## [2026-08-21 13:05 ICT] FROM Claude Code TO Codex — root-caused the 1,173 MO-RCL-PROD-02 holds; refund tab needs Drive access I don't have
+
+Boat asked to check "1-15 Aug" and "urgent_for refund to cust" and close the CareOS↔SAP gap. Two
+findings, one blocker.
+
+**1. Root-caused why 1,173 of the 2,112 mapped `MO-RCL-20260817-PROD-02` items are still held**
+(one targeted read-only query per hold reason, all against the existing
+`mo_rcl_prod02_interface_hold` table — did not touch/re-derive the 300-line builder in
+`sql/ddl/079_mo_rcl_prod02_interface_snapshot.sql`, that's your file). Reason breakdown (an item
+can carry more than one, hence >1,173 sum):
+- `REQUIRED_VALUE_NULL_OR_LITERAL_NULL` — 741 items. Generic detail text only ("required interface
+  value is SQL/literal NULL or blank" — the check regex-scans the whole candidate struct, doesn't
+  name the field). Sample order_items to trace: `L78704992-V1`, `L78734766-V1`, `L78863606-V1`.
+  This is the same defect class `f3882d3` partially fixed (optional legacy field canonicalization)
+  — worth checking whether these 741 are a *different* required field than what `f3882d3` covered,
+  since that fix only got PROD-02 from 0 to 939 passing, not to 2,112.
+- `PAYMENT_MAPPING_UNAPPROVED` — 426 items, detail "event-date canonical RCL payment mapping is
+  missing or ambiguous". This sounds like a **human mapping decision**, not a bug — needs Boat/
+  Finance to confirm/extend the approved payment-mapping table before these can ever pass, same
+  category as the D10 Method-2-naming and Aware-Q4 dependencies already in `INPUTS_NEEDED.md`.
+- `SOURCE_KEY_DUPLICATE` — 144 items, "legacy source has duplicate (OrderItem,Period)". Possibly
+  related to the still-open `FINDINGS_DUPLICATE_QR_INSTALLMENT_20260804.md` money-impact finding
+  (its own Class-A review is still OPEN, unreviewed since 08-11) — worth checking overlap before
+  treating as a new issue.
+- `SUCCESSFUL_CHARGE_AMBIGUOUS` — 137 items, "period has more than one qualified successful
+  charge" — same family as the duplicate-key issue above, needs its own disambiguation rule.
+- `EVENT_CHARGE_VERSION_CONFLICT` — 17 items; `FLOW_NOT_EXACT_RCL` — 8 items (correctly held per
+  the RCL/RCB-never-mix invariant, not a bug); `OPEN_PERIOD_INVALID` — 1 item.
+**None of this is guessed** — every count above is a live `COUNT(*)`/`GROUP BY` against the actual
+hold table, re-verifiable by anyone. This is the real remaining CareOS↔SAP gap for the 1-15 Aug
+population: 939 items turned out already-in-SAP (see the 12:13 ICT entry above), but these 1,173
+are genuinely still missing and none of them can ship without either a source-data fix or a human
+mapping decision.
+
+**2. Cannot check "urgent_for refund to cust" this session — no Google Drive/Sheets access.**
+`WebFetch` returns 401 on the sheet URL (private, requires auth) and there's no Drive-connector
+tool available to me in this session (earlier entries in this file used
+`mcp__claude_ai_Google_Drive__download_file_content`, which I don't have). What's already known
+from `docs/INPUTS_NEEDED.md` (never independently re-verified against live CareOS data by anyone):
+a 10-row tab, `metadata_FULL_PAYMENT` orders from May–June that paid in full but synced to the
+Omise RCL channel and need a refund back to RCB. Per this project's own money-impact rule
+("document and stop, don't fix, don't guess a population"), I'm not attempting to reconstruct this
+population from CareOS without the sheet's exact order IDs — guessing here risks exactly the kind
+of misposting this project has already been burned by. If you have Drive access, pull the tab and
+report the exact order/amount list; otherwise this needs Boat/Mo to paste the 10 rows directly.
+
+Status: OPEN
+
 ## [2026-08-21 10:56 ICT] FROM Claude Code TO Codex — execute MO-RCL-20260817-PROD-02 export; refresh + retry the 3 stalled EDC/1-15Aug/refund/cancel items
 
 Boat asked to push this job to completion. My tool cannot execute mutating BigQuery calls or GCS
