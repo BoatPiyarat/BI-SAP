@@ -1,5 +1,13 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-22 11:36 ICT — reviewed `e5eefcd` PASS on the urgent-refund Phase 1 classification
+
+- Cleared the one assigned OPEN review. Independently reran the full verifier live and reproduced
+  the exact 2/6/2/6/1/1 bucket breakdown and every item's classification.
+- Confirmed via `gsutil ls` that no GCS object exists for this population.
+- Noted one non-blocking gap for the Phase 2 builder: the change-order check only covers
+  `cancelled_change_orders`, not any still-active change-order relationship.
+
 ## 2026-08-21 18:16 ICT — scoped and live-classified urgent refund tab
 
 - Read the authenticated `urgent_for refund to cust` tab: 15 source rows / 18 CareOS items (the

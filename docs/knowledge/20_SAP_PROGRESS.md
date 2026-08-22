@@ -1,5 +1,16 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-22 11:36 ICT — reviewed and PASSed Codex's urgent-refund Phase 1 classification
+
+Class-A review of `e5eefcd` (`RQ-20260821-1817-urgent-refund-paid-cancel-phase1`): **PASS** —
+`docs/reviews/2026-08-21-e5eefcd-claude.md`. Reauthenticated `gcloud`/`bq` (expired again
+overnight) and independently reran the full verifier live: reproduced the exact 2 complete / 6
+plain-cancel / 10 held (2/6/1/1 sub-split) breakdown and every order_item's bucket assignment
+bit-for-bit. Confirmed via `gsutil ls` that no GCS object exists anywhere for this population. One
+non-blocking note recorded for whoever builds the Phase 2 payload: the change-order check only
+looks at `cancelled_change_orders`, not any still-active change-order relationship — re-check at
+execution time, not just against this Phase-1 snapshot.
+
 ## 2026-08-21 18:16 ICT — urgent-refund tab scoped; 6 plain-cancel candidates, 10 held, 2 complete
 
 Boat made CareOS item status definitive and defined completion as SAP Paid then Cancelled. Codex

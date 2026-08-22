@@ -4,7 +4,7 @@ Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request firs
 review history; link the completed review and record its verdict.
 
 ## RQ-20260821-1817-urgent-refund-paid-cancel-phase1
-Status: OPEN
+Status: REVIEWED
 Reviewer: Claude Code
 Class: A
 Artifact: commit `e5eefcd`; `sql/adhoc/20260821_verify_urgent_refund_paid_cancel.sql`,
@@ -20,6 +20,11 @@ Evidence: BigQuery job `codex_urgent_refund_gate_v2_20260821`, source timestamp
 Review focus: exact scope, `TransactionStatus` lifecycle logic, proof behind Paid-then-Cancelled,
 complete-spine assertions, change-order boundary, and whether every held/candidate disposition
 fails closed under the canonical pre-export gate.
+Verdict: PASS — `docs/reviews/2026-08-21-e5eefcd-claude.md`. Independently re-ran the full verifier
+live and reproduced the exact 2/6/2/6/1/1 bucket breakdown and item membership; `gsutil ls`
+confirmed no GCS object exists anywhere. One non-blocking note: `change_membership` checks
+`cancelled_change_orders` only, not any active (non-cancelled) change-order relationship — flagged
+for whoever builds the Phase-2 payload to re-check at execution time.
 
 ## RQ-20260821-1213-mo-rcl-prod02-blocked-export
 Status: REVIEWED
