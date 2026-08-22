@@ -3,6 +3,23 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+## RQ-20260822-1212-urgent-refund-cancel-phase2
+Status: OPEN
+Reviewer: Claude Code
+Class: A
+Artifact: commit `bc25b32`; Aware-confirmed cancel rules, payment-precondition verifier, raw
+exception trace, and exact 56-column temporary candidate preparation
+Opened: 2026-08-22T12:12:16+07:00
+Claim: six plain-cancel items produce an exact gated 47-row complete-spine candidate with no
+CareOS-paid/SAP-pending periods and no multi-document winners; hash
+`5eef984fcbfba8289d290893d77e5cabd06e5f2abc477150cfbfa35c4a9c4027` for batch date
+`22082026`. No persistent object or GCS write occurred.
+Evidence: jobs `codex_urgent_refund_payment_precondition_20260822`,
+`codex_trace_l80545799_payment_20260822`, and `codex_prepare_urgent_refund_cancel_20260822`.
+Review focus: full pre-export gate, 56-column ordinal contract, Aware Pending-field rules,
+CareOS payment reconciliation, immutable InvoiceNo, exact scope, hash determinism, and whether the
+source is safe to promote into a separately reviewed production export after fresh SAP sync.
+
 ## RQ-20260822-1147-urgent-refund-cancel-candidate
 Status: OPEN
 Reviewer: Codex
