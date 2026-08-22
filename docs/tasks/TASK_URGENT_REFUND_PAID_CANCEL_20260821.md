@@ -54,3 +54,38 @@ bytes) records the ambiguity.
    InvoiceNo, prior cancellation, complete spine, candidate hash, and schema hash.
 
 No interface file was built or written by Phase 1.
+
+## Aware answers received
+
+- 2026-08-22 — Pending-period `InvoiceNo`: preserve the existing SAP value exactly; when the
+  existing SAP value is blank, leave it blank. Never generate or substitute it.
+
+## Phase 2 — shadow candidate built (source only, not executed), 2026-08-22
+
+`sql/ddl/080_urgent_refund_cancel_candidate.sql` implements step 5 above for the 6 plain-cancel
+candidates: full-spine rows mirrored verbatim from `sap_mirror_state` (no recompute — deliberately
+avoids the unsafe legacy `sql/production/RCL_02_items_cancel.sql` wide-source view), forward-fills
+`PaymentMethod`/`PaymentChannel` from the item's one confirmed non-blank value (all 6 items
+verified live to have exactly one distinct value each — job against `sap_mirror_state`, live
+2026-08-22), sets `TransactionStatus='Cancelled'` for the full spine per inferred rule R1, and
+item-level-quarantines anything that fails re-derived eligibility (CareOS not cancelled, SAP
+already shows a Cancelled period, invalid spine, ambiguous/missing payment channel) rather than
+trusting the Phase-1 snapshot's freshness. Dry-run passed at 0 bytes.
+
+**This script has not been executed.** It builds no table, holds no manifest, and is not eligible
+for export until it separately receives Class-A PASS.
+
+**Known likely blocker, disclosed in the script itself**: all 6 candidates propose `Cancelled`
+status on periods that were always `Pending` (never paid), which under the current mirror-verbatim
+rule leaves `PaymentDate=''` on a `Cancelled` row. The canonical gate
+(`docs/design/SAP_INTERFACE_PRE_EXPORT_GATE.md` item 5) only confirms blank `PaymentDate` as an
+exception for `status='Pending'`; extending it to `Cancelled` is the still-open Q11 in
+`SAP_CANCEL_IMPORT_SPEC_INFERRED_v0.9.md`. The script computes `gate_status` honestly rather than
+assume the extension — expect `BLOCK_OPEN_VENDOR_QUESTION` unless Aware confirms Q11 first. That is
+a correct outcome to report, not a defect to silently work around.
+
+**Next steps**: (1) Class-A review of `080_urgent_refund_cancel_candidate.sql` by Codex — logged
+`RQ-20260822-1147-urgent-refund-cancel-candidate`. (2) Independently of the review, Aware needs to
+confirm Q11 before this can ever reach `PASS`. (3) Only after both: execute the script (Codex, per
+the single-deployer rule), inspect the resulting gate manifest, and if `PASS`, bring it to Boat for
+the separate explicit scoped `deploy OK` before any `gs://interface-file/**` write.
