@@ -21,11 +21,14 @@ CareOS payment reconciliation, immutable InvoiceNo, exact scope, hash determinis
 source is safe to promote into a separately reviewed production export after fresh SAP sync.
 
 ## RQ-20260822-1147-urgent-refund-cancel-candidate
-Status: OPEN
+Status: REVIEWED
 Reviewer: Codex
 Class: A
 Artifact: commit `d0229fb`, plus uncommitted working-tree corrections described below;
 `sql/ddl/080_urgent_refund_cancel_candidate.sql`
+Verdict: BLOCK — `docs/reviews/2026-08-22-d0229fb-codex.md`. Pending payment fields contradict
+Aware's confirmed blank-only rule; CareOS-paid sequencing, change-order, multi-document, exact
+physical types/ordinals, predecessor status, and stable immutable export binding are incomplete.
 Opened: 2026-08-22T11:47:56+07:00
 Claim: a shadow-only, item-level-quarantined 56-column cancel candidate for the 6 Phase-1-passed
 `urgent_for refund to cust` items, mirroring `sap_mirror_state` verbatim (no recompute), full
