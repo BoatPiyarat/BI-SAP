@@ -1,9 +1,14 @@
 # Daily CareOS → SAP automation completion checklist
 
-Status at 2026-08-05 21:19 ICT: **NOT YET UNATTENDED**
+Status at 2026-08-22 12:45 ICT: **NOT YET UNATTENDED**. Refreshed against live checkers this
+session — see `docs/HANDOFF_QUEUE.md` 2026-08-22 12:45 ICT for the exact current-state execution
+list. **§2 below is stale**: `POST_IMPORT_ADMIN_COMPLETION.md` was superseded 2026-08-06 by
+`DEFAULT_COMPUTE_SA_AUTOMATION_WORKAROUND.md` (reuse the existing default Compute service account,
+no IAM grants at all) — do not follow §2's dedicated-identity/IAM-grant steps.
 
 This is the short operational index. Exact commands and evidence requirements remain in
-`POST_IMPORT_ADMIN_COMPLETION.md`, `POST_IMPORT_AUTOMATION_DEPLOYMENT.md`,
+`DEFAULT_COMPUTE_SA_AUTOMATION_WORKAROUND.md` (current), `POST_IMPORT_ADMIN_COMPLETION.md`
+(superseded, history only), `POST_IMPORT_AUTOMATION_DEPLOYMENT.md`,
 `SAP_RESULT_INGESTION_DEPLOYMENT.md`, `V3_ORCHESTRATOR_UNIT1_RUNBOOK.md`, and
 `V3_DELIVERY_CONTROL_PLANE.md`.
 
@@ -18,11 +23,16 @@ This is the short operational index. Exact commands and evidence requirements re
 - [x] `delivery_enabled: false` remains live.
 - [x] Private dispatcher, unscheduled watchdog job, input/DLQ topics, and retained DLQ evidence
   subscription exist.
-- [x] Read-only activation checker returns `safety_passed=true`.
-- [ ] Dispatcher authenticated push subscription exists.
-- [ ] Watchdog scheduler exists in PAUSED state.
-- [ ] Post-import runtime IAM is complete.
-- [ ] Gmail attachment-ingestion Apps Script is deployed and authorized.
+- [ ] Read-only activation checker returns `safety_passed=true`. **REGRESSED as of 2026-08-22
+  05:16 ICT**: now `false` — dispatcher and watchdog both still run under their old dedicated
+  service accounts, not the approved default Compute SA. Redeploy both (see
+  `DEFAULT_COMPUTE_SA_AUTOMATION_WORKAROUND.md`; no IAM grant needed).
+- [ ] Dispatcher authenticated push subscription exists. Confirmed absent, 2026-08-22.
+- [ ] Watchdog scheduler exists in PAUSED state. Confirmed absent, 2026-08-22.
+- [x] ~~Post-import runtime IAM is complete~~ — superseded item. Under the 2026-08-06 default-SA
+  workaround, no new IAM grant is required for Track 1 at all; nothing to complete here.
+- [ ] Gmail attachment-ingestion Apps Script is deployed and authorized. Owner identified
+  2026-08-22: `data@rabbit.co.th` (Boat) — Script ID/OAuth still outstanding.
 - [ ] A recurring V3 workflow trigger exists.
 - [ ] Finance cutoff registry and reviewed automatic monthly transition are live.
 - [ ] DDL 067 completeness snapshot is live: healthy-zero after Units 2–5; nonzero only after

@@ -1,5 +1,28 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-22 12:45 ICT — daily automation checklist refreshed against live checkers; stale doc corrected
+
+Boat asked to work the daily-automation completion checklist through to done, one decision/action
+at a time. Found `docs/design/DAILY_AUTOMATION_COMPLETION_CHECKLIST.md` pointing at a superseded
+plan (`POST_IMPORT_ADMIN_COMPLETION.md`, marked DO NOT RUN since 2026-08-06 — no account has
+`run.services.setIamPolicy`; the live plan is `DEFAULT_COMPUTE_SA_AUTOMATION_WORKAROUND.md`, reuse
+the existing default Compute SA, no IAM grants). Ran both live checkers instead of trusting the
+doc: `check_post_import_activation.ps1` (05:16:24Z) shows `safety_passed=false` — dispatcher and
+watchdog still run under their old dedicated service accounts, not the approved default Compute
+SA — plus the push subscription and watchdog scheduler are both still absent.
+`check_v3_delivery_control_plane.ps1` (05:16:42Z) confirms the separate outbound-delivery track is
+further out (no two-name markers, no promoter, no scheduler) — not part of today's ask.
+
+Cleared two decisions with Boat: Apps Script mailbox owner is `data@rabbit.co.th`; DDL 066/068
+alert thresholds get provisional defaults (~20% of live baseline, floored for small buckets:
+STATUS_CONFLICT 7500/2000, MISSING 300/300, PENDING_ACK 250/250, POLICYNO_TOO_LONG 20/15,
+MASTER_INSURER_UNKNOWN 20/20 — record/order increase caps respectively; `OK` deliberately excluded
+as healthy growth, flagged for Boat to confirm that scoping choice). Corrected the checklist doc's
+stale checked items and wrote a fully-specified, zero-open-decision execution list to
+`docs/HANDOFF_QUEUE.md` 2026-08-22 12:45 ICT for Codex: redeploy dispatcher/watchdog under the
+default SA, create the push subscription + paused scheduler, re-check, run the 10-case rehearsal,
+then deploy DDL 067/066/068 with the seed values above.
+
 ## 2026-08-22 12:12 ICT — urgent-refund 47-row cancel candidate prepared; awaiting Class-A review
 
 Boat relayed the remaining Aware Pending-field rules and authorized production completion for the

@@ -1,5 +1,17 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-22 12:45 ICT — refreshed daily automation checklist against live state
+
+- Found and flagged that `DAILY_AUTOMATION_COMPLETION_CHECKLIST.md` pointed at a plan superseded
+  since 2026-08-06 (`POST_IMPORT_ADMIN_COMPLETION.md`, IAM-admin path, DO NOT RUN); corrected it to
+  point at `DEFAULT_COMPUTE_SA_AUTOMATION_WORKAROUND.md` and fixed its stale checked items.
+- Ran `check_post_import_activation.ps1` and `check_v3_delivery_control_plane.ps1` live; confirmed
+  dispatcher/watchdog still run under the wrong service accounts and the push
+  subscription/watchdog scheduler don't exist.
+- Cleared two Boat decisions (Apps Script mailbox = `data@rabbit.co.th`; provisional DDL 066/068
+  thresholds from live baseline counts) and wrote a fully-specified execution list to
+  `docs/HANDOFF_QUEUE.md` for Codex — no open decisions left in that list.
+
 ## 2026-08-22 12:12 ICT — prepared gated urgent-refund cancel candidate
 
 - Recorded Aware-confirmed Pending-field and sequencing rules in the cancel spec and task.
