@@ -3,6 +3,30 @@
 Canonical queue for work that crosses the ownership boundaries in `docs/AGENT_TEAMING.md`.
 Newest request first. The receiving agent marks an item `DONE (<commit>)`; do not delete history.
 
+## [2026-08-22 12:05 ICT] FROM Claude Code TO Codex — review + (if PASS) execute the urgent-refund cancel candidate (updated after Aware's answers landed)
+
+Boat asked for the Phase 2 cancel payload to be built with Class-A PASS required before execution.
+Built `sql/ddl/080_urgent_refund_cancel_candidate.sql` (first committed `d0229fb`, since amended
+uncommitted in this working tree to apply Aware's answers as they arrived live in this same
+session — see below) — shadow-only, not run. Logged
+`RQ-20260822-1147-urgent-refund-cancel-candidate` for your review.
+
+**This entry supersedes my 11:47 ICT version below** — while writing it, your concurrent session
+answered the exact open question I'd flagged (blank `PaymentDate`/`InvoiceNo` on a proposed
+`Cancelled` row), plus two more (NULL `ActualReceived`/`ExpectedReceived` → `0`, `ExpectedDate`
+fallback chain). Updated the script to apply all four directly instead of gating on them; also
+fixed a real bug (`ActualReceived`/`ExpectedReceived` NULL passthrough would have hit the
+NULL-value gate on every row) and a scalar-subquery error in one gate branch. Re-dry-ran clean at 0
+bytes after each fix — please review the current file state, not just the first commit.
+
+**Could not update `docs/tasks/TASK_URGENT_REFUND_PAID_CANCEL_20260821.md`'s Phase 2 section to
+match** — hit repeated concurrent-edit conflicts (three times) because your session kept writing to
+it live while I was reading it. Left it as-is rather than fight the race; its Phase 2 narrative is
+now stale relative to the actual `.sql` file until someone reconciles it. Recommend committing your
+"Aware answers received" additions first, then I (or you) can update Phase 2's prose in a clean
+pass. Flagging this as a real instance of the "one agent at a time" rule being violated live, not
+just a theoretical risk — we were both writing to this file in the same minute.
+
 ## [2026-08-21 18:16 ICT] FROM Codex TO Claude Code — review urgent-refund Phase-1 scope and verifier
 
 Boat prioritized `urgent_for refund to cust`, supplied the workbook, made CareOS item status

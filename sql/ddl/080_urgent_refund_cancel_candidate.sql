@@ -15,14 +15,11 @@
 -- cancel view (sql/production/RCL_02_items_cancel.sql), which re-derives premiums/fees fresh from
 -- CareOS/CarePay instead of mirroring what SAP already has.
 --
--- KNOWN OPEN VENDOR QUESTION THIS CANDIDATE CANNOT RESOLVE (Q11,
--- SAP_CANCEL_IMPORT_SPEC_INFERRED_v0.9.md): "For a cancel row on a Pending (unpaid) period,
--- required values for ActualReceived/PaymentDate/InvoiceNo (empty vs mirror)?" The canonical gate
--- (docs/design/SAP_INTERFACE_PRE_EXPORT_GATE.md item 5) only confirms blank PaymentDate as an
--- exception when status is literally 'Pending' -- these rows become 'Cancelled', so that exception
--- may not apply as written. This script does NOT invent a PaymentDate. It builds the full
--- candidate, then honestly reports whether the gate PASSes as literally written or BLOCKs on this
--- exact open question, rather than silently extending the exception to get a green result.
+-- UPDATE 2026-08-22 (Boat relaying Aware, recorded in TASK_URGENT_REFUND_PAID_CANCEL_20260821.md
+-- "Aware answers received"): the Q11 question this file originally could not resolve is now
+-- confirmed -- for a never-paid period, preserve the existing SAP InvoiceNo and PaymentDate
+-- verbatim (blank stays blank) even once status becomes Cancelled; NULL ActualReceived becomes
+-- numeric 0. This file applies all three confirmed rules directly rather than gate on them.
 
 DECLARE v_request_id STRING DEFAULT 'URGENT-REFUND-CANCEL-20260822-PHASE2';
 
@@ -100,7 +97,7 @@ SELECT
   m.U_ShippingFeeVat AS ShippingFeeVat, m.U_TotalAmount AS TotalAmount,
   m.U_Discount AS Discount, m.U_SubmissionStatus AS SubmissionStatus,
   m.U_ApprovalStatus AS ApprovalStatus, m.U_PaymentStatus AS PaymentStatus,
-  m.ExpectedReceived, m.U_ActualReceived AS ActualReceived,
+  COALESCE(m.ExpectedReceived,0) AS ExpectedReceived, COALESCE(m.U_ActualReceived,0) AS ActualReceived,
   m.U_InterestThisPeriod AS InterestThisPeriod, m.U_PrincipleThisPeriod AS PrincipleThisPeriod,
   m.U_InterestEIRThisPeriod AS InterestEIRThisPeriod,
   m.U_PrincipleEIRThisPeriod AS PrincipleEIRThisPeriod,
@@ -176,7 +173,12 @@ SELECT
   InterestThisPeriod, PrincipleThisPeriod, InterestEIRThisPeriod, PrincipleEIRThisPeriod,
   PaymentDate, -- mirrored verbatim, never invented; blank stays blank for never-paid periods
   Period, TotalPeriods, PendingPayment, PaymentMethod, PaymentChannel,
-  CAST(FORMAT_DATE('%d%m%Y', SAFE.PARSE_DATE('%d%m%Y',ExpectedDate)) AS STRING) AS ExpectedDate,
+  -- ExpectedDate fallback chain (Aware, 2026-08-22): existing value, else PaymentDate, else
+  -- BatchRunDate -- never blank.
+  FORMAT_DATE('%d%m%Y', COALESCE(
+    SAFE.PARSE_DATE('%d%m%Y',ExpectedDate),
+    SAFE.PARSE_DATE('%d%m%Y',PaymentDate),
+    CURRENT_DATE('Asia/Bangkok'))) AS ExpectedDate,
   RefOrder, RefundAmountBeforeFee, RefundAmountAfterFee, BillingAddress,
   FORMAT_DATE('%d%m%Y', CURRENT_DATE('Asia/Bangkok')) AS BatchRunDate
 FROM _mirror
@@ -186,8 +188,12 @@ WHERE order_item NOT IN (
 );
 
 -- ============================================================================
--- Gate: report honestly. Do not extend the confirmed Pending-only blank-PaymentDate
--- exception to Cancelled rows without Aware's confirmation (Q11) -- count and flag instead.
+-- Gate. UPDATE 2026-08-22: Boat relayed Aware's confirmation for the two open questions this
+-- gate originally distrusted -- blank PaymentDate and blank InvoiceNo on a never-paid period are
+-- both confirmed mirror-verbatim-correct even once status becomes Cancelled, and NULL
+-- ActualReceived is confirmed to become numeric 0 (applied above). See
+-- docs/tasks/TASK_URGENT_REFUND_PAID_CANCEL_20260821.md "Aware answers received". This gate no
+-- longer treats those as BLOCK conditions; it still fails closed on any other required-field NULL.
 -- ============================================================================
 INSERT INTO `pacific-plating-282708.sap_integration_v3.urgent_refund_cancel_gate_manifest`
 SELECT
@@ -204,20 +210,34 @@ SELECT
     WHERE table_name='urgent_refund_cancel_ready'))),
   CURRENT_TIMESTAMP(),
   CASE
-    WHEN (SELECT COUNT(*) FROM `pacific-plating-282708.sap_integration_v3.urgent_refund_cancel_ready`
-      WHERE request_id=v_request_id AND TransactionStatus='Cancelled' AND PaymentDate='')>0
-      THEN 'BLOCK_OPEN_VENDOR_QUESTION'
     WHEN (SELECT COUNT(*) FROM `pacific-plating-282708.sap_integration_v3.urgent_refund_cancel_ready` r
       WHERE r.request_id=v_request_id
-        AND REGEXP_CONTAINS(TO_JSON_STRING((SELECT AS STRUCT r.* EXCEPT(request_id,PaymentDate))),r':null|:"NULL"'))>0
+        AND REGEXP_CONTAINS(TO_JSON_STRING((SELECT AS STRUCT r.* EXCEPT(request_id,PaymentDate,InvoiceNo))),r':null|:"NULL"'))>0
       THEN 'BLOCK_NULL_VALUE'
+    WHEN (SELECT COUNT(*) FROM (
+      SELECT OrderItem FROM `pacific-plating-282708.sap_integration_v3.urgent_refund_cancel_ready`
+      WHERE request_id=v_request_id GROUP BY OrderItem
+      HAVING COUNT(*)!=CAST(ANY_VALUE(TotalPeriods) AS INT64)
+        OR COUNT(DISTINCT SAFE_CAST(Period AS INT64))!=CAST(ANY_VALUE(TotalPeriods) AS INT64)
+        OR MIN(SAFE_CAST(Period AS INT64))!=1
+        OR MAX(SAFE_CAST(Period AS INT64))!=CAST(ANY_VALUE(TotalPeriods) AS INT64)
+        OR COUNTIF(TransactionStatus!='Cancelled')>0
+    ))>0
+      THEN 'BLOCK_SPINE_OR_STATUS'
+    WHEN (SELECT COUNT(*) FROM `pacific-plating-282708.sap_integration_v3.urgent_refund_cancel_ready`
+      WHERE request_id=v_request_id) = 0
+      THEN 'BLOCK_NO_READY_ROWS'
     ELSE 'PASS'
   END,
   CASE
+    WHEN (SELECT COUNT(*) FROM `pacific-plating-282708.sap_integration_v3.urgent_refund_cancel_ready` r
+      WHERE r.request_id=v_request_id
+        AND REGEXP_CONTAINS(TO_JSON_STRING((SELECT AS STRUCT r.* EXCEPT(request_id,PaymentDate,InvoiceNo))),r':null|:"NULL"'))>0
+      THEN 'A required field other than the confirmed PaymentDate/InvoiceNo exceptions is SQL NULL or literal NULL.'
     WHEN (SELECT COUNT(*) FROM `pacific-plating-282708.sap_integration_v3.urgent_refund_cancel_ready`
-      WHERE request_id=v_request_id AND TransactionStatus='Cancelled' AND PaymentDate='')>0
-      THEN 'Rows exist where a never-paid Pending period is proposed as Cancelled with blank PaymentDate. The canonical gate confirms blank PaymentDate only for status=Pending; extending it to Cancelled is unconfirmed (Q11, SAP_CANCEL_IMPORT_SPEC_INFERRED_v0.9.md). Do not export until Aware confirms.'
-    ELSE 'No open-vendor-question rows found.'
+      WHERE request_id=v_request_id) = 0
+      THEN 'No items passed item-level quarantine; see urgent_refund_cancel_hold for reasons.'
+    ELSE 'Confirmed rules applied: blank PaymentDate/InvoiceNo on never-paid periods and NULL ActualReceived->0 are all Aware-confirmed, not open questions.'
   END;
 
 -- Report the result. This script performs no GCS write and does not by itself constitute

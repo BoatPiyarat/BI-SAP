@@ -1,5 +1,28 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-22 11:47 ICT — built (not executed) the urgent-refund Phase 2 cancel candidate; sent for Class-A review
+
+Per Boat's instruction that the payload must be built and receive Class-A PASS before execution:
+`sql/ddl/080_urgent_refund_cancel_candidate.sql` (commit `d0229fb`) mirrors `sap_mirror_state`
+verbatim for the 6 Phase-1-passed plain-cancel items (no recompute — avoids the legacy wide
+`RCL_02_items_cancel.sql` CarePay view), forward-fills PaymentMethod/PaymentChannel from each
+item's one confirmed value (verified live, single distinct value per item), sets full-spine
+`TransactionStatus='Cancelled'` per inferred rule R1, and item-level quarantines anything failing
+re-derived live eligibility. Dry-run 0 bytes; not executed — no table populated, no manifest
+written. `RQ-20260822-1147-urgent-refund-cancel-candidate` opened for Codex's review.
+
+**Updated same session**: while writing this, Aware's answers to exactly the open question above
+landed live via a concurrent Codex session (blank InvoiceNo/PaymentDate on a never-paid period
+confirmed verbatim-correct even once status is Cancelled; NULL ActualReceived/ExpectedReceived →
+0; ExpectedDate falls back ExpectedDate → PaymentDate → BatchRunDate). Updated the script to apply
+all four directly instead of gating on them, and fixed two real bugs found in the process
+(ActualReceived/ExpectedReceived NULL passthrough would have tripped the NULL-value gate on every
+row; one CASE branch used a multi-row scalar subquery that would error at runtime). Re-dry-ran
+clean at 0 bytes each time. Could not update `TASK_URGENT_REFUND_PAID_CANCEL_20260821.md`'s Phase
+2 prose to match — three repeated concurrent-edit conflicts with Codex's live session on that same
+file; left it stale rather than fight the race. This was a real, live instance of two agents
+writing to the same working tree at once, not just a theoretical risk.
+
 ## 2026-08-22 11:36 ICT — reviewed and PASSed Codex's urgent-refund Phase 1 classification
 
 Class-A review of `e5eefcd` (`RQ-20260821-1817-urgent-refund-paid-cancel-phase1`): **PASS** —

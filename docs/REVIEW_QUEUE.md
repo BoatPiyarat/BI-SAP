@@ -3,6 +3,40 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+## RQ-20260822-1147-urgent-refund-cancel-candidate
+Status: OPEN
+Reviewer: Codex
+Class: A
+Artifact: commit `d0229fb`, plus uncommitted working-tree corrections described below;
+`sql/ddl/080_urgent_refund_cancel_candidate.sql`
+Opened: 2026-08-22T11:47:56+07:00
+Claim: a shadow-only, item-level-quarantined 56-column cancel candidate for the 6 Phase-1-passed
+`urgent_for refund to cust` items, mirroring `sap_mirror_state` verbatim (no recompute), full
+`1..TotalPeriods` spine with `TransactionStatus='Cancelled'`, PaymentMethod/PaymentChannel
+forward-filled from each item's one confirmed value. Not executed — dry-run only (0 bytes).
+**Superseded mid-review**: the file originally distrusted blank `PaymentDate` on a `Cancelled` row
+as an open vendor question and expected `BLOCK_OPEN_VENDOR_QUESTION`. Aware's answers landed live
+in a concurrent Codex session while this review was open (blank InvoiceNo/PaymentDate confirmed
+verbatim-correct, NULL ActualReceived/ExpectedReceived → 0, ExpectedDate falls back to
+PaymentDate → BatchRunDate) — the script now applies all four directly. Also fixed two real bugs
+found while updating: `ActualReceived`/`ExpectedReceived` NULL passthrough would have tripped the
+NULL-value gate on every row, and one gate CASE branch used a multi-row scalar subquery that would
+error at runtime. Re-dry-ran clean (0 bytes) after each change.
+Evidence: dry-run 0 bytes (`scripts/bq_safe_query.sh --dry-run-only`, re-run after each fix);
+PaymentMethod/PaymentChannel single-value-per-item confirmed live against `sap_mirror_state` for
+all 6 order_items (uniqueness check, one targeted query, 2026-08-22).
+Note: could not sync `docs/tasks/TASK_URGENT_REFUND_PAID_CANCEL_20260821.md`'s Phase 2 prose to
+match — repeated concurrent-edit conflicts with Codex's live session on the same file. Please
+review the actual current `.sql` file content, not the (now stale) task-file narrative.
+Review focus: whether mirroring `sap_mirror_state` verbatim (vs. recomputing via the legacy wide
+CarePay view) is the right contract; whether the forward-fill assumption for PaymentMethod/
+PaymentChannel is safe; whether the item-level quarantine rules are complete; whether the
+Q11-disclosure gate logic is correct instead of silently passing.
+Note: found `docs/INPUTS_NEEDED.md` and `docs/design/SAP_CANCEL_IMPORT_SPEC_INFERRED_v0.9.md`
+mid-edit, uncommitted, in this same working tree during this review request (resolving a different
+open question, Q8b/Pending InvoiceNo) — flagging the concurrent-session overlap per
+`AGENT_RULES.md`'s "one agent at a time" rule, not blocking on it.
+
 ## RQ-20260821-1817-urgent-refund-paid-cancel-phase1
 Status: REVIEWED
 Reviewer: Claude Code

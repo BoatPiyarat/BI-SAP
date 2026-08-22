@@ -1,5 +1,20 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-22 11:47 ICT — built (source-only) the urgent-refund Phase 2 cancel candidate
+
+- Added `sql/ddl/080_urgent_refund_cancel_candidate.sql`: mirrors `sap_mirror_state` verbatim for
+  the 6 Phase-1-passed items, forward-fills PaymentMethod/PaymentChannel, sets full-spine
+  `TransactionStatus='Cancelled'`, item-level quarantines re-derived live eligibility failures.
+  Dry-run 0 bytes; not executed.
+- Opened `RQ-20260822-1147-urgent-refund-cancel-candidate` for Codex's Class-A review.
+- Aware's answers to the exact question this gate distrusted landed live mid-review via a
+  concurrent Codex session; updated the script to apply all four confirmed rules directly
+  (InvoiceNo/PaymentDate verbatim, ActualReceived/ExpectedReceived NULL→0, ExpectedDate fallback
+  chain) instead of gating on them, and fixed two real bugs found in the process (NULL passthrough
+  on two numeric fields; a multi-row scalar subquery in one gate branch). Re-dry-ran clean each
+  time. Could not sync the task file's Phase 2 prose — three concurrent-edit conflicts with
+  Codex's live session on the same file, a real "one agent at a time" violation, not theoretical.
+
 ## 2026-08-22 11:36 ICT — reviewed `e5eefcd` PASS on the urgent-refund Phase 1 classification
 
 - Cleared the one assigned OPEN review. Independently reran the full verifier live and reproduced
