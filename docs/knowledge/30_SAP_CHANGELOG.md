@@ -1,5 +1,12 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-22 12:12 ICT — prepared gated urgent-refund cancel candidate
+
+- Recorded Aware-confirmed Pending-field and sequencing rules in the cancel spec and task.
+- Added CareOS-payment preflight and exact 56-column plain-cancel preparation SQL.
+- Read-only candidate passed: 47 rows / 6 items, hash `5eef984f...c4027`; no GCS or persistent
+  BigQuery write occurred pending Class-A review.
+
 ## 2026-08-22 11:47 ICT — built (source-only) the urgent-refund Phase 2 cancel candidate
 
 - Added `sql/ddl/080_urgent_refund_cancel_candidate.sql`: mirrors `sap_mirror_state` verbatim for

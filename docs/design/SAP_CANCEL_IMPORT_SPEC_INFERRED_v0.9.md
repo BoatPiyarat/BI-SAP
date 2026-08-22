@@ -67,12 +67,21 @@ row N is reported.
 [ ] confirm
 **Q7a: Does row ORDER inside the file matter (must periods be ascending)?**
 
+**CONFIRMED 2026-08-22 (Boat relaying Aware):** order rows by `Period` ascending within each
+cancelled item (`1, 2, ... TotalPeriods`), and keep the complete spine for each `OrderItem`
+contiguous before the next item begins.
+
 **R8. InvoiceNo uniqueness within file**
 `InvoiceNo: is duplicated` — the same InvoiceNo (including empty?) may not
 appear on more than one row of the same import scope.
 [ ] confirm
 **Q8a: scope = per order, per file, or per DB?**
 **Q8b: are EMPTY InvoiceNo values exempt for Pending periods?**
+
+**CONFIRMED 2026-08-22 (Boat relaying Aware):** for a Pending SAP period, preserve the existing
+SAP `InvoiceNo` verbatim. If the existing SAP value is blank, leave it blank. Do not generate or
+substitute an InvoiceNo for the Pending period. Multiple Pending rows may each have blank
+`InvoiceNo`; blank is the correct Pending representation and is exempt from nonblank uniqueness.
 
 **R9. Balance check on cancel**
 `FullPayment: Not balance transaction` also applies to cancel rows —
@@ -89,6 +98,33 @@ periods as-is, or must a refund/credit memo flow precede?
 
 **Q11.** For a cancel row on a Pending (unpaid) period: required values for
 ActualReceived / PaymentDate / InvoiceNo (empty vs mirror)?
+
+**CONFIRMED 2026-08-22 (Boat relaying Aware):** preserve the existing SAP `PaymentDate`
+verbatim for a Pending period; if SAP has a blank value, leave it blank. Together with the Q8b
+answer above, Pending `InvoiceNo` is also preserved verbatim, including blank. Preserve Pending
+`ActualReceived` exactly when non-NULL; convert SQL NULL to numeric `0` because the interface must
+not contain NULL. Preserve Pending `ExpectedReceived` exactly when non-NULL; convert SQL NULL to
+numeric `0`.
+
+Pending `ExpectedDate` must not be blank. Preserve the existing SAP value when present; otherwise
+use the preserved `PaymentDate`; if that is also blank, use the cancellation file's `BatchRunDate`.
+Pending `PaymentMethod` and `PaymentChannel` must be blank, regardless of the stored SAP values.
+Pending `PendingPayment` preserves the existing SAP value exactly and may remain SQL NULL.
+
+**CONFIRMED 2026-08-22 (Boat relaying Aware) — CareOS payment precondition:** before cancellation,
+reconcile every SAP Pending period against CareOS. If CareOS shows that period was actually paid,
+complete the Paid transaction in SAP before cancelling it. A stale SAP Pending status must never
+be carried directly into the cancel file merely because the SAP mirror says Pending.
+
+The sequence is mandatory and asynchronous: send a separate Paid/new-payment file first, wait for
+SAP import completion, refresh the SAP mirror, and prove the period is now `Paid`; only then may a
+later cancellation file include it. Never combine Paid and Cancelled transitions in one file or
+send the cancellation before SAP confirmation.
+
+**Implementation decision 2026-08-22:** for a plain cancellation, every row in the required full
+period spine emits `TransactionStatus = 'Cancelled'`, including rows whose predecessor was
+Pending. Paid/Pending describes the required predecessor state; it is not the outgoing status.
+Change-order rows are excluded from this flow and retain their separate reviewed status.
 
 **Q12.** Is there an idempotency key — if the same cancel file is imported
 twice, what happens?

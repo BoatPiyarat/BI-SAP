@@ -1,5 +1,15 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-22 12:12 ICT — urgent-refund 47-row cancel candidate prepared; awaiting Class-A review
+
+Boat relayed the remaining Aware Pending-field rules and authorized production completion for the
+six plain-cancel items. Read-only payment reconciliation found no CareOS-paid/SAP-pending periods
+and no multi-document winners. Preparation job `codex_prepare_urgent_refund_cancel_20260822`
+passed all gates at `2026-08-22 05:11:35 UTC`: 47 rows / 6 items, batch date `22082026`, candidate
+hash `5eef984f...c4027`. This was a temporary candidate only; no persistent object or GCS file was
+written. Production export remains gated on Class-A review of the Phase-2 source, followed by a
+same-session SAP refresh and exact revalidation.
+
 ## 2026-08-22 11:47 ICT — built (not executed) the urgent-refund Phase 2 cancel candidate; sent for Class-A review
 
 Per Boat's instruction that the payload must be built and receive Class-A PASS before execution:

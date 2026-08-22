@@ -55,10 +55,47 @@ bytes) records the ambiguity.
 
 No interface file was built or written by Phase 1.
 
+## Phase 2 candidate preparation — 2026-08-22
+
+`sql/adhoc/20260822_prepare_urgent_refund_cancel.sql` constructed the exact candidate in a
+temporary table only and passed every assertion as job
+`codex_prepare_urgent_refund_cancel_20260822` at `2026-08-22 05:11:35 UTC`. Result: 47 rows / 6
+items, batch date `22082026`, SHA-256
+`5eef984fcbfba8289d290893d77e5cabd06e5f2abc477150cfbfa35c4a9c4027`. The wrapper dry-run
+reported 0 bytes for the multi-statement temporary-table script. No persistent table or GCS object
+was written.
+
+Payment precondition job `codex_urgent_refund_payment_precondition_20260822` found no CareOS-paid /
+SAP-pending period and no multi-document winner among the 47 rows. The sole canonical-event gap,
+`L80545799-V1` period 1, was traced in job `codex_trace_l80545799_payment_20260822` to exactly one
+raw SUCCESSFUL CareOS charge whose third-party ID matches the immutable SAP Paid InvoiceNo.
+
 ## Aware answers received
 
 - 2026-08-22 — Pending-period `InvoiceNo`: preserve the existing SAP value exactly; when the
   existing SAP value is blank, leave it blank. Never generate or substitute it.
+- 2026-08-22 — Pending-period `PaymentDate`: preserve the existing SAP value exactly; when the
+  existing SAP value is blank, leave it blank.
+- 2026-08-22 — Pending-period `ActualReceived`: preserve the existing SAP value exactly when
+  non-NULL; convert SQL NULL to numeric `0`.
+- 2026-08-22 — Pending-period `ExpectedReceived`: preserve the existing SAP value exactly when
+  non-NULL; convert SQL NULL to numeric `0`.
+- 2026-08-22 — Pending-period `ExpectedDate`: preserve the existing SAP value when present; when
+  blank, use `PaymentDate`; when both are blank, use the file's `BatchRunDate`. Never emit blank.
+- 2026-08-22 — Pending-period `PaymentMethod`: emit blank regardless of the stored SAP value.
+- 2026-08-22 — Pending-period `PaymentChannel`: emit blank regardless of the stored SAP value.
+- 2026-08-22 — Pending-period `PendingPayment`: preserve the existing SAP value exactly; SQL NULL
+  is allowed for this field.
+- 2026-08-22 — Before cancellation, reconcile every SAP Pending period against CareOS payment
+  truth. If CareOS shows it was paid, complete the SAP Paid transaction before cancelling it; do
+  not copy a stale SAP Pending status into the cancel file.
+- 2026-08-22 — Required sequence for CareOS-paid/SAP-pending periods: send a separate
+  Paid/new-payment file, wait for successful SAP import and refreshed mirror proof of `Paid`, then
+  send cancellation in a later file. Do not combine the transitions.
+- 2026-08-22 — Plain-cancel output status: every period emits `Cancelled`; predecessor
+  Paid/Pending status is a gate, not the outgoing status. Change-order items stay excluded.
+- 2026-08-22 — Output ordering: keep each `OrderItem` spine contiguous and order its rows by
+  `Period` ascending.
 
 ## Phase 2 — shadow candidate built (source only, not executed), 2026-08-22
 

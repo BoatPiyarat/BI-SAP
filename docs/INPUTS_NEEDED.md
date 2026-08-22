@@ -11,9 +11,16 @@ and 10 held.
 
 Human/vendor inputs still required before the six candidates can become a production file:
 
-1. Aware: confirm the applicable cancel-import rules still marked inferred in
-   `SAP_CANCEL_IMPORT_SPEC_INFERRED_v0.9.md`, especially current-document selection/InvoiceNo for
-   multi-document periods and required Pending-period values.
+1. Aware: confirm the remaining applicable cancel-import rules still marked inferred in
+   `SAP_CANCEL_IMPORT_SPEC_INFERRED_v0.9.md`, especially required Pending-period values. Pending
+   `InvoiceNo` and `PaymentDate` are now resolved: preserve each existing SAP value verbatim,
+   including blank. Pending `ActualReceived` is also resolved: preserve non-NULL SAP values and
+   convert SQL NULL to numeric `0`. Apply the same rule to Pending `ExpectedReceived`.
+   Pending `ExpectedDate` is resolved: existing value, else `PaymentDate`, else `BatchRunDate`;
+   never blank.
+   Pending `PaymentMethod`/`PaymentChannel` are blank-only; `PendingPayment` preserves SAP exactly
+   and may be NULL. New required gate: reconcile every SAP Pending period to CareOS payment truth;
+   any CareOS-paid/SAP-pending period must be completed as Paid in SAP before cancellation.
 2. Boat: after an immutable payload and Class-A PASS exist, give explicit scoped `deploy OK` in
    the execution session. The priority instruction and completion definition do not by themselves
    waive the production-write gate.
