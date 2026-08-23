@@ -4,7 +4,7 @@ Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request firs
 review history; link the completed review and record its verdict.
 
 ## RQ-20260823-2039-rcb-onetime-creditshell-fix
-Status: OPEN
+Status: REVIEWED
 Reviewer: Codex
 Class: A
 Artifact: `sql/production/RCL_04_new_order_credit_shell_new_tunning.sql` (source only, not deployed)
@@ -36,6 +36,9 @@ across all `carepay_transactions`, so this view's change-order-scoped subset is 
 the FULL_PAYMENT population, not implausible). Also confirm this finding correctly stops scope at
 "fix the generator for future rows" and does not imply authorization to correct/backfill the 7,557
 already-posted mislabelled rows — that is a separate, larger, not-yet-scoped decision.
+Verdict: BLOCK — `docs/reviews/2026-08-23-f25af4f-codex.md`. The proposed v2 DDL target is
+forbidden; numeric provenance is incomplete; unknown/NULL flow still defaults to RCL; the durable
+ONETIME-not-RCL assertion is absent; and CREDIT_CARD_INSTALLMENT lacks the `TotalPeriods=1` gate.
 
 ## RQ-20260822-1212-urgent-refund-cancel-phase2
 Status: REVIEWED
