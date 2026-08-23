@@ -1,5 +1,15 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-23 20:06 ICT — confirmed second live RCB/RCL-Credit-Shell misroute, still unfixed
+
+- Verified Mo's `L80569331-M1` report live: RCB FULL_PAYMENT one-time change order posted with
+  `PaymentMethod`/`PaymentChannel='RCL-Credit Shell'`, matching the exact known-answer shape from
+  `FINDINGS_RCB_ONETIME_CHANGE_ORDER_MISROUTED_RCL_20260803.md`.
+- Confirmed this is a new occurrence (created 2026-08-13), not the historical 9-order population,
+  and that the finding's proposed fix was never deployed to the live legacy generator.
+- Updated the finding file with the new evidence and added an `INPUTS_NEEDED.md` decision entry.
+  No correction or mutation performed.
+
 ## 2026-08-22 12:45 ICT — refreshed daily automation checklist against live state
 
 - Found and flagged that `DAILY_AUTOMATION_COMPLETION_CHECKLIST.md` pointed at a plan superseded

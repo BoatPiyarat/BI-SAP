@@ -1,5 +1,27 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-23 20:06 ICT — confirmed second live RCB/RCL-Credit-Shell misroute; root cause still unfixed
+
+Mo reported `L80569331-M1` as the same "No.3" defect class Boat previously described (FULL_PAYMENT
+change order labelled RCL-Credit Shell), matching the exact shape of the known-answer case in
+`docs/FINDINGS_RCB_ONETIME_CHANGE_ORDER_MISROUTED_RCL_20260803.md` (`L80482368`). Independently
+verified live rather than trusting the chat report: `sap_mirror_state` shows `CompanyDB=RCB`,
+`TotalPeriods=1`, `PaymentMethod`/`PaymentChannel='RCL-Credit Shell'`; CareOS confirms
+`payment_option=FULL_PAYMENT`, a change order (`old_human_id=L80544283`), created 2026-08-13 —
+Mo's "SAP posting date 01.08.26" is `SAP_LIVE_FULL.PaymentDate`, not `OrderDate`/`UpdateDate`.
+
+Because the order was created 10 days after the finding was filed and the finding's fix was never
+deployed to the live legacy generator (`sql/production/RCL_04_new_order_credit_shell_all.sql`,
+re-checked 2026-08-23, still has the unconditional CASH/QR_CODE→RCL-Credit-Shell branches with no
+`payment_option` check), **this is not a stale pre-fix artifact — the root cause is still actively
+producing new wrong-label postings.** Updated the finding file with this second occurrence and
+added an `INPUTS_NEEDED.md` entry asking whether to fix the legacy path now or explicitly wait for
+V3 cutover (V3's Unit 5 shadow already guards against this shape but isn't live for production
+interface delivery yet). Flagged a possible connection to the still-open "urgent_for refund to
+cust" tab (same FULL_PAYMENT-routed-to-RCL shape, different downstream symptom) without asserting
+it's the same population. No correction, deploy, or mutation performed — money-impact finding,
+documented per the standing rule, not fixed.
+
 ## 2026-08-22 12:45 ICT — daily automation checklist refreshed against live checkers; stale doc corrected
 
 Boat asked to work the daily-automation completion checklist through to done, one decision/action

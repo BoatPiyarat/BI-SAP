@@ -66,6 +66,41 @@ Evidence job `codex_l80482368_exactpop_20260803_121114`, query timestamp
 | exact wrong RCL Credit Shell label | **9** | **9** |
 | exact wrong label and M1 | **9** | **9** |
 
+## Second confirmed occurrence, 2026-08-23 — root cause still live, not fixed
+
+Mo Pawinee reported `L80569331-M1` (relayed via Boat, chat, "No.3" issue type — matches this
+finding's exact description, quoted verbatim: "Change order แบบ FULL_PAYMENT ถูกกำหนดเป็น
+RCL-Credit Shell"). Independently verified live, not trusted from the chat report alone:
+- `sap_integration_v3.sap_mirror_state`: `DocEntry=2422529`, `CompanyDB=RCB`, `TotalPeriods=1`
+  (ONETIME), `TransactionStatus=Paid`, both `PaymentMethod` and `PaymentChannel` =
+  `RCL-Credit Shell`. `OrderDate=13082026`.
+- `careos.careos_orders` joined to `carepay_transactions`/`carepay_transaction_snapshots`:
+  `payment_option=FULL_PAYMENT`, `number_of_installment=1`, `create_time=2026-08-13 17:42:03`,
+  and it is a change order (`cancelled_change_orders.current_human_id=L80569331`,
+  `old_human_id=L80544283`) — the exact same shape as the known-answer case (`L80482368`) above.
+- `sap_integration_v2.SAP_LIVE_FULL` for the same DocEntry: `PaymentDate=01082026` — this is what
+  Mo's "SAP posting date = 01.08.26" refers to (the underlying charge date carried onto the
+  change-order row), not `OrderDate`/`UpdateDate` (`2026-08-14`).
+
+**This is not a pre-fix legacy artifact.** The change order was created 2026-08-13, ten days after
+this finding was filed (2026-08-03) with its correction proposal still source-only and never
+deployed ("No deploy, backfill, correction, export, or production mutation was performed"). The
+live legacy generator (`sql/production/RCL_04_new_order_credit_shell_all.sql`) still contains the
+same unconditional `PaymentMethod IN ('CASH','QR_CODE') => 'RCL-Credit Shell'` branches with no
+`payment_option`/flow check, confirmed by re-reading the file 2026-08-23 — consistent with, though
+not proof of, the live drifted view's identical defect. **The root cause remains active and will
+keep producing new wrong-label cases until the flow-aware routing fix in this finding's "Future
+correction proposal" is actually implemented and deployed**, not just designed.
+
+Also worth checking for the same underlying defect family: `docs/INPUTS_NEEDED.md`'s
+"urgent_for refund to cust" tab describes FULL_PAYMENT orders that "sync to omise RCL > refund to
+RCB" for May–June — structurally the same failure (a FULL_PAYMENT/RCB-flow order ending up
+associated with RCL), possibly the same root cause surfacing as a different downstream symptom
+(refund-needed instead of wrong-label-already-posted). Not confirmed as the same population —
+flagging the connection, not asserting it.
+
+No correction, deploy, or production mutation was performed for this new occurrence either.
+
 Nine is the population of this exact posted cause, not every possible one-time/RCL mechanism.
 Correction eligibility remains separate and is not approved by this finding.
 

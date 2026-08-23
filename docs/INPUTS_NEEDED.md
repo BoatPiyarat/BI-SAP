@@ -1,5 +1,31 @@
 # INPUTS NEEDED — things only Boat / Aware / Attila / Finance can answer
 
+## OPEN 2026-08-23 — RCB one-time change-order mislabelled RCL: second live occurrence, root cause still unfixed
+
+Mo reported `L80569331-M1` (relayed via Boat) as the same defect class as
+`docs/FINDINGS_RCB_ONETIME_CHANGE_ORDER_MISROUTED_RCL_20260803.md`'s known-answer case
+(`L80482368`). Independently verified live: RCB one-time FULL_PAYMENT change order (created
+2026-08-13, ten days after the finding was filed), posted to SAP with `PaymentMethod`/
+`PaymentChannel = 'RCL-Credit Shell'`. Full evidence in the finding file's new "Second confirmed
+occurrence" section.
+
+**This proves the finding's proposed flow-aware fix has not been deployed to the live path** — the
+legacy generator (`sql/production/RCL_04_new_order_credit_shell_all.sql`) still has the
+unconditional CASH/QR_CODE → RCL-Credit Shell branches with no `payment_option` check. V3's Unit 5
+newpayment shadow (`sql/ddl/058_v3_unit5_newpayment_shadow.sql`) already has a fail-closed guard
+against this exact shape, but V3 doesn't produce the live production interface file yet, so it
+doesn't protect today's real postings.
+
+**Decision needed**: does this warrant a standalone fix to the live legacy generator now (ahead of
+the full V3 cutover), given it's actively recurring, not just a closed historical incident? If yes,
+scope and correction-method decisions follow the same D10–D14 confirmed-decision framework already
+governing other SAP corrections. If the answer is "wait for V3 cutover," that should be stated
+explicitly so future occurrences aren't re-investigated as if new.
+
+Also flagging a possible connection (not confirmed) to the "urgent_for refund to cust" tab —
+described in the entry below as FULL_PAYMENT orders "sync to omise RCL > refund to RCB" for
+May–June, structurally the same failure shape.
+
 ## OPEN 2026-08-21 — urgent refund: approvals needed after exact population/live classification
 
 Boat supplied the `RCL_missing order` workbook and decided that CareOS item status is definitive;
