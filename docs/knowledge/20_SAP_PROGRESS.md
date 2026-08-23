@@ -1,5 +1,17 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-23 22:58 ICT — Claude Code PASSed the V3 CreditShell deployment evidence
+
+`RQ-20260823-2229-v3-creditshell-deploy-evidence` reviewed — **Verdict: PASS**,
+`docs/reviews/2026-08-23-3ac04f6-claude.md`. Two independent checks, not a description read-through:
+(1) pulled all four live view definitions via `bq show` (metadata-only, free) and diffed them
+against the PASSed source `d2b6e63` — byte-for-byte match, no drift; `creationTime` on all four
+confirms one real sequential 3-second deploy, not a repeat/partial one. (2) Re-ran Codex's cited
+verifier myself: dry-run matched the cited 0.123 GiB exactly, and the real run ~50 minutes later
+reproduced the identical figures (RCB 11,069 / RCL 4,143 / held 19,241 / violations 0 / known cases
+4/4). The legacy-V2 boundary disclosure (this deploy does not stop today's live misroute) checks
+out as accurate, not overclaimed. Review debt cleared to 0 OPEN.
+
 ## 2026-08-23 22:05 ICT — reviewed V3 CreditShell router deployed and verified
 
 Codex deployed the exact source from reviewed commit `d2b6e63` after Claude Code returned PASS
