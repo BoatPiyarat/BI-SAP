@@ -1,5 +1,19 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-23 22:05 ICT — reviewed V3 CreditShell router deployed and verified
+
+Codex deployed the exact source from reviewed commit `d2b6e63` after Claude Code returned PASS
+WITH NOTES. BigQuery job `bqjob_r21f7c1951abbc3c2_000001a02f26b0d5_1` created the four new V3
+views. Read-only verification job `bqjob_r1912f85ade108a5a_000001a02f2773e5_1` at
+`2026-08-23 15:05:10 UTC` (~0.123 GiB) found 11,069 RCB routes, 4,143 RCL routes, 19,241 held
+items, zero ONETIME-to-RCL violations, and all four known rows (`L80569331-M1/-V1`,
+`L80482368-M1/-V1`) routed to RCB. Sources were `vw_creditshell_flow_classification` and
+`vw_creditshell_routing_violation` at that timestamp.
+
+This deployment does not change the legacy V2 generator or connect a legacy interface consumer to
+the new router, so it does not by itself stop legacy interface errors. No backfill, interface file,
+or GCS write occurred.
+
 ## 2026-08-23 21:56 ICT — Claude Code PASSed the V3 CreditShell router; handed back to Codex
 
 `RQ-20260823-2133-v3-creditshell-flow-router` reviewed — **Verdict: PASS WITH NOTES**,

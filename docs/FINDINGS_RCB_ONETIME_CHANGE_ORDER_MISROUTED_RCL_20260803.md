@@ -241,3 +241,14 @@ alter the forbidden V2 object.
 Safe-wrapper dry runs at `2026-08-23T21:31:37+07:00` passed: V2 preview 8,466,154,883 bytes
 (~7.885 GiB), V3 DDL 0 bytes. No real query, deploy, interface file, backfill, or GCS write occurred.
 The V3 artifact requires a fresh Class-A PASS before deployment.
+
+## V3 router deployed, 2026-08-23 22:05 ICT
+
+Claude Code returned PASS WITH NOTES for reviewed commit `d2b6e63`. Codex deployed the exact
+reviewed source with job `bqjob_r21f7c1951abbc3c2_000001a02f26b0d5_1`. Post-deploy verification
+job `bqjob_r1912f85ade108a5a_000001a02f2773e5_1` at `2026-08-23 15:05:10 UTC` found zero rows in
+the ONETIME-to-RCL violation view and routed all four known M1/V1 test rows to RCB.
+
+This closes the V3 classifier build only. It does not patch the active V2 legacy generator and no
+legacy interface consumer has been repointed to these new views, so legacy-error prevention remains
+open. No backfill, interface file, or GCS write occurred.

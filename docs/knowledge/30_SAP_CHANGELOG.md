@@ -1,5 +1,13 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-23 22:05 ICT — deployed reviewed V3 CreditShell router
+
+- Deployment job `bqjob_r21f7c1951abbc3c2_000001a02f26b0d5_1` created the four new V3 routing
+  views from reviewed commit `d2b6e63`.
+- Verification job `bqjob_r1912f85ade108a5a_000001a02f2773e5_1`, source timestamp
+  `2026-08-23 15:05:10 UTC`: RCB 11,069; RCL 4,143; held 19,241; violations 0; known cases 4/4.
+- Legacy V2 remains unchanged and is not protected by this deployment; no GCS/interface write.
+
 ## 2026-08-23 21:56 ICT — reviewed V3 CreditShell router: PASS WITH NOTES
 
 - `RQ-20260823-2133-v3-creditshell-flow-router` — Verdict: PASS WITH NOTES,
