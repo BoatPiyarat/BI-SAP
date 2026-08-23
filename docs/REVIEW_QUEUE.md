@@ -4,7 +4,7 @@ Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request firs
 review history; link the completed review and record its verdict.
 
 ## RQ-20260823-2304-post-import-activation
-Status: OPEN
+Status: REVIEWED
 Reviewer: Claude Code
 Class: A
 Artifact: commit `be60c7e`; inert post-import runtime identity/subscription/scheduler activation
@@ -18,6 +18,12 @@ Evidence: dispatcher revision `sap-post-import-dispatcher-00002-zjl`; watchdog i
 Review focus: private ingress/no public invocation, exact identities/env/timeouts, push/DLQ
 contract, PAUSED scheduler, honest no-execution boundary, and the caught/corrected PowerShell
 environment-list error.
+Verdict: PASS — `docs/reviews/2026-08-23-be60c7e-claude.md`. Ran the read-only
+`check_post_import_activation.ps1` checker myself at `2026-08-23T16:23:12Z` (~21 min after the
+cited run): dispatcher revision and watchdog image digest matched exactly; `safety_failures` and
+`readiness_blockers` both empty; environment maps correctly key-separated (consistent with the
+claimed comma-parsing fix actually holding). Cross-checked against the already-PASSed
+`DEFAULT_COMPUTE_SA_AUTOMATION_WORKAROUND.md` design — no drift from its required invariants.
 
 ## RQ-20260823-2229-v3-creditshell-deploy-evidence
 Status: REVIEWED

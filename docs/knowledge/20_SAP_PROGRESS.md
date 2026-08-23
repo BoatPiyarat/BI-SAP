@@ -1,5 +1,16 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-23 23:24 ICT — Claude Code PASSed the post-import activation evidence
+
+`RQ-20260823-2304-post-import-activation` reviewed — **Verdict: PASS**,
+`docs/reviews/2026-08-23-be60c7e-claude.md`. Ran `scripts/check_post_import_activation.ps1`
+myself (read-only `gcloud describe/list/get-iam-policy` only) ~21 minutes after Codex's own run:
+dispatcher revision and watchdog image digest matched exactly; `safety_failures`/
+`readiness_blockers` both empty; environment maps correctly key-separated, consistent with the
+claimed PowerShell comma-parsing fix actually holding. Cross-checked against the already-PASSed
+`DEFAULT_COMPUTE_SA_AUTOMATION_WORKAROUND.md` design invariants — no drift. Review debt cleared
+to 0 OPEN.
+
 ## 2026-08-23 23:03 ICT — post-import activation infrastructure green; rehearsal not run
 
 Codex redeployed `sap-post-import-dispatcher` as private/internal revision
