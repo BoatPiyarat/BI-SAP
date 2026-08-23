@@ -224,3 +224,20 @@ Any retained legacy/manual generator must replace the unconditional
 rebased from the exact executed definition.
 
 No deploy, backfill, correction, export, or production mutation was performed.
+
+## Compliant V3 replacement prepared, 2026-08-23 21:31 ICT
+
+The blocked V2 patch remains non-deployable. A replacement is now prepared in
+`sql/ddl/081_v3_creditshell_flow_router.sql`, targeting only new `sap_integration_v3` views. It
+implements the five review corrections: V3-only DDL; fail-closed NULL/unknown and ambiguous
+classification holds; CREDIT_CARD_INSTALLMENT constrained to an exact ONETIME 1/1 spine; RCL
+routing constrained to a complete `1..TotalPeriods` spine; and a durable violation surface for
+any ONETIME target labelled `RCL%`.
+
+For Boat's V2 investigation, `sql/adhoc/20260823_preview_v2_creditshell_routing_fix.sql` is a
+read-only SELECT showing current and proposed labels plus the hold/route decision. It does not
+alter the forbidden V2 object.
+
+Safe-wrapper dry runs at `2026-08-23T21:31:37+07:00` passed: V2 preview 8,466,154,883 bytes
+(~7.885 GiB), V3 DDL 0 bytes. No real query, deploy, interface file, backfill, or GCS write occurred.
+The V3 artifact requires a fresh Class-A PASS before deployment.

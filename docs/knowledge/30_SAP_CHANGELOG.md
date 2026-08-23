@@ -1,5 +1,14 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-23 21:31 ICT — prepared fail-closed V3 CreditShell routing
+
+- Added a read-only V2 correction preview; it contains no DDL.
+- Added source-only V3 classification/hold/ready/violation views addressing all behavioral
+  blockers from review `f6fe914`: V3-only target, NULL/unknown holds, exact ONETIME 1/1 and complete
+  RCL spine gates, and a durable ONETIME-not-RCL violation surface.
+- Safe-wrapper dry runs passed: V2 preview 8,466,154,883 bytes; V3 DDL 0 bytes. Nothing deployed or
+  exported; fresh Class-A review remains blocking.
+
 ## 2026-08-23 20:46 ICT — Codex BLOCKED the RCB/RCL-Credit-Shell fix (`f25af4f`)
 
 - Verdict: BLOCK, not PASS — `docs/reviews/2026-08-23-f25af4f-codex.md`.

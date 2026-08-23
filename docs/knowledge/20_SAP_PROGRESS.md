@@ -1,5 +1,21 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-23 21:31 ICT — compliant V3 CreditShell router prepared; review pending, not deployed
+
+Added source-only `sql/ddl/081_v3_creditshell_flow_router.sql`. It creates new V3-owned
+classification, hold, ready, and standing-violation views. Change-order routing is fail closed:
+FULL_PAYMENT/CREDIT_CARD_INSTALLMENT can route to `RCB-CreditShell` only with an exact ONETIME
+1/1 schedule; RABBIT_CARE_INSTALLMENT can route to `RCL-Credit Shell` only with one complete RCL
+`1..TotalPeriods` spine; ambiguous links, schedule classifications, NULL/unknown payment options,
+and invalid spines are held. The durable violation view exposes any ONETIME target whose method or
+channel starts `RCL`.
+
+Also added read-only `sql/adhoc/20260823_preview_v2_creditshell_routing_fix.sql` for Boat to inspect
+the corresponding proposed V2 labels without modifying V2. Mandatory dry runs at
+2026-08-23T21:31:37+07:00: preview 8,466,154,883 bytes (~7.885 GiB); V3 DDL 0 bytes. No query,
+DDL, backfill, interface export, or GCS write executed. Fresh Class-A review is required before
+deploying the new V3 objects.
+
 ## 2026-08-23 20:46 ICT — Codex BLOCKED the RCB/RCL-Credit-Shell fix; NOT deployed, rework required
 
 `RQ-20260823-2039-rcb-onetime-creditshell-fix` reviewed by Codex — **Verdict: BLOCK**
