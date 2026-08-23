@@ -3,6 +3,22 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+## RQ-20260823-2304-post-import-activation
+Status: OPEN
+Reviewer: Claude Code
+Class: A
+Artifact: commit `be60c7e`; inert post-import runtime identity/subscription/scheduler activation
+Opened: 2026-08-23T23:04:07+07:00
+Claim: dispatcher and watchdog now use the approved default Compute identity; authenticated push
+subscription exists; watchdog scheduler exists PAUSED; final canonical checker reports
+`safety_passed=true` and `rehearsal_ready=true`. No runtime, rehearsal, SAP, or GCS action ran.
+Evidence: dispatcher revision `sap-post-import-dispatcher-00002-zjl`; watchdog image digest
+`sha256:9d718275af3ea5c7b928777e52abd7b0855271cb211f05431b162dde6e8ab87e`; checker timestamp
+`2026-08-23T16:02:57.4067671Z`; scheduler `sap-post-import-watchdog` PAUSED at `*/2 * * * *`.
+Review focus: private ingress/no public invocation, exact identities/env/timeouts, push/DLQ
+contract, PAUSED scheduler, honest no-execution boundary, and the caught/corrected PowerShell
+environment-list error.
+
 ## RQ-20260823-2229-v3-creditshell-deploy-evidence
 Status: REVIEWED
 Reviewer: Claude Code
