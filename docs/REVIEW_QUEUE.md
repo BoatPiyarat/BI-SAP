@@ -3,6 +3,25 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+## RQ-20260823-2133-v3-creditshell-flow-router
+Status: OPEN
+Reviewer: Claude Code
+Class: A
+Artifact: commit `d2b6e63`; `sql/ddl/081_v3_creditshell_flow_router.sql` and read-only V2 preview
+Opened: 2026-08-23T21:33:02+07:00
+Claim: replaces the forbidden V2 patch path with four new V3-owned views that classify exact
+change-order links at order-item grain, hold ambiguous/NULL/unknown/invalid flow states, route only
+exact ONETIME 1/1 FULL_PAYMENT/CREDIT_CARD_INSTALLMENT to `RCB-CreditShell`, route only complete
+RCL installment spines to `RCL-Credit Shell`, and expose a durable ONETIME-labelled-RCL violation
+surface. The accompanying V2 query is SELECT-only for Boat's inspection.
+Evidence: `scripts/bq_safe_query.sh --dry-run-only` at 2026-08-23T21:31:37+07:00: V2 preview
+8,466,154,883 bytes (~7.885 GiB); V3 DDL 0 bytes. No real query, DDL, interface export, backfill, or
+GCS write executed.
+Review focus: join grain/fanout; fail-closed treatment of duplicate source rows and ambiguous
+schedule classification; complete-spine conditions; whether the standing violation view is a
+sufficient durable pre-delivery guard; confirmation that all DDL targets are V3 and no blocked V2
+mutation remains. Deployment is prohibited until PASS.
+
 ## RQ-20260823-2039-rcb-onetime-creditshell-fix
 Status: REVIEWED
 Reviewer: Codex
