@@ -4,7 +4,7 @@ Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request firs
 review history; link the completed review and record its verdict.
 
 ## RQ-20260822-1212-urgent-refund-cancel-phase2
-Status: OPEN
+Status: REVIEWED
 Reviewer: Claude Code
 Class: A
 Artifact: commit `bc25b32`; Aware-confirmed cancel rules, payment-precondition verifier, raw
@@ -19,6 +19,13 @@ Evidence: jobs `codex_urgent_refund_payment_precondition_20260822`,
 Review focus: full pre-export gate, 56-column ordinal contract, Aware Pending-field rules,
 CareOS payment reconciliation, immutable InvoiceNo, exact scope, hash determinism, and whether the
 source is safe to promote into a separately reviewed production export after fresh SAP sync.
+Verdict: PASS — `docs/reviews/2026-08-22-bc25b32-claude.md`. Independently re-ran the exact
+preparation script and reproduced the claimed hash/row/item count bit-for-bit; independently
+re-derived all four quarantine gates (multi-document, change-order, CareOS-paid/SAP-pending,
+CareOS-not-cancelled) from scratch and got zero violations on each; confirmed no GCS object exists
+anywhere. Two non-blocking notes for the next (export) step: no ordinal/type equality assertion
+against the live physical contract yet, and the candidate hash is batch-date-dependent so a
+same-day rebuild is stable but a different-day rebuild won't reproduce this exact hash.
 
 ## RQ-20260822-1147-urgent-refund-cancel-candidate
 Status: REVIEWED

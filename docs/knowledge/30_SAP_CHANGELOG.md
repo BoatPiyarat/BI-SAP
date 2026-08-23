@@ -1,5 +1,12 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-23 20:20 ICT — reviewed `bc25b32` PASS on urgent-refund cancel candidate
+
+- Cleared the one assigned OPEN review. Independently reproduced the claimed hash/row/item count
+  bit-for-bit and re-derived all four quarantine gates from scratch (zero violations each).
+- Confirmed every defect from the prior BLOCK on `d0229fb` is fixed in this replacement.
+- Carried two non-blocking notes to the next (export) step.
+
 ## 2026-08-23 20:06 ICT — confirmed second live RCB/RCL-Credit-Shell misroute, still unfixed
 
 - Verified Mo's `L80569331-M1` report live: RCB FULL_PAYMENT one-time change order posted with

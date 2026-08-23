@@ -1,5 +1,18 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-23 20:20 ICT — PASSed Codex's replacement urgent-refund cancel candidate
+
+Class-A review of `bc25b32` (`RQ-20260822-1212-urgent-refund-cancel-phase2`): **PASS** —
+`docs/reviews/2026-08-22-bc25b32-claude.md`. Independently re-ran the preparation script and
+reproduced the claimed hash/row/item count (`5eef984f...c4027`, 47 rows, 6 items) bit-for-bit;
+independently re-derived all four quarantine gates (multi-document winner, change-order
+intersection, CareOS-paid/SAP-pending mismatch, CareOS-not-cancelled) from scratch, zero
+violations on each; confirmed no GCS object exists. This candidate correctly fixes every defect
+the prior BLOCK on `d0229fb` found (removed the wrong forward-fill, added CareOS payment
+reconciliation, added change-order exclusion). Two non-blocking notes carried to the next step:
+no ordinal/type equality assertion against the live physical contract yet, and the hash is
+batch-date-dependent (fine for a same-day temp artifact, not yet a durable export binding).
+
 ## 2026-08-23 20:06 ICT — confirmed second live RCB/RCL-Credit-Shell misroute; root cause still unfixed
 
 Mo reported `L80569331-M1` as the same "No.3" defect class Boat previously described (FULL_PAYMENT
