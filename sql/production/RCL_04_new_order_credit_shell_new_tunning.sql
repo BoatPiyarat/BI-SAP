@@ -3,6 +3,30 @@
 -- Boat: fix the same A2 NULL-safe bug here, leave everything else as-is (not
 -- confirmed live/nightly production like the other 4 objects, but fixing anyway).
 -- See docs/knowledge/30_SAP_CHANGELOG.md (2026-07-24 entry) for the bug.
+--
+-- FIX 2026-08-23 (SOURCE ONLY, NOT DEPLOYED): re-pulled live 2026-08-23, confirmed byte-for-byte
+-- identical to this file after that point, so drift-free as of this fix. Corrects
+-- docs/FINDINGS_RCB_ONETIME_CHANGE_ORDER_MISROUTED_RCL_20260803.md's confirmed root cause: a
+-- carried-over FULL_PAYMENT/CREDIT_CARD_INSTALLMENT (ONETIME) order was unconditionally labelled
+-- 'RCL-Credit Shell' purely because `is_carried_over_from_old_order` was true, with no check of
+-- the order's own payment_option. Live-verified trigger case: L80569331-M1 (created 2026-08-13,
+-- payment_option=FULL_PAYMENT), reported by Mo 2026-08-23. Three changes, all additive/minimal:
+-- (1) carry `payment_option` through transactions -> new_order_txn -> period_spine ->
+--     spine_with_payment (new column, no existing column touched);
+-- (2) in `channel_final`, route carried-over FULL_PAYMENT/CREDIT_CARD_INSTALLMENT to
+--     'RCB-CreditShell' (matches the label already used by the reviewed V3 canonical router,
+--     sql/ddl/050_v3_onetime_payload_source.sql); RABBIT_CARE_INSTALLMENT and unknown/NULL
+--     payment_option keep the exact prior 'RCL-Credit Shell' behavior unchanged -- no new "hold"
+--     state is introduced because this view has no quarantine mechanism to hold into, and
+--     changing unproven cases risked a new failure mode with no live evidence to justify it;
+-- (3) in `qualifying_orders`, added `PaymentChannel LIKE '%CreditShell%'` alongside the existing
+--     '%Credit Shell%'/'%RCL%' checks -- WITHOUT this, rows newly relabelled 'RCB-CreditShell'
+--     (no space, TotalPeriods=1) would fail every existing qualification condition and be
+--     silently dropped from this view's entire output. Caught by manually tracing the label
+--     through STEP 7 before treating the CASE-block change alone as sufficient.
+-- Deliberately NOT changed: the MOTOR_TYPE_COMPULSORY path, any non-carried-over routing, and the
+-- unproven RABBIT_CARE_INSTALLMENT/unknown-payment_option carried-over case.
+-- No deploy performed. Pending Class-A review before Codex applies via CREATE OR REPLACE VIEW.
 
 WITH
 ------------------------------------------------------------------
@@ -24,7 +48,7 @@ order_items AS (
 
 leads AS (SELECT id, type, reference FROM `pacific-plating-282708.careos.careos_leads`),
 
-transactions AS (SELECT id FROM `pacific-plating-282708.careos.carepay_transactions`),
+transactions AS (SELECT id, payment_option FROM `pacific-plating-282708.careos.carepay_transactions`),
 
 transaction_snapshots AS (
   SELECT id, transaction_id, number_of_installment
@@ -143,6 +167,7 @@ new_order_txn AS (
     o.lead          AS lead_ref,
     o.create_time   AS OrderDate,
     t.id            AS transaction_id,
+    t.payment_option AS payment_option,
     ts.id           AS snapshot_id,
     ts.number_of_installment AS TotalPeriods
   FROM orders_scoped o
@@ -154,7 +179,7 @@ new_order_txn AS (
 period_spine AS (
   SELECT
     n.order_pk,
-    n.OrderID, n.transaction_id, n.snapshot_id, n.TotalPeriods, n.OrderDate,
+    n.OrderID, n.transaction_id, n.payment_option, n.snapshot_id, n.TotalPeriods, n.OrderDate,
     n.order_data, n.lead_ref,
     period_num AS Period
   FROM new_order_txn n,
@@ -167,7 +192,7 @@ period_spine AS (
 spine_with_payment AS (
   SELECT
     s.order_pk,
-    s.OrderID, s.transaction_id, s.snapshot_id, s.TotalPeriods, s.Period, s.OrderDate,
+    s.OrderID, s.transaction_id, s.payment_option, s.snapshot_id, s.TotalPeriods, s.Period, s.OrderDate,
     s.order_data, s.lead_ref,
     isd.payment_amount, isd.principal, isd.principal_balance, isd.interest, isd.add_ons,
     c.third_party_id  AS charge_invoice_no,
@@ -215,6 +240,11 @@ channel_final AS (
     *,
     CASE
       WHEN NOT is_paid THEN NULL
+      -- FIX 2026-08-23 (docs/FINDINGS_RCB_ONETIME_CHANGE_ORDER_MISROUTED_RCL_20260803.md):
+      -- a carried-over ONETIME order (FULL_PAYMENT/CREDIT_CARD_INSTALLMENT) must route to
+      -- RCB-CreditShell, not RCL-Credit Shell. Only RABBIT_CARE_INSTALLMENT (and unknown/NULL,
+      -- unchanged pending vendor confirmation) keeps the original RCL-Credit Shell behavior.
+      WHEN is_carried_over_from_old_order AND payment_option IN ('FULL_PAYMENT','CREDIT_CARD_INSTALLMENT') THEN 'RCB-CreditShell'
       WHEN is_carried_over_from_old_order THEN 'RCL-Credit Shell'
       WHEN charge_payment_method = 'CASH' THEN 'RCL-Transfer-อื่นๆ'
       WHEN charge_payment_method = 'QR_CODE' AND charge_service_provider = 'RABBIT_LENDING' THEN 'RCL-Omise QR Prompt Pay-BAY'
@@ -222,6 +252,7 @@ channel_final AS (
     END AS PaymentChannel_resolved,
     CASE
       WHEN NOT is_paid THEN NULL
+      WHEN is_carried_over_from_old_order AND payment_option IN ('FULL_PAYMENT','CREDIT_CARD_INSTALLMENT') THEN 'RCB-CreditShell'
       WHEN is_carried_over_from_old_order THEN 'RCL-Credit Shell'
       WHEN charge_payment_method = 'CASH' THEN 'TRF Transfer'
       WHEN charge_payment_method = 'QR_CODE' THEN 'OME Omise QR Prompt Pay'
@@ -450,7 +481,11 @@ qualifying_orders AS (
   FROM final
   WHERE (TotalPeriods > 1
      OR PaymentChannel LIKE '%RCL%'
-     OR PaymentChannel LIKE '%Credit Shell%')
+     OR PaymentChannel LIKE '%Credit Shell%'
+     -- FIX 2026-08-23: 'RCB-CreditShell' (no space) is a new valid label from the
+     -- FULL_PAYMENT/CREDIT_CARD_INSTALLMENT routing fix above and must also qualify its
+     -- order, or those rows would be silently dropped from this view's output entirely.
+     OR PaymentChannel LIKE '%CreditShell%')
 )
 
 SELECT f.*

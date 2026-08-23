@@ -84,13 +84,84 @@ RCL-Credit Shell"). Independently verified live, not trusted from the chat repor
 
 **This is not a pre-fix legacy artifact.** The change order was created 2026-08-13, ten days after
 this finding was filed (2026-08-03) with its correction proposal still source-only and never
-deployed ("No deploy, backfill, correction, export, or production mutation was performed"). The
-live legacy generator (`sql/production/RCL_04_new_order_credit_shell_all.sql`) still contains the
-same unconditional `PaymentMethod IN ('CASH','QR_CODE') => 'RCL-Credit Shell'` branches with no
-`payment_option`/flow check, confirmed by re-reading the file 2026-08-23 — consistent with, though
-not proof of, the live drifted view's identical defect. **The root cause remains active and will
-keep producing new wrong-label cases until the flow-aware routing fix in this finding's "Future
-correction proposal" is actually implemented and deployed**, not just designed.
+deployed ("No deploy, backfill, correction, export, or production mutation was performed").
+
+**Correction (2026-08-23, same session): the actual live-executing generator is a different object
+than first guessed.** `sql/production/RCL_04_new_order_credit_shell_all.sql` was checked first and
+ruled out — traced live via `INFORMATION_SCHEMA.VIEWS`/`bq show`, its CASE logic requires
+`PaymentChannel='RABBIT_LENDING'` for the QR_CODE branch, but `L80569331`'s raw
+`carepay_charges.service_provider='RCB'`, so that view's logic would not have produced
+`RCL-Credit Shell` for this row at all — proof it isn't the live path for this case, exactly the
+kind of repo-vs-live drift `AGENT_RULES.md` warns about. The correct live object is
+`sap_integration_v2.\`RCL 04_new order credit shell new tunning\`` (repo:
+`sql/production/RCL_04_new_order_credit_shell_new_tunning.sql`) — pulled live 2026-08-23 via
+`bq show`, confirmed **byte-for-byte identical** to the repo file (whitespace-normalized diff, no
+drift). Its actual root cause is worse than first assumed: `channel_final`'s CASE routes purely on
+`is_carried_over_from_old_order` (does the charge's `third_party_id` also appear on the
+predecessor order) — `WHEN is_carried_over_from_old_order THEN 'RCL-Credit Shell'` — with **no
+`payment_method`/`payment_option` check of any kind**, not even the partial gating the other file
+has. **The root cause remains active and will keep producing new wrong-label cases** until fixed.
+
+## Fix prepared (source only, not deployed), 2026-08-23
+
+`sql/production/RCL_04_new_order_credit_shell_new_tunning.sql` now carries `payment_option`
+through `transactions → new_order_txn → period_spine → spine_with_payment` and routes
+`is_carried_over_from_old_order AND payment_option IN ('FULL_PAYMENT','CREDIT_CARD_INSTALLMENT')`
+to `RCB-CreditShell` (the same label the reviewed V3 canonical router,
+`sql/ddl/050_v3_onetime_payload_source.sql`, already uses) instead of `RCL-Credit Shell`.
+`RABBIT_CARE_INSTALLMENT` and unknown/NULL `payment_option` keep the exact prior behavior
+unchanged — deliberately not touched, since this view has no quarantine/hold mechanism and there
+is no live evidence those cases are wrong.
+
+**Caught and fixed a silent-drop risk the CASE-block change alone would have caused**: the view's
+`qualifying_orders` CTE only pulls an order's rows into the final output when
+`PaymentChannel LIKE '%RCL%' OR PaymentChannel LIKE '%Credit Shell%'` (or `TotalPeriods>1`). The
+new label `RCB-CreditShell` (no space) matches neither pattern, so without a matching third
+condition, every row this fix relabels would have silently vanished from the view's output
+entirely — the exact "silent drop" bug class this project has been burned by before. Added
+`OR PaymentChannel LIKE '%CreditShell%'` to `qualifying_orders`.
+
+**Verified, not just asserted**: dry-run clean (8.47 GiB, under the 20 GiB cap); ran the corrected
+view for real, scoped to `L80569331-M1` — confirmed `PaymentMethod`/`PaymentChannel` now both
+`RCB-CreditShell` and the row still appears in output (2 rows, same duplication the unfixed view
+already has for this item — pre-existing, not introduced by this fix, not touched). Full-population
+before/after regression comparison (row count, item count, changed-row count, blank-PaymentMethod
+count) queued as a background job; results to follow in this file once complete.
+
+No deploy performed — pending Class-A review, then Codex applies via `CREATE OR REPLACE VIEW`
+under the standard deploy gate (dry-run evidence + change summary + Boat's explicit deploy OK).
+
+## Full-population regression result — scale is much larger than the original "9"
+
+Ran the corrected view against live data in full (not sampled), then re-verified with a clean,
+duplicate-safe (OrderItem, Period, row-rank) comparison against the unmodified live view — the
+naive first pass over-counted from this view's pre-existing duplicate rows (same issue seen on
+`L80569331-M1`, unrelated to this fix, not touched):
+
+| Check | Result |
+|---|---:|
+| Row count, orig vs fixed | 59,494 vs 59,494 — identical |
+| Distinct OrderItem count, orig vs fixed | 12,084 vs 12,084 — identical |
+| Blank/NULL PaymentMethod on paid rows, orig vs fixed | 0 vs 0 — no regression |
+| Rows changed | 10,721 |
+| Distinct OrderItems changed | **7,557** |
+| Every changed row's transformation | `PaymentMethod`/`PaymentChannel`: `RCL-Credit Shell` → `RCB-CreditShell`, and **only** that transformation — grouped the full diff set by (before, after) label pairs and got exactly one group, no unexpected side effects on any other payment method/channel |
+
+**This is a much larger population than the "9" quantified in this finding's original 2026-08-03
+population gate.** That number came from a completely different query construction (against
+`sap_view.RCL_Motor_process_1_create`/`sap_dashboard_carepay_installment`), not this view. 7,557
+items is the count of currently-live change-order rows in `RCL 04_new order credit shell new
+tunning` whose CareOS `payment_option` is FULL_PAYMENT/CREDIT_CARD_INSTALLMENT and which this view
+currently labels `RCL-Credit Shell` — i.e., the scale of the *ongoing* misrouting through this one
+view, not a one-off.
+
+**Important scope boundary: this fix only changes future query runs of the view.** It does
+**not** retroactively correct SAP rows already posted under the wrong `RCL-Credit Shell` label for
+those 7,557 items — SAP's `InvoiceNo`/posted rows are immutable once Paid per `AGENT_RULES.md`;
+correcting already-posted mislabeled rows is a separate, much bigger decision (backfill/correction
+method, GL impact, whether Finance needs to reconcile a mislabeled-channel history) that this
+finding does not propose and is explicitly out of scope here. Flagging in `INPUTS_NEEDED.md`
+rather than scoping it unilaterally.
 
 Also worth checking for the same underlying defect family: `docs/INPUTS_NEEDED.md`'s
 "urgent_for refund to cust" tab describes FULL_PAYMENT orders that "sync to omise RCL > refund to
@@ -98,8 +169,6 @@ RCB" for May–June — structurally the same failure (a FULL_PAYMENT/RCB-flow o
 associated with RCL), possibly the same root cause surfacing as a different downstream symptom
 (refund-needed instead of wrong-label-already-posted). Not confirmed as the same population —
 flagging the connection, not asserting it.
-
-No correction, deploy, or production mutation was performed for this new occurrence either.
 
 Nine is the population of this exact posted cause, not every possible one-time/RCL mechanism.
 Correction eligibility remains separate and is not approved by this finding.

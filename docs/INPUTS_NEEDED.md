@@ -1,30 +1,40 @@
 # INPUTS NEEDED — things only Boat / Aware / Attila / Finance can answer
 
-## OPEN 2026-08-23 — RCB one-time change-order mislabelled RCL: second live occurrence, root cause still unfixed
+## OPEN 2026-08-23 — RCB one-time change-order mislabelled RCL: fix prepared, scale is 7,557 items, two decisions needed
 
 Mo reported `L80569331-M1` (relayed via Boat) as the same defect class as
 `docs/FINDINGS_RCB_ONETIME_CHANGE_ORDER_MISROUTED_RCL_20260803.md`'s known-answer case
-(`L80482368`). Independently verified live: RCB one-time FULL_PAYMENT change order (created
-2026-08-13, ten days after the finding was filed), posted to SAP with `PaymentMethod`/
-`PaymentChannel = 'RCL-Credit Shell'`. Full evidence in the finding file's new "Second confirmed
-occurrence" section.
+(`L80482368`). Independently verified live and traced to the actual live-executing object (not the
+repo file first suspected — see the finding file for the drift-detection detail):
+`sap_integration_v2.\`RCL 04_new order credit shell new tunning\``, which routes purely on
+"is this charge shared with the predecessor order" with no `payment_option` check at all.
 
-**This proves the finding's proposed flow-aware fix has not been deployed to the live path** — the
-legacy generator (`sql/production/RCL_04_new_order_credit_shell_all.sql`) still has the
-unconditional CASH/QR_CODE → RCL-Credit Shell branches with no `payment_option` check. V3's Unit 5
-newpayment shadow (`sql/ddl/058_v3_unit5_newpayment_shadow.sql`) already has a fail-closed guard
-against this exact shape, but V3 doesn't produce the live production interface file yet, so it
-doesn't protect today's real postings.
+**A source-only fix is prepared** (`sql/production/RCL_04_new_order_credit_shell_new_tunning.sql`,
+not deployed): routes carried-over FULL_PAYMENT/CREDIT_CARD_INSTALLMENT orders to
+`RCB-CreditShell` instead of `RCL-Credit Shell`, matching the label the reviewed V3 canonical
+router already uses. Full-population regression run live: row/item counts unchanged, zero blank
+PaymentMethod regression, and **exactly one transformation type** across the entire diff
+(`RCL-Credit Shell` → `RCB-CreditShell`, nothing else touched) — see the finding file's
+"Full-population regression result" section.
 
-**Decision needed**: does this warrant a standalone fix to the live legacy generator now (ahead of
-the full V3 cutover), given it's actively recurring, not just a closed historical incident? If yes,
-scope and correction-method decisions follow the same D10–D14 confirmed-decision framework already
-governing other SAP corrections. If the answer is "wait for V3 cutover," that should be stated
-explicitly so future occurrences aren't re-investigated as if new.
+**The scale is far bigger than the original "9"-item population from 2026-08-03: 7,557 distinct
+order items** are currently live-mislabelled through this one view. Two decisions needed:
+
+1. **Deploy the fix?** (Class-A review still pending, then Codex deploys via
+   `CREATE OR REPLACE VIEW` under the standard gate.) This only stops *future* mislabelling — it
+   changes nothing about rows already posted to SAP.
+2. **Do the 7,557 already-posted items need a separate correction/backfill?** SAP's stored
+   `InvoiceNo`/Paid rows are immutable per `AGENT_RULES.md`; correcting an already-posted wrong
+   `PaymentMethod`/`PaymentChannel` label is a distinct, larger decision (correction method, GL/
+   accounting impact, whether Finance needs to reconcile a mislabelled-channel history) that this
+   finding does not propose and has not scoped. This needs its own explicit decision before any
+   correction work starts, per the D10–D14 confirmed-decision framework already governing other
+   SAP corrections.
 
 Also flagging a possible connection (not confirmed) to the "urgent_for refund to cust" tab —
 described in the entry below as FULL_PAYMENT orders "sync to omise RCL > refund to RCB" for
-May–June, structurally the same failure shape.
+May–June, structurally the same failure shape. Given the scale just found here, this connection is
+worth checking with real urgency, not just noting.
 
 ## OPEN 2026-08-21 — urgent refund: approvals needed after exact population/live classification
 

@@ -1,5 +1,17 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-23 20:39 ICT — prepared RCB/RCL-Credit-Shell fix; found real scale is 7,557 items
+
+- Traced Mo's `L80569331` report to the correct live-executing view (ruled out the repo file
+  first suspected via live `bq show` comparison — genuine drift-detection catch, not assumed).
+- Prepared `sql/production/RCL_04_new_order_credit_shell_new_tunning.sql`: routes carried-over
+  FULL_PAYMENT/CREDIT_CARD_INSTALLMENT to `RCB-CreditShell`; also fixed a silent-drop risk in
+  `qualifying_orders` the label change alone would have caused.
+- Full-population regression: row/item counts unchanged, zero blank-PaymentMethod regression,
+  exactly one transformation type across the diff — 7,557 distinct items, far above the original
+  finding's "9". Updated the finding and `INPUTS_NEEDED.md`; opened
+  `RQ-20260823-2039-rcb-onetime-creditshell-fix`. No deploy.
+
 ## 2026-08-23 20:20 ICT — reviewed `bc25b32` PASS on urgent-refund cancel candidate
 
 - Cleared the one assigned OPEN review. Independently reproduced the claimed hash/row/item count

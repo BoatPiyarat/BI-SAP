@@ -1,5 +1,28 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-23 20:39 ICT — RCB/RCL-Credit-Shell fix prepared; real scale is 7,557 items, not 9
+
+Traced Mo's `L80569331` report to the actual live-executing view (not the repo file first
+suspected — confirmed byte-for-byte drift-free via `bq show` before touching anything):
+`sap_integration_v2.\`RCL 04_new order credit shell new tunning\``. Its `channel_final` CASE
+routed purely on `is_carried_over_from_old_order` with zero `payment_option` check — worse than
+the partial gating first assumed. Prepared a source-only fix in
+`sql/production/RCL_04_new_order_credit_shell_new_tunning.sql`: carries `payment_option` through
+the CTE chain, routes carried-over FULL_PAYMENT/CREDIT_CARD_INSTALLMENT to `RCB-CreditShell`
+(matching the label the reviewed V3 canonical router already uses), leaves
+RABBIT_CARE_INSTALLMENT/unknown unchanged, and fixes a silent-drop risk the label change alone
+would have caused in `qualifying_orders` (the new label matched none of its existing `LIKE`
+patterns — caught by tracing the label through the rest of the view, not assumed safe).
+
+Ran a full-population regression live: row/item counts identical before/after (59,494/12,084),
+zero blank-PaymentMethod regression, and a clean duplicate-safe diff showing **exactly one**
+transformation type across the whole dataset (`RCL-Credit Shell`→`RCB-CreditShell`, nothing else
+touched) — **7,557 distinct order items**, far more than the original finding's "9". Updated the
+finding file and `INPUTS_NEEDED.md` with the real scale and two separate decisions: deploy the fix
+(stops future mislabelling only) and whether the 7,557 already-posted items need their own
+correction/backfill decision (not proposed here, immutable-InvoiceNo rule applies, much bigger
+scope). Opened `RQ-20260823-2039-rcb-onetime-creditshell-fix` for Codex's review. No deploy.
+
 ## 2026-08-23 20:20 ICT — PASSed Codex's replacement urgent-refund cancel candidate
 
 Class-A review of `bc25b32` (`RQ-20260822-1212-urgent-refund-cancel-phase2`): **PASS** —

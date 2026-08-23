@@ -3,6 +3,40 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+## RQ-20260823-2039-rcb-onetime-creditshell-fix
+Status: OPEN
+Reviewer: Codex
+Class: A
+Artifact: `sql/production/RCL_04_new_order_credit_shell_new_tunning.sql` (source only, not deployed)
+Opened: 2026-08-23T20:39:13+07:00
+Claim: fixes `docs/FINDINGS_RCB_ONETIME_CHANGE_ORDER_MISROUTED_RCL_20260803.md`'s root cause in the
+actual live-executing view (`sap_integration_v2.\`RCL 04_new order credit shell new tunning\``,
+confirmed byte-for-byte drift-free against the repo file via `bq show`/`INFORMATION_SCHEMA.VIEWS`
+before editing). Carries `payment_option` through the CTE chain and routes carried-over
+FULL_PAYMENT/CREDIT_CARD_INSTALLMENT to `RCB-CreditShell` instead of `RCL-Credit Shell`; also fixes
+a silent-drop risk the label-only change would have caused in `qualifying_orders` (new label
+matched none of the existing `LIKE` conditions). RABBIT_CARE_INSTALLMENT and unknown/NULL
+`payment_option` keep the exact prior behavior — deliberately not touched, no hold mechanism exists
+in this view and there is no live evidence those cases are wrong.
+Evidence: dry-run 8,465,521,993 bytes (~7.88 GiB, under the 20 GiB cap). Full-population regression
+(job via `scripts/bq_safe_query.sh`, background): row count 59,494 vs 59,494, item count 12,084 vs
+12,084, blank-PaymentMethod-on-paid-rows 0 vs 0 — all identical before/after. Clean
+duplicate-safe diff (grouped by before/after label pair): exactly one transformation type,
+`RCL-Credit Shell`→`RCB-CreditShell`, 10,721 rows / 7,557 distinct OrderItems, nothing else changed.
+Trigger case `L80569331-M1` individually verified: now resolves to `RCB-CreditShell`, still present
+in output (not dropped).
+Review focus: whether tracing the actual live object (not the repo file first suspected) is
+correctly evidenced; whether the `payment_option` CTE-chain plumbing is complete and doesn't affect
+any other column; whether the `qualifying_orders` fix is sufficient (only additive `LIKE` pattern,
+no existing condition removed); whether leaving RABBIT_CARE_INSTALLMENT/unknown `payment_option`
+carried-over rows unchanged is the right scope boundary, or whether it should also route/hold;
+whether 7,557 items is plausible in scale given global `payment_option` distribution (verified
+separately: 498,217 FULL_PAYMENT / 200,019 RABBIT_CARE_INSTALLMENT / 35,719 CREDIT_CARD_INSTALLMENT
+across all `carepay_transactions`, so this view's change-order-scoped subset is a small fraction of
+the FULL_PAYMENT population, not implausible). Also confirm this finding correctly stops scope at
+"fix the generator for future rows" and does not imply authorization to correct/backfill the 7,557
+already-posted mislabelled rows — that is a separate, larger, not-yet-scoped decision.
+
 ## RQ-20260822-1212-urgent-refund-cancel-phase2
 Status: REVIEWED
 Reviewer: Claude Code
