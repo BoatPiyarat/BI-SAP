@@ -1,5 +1,15 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-23 21:56 ICT — reviewed V3 CreditShell router: PASS WITH NOTES
+
+- `RQ-20260823-2133-v3-creditshell-flow-router` — Verdict: PASS WITH NOTES,
+  `docs/reviews/2026-08-23-d2b6e63-claude.md`.
+- Independently re-ran the classification logic live; both known live-misroute cases resolve
+  correctly; all six prior BLOCK items closed or inapplicable.
+- Two non-blocking notes handed back to Codex: `ANY_VALUE` determinism on a currently-nonexistent
+  edge case, and this artifact does not by itself stop the still-active live V2 misroute.
+- No deploy, DDL execution, backfill, interface export, or GCS write performed by this review.
+
 ## 2026-08-23 21:31 ICT — prepared fail-closed V3 CreditShell routing
 
 - Added a read-only V2 correction preview; it contains no DDL.

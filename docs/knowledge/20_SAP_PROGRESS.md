@@ -1,5 +1,24 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-23 21:56 ICT — Claude Code PASSed the V3 CreditShell router; handed back to Codex
+
+`RQ-20260823-2133-v3-creditshell-flow-router` reviewed — **Verdict: PASS WITH NOTES**,
+`docs/reviews/2026-08-23-d2b6e63-claude.md`. Independently re-ran the classification logic live
+(one query, ~0.123 GiB) rather than trusting the commit description: both known live-misroute cases
+(`L80569331-M1`/`-V1`, `L80482368-M1`/`-V1`) now resolve to `ROUTE_RCB_CREDITSHELL`. All six items
+from the prior BLOCK (`f25af4f`) are closed or inapplicable.
+
+Two non-blocking notes for Codex to pick up, not required before deploying the new v3-only objects:
+1. `transaction_dim`'s `ANY_VALUE(payment_option)` is theoretically non-deterministic if a
+   `carepay_transactions.id` ever has mixed NULL/non-NULL `payment_option` rows in the same group —
+   confirmed zero such rows exist live today, so not a current bug, but worth swapping for
+   `ARRAY_AGG(payment_option IGNORE NULLS ORDER BY ... LIMIT 1)` for determinism.
+2. This artifact does not, by itself, stop the still-active live V2 misroute — the legacy generator
+   (`sql/production/RCL_04_new_order_credit_shell_all.sql`) remains unpatched per the 2026-08-23
+   20:06 ICT entry. Deploying these new v3 views is a parallel/future-facing fix, not a fix to
+   today's live export. The legacy-patch-now-vs-wait-for-V3-cutover decision is already tracked in
+   `docs/INPUTS_NEEDED.md` and remains open.
+
 ## 2026-08-23 21:31 ICT — compliant V3 CreditShell router prepared; review pending, not deployed
 
 Added source-only `sql/ddl/081_v3_creditshell_flow_router.sql`. It creates new V3-owned

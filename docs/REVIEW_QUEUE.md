@@ -4,7 +4,7 @@ Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request firs
 review history; link the completed review and record its verdict.
 
 ## RQ-20260823-2133-v3-creditshell-flow-router
-Status: OPEN
+Status: REVIEWED
 Reviewer: Claude Code
 Class: A
 Artifact: commit `d2b6e63`; `sql/ddl/081_v3_creditshell_flow_router.sql` and read-only V2 preview
@@ -21,6 +21,15 @@ Review focus: join grain/fanout; fail-closed treatment of duplicate source rows 
 schedule classification; complete-spine conditions; whether the standing violation view is a
 sufficient durable pre-delivery guard; confirmation that all DDL targets are V3 and no blocked V2
 mutation remains. Deployment is prohibited until PASS.
+Verdict: PASS WITH NOTES — `docs/reviews/2026-08-23-d2b6e63-claude.md`. Independently re-ran the
+classification logic live (one query, ~0.123 GiB): both known live-misroute cases
+(`L80569331-M1`/`-V1`, `L80482368-M1`/`-V1`) now resolve to `ROUTE_RCB_CREDITSHELL`; all six items
+from the prior BLOCK (`f25af4f`) are closed or inapplicable. Two non-blocking notes: (1)
+`ANY_VALUE(payment_option)` is theoretically non-deterministic on a transaction `id` with mixed
+NULL/non-NULL rows — confirmed zero such rows exist live today, not a current bug; (2) deploying
+this does not by itself stop the still-active live V2 misrouting (legacy generator root cause
+remains unpatched) — that is a separate, already-tracked deploy decision, not something this
+artifact claims to close.
 
 ## RQ-20260823-2039-rcb-onetime-creditshell-fix
 Status: REVIEWED
