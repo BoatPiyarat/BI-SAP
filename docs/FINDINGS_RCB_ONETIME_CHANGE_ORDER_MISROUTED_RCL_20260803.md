@@ -173,6 +173,37 @@ flagging the connection, not asserting it.
 Nine is the population of this exact posted cause, not every possible one-time/RCL mechanism.
 Correction eligibility remains separate and is not approved by this finding.
 
+## Review outcome: BLOCKED, 2026-08-23 20:46 ICT
+
+Codex's Class-A review of the v2-view fix above (`RQ-20260823-2039-rcb-onetime-creditshell-fix`,
+artifact `f25af4f`) returned **Verdict: BLOCK**, not PASS —
+`docs/reviews/2026-08-23-f25af4f-codex.md`. The fix described in the previous section is **not
+deployed and must not be deployed as-written**. Five blockers, in order of severity:
+
+1. **Deploy target forbidden.** `sap_integration_v2` is not a permitted DDL target —
+   `AGENT_RULES.md` allows `CREATE OR REPLACE VIEW` only in `sap_integration_v3`. This invalidates
+   the whole "patch the live v2 legacy view in place" approach, not just a detail of it. The
+   "Future-order correction proposal" section below — routing through the v3 canonical
+   `stg_schedule` router / `050_v3_onetime_payload_source.sql` — is the compliant path and should
+   be the actual next implementation, not the v2 patch.
+2. Regression numbers (59,494 rows / 12,084 items / 10,721 changed rows / 7,557 changed items)
+   need reproducible query text + job ID + exact source-table snapshot timestamp attached, not just
+   narrative claims.
+3. Unknown/NULL `payment_option` on a carried-over order still fails open to `RCL-Credit Shell` in
+   the v2 patch. Point 5 of the proposal below ("hold and report unknown flow") was written but not
+   implemented in that patch — needs an actual hold/quarantine mechanism, not silent pass-through.
+4. No durable regression assertion exists yet enforcing "no ONETIME row's PaymentMethod/
+   PaymentChannel matches `RCL%`" (point in the proposal below) — a one-time before/after diff
+   isn't a standing guard.
+5. The v2 patch's CREDIT_CARD_INSTALLMENT branch isn't gated on `TotalPeriods = 1`, so it's broader
+   than the ONETIME invariant the proposal defines.
+
+Boat's deploy approval and no-backfill decision (recorded in `docs/INPUTS_NEEDED.md`,
+2026-08-23 20:43 ICT) are approvals-in-principle and still stand — they cover "deploy a compliant
+fix" and "don't backfill the 7,557," not the specific blocked v2 artifact. Whoever picks this up
+next should treat this as: design and implement against the v3 canonical path, close all 5 points
+above, then open a fresh review request rather than re-submitting `f25af4f`.
+
 ## Future-order correction proposal (source only)
 
 Route before assigning a credit-shell label:

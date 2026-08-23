@@ -1,5 +1,22 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-23 20:46 ICT — Codex BLOCKED the RCB/RCL-Credit-Shell fix; NOT deployed, rework required
+
+`RQ-20260823-2039-rcb-onetime-creditshell-fix` reviewed by Codex — **Verdict: BLOCK**
+(`docs/reviews/2026-08-23-f25af4f-codex.md`), not the PASS the 20:43 handoff was written expecting.
+5 blockers: (1) deploy target `sap_integration_v2` is forbidden by `AGENT_RULES.md` — DDL is
+v3-only, so the whole "patch the live v2 legacy view" plan needs to become "build a v3 canonical
+replacement" instead; (2) regression numbers (59,494/12,084/10,721/7,557) lack reproducible
+query/job-ID/timestamp provenance; (3) unknown/NULL `payment_option` still fail-open routes to
+`RCL-Credit Shell` instead of being held; (4) no durable regression assertion guarding "no ONETIME
+row matches `RCL%`"; (5) the new CREDIT_CARD_INSTALLMENT branch isn't gated on `TotalPeriods = 1`.
+
+Boat's two decisions (deploy YES; no backfill on the 7,557 already-posted rows, below) both still
+stand as approvals-in-principle — they just can't be executed until a compliant fix exists.
+Superseded the 20:43 ICT handoff instruction (which told Codex to `CREATE OR REPLACE VIEW` on the
+v2 object — void, do not follow) with a new `docs/HANDOFF_QUEUE.md` entry describing all 5 fixes
+needed and that this now requires new v3-target design work, not a quick re-review of `f25af4f`.
+
 ## 2026-08-23 20:43 ICT — Boat decided both open questions: deploy YES, no backfill for the 7,557
 
 Boat, in chat: "Deploy the fix = yes" and "What about the 7,557 already-posted items = do nothing."

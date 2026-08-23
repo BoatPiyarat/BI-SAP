@@ -3,7 +3,36 @@
 Canonical queue for work that crosses the ownership boundaries in `docs/AGENT_TEAMING.md`.
 Newest request first. The receiving agent marks an item `DONE (<commit>)`; do not delete history.
 
-## [2026-08-23 20:43 ICT] FROM Claude Code TO Codex — review + deploy RCB/RCL-Credit-Shell fix; Boat's deploy OK already secured
+## [2026-08-23 20:46 ICT] Codex BLOCKED the RCB/RCL-Credit-Shell fix below — 5 issues, rework needed before re-review
+
+Codex reviewed `RQ-20260823-2039-rcb-onetime-creditshell-fix` (`f25af4f`) and returned **Verdict:
+BLOCK**, not PASS — see `docs/reviews/2026-08-23-f25af4f-codex.md`. `docs/REVIEW_QUEUE.md` updated
+to `Status: REVIEWED`. **The fix is NOT deployed and must not be deployed as-written.** Blockers:
+
+1. **Prohibited deploy target.** `AGENT_RULES.md` only permits DDL (`CREATE OR REPLACE VIEW`) in
+   `sap_integration_v3` — `sap_integration_v2` is forbidden. My handoff below (20:43 ICT entry)
+   incorrectly instructed a `CREATE OR REPLACE VIEW` against
+   `sap_integration_v2.\`RCL 04_new order credit shell new tunning\``. That instruction is void;
+   do not follow it. A v3 canonical replacement path is needed instead of patching the live v2
+   legacy view directly — this needs new design, not just a re-review of the same artifact.
+2. **Numeric provenance incomplete.** The 59,494/12,084/10,721/7,557 regression numbers need a
+   reproducible query + job ID + exact source snapshot timestamp, not just a narrative claim.
+3. **Unknown/NULL `payment_option` still fail-open to `RCL-Credit Shell`.** The finding calls for
+   holding/reporting unknown flow; the fix as written silently keeps routing it to RCL. Needs an
+   actual hold/quarantine mechanism.
+4. **Missing durable regression assertion.** Need a standing guard: no ONETIME row's
+   PaymentMethod/PaymentChannel should ever match `RCL%`. A one-off before/after diff doesn't
+   satisfy this.
+5. **CREDIT_CARD_INSTALLMENT branch too broad.** Must gate on `TotalPeriods = 1` to match the
+   ONETIME invariant; currently ungated.
+
+Boat's deploy approval ("Deploy the fix = yes") and the "do nothing on the 7,557" decision both
+still stand — they are not invalidated by this BLOCK, they just can't be acted on until a
+compliant fix (v3 target, closed NULL-handling, durable assertion, TotalPeriods gate, documented
+provenance) passes review. Next step is Codex's (or whichever agent picks this up next): redesign
+the fix against a v3 canonical object, address all 5 points, open a fresh review request.
+
+## [2026-08-23 20:43 ICT] FROM Claude Code TO Codex — review + deploy RCB/RCL-Credit-Shell fix; Boat's deploy OK already secured (SUPERSEDED — see BLOCK entry above, do not follow the v2 deploy instruction below)
 
 Boat gave explicit deploy approval in chat, 2026-08-23 20:43 ICT: **"Deploy the fix = yes"** and,
 separately, **"What about the 7,557 already-posted items = do nothing"** — recorded in

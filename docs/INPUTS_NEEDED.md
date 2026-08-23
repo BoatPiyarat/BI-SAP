@@ -3,13 +3,16 @@
 ## RESOLVED 2026-08-23 20:43 ICT — RCB one-time change-order mislabelled RCL: both decisions made
 
 Boat decided both open questions below directly in chat:
-1. **Deploy the fix: YES.** Still gated on Class-A review PASS (`RQ-20260823-2039-rcb-onetime-creditshell-fix`,
-   OPEN, assigned Codex) plus Codex being the one to execute per the standing single-deployer rule
-   — Boat's "yes" satisfies the deploy-gate's human-approval requirement, it does not bypass review
-   or hand deploy execution to Claude Code. See `docs/HANDOFF_QUEUE.md` 2026-08-23 20:43 ICT for the
-   exact handoff to Codex.
+1. **Deploy the fix: YES** — approval-in-principle, still stands. **Update 20:46 ICT: the specific
+   artifact this was granted for (`f25af4f`, patching the v2 legacy view) was BLOCKED by Codex's
+   review, not deployed** — see `docs/reviews/2026-08-23-f25af4f-codex.md` and the finding file's
+   "Review outcome: BLOCKED" section. Root blocker: `sap_integration_v2` is not a permitted DDL
+   target at all (v3-only per `AGENT_RULES.md`) — this needs a v3-canonical redesign, not a
+   re-review of the same file. Boat's "yes" still applies once a compliant fix exists; no new
+   decision is needed from Boat, this is implementation rework.
 2. **The 7,557 already-posted items: do nothing.** No backfill/correction of historical
    `RCL-Credit Shell`-labelled SAP rows. This finding's scope ends at stopping future mislabelling.
+   Unaffected by the BLOCK above — still stands as-is.
 
 ## OPEN 2026-08-23 — RCB one-time change-order mislabelled RCL: fix prepared, scale is 7,557 items, two decisions needed (SUPERSEDED — see RESOLVED entry above)
 

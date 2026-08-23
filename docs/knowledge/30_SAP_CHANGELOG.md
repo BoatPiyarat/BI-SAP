@@ -1,5 +1,17 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-23 20:46 ICT — Codex BLOCKED the RCB/RCL-Credit-Shell fix (`f25af4f`)
+
+- Verdict: BLOCK, not PASS — `docs/reviews/2026-08-23-f25af4f-codex.md`.
+- 5 blockers: forbidden v2 deploy target (DDL is v3-only per `AGENT_RULES.md`), incomplete numeric
+  provenance, fail-open unknown/NULL `payment_option` routing to RCL, missing durable
+  "no ONETIME row matches RCL%" regression assertion, ungated CREDIT_CARD_INSTALLMENT branch
+  (needs `TotalPeriods = 1`).
+- `RQ-20260823-2039-rcb-onetime-creditshell-fix` → `Status: REVIEWED`. Fix NOT deployed.
+- Superseded the 20:43 ICT `HANDOFF_QUEUE.md` deploy instruction (told Codex to `CREATE OR REPLACE
+  VIEW` on the v2 legacy object — void). Next step is v3-target redesign, not a re-review of the
+  same artifact. Boat's deploy-YES / no-backfill decisions still stand as approvals-in-principle.
+
 ## 2026-08-23 20:43 ICT — recorded Boat's deploy decision for the RCB/RCL-Credit-Shell fix
 
 - Boat: "Deploy the fix = yes"; "What about the 7,557 already-posted items = do nothing."
