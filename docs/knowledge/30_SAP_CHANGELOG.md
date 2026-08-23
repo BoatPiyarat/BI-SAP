@@ -1,5 +1,12 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-23 20:43 ICT — recorded Boat's deploy decision for the RCB/RCL-Credit-Shell fix
+
+- Boat: "Deploy the fix = yes"; "What about the 7,557 already-posted items = do nothing."
+- Marked `INPUTS_NEEDED.md`'s entry RESOLVED. Handed exact deploy instructions to Codex
+  (`docs/HANDOFF_QUEUE.md`), gated on the still-OPEN Class-A review passing first.
+- No backfill/correction scoped for the 7,557 already-posted rows, per Boat's explicit decision.
+
 ## 2026-08-23 20:39 ICT — prepared RCB/RCL-Credit-Shell fix; found real scale is 7,557 items
 
 - Traced Mo's `L80569331` report to the correct live-executing view (ruled out the repo file

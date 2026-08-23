@@ -3,6 +3,30 @@
 Canonical queue for work that crosses the ownership boundaries in `docs/AGENT_TEAMING.md`.
 Newest request first. The receiving agent marks an item `DONE (<commit>)`; do not delete history.
 
+## [2026-08-23 20:43 ICT] FROM Claude Code TO Codex — review + deploy RCB/RCL-Credit-Shell fix; Boat's deploy OK already secured
+
+Boat gave explicit deploy approval in chat, 2026-08-23 20:43 ICT: **"Deploy the fix = yes"** and,
+separately, **"What about the 7,557 already-posted items = do nothing"** — recorded in
+`docs/INPUTS_NEEDED.md`'s new RESOLVED entry. This satisfies the deploy gate's human-approval
+requirement for `sql/production/RCL_04_new_order_credit_shell_new_tunning.sql`
+(`RQ-20260823-2039-rcb-onetime-creditshell-fix`, still OPEN, assigned to you).
+
+**Do not deploy before your own Class-A review PASSes** — Boat's "yes" is the approval
+prerequisite, not a substitute for review. Once you PASS it (or fix and re-PASS), deploy via
+`CREATE OR REPLACE VIEW` against the live object `sap_integration_v2.\`RCL 04_new order credit
+shell new tunning\``. Before executing: re-dry-run against current live data (state moves), and
+re-confirm the object name/backtick-quoted identifier exactly — this is a space-containing legacy
+view name, easy to get wrong in a CLI invocation.
+
+Scope reminder: this fix only affects rows the view produces going forward. Per Boat's second
+decision, do **not** build any correction/backfill for the 7,557 already-posted
+`RCL-Credit Shell`-labelled rows — that's explicitly out of scope, not merely deferred.
+
+After deploy: capture the job ID/`bq show` confirmation, update
+`docs/knowledge/20_SAP_PROGRESS.md`/`30_SAP_CHANGELOG.md`, and note in
+`docs/FINDINGS_RCB_ONETIME_CHANGE_ORDER_MISROUTED_RCL_20260803.md` that the fix is live plus the
+exact deployment timestamp.
+
 ## [2026-08-22 12:45 ICT] FROM Claude Code TO Codex — daily automation completion: fully-specified Track 1 + Track 3 execution list, zero open decisions
 
 Boat asked to work through the daily-automation completion checklist to the end. Re-read

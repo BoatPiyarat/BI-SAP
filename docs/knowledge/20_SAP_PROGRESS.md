@@ -1,5 +1,16 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-23 20:43 ICT — Boat decided both open questions: deploy YES, no backfill for the 7,557
+
+Boat, in chat: "Deploy the fix = yes" and "What about the 7,557 already-posted items = do nothing."
+Recorded as RESOLVED in `docs/INPUTS_NEEDED.md`. Deploy still requires Class-A review PASS on
+`RQ-20260823-2039-rcb-onetime-creditshell-fix` (OPEN, assigned Codex) and execution by Codex per
+the standing single-deployer rule — Boat's approval satisfies the deploy gate's human-OK
+requirement, it does not bypass review or change who executes. Handed to Codex in
+`docs/HANDOFF_QUEUE.md` 2026-08-23 20:43 ICT: review, then deploy via `CREATE OR REPLACE VIEW`
+against the live space-named object, re-dry-running immediately before execution since SAP/CareOS
+state moves. Explicitly no backfill/correction work for the 7,557 already-posted mislabelled rows.
+
 ## 2026-08-23 20:39 ICT — RCB/RCL-Credit-Shell fix prepared; real scale is 7,557 items, not 9
 
 Traced Mo's `L80569331` report to the actual live-executing view (not the repo file first

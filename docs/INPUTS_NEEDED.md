@@ -1,6 +1,17 @@
 # INPUTS NEEDED — things only Boat / Aware / Attila / Finance can answer
 
-## OPEN 2026-08-23 — RCB one-time change-order mislabelled RCL: fix prepared, scale is 7,557 items, two decisions needed
+## RESOLVED 2026-08-23 20:43 ICT — RCB one-time change-order mislabelled RCL: both decisions made
+
+Boat decided both open questions below directly in chat:
+1. **Deploy the fix: YES.** Still gated on Class-A review PASS (`RQ-20260823-2039-rcb-onetime-creditshell-fix`,
+   OPEN, assigned Codex) plus Codex being the one to execute per the standing single-deployer rule
+   — Boat's "yes" satisfies the deploy-gate's human-approval requirement, it does not bypass review
+   or hand deploy execution to Claude Code. See `docs/HANDOFF_QUEUE.md` 2026-08-23 20:43 ICT for the
+   exact handoff to Codex.
+2. **The 7,557 already-posted items: do nothing.** No backfill/correction of historical
+   `RCL-Credit Shell`-labelled SAP rows. This finding's scope ends at stopping future mislabelling.
+
+## OPEN 2026-08-23 — RCB one-time change-order mislabelled RCL: fix prepared, scale is 7,557 items, two decisions needed (SUPERSEDED — see RESOLVED entry above)
 
 Mo reported `L80569331-M1` (relayed via Boat) as the same defect class as
 `docs/FINDINGS_RCB_ONETIME_CHANGE_ORDER_MISROUTED_RCL_20260803.md`'s known-answer case
