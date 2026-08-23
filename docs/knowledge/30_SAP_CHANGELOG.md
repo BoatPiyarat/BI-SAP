@@ -1,5 +1,14 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-23 23:03 ICT — completed inert post-import activation infrastructure
+
+- Dispatcher revision `sap-post-import-dispatcher-00002-zjl` and watchdog now use the approved
+  default Compute identity; dispatcher remains internal/non-public.
+- Created authenticated push subscription and a PAUSED watchdog scheduler; nothing was invoked.
+- Checker at `2026-08-23T16:02:57.4067671Z`: `safety_passed=true`, `rehearsal_ready=true`, no
+  failures/blockers. Corrected a caught-before-execution PowerShell environment-list parsing error.
+- Delivery remains disabled; rehearsal, Gmail authorization, SAP action, and GCS writes not run.
+
 ## 2026-08-23 22:58 ICT — reviewed V3 CreditShell deployment evidence: PASS
 
 - `RQ-20260823-2229-v3-creditshell-deploy-evidence` — Verdict: PASS,

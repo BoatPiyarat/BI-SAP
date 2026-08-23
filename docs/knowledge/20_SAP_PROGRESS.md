@@ -1,5 +1,22 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-23 23:03 ICT — post-import activation infrastructure green; rehearsal not run
+
+Codex redeployed `sap-post-import-dispatcher` as private/internal revision
+`sap-post-import-dispatcher-00002-zjl` and redeployed the unscheduled `sap-post-import-watchdog`
+under the approved default Compute service account. Created authenticated push subscription
+`sap-post-import-refresh-push` and watchdog scheduler `sap-post-import-watchdog`; the scheduler was
+created at a dormant annual cadence, immediately PAUSED, then updated to `*/2 * * * *` while
+remaining PAUSED. No IAM grant was added.
+
+The first watchdog environment update exposed a PowerShell comma-parsing defect: all values landed
+inside `PROJECT_ID`. The activation checker failed before any execution; Codex corrected the job
+environment and reran it at `2026-08-23T16:02:57.4067671Z`. Final result:
+`safety_passed=true`, `rehearsal_ready=true`, zero safety failures and zero readiness blockers.
+No watchdog execution, synthetic rehearsal, Gmail publication, production workflow, SAP action,
+or GCS write occurred. Permission rehearsal and Gmail Apps Script authorization remain separate
+next gates.
+
 ## 2026-08-23 22:58 ICT — Claude Code PASSed the V3 CreditShell deployment evidence
 
 `RQ-20260823-2229-v3-creditshell-deploy-evidence` reviewed — **Verdict: PASS**,

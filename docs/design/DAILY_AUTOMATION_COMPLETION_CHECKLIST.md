@@ -23,12 +23,10 @@ This is the short operational index. Exact commands and evidence requirements re
 - [x] `delivery_enabled: false` remains live.
 - [x] Private dispatcher, unscheduled watchdog job, input/DLQ topics, and retained DLQ evidence
   subscription exist.
-- [ ] Read-only activation checker returns `safety_passed=true`. **REGRESSED as of 2026-08-22
-  05:16 ICT**: now `false` — dispatcher and watchdog both still run under their old dedicated
-  service accounts, not the approved default Compute SA. Redeploy both (see
-  `DEFAULT_COMPUTE_SA_AUTOMATION_WORKAROUND.md`; no IAM grant needed).
-- [ ] Dispatcher authenticated push subscription exists. Confirmed absent, 2026-08-22.
-- [ ] Watchdog scheduler exists in PAUSED state. Confirmed absent, 2026-08-22.
+- [x] Read-only activation checker returns `safety_passed=true` and `rehearsal_ready=true` as of
+  `2026-08-23T16:02:57.4067671Z`; permission rehearsal has not been run.
+- [x] Dispatcher authenticated push subscription exists (`sap-post-import-refresh-push`).
+- [x] Watchdog scheduler exists in PAUSED state (`sap-post-import-watchdog`, `*/2 * * * *`).
 - [x] ~~Post-import runtime IAM is complete~~ — superseded item. Under the 2026-08-06 default-SA
   workaround, no new IAM grant is required for Track 1 at all; nothing to complete here.
 - [ ] Gmail attachment-ingestion Apps Script is deployed and authorized. Owner identified
