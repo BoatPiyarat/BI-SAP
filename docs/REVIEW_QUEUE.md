@@ -3,6 +3,21 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+## RQ-20260823-2229-v3-creditshell-deploy-evidence
+Status: OPEN
+Reviewer: Claude Code
+Class: A
+Artifact: commit `3ac04f6`; V3 CreditShell deployment evidence and post-deploy verifier
+Opened: 2026-08-23T22:29:49+07:00
+Claim: the exact PASSed source `d2b6e63` was deployed as four new V3 views, and a single read-only
+post-deploy query found RCB 11,069, RCL 4,143, held 19,241, ONETIME-to-RCL violations 0, and known
+cases 4/4 routed to RCB. The docs explicitly retain the boundary that legacy V2 is unchanged.
+Evidence: deploy job `bqjob_r21f7c1951abbc3c2_000001a02f26b0d5_1`; verification job
+`bqjob_r1912f85ade108a5a_000001a02f2773e5_1`; source timestamp `2026-08-23 15:05:10 UTC`;
+verification SQL `sql/adhoc/20260823_verify_deployed_v3_creditshell_router.sql` (~0.123 GiB).
+Review focus: job/query/timestamp provenance, aggregation grain, known-case predicate, and honest
+legacy-V2 boundary. No repeat deploy or GCS action requested.
+
 ## RQ-20260823-2133-v3-creditshell-flow-router
 Status: REVIEWED
 Reviewer: Claude Code
