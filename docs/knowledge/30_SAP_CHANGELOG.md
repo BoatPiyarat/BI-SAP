@@ -1,5 +1,15 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-24 12:34 ICT — findings: RCL new-period payments not interfacing (Period 1 OK, 2+ not)
+
+- Investigated 43 reported (order_id, period) pairs read-only. 39/43 clean/paid/complete-spine,
+  never delivered; their own Period 1 already in SAP. New
+  `docs/FINDINGS_RCL_NEWPAYMENT_NOT_INTERFACED_20260824.md`.
+- 1 correctly held by `POLICYNO_TOO_LONG`; 2 have no `stg_payment_events` row for that exact
+  (order_id, period); 1 has a paid candidate row but no matching `stg_schedule` period.
+- Likely the same shape driving today's V2-stop/V3-cutover order; lines up with Codex's concurrent
+  `RQ-20260824-1217` build. No mutation, correction, or export performed.
+
 ## 2026-08-24 — prepared ordinary RCL Motor Unit-5 status correction
 
 - Recorded Boat's decision that `RCB_MOTOR` / `INSURANCE_RCB` is the Motor transport template and

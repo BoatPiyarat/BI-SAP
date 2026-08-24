@@ -1,5 +1,23 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-24 12:34 ICT — confirmed RCL new-period payments failing to interface (Period 1 OK, Period 2+ not)
+
+Boat reported 43 (order_id, period) pairs as "not on SAP". Investigated read-only
+(`sql/adhoc/20260824_verify_rcl_newpayment_missing_from_sap.sql`): 39/43 have a completely clean,
+paid, complete-spine candidate row (real InvoiceNo, real 8-digit PaymentDate, full `1..TotalPeriods`
+schedule) that simply never reached SAP — not a data-quality issue. Separately confirmed **Period 1
+for all 39 already exists in `stg_sap_state`** — SAP has the order, just not its later installment
+payments. Remaining 4: 1 correctly held by the existing `POLICYNO_TOO_LONG` validation rule, 2 have
+no matching `stg_payment_events` row at all for that exact (order_id, period) (source-report or
+data gap, not folded into the 39), 1 (`L78710141-V1` period 2) has a paid candidate row but no
+`stg_schedule` period-2 entry (a separate schedule/source discrepancy).
+
+Written up in `docs/FINDINGS_RCL_NEWPAYMENT_NOT_INTERFACED_20260824.md`. This population — ongoing
+RCL payments failing while the order's first payment succeeds — is very likely the concrete shape
+behind today's earlier V2-stop/V3-cutover order and lines up directly with Codex's concurrent
+`RQ-20260824-1217-v3-normal-rcl-motor-newpayment` build. No root-cause trace into the exact
+defective generator line has been done yet; no correction, backfill, or export performed.
+
 ## 2026-08-24 — staged V3 activation: Motor template clarified; ordinary RCL Unit-5 fix ready for review
 
 Boat confirmed that `RCB_MOTOR` / `INSURANCE_RCB` is the Motor transport template and may carry
