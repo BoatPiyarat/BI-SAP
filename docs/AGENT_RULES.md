@@ -62,6 +62,13 @@ require constant clarification.
 ## Hard rules (non-negotiable)
 - **BigQuery Standard SQL only.** Deliver full runnable files; repo diffs are fine, "here's a snippet" is not.
 - **DDL only in `sap_integration_v3`.** Never CREATE/ALTER/DROP in `sap_integration_v2`, `SAP`, or `careos`.
+- **One-time legacy-view exception (Boat, 2026-08-24):** Codex may prepare and, only after Class-A
+  PASS plus a separate explicit deploy approval, `CREATE OR REPLACE` exactly
+  `sap_data_engineer.sap_dashboard_carepay_installment` solely to apply the two reviewed InvoiceNo
+  NULL-safety predicates from `a3d0305` + `0ac324f`. The artifact must start from a fresh live
+  definition, preserve every other byte/behavior (including current inline PaymentDate and
+  BatchRunDate rules), and prove the compulsory-installment predicate remains unchanged. This is
+  not a general exception for `sap_data_engineer` or any other legacy object.
 - **Never write to `gs://interface-file/**`.** That is production; SAP pulls it every 15 minutes. Shadow prefixes only.
 - **DEPLOY GATE:** replacing anything existing consumers read (views, tables, procedures — even inside v3) requires: dry-run evidence + a one-paragraph change summary + explicit human "deploy OK" in that session. Building/testing *new* objects needs no approval.
 - **SINGLE DEPLOYER (Boat, 2026-08-02): Codex only.** Claude Code may prepare source, run

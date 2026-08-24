@@ -1,5 +1,22 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-24 23:56 ICT — exact live-wrapped InvoiceNo deployment artifact prepared; not deployed
+
+Boat authorized a one-time exception to the V3-only DDL rule for exactly
+`sap_data_engineer.sap_dashboard_carepay_installment` and only the two review-cleared InvoiceNo
+NULL-safety predicates (`a3d0305` + `0ac324f`, evidence `18d0013`). Added the narrow exception to
+`AGENT_RULES.md` and generated
+`sql/production/20260824_deploy_installment_invoiceno_null_safety.sql` from fresh live metadata
+(`lastModifiedTime=1786025613958`). Contrary to the older finding, the current live definition has
+no outer `SELECT * REPLACE`; its PaymentDate/BatchRunDate behavior is inline and is preserved
+byte-for-byte. Live query SHA-256 is
+`fa0a557260d99083b9bd3af1aa2a09d5f55828d8c15088235ff7a3cd071f1aa7`; candidate body SHA-256 is
+`148813fb8035046a456a090b0cc76c982dc6b52fec0a89ae9bdad72fef2cf163`. Reversing the two predicate
+edits reproduces the live query exactly. Static counts prove one voluntary predicate and one final
+transformation predicate fixed, with the separate compulsory predicate preserved unchanged. Full
+DDL dry-run: 0 bytes. No view replacement or other production mutation occurred; Class-A PASS and
+separate explicit deploy approval are still required.
+
 ## 2026-08-24 — Boat cleared InvoiceNo NULL-safety review BLOCK; deploy approval still required
 
 Boat explicitly cleared the BLOCK for commits `a3d0305` + `0ac324f` based on provenance evidence

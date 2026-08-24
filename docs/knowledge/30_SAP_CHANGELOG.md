@@ -1,5 +1,15 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-24 23:56 ICT — prepared exact-live InvoiceNo deployment artifact
+
+- Boat authorized a one-time, one-view exception for the two review-cleared predicates; recorded it
+  narrowly in `AGENT_RULES.md`.
+- Generated the full runnable replacement from live `lastModifiedTime=1786025613958`. Reverse-edit
+  identity proves every other query byte is preserved, including the current inline date rules;
+  the compulsory predicate remains unchanged.
+- Candidate dry-run passed at 0 bytes. No deployment occurred; Class-A review and separate deploy
+  approval remain required.
+
 ## 2026-08-24 — Boat cleared InvoiceNo NULL-safety BLOCK
 
 - Boat cleared the Class-A review BLOCK for `a3d0305` + `0ac324f` based on evidence `18d0013`.
