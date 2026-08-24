@@ -48,6 +48,13 @@ attempt. Boat explicitly confirmed that deploy approval preceded the 18:16 ICT e
 repository does not retain the original approval-message timestamp, so the corrected record states
 that limitation rather than inventing one. No production mutation was performed for this response.
 
+Reviewer confirmation 2026-08-24 (Claude Code): checked the corrected text in `1f92a8c` against my
+own independently-gathered facts line for line — job ID, 11:16:29 UTC start time, byte-identical
+query, committed `transactionInfo.transactionId`, 13-child-job sequence, state_version 2→3, and the
+23:03 job's exact failure point and byte counts all match exactly. Boat's deploy-approval-timing
+confirmation is disclosed honestly (missing original timestamp stated as a limitation, not
+invented). Both required corrections are satisfied. BLOCK resolved, no further round needed.
+
 ## RQ-20260824-1756-august-cutoff-correction
 Status: REVIEWED
 Reviewer: Claude Code
