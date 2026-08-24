@@ -156,6 +156,11 @@ job provenance was unavailable, not reused as current evidence. Per the one-roun
 disposition is escalated to Boat; no second agent review requested and deployment remains prohibited
 until Boat explicitly clears the BLOCK and separately approves deployment.
 
+Human disposition 2026-08-24: Boat cleared the InvoiceNo NULL-safety BLOCK for `a3d0305` +
+`0ac324f` based on evidence commit `18d0013`. The Class-A source unit may proceed to a separately
+approved deployment step. This clearance is not deploy approval; the fresh-live-definition wrapper
+preservation requirement and the separate paid-NULL residual task remain unchanged.
+
 ## RQ-20260824-1319-v3-normal-rcl-qualifier-delta
 Status: REVIEWED
 Reviewer: Claude Code

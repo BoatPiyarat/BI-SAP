@@ -1,5 +1,13 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-24 — Boat cleared InvoiceNo NULL-safety review BLOCK; deploy approval still required
+
+Boat explicitly cleared the BLOCK for commits `a3d0305` + `0ac324f` based on provenance evidence
+commit `18d0013`. The source fix is therefore review-cleared. No deployment is authorized by that
+decision: before any live replacement, capture the fresh live definition, preserve its outer
+`SELECT * REPLACE` PaymentDate/BatchRunDate wrapper, dry-run the exact deployment source, and obtain
+separate explicit deploy approval. The one paid NULL residual remains a separate issue.
+
 ## 2026-08-24 23:08 ICT — InvoiceNo review provenance gap supplied; Boat disposition pending
 
 The `0ac324f` review BLOCK accepted the SQL behavior and scope but lacked reproducible provenance

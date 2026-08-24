@@ -1,5 +1,11 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-24 — Boat cleared InvoiceNo NULL-safety BLOCK
+
+- Boat cleared the Class-A review BLOCK for `a3d0305` + `0ac324f` based on evidence `18d0013`.
+- This is review disposition only. No view replacement or other production mutation was performed;
+  a fresh wrapped deployment artifact, dry-run, and separate explicit deploy approval are required.
+
 ## 2026-08-24 23:08 ICT — supplied missing InvoiceNo parity provenance
 
 - Added a saved read-only same-scan verifier against the current live wrapped installment view.
