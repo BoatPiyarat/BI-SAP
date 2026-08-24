@@ -24,7 +24,7 @@ only: DDL 058 was not changed and its status fix was already found correct in `c
 CALL, GCS/SAP write, or scheduler action occurred.
 
 ## RQ-20260824-1319-installment-invoiceno-null-safety
-Status: OPEN
+Status: REVIEWED
 Reviewer: Codex
 Class: A
 Artifact: commit `a3d0305`; `sql/production/sap_dashboard_carepay_installment.sql`
@@ -49,6 +49,12 @@ known repo-vs-live drift noted in `docs/FINDINGS_RCB_ONETIME_CHANGE_ORDER_MISROU
 — live view carries an additional outer `SELECT * REPLACE` (PaymentDate/BatchRunDate clamp rules)
 not present in this repo file; confirm that wrapper is preserved when/if this fix is deployed.
 Deployment prohibited until PASS and Boat's explicit deploy OK, per the single-deployer rule.
+Verdict: BLOCK — `docs/reviews/2026-08-24-a3d0305-codex.md`. The two COALESCE changes are
+spec-correct, but the unit lacks dry-run/changed-output parity evidence and includes unrelated
+formatting churn. Targeted review job `bqjob_r495c418663e16e8e_000001a0326f649e_1` confirms the
+current live symptom (paid period 1 preserved; pending periods 2–6 SQL NULL) but cannot prove the
+undeployed output. Revert formatting, validate exact changed SQL, preserve the live outer wrapper,
+and resubmit once.
 
 ## RQ-20260824-1217-v3-normal-rcl-motor-newpayment
 Status: REVIEWED
