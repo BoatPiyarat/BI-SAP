@@ -1,5 +1,19 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-24 — normal-RCL qualifier BLOCK corrected and rerun
+
+Claude review `cf17399` correctly BLOCKed the first qualifier for a raw OR join to
+`careos.cancelled_change_orders` and ambiguous count wording. The qualifier now unions CURRENT and
+OLD relationship paths, aggregates to exactly one row per OrderID, and explicitly holds multiple,
+mixed-role, or multiple-counterpart relationships before classification. Rerun job
+`bqjob_rdd39aad5ae1f368_000001a0326bbce5_1` (2026-08-24; dry-run 68,640 bytes) reports 558 total
+identities: 555 READY across 552 items, 1 cancelled hold, and 2 incomplete-spine holds. The
+READY identity/item difference is fully explained by two items with multiple period-specific
+successful-charge identities: `L78389133-V1` has periods 4 and 5 (2 identities), and
+`L78525812-V1` has periods 4, 5, and 6 (3 identities). Five identities across those two items
+create the three-identity excess over distinct item count. This remains stale August 3 preview
+evidence only. DDL 058 was not changed in this delta; no deploy, CALL, GCS, SAP, or scheduler action.
+
 ## 2026-08-24 12:34 ICT — confirmed RCL new-period payments failing to interface (Period 1 OK, Period 2+ not)
 
 Boat reported 43 (order_id, period) pairs as "not on SAP". Investigated read-only

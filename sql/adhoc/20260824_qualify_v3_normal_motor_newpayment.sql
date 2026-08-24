@@ -22,6 +22,42 @@ identity AS (
   WHERE pipeline_run_id = v_pipeline_run_id
     AND file_role = 'NEWPAYMENT'
 ),
+identity_item AS (
+  SELECT
+    order_item,
+    COUNT(*) AS event_identity_count,
+    STRING_AGG(
+      FORMAT('period=%d,charge_id=%s,invoice=%s', period, charge_id, invoice_no),
+      '|' ORDER BY period, charge_id
+    ) AS event_identity_detail
+  FROM identity
+  GROUP BY order_item
+),
+change_link_rows AS (
+  SELECT
+    current_human_id AS order_id,
+    'CURRENT' AS relationship_role,
+    old_human_id AS counterpart_order_id
+  FROM `pacific-plating-282708.careos.cancelled_change_orders`
+  WHERE current_human_id IS NOT NULL
+  UNION ALL
+  SELECT
+    old_human_id AS order_id,
+    'OLD' AS relationship_role,
+    current_human_id AS counterpart_order_id
+  FROM `pacific-plating-282708.careos.cancelled_change_orders`
+  WHERE old_human_id IS NOT NULL
+),
+change_link AS (
+  SELECT
+    order_id,
+    COUNT(*) AS link_count,
+    COUNTIF(relationship_role = 'CURRENT') AS current_link_count,
+    COUNTIF(relationship_role = 'OLD') AS old_link_count,
+    COUNT(DISTINCT counterpart_order_id) AS counterpart_count
+  FROM change_link_rows
+  GROUP BY order_id
+),
 payload AS (
   SELECT
     p.OrderID, p.OrderItem, p.InvoiceNo, p.TransactionStatus, p.PaymentDate,
@@ -59,15 +95,21 @@ classified AS (
     i.payload_hash, e.flow, p.OrderID, p.TransactionStatus, p.PaymentMethod,
     p.PaymentChannel, p.PaymentDate, p.BatchRunDate,
     d.is_cancelled_effective, oi.motor_item_type,
-    c.current_human_id IS NOT NULL AS is_credit_shell,
-    c.old_human_id IS NOT NULL AS is_change_order_previous,
+    IFNULL(c.link_count, 0) AS change_link_count,
+    IFNULL(c.current_link_count, 0) AS current_change_link_count,
+    IFNULL(c.old_link_count, 0) AS old_change_link_count,
+    IFNULL(c.counterpart_count, 0) AS change_counterpart_count,
+    ii.event_identity_count, ii.event_identity_detail,
     s.payload_rows, s.distinct_periods, s.min_period, s.max_period,
     s.total_period_values, s.total_periods, s.status_values, s.invalid_status_rows,
     s.paid_blank_invoice_rows, s.paid_blank_payment_date_rows,
     CASE
       WHEN IFNULL(d.is_cancelled_effective, FALSE) THEN 'HOLD_CANCELLED'
-      WHEN c.current_human_id IS NOT NULL THEN 'HOLD_CREDITSHELL_OR_CHANGE_CURRENT'
-      WHEN c.old_human_id IS NOT NULL THEN 'HOLD_CHANGE_PREVIOUS'
+      WHEN IFNULL(c.link_count, 0) > 1 OR IFNULL(c.counterpart_count, 0) > 1
+        OR (IFNULL(c.current_link_count, 0) > 0 AND IFNULL(c.old_link_count, 0) > 0)
+        THEN 'HOLD_CHANGE_LINK_AMBIGUOUS'
+      WHEN IFNULL(c.current_link_count, 0) = 1 THEN 'HOLD_CREDITSHELL_OR_CHANGE_CURRENT'
+      WHEN IFNULL(c.old_link_count, 0) = 1 THEN 'HOLD_CHANGE_PREVIOUS'
       WHEN UPPER(IFNULL(p.PaymentMethod, '')) LIKE '%EDC%'
         OR UPPER(IFNULL(p.PaymentChannel, '')) LIKE '%EDC%' THEN 'HOLD_EDC'
       WHEN UPPER(IFNULL(p.PaymentChannel, '')) NOT LIKE 'RCL%' THEN 'HOLD_NOT_RCL_CHANNEL'
@@ -84,6 +126,7 @@ classified AS (
       ELSE 'READY_NORMAL_RCL_MOTOR_NEWPAYMENT'
     END AS qualification
   FROM identity i
+  JOIN identity_item ii USING (order_item)
   JOIN payload p
     ON p.OrderItem = i.order_item
    AND SAFE_CAST(p.Period AS INT64) = i.period
@@ -98,8 +141,7 @@ classified AS (
     ON d.order_item = i.order_item
   JOIN `pacific-plating-282708.careos.careos_order_items` oi
     ON oi.human_id = i.order_item
-  LEFT JOIN `pacific-plating-282708.careos.cancelled_change_orders` c
-    ON c.current_human_id = p.OrderID OR c.old_human_id = p.OrderID
+  LEFT JOIN change_link c ON c.order_id = p.OrderID
 )
 SELECT
   v_pipeline_run_id AS pipeline_run_id,
@@ -109,6 +151,11 @@ SELECT
   COUNT(DISTINCT OrderID) AS orders,
   COUNT(DISTINCT charge_id) AS charges,
   COUNT(DISTINCT payload_hash) AS payload_hashes,
+  COUNT(DISTINCT IF(event_identity_count > 1, order_item, NULL)) AS multi_event_order_items,
+  STRING_AGG(DISTINCT IF(event_identity_count > 1,
+    FORMAT('%s[%s]', order_item, event_identity_detail), NULL), ';' ORDER BY
+    IF(event_identity_count > 1, FORMAT('%s[%s]', order_item, event_identity_detail), NULL))
+    AS multi_event_detail,
   STRING_AGG(DISTINCT status_values, ';' ORDER BY status_values) AS status_values,
   MIN(BatchRunDate) AS min_batch_run_date,
   MAX(BatchRunDate) AS max_batch_run_date

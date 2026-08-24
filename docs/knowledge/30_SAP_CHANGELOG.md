@@ -1,5 +1,15 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-24 — fixed normal-RCL qualifier change-link grain and evidence totals
+
+- Replaced the raw `cancelled_change_orders` OR join with a one-row-per-order relationship summary;
+  ambiguous/mixed-role/multiple-counterpart links now hold explicitly.
+- Added multi-event identity evidence. Rerun job
+  `bqjob_rdd39aad5ae1f368_000001a0326bbce5_1`: 558 total identities = 555 READY + 1 cancelled
+  hold + 2 incomplete-spine holds. The 555 READY identities cover 552 items because
+  `L78389133-V1` contributes 2 period identities and `L78525812-V1` contributes 3.
+- Qualifier/docs only; DDL 058 unchanged and no production mutation.
+
 ## 2026-08-24 12:34 ICT — findings: RCL new-period payments not interfacing (Period 1 OK, 2+ not)
 
 - Investigated 43 reported (order_id, period) pairs read-only. 39/43 clean/paid/complete-spine,
