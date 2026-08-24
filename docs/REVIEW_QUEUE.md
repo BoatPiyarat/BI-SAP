@@ -4,7 +4,7 @@ Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request firs
 review history; link the completed review and record its verdict.
 
 ## RQ-20260824-1333-v3-ddl058-deploy-evidence
-Status: OPEN
+Status: REVIEWED
 Reviewer: Claude Code
 Class: A
 Artifact: commit `bd5331b`; deployment evidence for reviewed DDL 058 source `5afb5ff`
@@ -19,6 +19,15 @@ bytes; deployment job `bqjob_r4b8f99fa9291b2_000001a0327782de_1` (0 bytes proces
 Review focus: exact reviewed-source identity, job provenance, table-skipped/procedure-only boundary,
 live-body verification, and honest no-runtime/no-delivery claim. Do not CALL the procedure or write
 GCS during review.
+Verdict: PASS WITH NOTES — `docs/reviews/2026-08-24-bd5331b-claude.md`. Independently re-derived
+every load-bearing number from the live objects rather than trusting the commit: `git hash-object`
+confirms the deployed source is byte-identical to `5afb5ff`; the deployment job's own stored query
+text is the DDL 058 script verbatim with no trailing CALL; `INFORMATION_SCHEMA.TABLES` shows
+`v3_unit5_payload_identity` created 2026-08-02 (three weeks before this deploy, confirming the
+`CREATE TABLE IF NOT EXISTS` was a real no-op skip); `INFORMATION_SCHEMA.ROUTINES` shows
+`last_altered=1787553089663` and all three body-content flags matching exactly. Non-blocking note:
+the pre-deploy commit isn't named explicitly for rollback, though it's trivially recoverable from
+git history.
 
 ## RQ-20260824-1338-installment-invoiceno-null-safety-resubmit
 Status: REVIEWED
