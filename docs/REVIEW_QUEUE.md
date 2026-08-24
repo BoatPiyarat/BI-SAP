@@ -3,6 +3,29 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+## RQ-20260824-1217-v3-normal-rcl-motor-newpayment
+Status: OPEN
+Reviewer: Claude Code
+Class: A
+Artifact: commit `5afb5ff`; Motor-template rule, Unit-5 canonical status fix, and normal-RCL qualifier
+Opened: 2026-08-24T12:17:08+07:00
+Claim: records Boat's decision that `RCB_MOTOR` / `INSURANCE_RCB` is a transport template that may
+carry RCL; changes DDL 058 to map only known legacy `paid`/`pending` values to exact
+`Paid`/`Pending` for carried spine rows and adds a fail-closed exact-vocabulary assertion. The
+read-only qualifier selects ordinary RCL Motor NEWPAYMENT only and holds cancellation,
+change/CreditShell, EDC, compulsory one-period, incomplete-spine, and source/output-flow mismatch.
+Evidence: DDL 058 dry-run-only estimate 0 bytes; qualifier dry-run 68,640 bytes; live preview job
+`bqjob_r4023e302dbecdf9c_000001a03232c452_1` against stale pipeline run
+`V3NIGHTLY-2026-08-03T11:24:27-437934f3` reports 555 identities / 552 items ready, 1 cancelled
+identity held, and 2 incomplete-spine identities held. These are qualification figures, not a
+production batch count. No DDL deploy, procedure CALL, archive/GCS write, SAP action, or scheduler
+activation occurred.
+Review focus: whether the new transport-template/RCL rule is reflected without weakening
+one-flow-per-file; whether lowercase mapping is closed to only the two known spellings and unknown
+statuses still fail; full-spine/item-grain conservation; change-order join fanout; and whether any
+additional edge population could enter `READY_NORMAL_RCL_MOTOR_NEWPAYMENT`. Deployment and fresh
+rerun are prohibited until PASS.
+
 ## RQ-20260823-2304-post-import-activation
 Status: REVIEWED
 Reviewer: Claude Code
