@@ -3,6 +3,26 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+## RQ-20260824-1319-v3-normal-rcl-qualifier-delta
+Status: OPEN
+Reviewer: Claude Code
+Class: A
+Artifact: commit `a01f4cb`; qualifier-only correction after `cf17399` BLOCK
+Opened: 2026-08-24T13:19:49+07:00
+Claim: replaces the blocked raw OR join with a CURRENT/OLD relationship union aggregated to one
+row per OrderID. Multiple rows, mixed relationship roles, or multiple counterparts fail closed as
+`HOLD_CHANGE_LINK_AMBIGUOUS`. Adds explicit event-identity detail and corrects the evidence to 558
+total identities: 555 READY across 552 items, 1 cancelled hold, 2 incomplete-spine holds.
+Evidence: `sql/adhoc/20260824_qualify_v3_normal_motor_newpayment.sql`; dry-run 68,640 bytes; real
+job `bqjob_rdd39aad5ae1f368_000001a0326bbce5_1`. READY's three-identity excess over item count is
+explained by `L78389133-V1` (periods 4,5: 2 identities) and `L78525812-V1` (periods 4,5,6: 3
+identities). The query output includes their exact charge IDs and invoice identities. The source
+run remains stale `V3NIGHTLY-2026-08-03T11:24:27-437934f3`; no production count is claimed.
+Review focus: verify one-row-per-OrderID change-link grain, ambiguous-link precedence, conservation
+of 558 identities across mutually exclusive buckets, and the multi-event explanation. Delta review
+only: DDL 058 was not changed and its status fix was already found correct in `cf17399`. No deploy,
+CALL, GCS/SAP write, or scheduler action occurred.
+
 ## RQ-20260824-1319-installment-invoiceno-null-safety
 Status: OPEN
 Reviewer: Codex
