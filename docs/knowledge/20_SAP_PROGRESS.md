@@ -1,5 +1,17 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-24 13:31 ICT — reviewed DDL 058 deployed; no runtime CALL
+
+Boat explicitly approved: “Deploy reviewed DDL 058 commit `5afb5ff` OK.” Pre-deploy verification
+proved the working file byte-identical to `5afb5ff` (Git blob
+`0e8fab0a52e10d7e27fd4d6c058f0f81ff8a3ecc`) and fresh dry-run 0 bytes. Deployment job
+`bqjob_r4b8f99fa9291b2_000001a0327782de_1` completed at 2026-08-24 06:31:29 UTC (13:31:29 ICT),
+processed/billed 0 bytes, skipped the already-existing `v3_unit5_payload_identity` table, and
+replaced only `sap_integration_v3.sp_build_v3_newpayment_shadow`. Post-deploy `bq show` confirms
+both lowercase status mappings and the exact `Paid`/`Pending` fail-closed assertion in the live
+body (`lastModifiedTime=1787553089663`). No procedure CALL, payload rebuild, GCS write, SAP action,
+or scheduler activation occurred. Fresh Unit 1–5 execution remains the next separately gated step.
+
 ## 2026-08-24 13:24 ICT — Claude Code PASSed the normal-RCL qualifier delta fix
 
 `RQ-20260824-1319-v3-normal-rcl-qualifier-delta` reviewed — **Verdict: PASS**,

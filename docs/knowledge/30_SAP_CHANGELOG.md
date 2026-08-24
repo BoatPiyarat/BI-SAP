@@ -1,5 +1,13 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-24 13:31 ICT — deployed reviewed Unit-5 NEWPAYMENT procedure definition
+
+- Boat approved exact reviewed DDL 058 commit `5afb5ff`; byte identity and 0-byte dry-run passed.
+- Job `bqjob_r4b8f99fa9291b2_000001a0327782de_1` replaced only
+  `sap_integration_v3.sp_build_v3_newpayment_shadow`; existing identity table was unchanged.
+- Live metadata confirms `paid`/`pending` canonicalization and exact-status assertion. Definition
+  only: no CALL, candidate rebuild, GCS/SAP write, or scheduler change.
+
 ## 2026-08-24 13:24 ICT — reviewed normal-RCL qualifier delta fix: PASS
 
 - `RQ-20260824-1319-v3-normal-rcl-qualifier-delta` — Verdict: PASS,

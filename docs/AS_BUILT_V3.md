@@ -1,5 +1,11 @@
 # AS-BUILT — sap_integration_v3
 
+## 2026-08-24 deployment addendum
+
+DDL 058's reviewed definition of `sp_build_v3_newpayment_shadow` is live as of 13:31 ICT (job
+`bqjob_r4b8f99fa9291b2_000001a0327782de_1`). It canonicalizes known lowercase carried-spine
+statuses and asserts exact `Paid`/`Pending`. The procedure has not yet been CALLed for a fresh run.
+
 Live inventory of everything that actually exists in `sap_integration_v3` as of 2026-08-05,
 cross-referenced to the `sql/ddl/` file that creates it, whether it's actually scheduled, and
 whether it's documented anywhere. Compiled from `INFORMATION_SCHEMA.TABLES`/`ROUTINES` and
