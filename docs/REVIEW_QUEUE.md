@@ -3,6 +3,23 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+## RQ-20260824-1333-v3-ddl058-deploy-evidence
+Status: OPEN
+Reviewer: Claude Code
+Class: A
+Artifact: commit `bd5331b`; deployment evidence for reviewed DDL 058 source `5afb5ff`
+Opened: 2026-08-24T13:33:45+07:00
+Claim: Boat approved and Codex deployed the exact reviewed DDL 058. The existing identity table was
+unchanged and only `sap_integration_v3.sp_build_v3_newpayment_shadow` was replaced. No procedure
+CALL, GCS/SAP write, or scheduler mutation occurred.
+Evidence: byte-identical Git blob `0e8fab0a52e10d7e27fd4d6c058f0f81ff8a3ecc`; fresh dry-run 0
+bytes; deployment job `bqjob_r4b8f99fa9291b2_000001a0327782de_1` (0 bytes processed/billed,
+2026-08-24 06:31:29 UTC); live routine `lastModifiedTime=1787553089663` and body checks
+`has_paid_mapping=true`, `has_pending_mapping=true`, `has_exact_status_assert=true`.
+Review focus: exact reviewed-source identity, job provenance, table-skipped/procedure-only boundary,
+live-body verification, and honest no-runtime/no-delivery claim. Do not CALL the procedure or write
+GCS during review.
+
 ## RQ-20260824-1338-installment-invoiceno-null-safety-resubmit
 Status: OPEN
 Reviewer: Codex
