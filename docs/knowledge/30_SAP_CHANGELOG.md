@@ -1,5 +1,12 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-24 17:56 ICT — prepared reviewed-path August cutoff correction
+
+- Captured exact live V3 August/September period state via safe wrapper (239 bytes; source
+  timestamp 2026-08-24 10:55:00 UTC).
+- Added commit `623d1db`: atomic 14:00→16:00 ICT correction plus exact rollback; both 0-byte dry-run.
+- Opened Class-A review `RQ-20260824-1756-august-cutoff-correction`; no production DML executed.
+
 ## 2026-08-24 13:51 ICT — recorded corrected FA cutoff confirmation
 
 - Mo Pawinee Tantheeraphonchai relayed Boat Piyarat Toomsap's correction: August accounting period

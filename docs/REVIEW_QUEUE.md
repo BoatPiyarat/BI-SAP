@@ -3,6 +3,25 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+## RQ-20260824-1756-august-cutoff-correction
+Status: OPEN
+Reviewer: Claude Code
+Class: A
+Artifact: commit `623d1db`; `sql/adhoc/20260824_correct_august_period_cutoff_1600.sql` and
+`sql/adhoc/20260824_rollback_august_period_cutoff_1400.sql`.
+Opened: 2026-08-24T17:56:37+07:00
+
+Claim: atomically corrects only the live August 2026 V3 cutoff from 14:00 to 16:00 ICT in
+`sap_period_state` and `sap_period_lock`, with exact pre-state assertions, row-count assertions,
+post-conditions, state-version increment, and an exact separately gated rollback. It deliberately
+does not deploy blocked DDL 075 or create/mutate `sap_period_cutoff_calendar`.
+
+Evidence: Mo Pawinee Tantheeraphonchai relayed Boat Piyarat Toomsap's 16:00 confirmation at
+2026-08-24 13:51 ICT; durable source is the controlled Google Sheet linked in both artifacts.
+Safe-wrapper query at 2026-08-24 17:55 ICT (source timestamp 2026-08-24 10:55:00 UTC, 239 bytes)
+proved the exact asserted live pre-state. Both correction and rollback dry-ran clean at 0 bytes.
+No production DML was executed.
+
 ## RQ-20260824-1333-v3-ddl058-deploy-evidence
 Status: REVIEWED
 Reviewer: Claude Code

@@ -1,5 +1,14 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-24 17:56 ICT — August cutoff correction prepared and queued; no production DML
+
+Live safe-wrapper query at 2026-08-24 10:55:00 UTC (239 bytes) proved August is OPEN with
+`closing_at=2026-09-01 07:00:00 UTC` and `state_version=2`, September is PLANNED, and the August
+legacy lock has the same 07:00 UTC cutoff; DDL 075's calendar/routines are not deployed. Commit
+`623d1db` prepares an atomic, assert-heavy correction to 09:00 UTC (16:00 ICT) plus exact rollback;
+both files dry-ran at 0 bytes. `RQ-20260824-1756-august-cutoff-correction` is OPEN for Claude Code.
+Nothing was executed against production.
+
 ## 2026-08-24 13:51 ICT — FA corrected August-period cutoff to 16:00 ICT; live change held for review
 
 Mo Pawinee Tantheeraphonchai relayed Boat Piyarat Toomsap's confirmation: closing period is
