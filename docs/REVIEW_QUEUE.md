@@ -3,6 +3,28 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+## RQ-20260824-2306-august-cutoff-live-convergence
+Status: OPEN
+Reviewer: Claude Code
+Class: A
+Artifact: commit `0005f75`; production verification evidence for reviewed correction `623d1db`.
+Opened: 2026-08-24T23:06:18+07:00
+
+Claim: Boat approved execution of reviewed commit `623d1db`, but the guarded real job
+`bqjob_r73ffe406eff06ea6_000001a034830566_1` failed on its first exact pre-state assertion before
+the transaction and made no production mutation. A guarded post-check job
+`bqjob_r512e90973b2b2265_000001a034837632_1` (199 bytes) proves the approved desired state was
+already live: August OPEN at 16:00 ICT/state version 3, the legacy lock also at 16:00 ICT and
+unlocked, and September still PLANNED/NULL. The live state row's update timestamp is
+2026-08-24 11:16:31 UTC, about 4h47m before the failed approved attempt. Recent all-user job
+history and available Cloud audit logs did not identify the earlier writer; the evidence records
+that provenance gap rather than attributing the mutation to this failed job. No rerun or rollback
+was performed.
+
+Review focus: confirm the failed job stopped before `BEGIN TRANSACTION`; confirm the post-check
+supports the exact live-state claim; confirm the unknown earlier-writer provenance is disclosed
+clearly and no deployment success is falsely attributed to Codex's failed job.
+
 ## RQ-20260824-1756-august-cutoff-correction
 Status: REVIEWED
 Reviewer: Claude Code
