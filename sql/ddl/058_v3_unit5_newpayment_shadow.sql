@@ -216,7 +216,11 @@ BEGIN
     FORMAT('%.2f',s.TotalEIR),FORMAT('%.2f',s.TotalSBT),FORMAT('%.2f',s.ProcessingFee),
     FORMAT('%.2f',s.ProcessingFeeVat),FORMAT('%.2f',s.ShippingFee),
     FORMAT('%.2f',s.ShippingFeeVat),FORMAT('%.2f',s.TotalAmount),FORMAT('%.2f',s.Discount),
-    CAST(s.TransactionStatus AS STRING),CAST(s.SubmissionStatus AS STRING),
+    CAST(CASE s.TransactionStatus
+      WHEN 'paid' THEN 'Paid'
+      WHEN 'pending' THEN 'Pending'
+      ELSE s.TransactionStatus
+    END AS STRING),CAST(s.SubmissionStatus AS STRING),
     CAST(s.ApprovalStatus AS STRING),CAST(s.PaymentStatus AS STRING),
     FORMAT('%.2f',s.ExpectedReceived),FORMAT('%.2f',s.ActualReceived),
     FORMAT('%.2f',s.InterestThisPeriod),FORMAT('%.2f',s.PrincipleThisPeriod),
@@ -240,6 +244,9 @@ BEGIN
     FROM _candidate GROUP BY OrderItem
     HAVING total_value_n!=1 OR first_period!=1 OR last_period!=total_n OR period_n!=total_n))=0
     AS 'NEWPAYMENT full period spine is incomplete';
+  ASSERT (SELECT COUNT(*) FROM _candidate
+    WHERE TransactionStatus NOT IN ('Paid','Pending') OR TransactionStatus IS NULL)=0
+    AS 'NEWPAYMENT status must be exactly Paid or Pending';
   ASSERT (SELECT COUNT(*) FROM (
     SELECT OrderItem,Period,IFNULL(InvoiceNo,''),COUNT(*) n FROM _candidate
     GROUP BY 1,2,3 HAVING n!=1))=0 AS 'NEWPAYMENT full period spine has duplicate identities';

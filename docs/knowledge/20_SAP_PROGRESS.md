@@ -1,5 +1,22 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-24 — staged V3 activation: Motor template clarified; ordinary RCL Unit-5 fix ready for review
+
+Boat confirmed that `RCB_MOTOR` / `INSURANCE_RCB` is the Motor transport template and may carry
+RCL. RCL payload identification is `PaymentChannel` starting `RCL` plus either installment
+`TotalPeriods > 1`, or compulsory Motor with `TotalPeriods = 1`; compulsory remains a separate
+population. The first normal slice therefore targets only ordinary installment RCL.
+
+Read-only qualification of stale run `V3NIGHTLY-2026-08-03T11:24:27-437934f3` found Unit 5 copied
+legacy lowercase `paid` into non-target spine periods. Source DDL 058 now explicitly maps only
+`paid`/`pending` to canonical `Paid`/`Pending` and asserts no other status can pass. Preview job
+`bqjob_r4023e302dbecdf9c_000001a03232c452_1` (2026-08-24; source objects are the Unit-5 identity,
+delivery-ready payload, Unit-2 event shadow, order dimension, CareOS items/change orders) reports
+555 payment identities / 552 items ready, 1 cancelled identity held, and 2 incomplete-spine
+identities held. This is not a production count: the run is stale and must be rebuilt after fresh
+SAP/CareOS refresh. No DDL deploy, procedure CALL, GCS write, SAP action, or V3 schedule activation
+occurred.
+
 ## 2026-08-24 09:28 ICT — Boat ordered V2 stop + V3 cutover tonight; readiness gap documented before any action
 
 Boat instructed Codex directly (relayed via Claude Code): "stop the V2 production and all

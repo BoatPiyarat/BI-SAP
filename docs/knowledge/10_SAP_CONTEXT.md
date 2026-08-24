@@ -583,3 +583,15 @@ observed by BigQuery are unrecoverable.
   401 and remains Class A review-pending. `L77828566` is unconfirmed pending FA/SAP/JE/import
   evidence. See `FINDINGS_D16_002A_POPULATION_SPLIT_20260801.md`; keep all related correction
   populations blocked until their review gates close.
+## ADDENDUM 2026-08-24 — Motor transport template and RCL identification (Boat; overrides older wording)
+
+- `RCB_MOTOR` is the production Motor folder and `INSURANCE_RCB` is the SAP filename prefix.
+  They are transport-template identifiers and may carry an RCL Motor file; they do not by
+  themselves classify the business flow as RCB.
+- For an SAP interface payload, identify RCL from the output contract as follows:
+  `PaymentChannel` starts with `RCL` and either (a) `TotalPeriods > 1`, or
+  (b) `motor_item_type = 'MOTOR_TYPE_COMPULSORY'` and `TotalPeriods = 1`.
+- Ordinary installment RCL and one-period compulsory RCL remain separate operation populations.
+  A file must declare which population it contains and must not mix them silently.
+- This decision supersedes any older statement that inferred RCB from the `RCB_MOTOR` folder or
+  `INSURANCE_RCB` filename, or that rejected an RCL payload solely because it uses that template.

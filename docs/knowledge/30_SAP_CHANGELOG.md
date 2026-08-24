@@ -1,5 +1,15 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-24 — prepared ordinary RCL Motor Unit-5 status correction
+
+- Recorded Boat's decision that `RCB_MOTOR` / `INSURANCE_RCB` is the Motor transport template and
+  can carry RCL; payload flow is identified from `PaymentChannel`, period shape, and Motor type.
+- Updated DDL 058 to canonicalize the two known legacy lowercase statuses and assert the exact
+  `Paid`/`Pending` output vocabulary.
+- Added read-only normal-slice qualifier. Preview job
+  `bqjob_r4023e302dbecdf9c_000001a03232c452_1` found 555 identities / 552 items ready in the stale
+  August 3 run; 3 identities held. No production mutation or GCS write.
+
 ## 2026-08-24 09:28 ICT — documented Boat's V2-stop/V3-cutover order; flagged undisclosed delivery gap
 
 - Boat ordered Codex to stop V2 production/schedules and get V3 running tonight. Recorded verbatim

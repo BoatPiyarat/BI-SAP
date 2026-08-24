@@ -29,8 +29,10 @@ Boat on 2026-08-17.
 1. Candidate grain is unique at the operation's canonical key; new-payment/installment files are
    unique at `(OrderItem, Period)`. Duplicate keys block the whole file.
 2. Every row resolves to exactly one canonical flow. Declared flow, source flow, PaymentMethod,
-   PaymentChannel, BU folder, and operation must agree. RCL and RCB may never mix in one order_item
-   or one candidate file. Unknown or NULL flow blocks.
+   PaymentChannel, period shape, motor item type, and operation must agree. The Motor transport
+   template (`RCB_MOTOR` folder / `INSURANCE_RCB` filename prefix) may carry RCL and is not itself
+   a flow classifier. RCL and RCB may never mix in one order_item or one candidate file. Unknown
+   or NULL flow blocks.
 3. The physical column names, types, and ordinal positions equal the reviewed SAP contract. Never
    use `SELECT *` as the export contract and never reorder via `SELECT * EXCEPT(...), expr AS ...`.
 4. Required fields contain neither SQL NULL nor literal `"NULL"`; required identifiers and codes
@@ -63,6 +65,10 @@ Boat on 2026-08-17.
 
 ## RCL installment checks
 
+- Motor RCL payload identification requires `PaymentChannel` starting with `RCL` and either
+  `TotalPeriods > 1`, or `motor_item_type = 'MOTOR_TYPE_COMPULSORY'` with `TotalPeriods = 1`.
+- The production Motor transport template remains folder `RCB_MOTOR` with filename prefix
+  `INSURANCE_RCB`; this does not reclassify the payload as RCB.
 - For each accepted OrderItem with `TotalPeriods=N`, rows are exactly the integer set `1..N`.
 - Assert one TotalPeriods value, `MIN(Period)=1`, `MAX(Period)=N`, `COUNT(*)=N`, and
   `COUNT(DISTINCT Period)=N`.
