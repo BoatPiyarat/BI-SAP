@@ -1,5 +1,16 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-24 23:04 ICT — verified August cutoff already live; approved attempt failed closed
+
+- Boat approved reviewed commit `623d1db`; wrapper self-test passed 7/7 and dry-run was 0 bytes.
+- Job `bqjob_r73ffe406eff06ea6_000001a034830566_1` stopped at the first pre-state assertion before
+  the transaction because the reviewed 14:00/state-version-2 state had already changed; this job
+  made no production mutation.
+- Guarded post-check (199 bytes) verified both cutoff controls already at 16:00 ICT, August OPEN at
+  state version 3, and September still PLANNED. Live `updated_at` is 2026-08-24 11:16:31 UTC;
+  earlier-writer provenance remains unresolved after recent-job and audit-log checks. No rerun or
+  rollback performed.
+
 ## 2026-08-24 17:56 ICT — prepared reviewed-path August cutoff correction
 
 - Captured exact live V3 August/September period state via safe wrapper (239 bytes; source

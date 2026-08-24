@@ -1,5 +1,18 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-24 23:04 ICT — August cutoff already live; approved attempt failed closed
+
+Boat approved execution of reviewed commit `623d1db`. The mandatory wrapper self-test passed 7/7
+and the dry-run was 0 bytes, but real job `bqjob_r73ffe406eff06ea6_000001a034830566_1` failed on
+the first exact pre-state assertion before `BEGIN TRANSACTION`; it made no production change.
+A guarded 199-byte post-check then proved the desired state was already live in both controls:
+August remains OPEN with `closing_at=2026-09-01 09:00:00 UTC` (16:00 ICT), `state_version=3`, and
+`updated_at=2026-08-24 11:16:31 UTC`; `sap_period_lock.lock_datetime` is also 09:00 UTC and remains
+unlocked; September remains PLANNED with no cutoff. The live update predates this attempt by about
+4h47m. Recent BigQuery job history and the available audit-log view did not identify the earlier
+writer, so mutation provenance is unresolved. Do not rerun the correction while this exact desired
+state holds; no rollback is approved or indicated.
+
 ## 2026-08-24 17:56 ICT — August cutoff correction prepared and queued; no production DML
 
 Live safe-wrapper query at 2026-08-24 10:55:00 UTC (239 bytes) proved August is OPEN with
