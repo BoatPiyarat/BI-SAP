@@ -4,7 +4,7 @@ Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request firs
 review history; link the completed review and record its verdict.
 
 ## RQ-20260824-1217-v3-normal-rcl-motor-newpayment
-Status: OPEN
+Status: REVIEWED
 Reviewer: Claude Code
 Class: A
 Artifact: commit `5afb5ff`; Motor-template rule, Unit-5 canonical status fix, and normal-RCL qualifier
@@ -25,6 +25,18 @@ one-flow-per-file; whether lowercase mapping is closed to only the two known spe
 statuses still fail; full-spine/item-grain conservation; change-order join fanout; and whether any
 additional edge population could enter `READY_NORMAL_RCL_MOTOR_NEWPAYMENT`. Deployment and fresh
 rerun are prohibited until PASS.
+Verdict: BLOCK — `docs/reviews/2026-08-24-5afb5ff-claude.md`. DDL 058's actual delta (lowercase
+`paid`/`pending` mapping plus the new fail-closed vocabulary assert) is correct — read directly and
+confirmed the assert runs downstream of the CASE, over the unioned `_candidate` table. Two real
+problems in the read-only qualifier: (1) confirmed change-order join fanout — the qualifier's
+unguarded `... ON c.current_human_id = p.OrderID OR c.old_human_id = p.OrderID` can double-match and
+misclassify one identity, unlike the already-PASSed sibling `081_v3_creditshell_flow_router.sql`
+which grouped/guarded this exact table for this exact reason; live-checked 2,225 OrderIDs
+project-wide are exposed to it. (2) the request's headline counts don't match the cited job's own
+stored output — re-fetched the job (found under `location=asia-southeast1`) and read its result:
+total identity rows are 558, not 555 (555 is actually just the READY bucket's own row count, 552 is
+its distinct order_items), and the 555-vs-552 gap inside READY is unexplained. Resubmit the
+qualifier only; DDL 058 does not need rework.
 
 ## RQ-20260823-2304-post-import-activation
 Status: REVIEWED
