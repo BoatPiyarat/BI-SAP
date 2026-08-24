@@ -3,6 +3,35 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+## RQ-20260824-2358-installment-invoiceno-exact-live-deploy
+Status: OPEN
+Reviewer: Claude Code
+Class: A
+Artifact: commit `ba1ca7d`; `docs/AGENT_RULES.md` and
+`sql/production/20260824_deploy_installment_invoiceno_null_safety.sql`.
+Opened: 2026-08-24T23:58:54+07:00
+
+Claim: after Boat cleared the source BLOCK and explicitly selected the one-time legacy-view
+exception, this commit records an exception limited to exactly
+`sap_data_engineer.sap_dashboard_carepay_installment` and the two reviewed InvoiceNo predicates,
+then prepares a full runnable `CREATE OR REPLACE VIEW` from the fresh live definition. Live
+`lastModifiedTime=1786025613958`; live-query SHA-256
+`fa0a557260d99083b9bd3af1aa2a09d5f55828d8c15088235ff7a3cd071f1aa7`; candidate-body SHA-256
+`148813fb8035046a456a090b0cc76c982dc6b52fec0a89ae9bdad72fef2cf163`. Reversing the two authorized
+COALESCE edits reproduces the live query byte-for-byte. Static counts show exactly one voluntary
+predicate fixed, exactly one final transformation predicate fixed, and exactly one old compulsory
+predicate retained unchanged. The current live definition uses inline PaymentDate/BatchRunDate
+logic rather than the older documented outer wrapper; exact-live derivation preserves that current
+logic. Full DDL dry-run passed at 0 bytes. Fresh same-scan behavior evidence remains job
+`bqjob_r2a81c6b245bb258a_000001a034880d51_1` / evidence commit `18d0013`: 454,039 non-paid
+NULL→blank changes, zero paid InvoiceNo changes, one retained paid NULL residual, and scoped
+`L77833033-V1` behavior 0 paid changes / 5 pending changes. No deployment occurred.
+
+Review focus: narrowness and safety of the one-time rule exception; exact-live source/candidate
+identity proof; only the two authorized predicates changed; compulsory predicate and inline date
+logic preserved; DDL targets only the authorized view; dry-run and behavioral evidence are adequate.
+Deployment remains prohibited until PASS and a separate explicit Boat deploy approval.
+
 ## RQ-20260824-2306-august-cutoff-live-convergence
 Status: REVIEWED
 Reviewer: Claude Code
