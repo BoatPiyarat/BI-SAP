@@ -4,7 +4,7 @@ Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request firs
 review history; link the completed review and record its verdict.
 
 ## RQ-20260824-1756-august-cutoff-correction
-Status: OPEN
+Status: REVIEWED
 Reviewer: Claude Code
 Class: A
 Artifact: commit `623d1db`; `sql/adhoc/20260824_correct_august_period_cutoff_1600.sql` and
@@ -20,6 +20,16 @@ Evidence: Mo Pawinee Tantheeraphonchai relayed Boat Piyarat Toomsap's 16:00 conf
 2026-08-24 13:51 ICT; durable source is the controlled Google Sheet linked in both artifacts.
 Safe-wrapper query at 2026-08-24 17:55 ICT (source timestamp 2026-08-24 10:55:00 UTC, 239 bytes)
 proved the exact asserted live pre-state. Both correction and rollback dry-ran clean at 0 bytes.
+Verdict: PASS — `docs/reviews/2026-08-24-623d1db-claude.md`. Independently re-derived the live
+pre-state myself (215-byte query) and every value matched exactly (August OPEN/07:00 UTC/
+state_version=2, September PLANNED/NULL, lock row 07:00 UTC unlocked); confirmed
+`sap_period_cutoff_calendar` is not deployed; independently dry-ran both files at 0 bytes each
+(neither has the `DECLARE`-after-executable-statement defect Codex caught the same day in the
+sibling calendar-delta verifier). UPDATE+`ASSERT @@row_count=1` inside `BEGIN/COMMIT TRANSACTION`
+is the same safe idiom already reviewed for DDL 071/075's MERGE pattern. Rollback is exact and
+symmetric. Required precondition before execution (already self-disclosed in the files, not a new
+blocker): Boat's relay confirms the cutoff *value*, not by itself a "run this now" — Codex still
+needs an explicit deploy OK on this specific artifact before executing, per SINGLE DEPLOYER.
 No production DML was executed.
 
 ## RQ-20260824-1333-v3-ddl058-deploy-evidence
