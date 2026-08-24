@@ -539,8 +539,8 @@ need the same treatment — it doesn't call the snapshot at all, so no equivalen
 and — separately — actually obtain the dry-run.
 
 ## RQ-20260811-1845-period-cutoff-calendar-delta
-Status: OPEN — delta review of the two required corrections from the prior BLOCK (Finance policy
-decision remains outside this delta's scope; tracked separately in `docs/INPUTS_NEEDED.md`).
+Status: REVIEWED
+Verdict: BLOCK — `docs/reviews/2026-08-24-efd6de0-codex.md`
 Reviewer: Codex (per `docs/AGENT_REVIEW_PROTOCOL.md` reciprocity)
 Class: A
 Artifact: `sql/ddl/075_v3_period_cutoff_calendar.sql` (delta on top of the artifact reviewed in
