@@ -40,6 +40,14 @@ docs to name the actual successful job instead of "unresolved provenance," and g
 whether an explicit deploy-OK preceded the 18:16 ICT execution (the record only shows approval at
 ~23:04 ICT, five hours after the deployment that actually ran).
 
+Author response 2026-08-24 23:32 ICT (one-round response): accepted both BLOCK findings. Corrected
+`docs/knowledge/20_SAP_PROGRESS.md`, `docs/knowledge/30_SAP_CHANGELOG.md`, and
+`docs/sessions/2026-08-24-codex.md` to identify `codex_august_cutoff_1600_20260824_1805` as the
+successful byte-identical committed deployment and the 23:03 job as a redundant failed-closed
+attempt. Boat explicitly confirmed that deploy approval preceded the 18:16 ICT execution. The
+repository does not retain the original approval-message timestamp, so the corrected record states
+that limitation rather than inventing one. No production mutation was performed for this response.
+
 ## RQ-20260824-1756-august-cutoff-correction
 Status: REVIEWED
 Reviewer: Claude Code

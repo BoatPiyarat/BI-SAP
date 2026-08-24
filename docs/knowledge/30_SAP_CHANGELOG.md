@@ -16,16 +16,17 @@
   distributions required by blocked checklist items 1/11. No view deployment or production write.
   Final BLOCK disposition remains Boat's decision under the one-round rule.
 
-## 2026-08-24 23:04 ICT — verified August cutoff already live; approved attempt failed closed
+## 2026-08-24 18:16 ICT — deployed reviewed August cutoff correction
 
-- Boat approved reviewed commit `623d1db`; wrapper self-test passed 7/7 and dry-run was 0 bytes.
-- Job `bqjob_r73ffe406eff06ea6_000001a034830566_1` stopped at the first pre-state assertion before
-  the transaction because the reviewed 14:00/state-version-2 state had already changed; this job
-  made no production mutation.
-- Guarded post-check (199 bytes) verified both cutoff controls already at 16:00 ICT, August OPEN at
-  state version 3, and September still PLANNED. Live `updated_at` is 2026-08-24 11:16:31 UTC;
-  earlier-writer provenance remains unresolved after recent-job and audit-log checks. No rerun or
-  rollback performed.
+- After PASS and Boat's explicit prior deploy approval, job
+  `codex_august_cutoff_1600_20260824_1805` ran the byte-identical reviewed `623d1db` correction:
+  committed transaction, 13 child jobs, 921 bytes, DONE/no error.
+- August cutoff changed atomically from 14:00 to 16:00 ICT in both controls; state version 2→3;
+  September remained PLANNED. Boat later reconfirmed that approval preceded execution; the original
+  approval-message timestamp is not retained in the repo.
+- A redundant 23:03 invocation (`bqjob_r73ffe406eff06ea6_000001a034830566_1`) failed closed before
+  its transaction. The 199-byte post-check confirmed the correct live state. No double-apply or
+  rollback occurred.
 
 ## 2026-08-24 17:56 ICT — prepared reviewed-path August cutoff correction
 

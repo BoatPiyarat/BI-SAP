@@ -22,18 +22,23 @@ and cost. This closes the stated technical evidence gap. The protocol's one-roun
 Boat to make the final BLOCK disposition; do not deploy without that decision and a separate
 explicit deploy approval. The live view itself was not changed.
 
-## 2026-08-24 23:04 ICT — August cutoff already live; approved attempt failed closed
+## 2026-08-24 18:16 ICT — reviewed August cutoff correction deployed successfully
 
-Boat approved execution of reviewed commit `623d1db`. The mandatory wrapper self-test passed 7/7
-and the dry-run was 0 bytes, but real job `bqjob_r73ffe406eff06ea6_000001a034830566_1` failed on
-the first exact pre-state assertion before `BEGIN TRANSACTION`; it made no production change.
-A guarded 199-byte post-check then proved the desired state was already live in both controls:
-August remains OPEN with `closing_at=2026-09-01 09:00:00 UTC` (16:00 ICT), `state_version=3`, and
-`updated_at=2026-08-24 11:16:31 UTC`; `sap_period_lock.lock_datetime` is also 09:00 UTC and remains
-unlocked; September remains PLANNED with no cutoff. The live update predates this attempt by about
-4h47m. Recent BigQuery job history and the available audit-log view did not identify the earlier
-writer, so mutation provenance is unresolved. Do not rerun the correction while this exact desired
-state holds; no rollback is approved or indicated.
+After Claude Code's PASS at 18:07 ICT and Boat's explicit deploy approval, Codex job
+`codex_august_cutoff_1600_20260824_1805` started at 2026-08-24 11:16:29 UTC. Its query text is
+byte-identical to reviewed commit `623d1db`; the committed transaction and 13-child-job sequence
+completed all pre-asserts, both UPDATEs, both post-asserts, and the final SELECT (921 bytes, DONE,
+no error). It atomically changed August from 14:00 to 16:00 ICT in `sap_period_state` and
+`sap_period_lock`, incrementing state version 2→3 while leaving September PLANNED. Boat confirmed
+later in the same dated session that explicit deploy approval preceded this execution; the earlier
+approval message timestamp is not retained in the repository record.
+
+At 23:03 ICT, a second redundant invocation
+`bqjob_r73ffe406eff06ea6_000001a034830566_1` correctly failed on the first exact pre-state assertion
+before `BEGIN TRANSACTION` because the correction was already live; it made no mutation. Post-check
+`bqjob_r512e90973b2b2265_000001a034837632_1` (199 bytes) confirmed August OPEN at 16:00 ICT/state
+version 3, the lock at 16:00 ICT and unlocked, and September PLANNED/NULL. No double-apply or
+rollback occurred.
 
 ## 2026-08-24 17:56 ICT — August cutoff correction prepared and queued; no production DML
 
