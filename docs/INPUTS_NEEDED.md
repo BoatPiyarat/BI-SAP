@@ -276,6 +276,16 @@ disclosure rule.
 
 ## OPEN 2026-08-11 — Finance: `sap_period_cutoff_calendar` correction/registry policy
 
+**2026-08-24 confirmation makes this correction path immediately required.** Mo Pawinee
+Tantheeraphonchai relayed at 13:51 ICT: “Boat Piyarat Toomsap แจ้งวัน closing period
+1-Sep-26 (16.00) ค่ะ”. This explicitly changes the August-period cutoff from the previously
+recorded `2026-09-01 14:00:00 Asia/Bangkok` to `2026-09-01 16:00:00 Asia/Bangkok`. The durable
+human-input source is the Google Sheet `SAP V3 — FA Period Cutoff Confirmation`:
+https://docs.google.com/spreadsheets/d/1K_LLlIfPgJWnKRJfJ1e4ZMkdf8M7_u2addZGbdwHo_Q/edit . The
+14:00 row is retained as `SUPERSEDED`; the 16:00 row is `APPROVED`. Do not silently UPDATE live
+period state or re-register the insert-only calendar row. A reviewed correction artifact is
+required before changing V3 production state.
+
 `sql/ddl/075_v3_period_cutoff_calendar.sql` (monthly cutoff automation source, PASS-pending
 Class-A review) deliberately builds no UPDATE/correction path for a wrong cutoff row —
 `sp_register_period_cutoff` is insert-only and rejects re-registration for an already-registered
@@ -489,7 +499,9 @@ D12/D13 resolves the former tolerance input: ±฿10 **per order**, after order 
 Boat approved the following ICT cutoffs for the reviewed monthly transition:
 
 - July: `2026-08-03 15:00:00 Asia/Bangkok`
-- August: `2026-09-01 14:00:00 Asia/Bangkok`
+- August: `2026-09-01 16:00:00 Asia/Bangkok` — corrected 2026-08-24 13:51 ICT by Mo Pawinee
+  Tantheeraphonchai relaying Boat Piyarat Toomsap; supersedes the earlier 14:00 approval. Durable
+  confirmation: https://docs.google.com/spreadsheets/d/1K_LLlIfPgJWnKRJfJ1e4ZMkdf8M7_u2addZGbdwHo_Q/edit
 
 Use these exact instants for the corresponding `sap_period_state` close transition; do not infer
 other months. Finance remains owner of future monthly calendar entries.

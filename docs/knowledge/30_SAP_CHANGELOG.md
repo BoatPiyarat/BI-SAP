@@ -1,5 +1,14 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-24 13:51 ICT — recorded corrected FA cutoff confirmation
+
+- Mo Pawinee Tantheeraphonchai relayed Boat Piyarat Toomsap's correction: August accounting period
+  closes `2026-09-01 16:00:00 Asia/Bangkok`, superseding 14:00.
+- Created the controlled Google Sheet `SAP V3 — FA Period Cutoff Confirmation`; historical 14:00 is
+  `SUPERSEDED`, corrected 16:00 is `APPROVED`.
+- No live period/calendar mutation: a reviewed correction artifact is required because the current
+  registry is intentionally insert-only.
+
 ## 2026-08-24 13:31 ICT — deployed reviewed Unit-5 NEWPAYMENT procedure definition
 
 - Boat approved exact reviewed DDL 058 commit `5afb5ff`; byte identity and 0-byte dry-run passed.

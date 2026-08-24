@@ -1,5 +1,16 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-24 13:51 ICT — FA corrected August-period cutoff to 16:00 ICT; live change held for review
+
+Mo Pawinee Tantheeraphonchai relayed Boat Piyarat Toomsap's confirmation: closing period is
+`2026-09-01 16:00:00 Asia/Bangkok`. This supersedes the previously recorded 14:00 cutoff. Created
+the durable Google Sheet `SAP V3 — FA Period Cutoff Confirmation`, retaining 14:00 as `SUPERSEDED`
+and 16:00 as `APPROVED`:
+https://docs.google.com/spreadsheets/d/1K_LLlIfPgJWnKRJfJ1e4ZMkdf8M7_u2addZGbdwHo_Q/edit . No live
+`sap_period_state` or cutoff-calendar mutation was attempted: the current design is insert-only
+and the Finance correction policy remains an explicit gate. V3 must continue using the existing
+live value until a Class-A reviewed correction artifact is approved and deployed.
+
 ## 2026-08-24 13:31 ICT — reviewed DDL 058 deployed; no runtime CALL
 
 Boat explicitly approved: “Deploy reviewed DDL 058 commit `5afb5ff` OK.” Pre-deploy verification
