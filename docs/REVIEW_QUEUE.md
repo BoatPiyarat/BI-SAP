@@ -21,7 +21,7 @@ live-body verification, and honest no-runtime/no-delivery claim. Do not CALL the
 GCS during review.
 
 ## RQ-20260824-1338-installment-invoiceno-null-safety-resubmit
-Status: OPEN
+Status: REVIEWED
 Reviewer: Codex
 Class: A
 Artifact: commit `0ac324f` (on top of `a3d0305`); `sql/production/sap_dashboard_carepay_installment.sql`
@@ -58,6 +58,12 @@ evidence supports the claim; confirm the residual-exception writeup is accurate 
 out-of-scope rather than something this fix should have also covered.
 Deployment still prohibited until PASS and Boat's explicit deploy OK; live-wrapper preservation
 note from the prior review still stands unchanged.
+Verdict: BLOCK — `docs/reviews/2026-08-24-0ac324f-codex.md`. Both original implementation
+corrections are substantively closed: the diff is surgical and the scoped/full-population numbers
+reconcile. The remaining Class-A blocker is provenance: the full-population before/after claims
+have no execution job IDs or saved query, source-object list, or query timestamps. Checklist 1/11
+therefore cannot pass. Per the one-round rule, supply provenance and escalate final disposition to
+Boat rather than starting another review ping-pong round.
 
 ## RQ-20260824-1319-v3-normal-rcl-qualifier-delta
 Status: REVIEWED
