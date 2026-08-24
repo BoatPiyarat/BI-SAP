@@ -20,6 +20,15 @@
 --   Health list). Added an InsuranceGroup != 'products/car-insurance' branch ahead of the
 --   generic BAY branch. (3) re-commented the follow_ups.transaction_id IS NOT NULL WHERE filter
 --   -- same LEFT-JOIN-turned-INNER pattern as (1) -- to match the query's actual live state.
+-- 24/Aug/2026 Claude: InvoiceNo returned literal NULL (not '') for unpaid installment periods.
+--   Root cause: the 06/Aug/2026 fix above correctly stopped dropping unpaid periods, which
+--   exposed that both InvoiceNo CASE expressions (in rcl_voluntary_installment_details and in
+--   transformation) test `charges.status <> 'SUCCESSFUL'` / `TransactionStatus <> 'SUCCESSFUL'`
+--   -- both NULL for a period with no charge yet, so the `<>` comparison is NULL (falsy), the
+--   intended "blank InvoiceNo" branch never fires, and it falls through to ELSE, returning NULL.
+--   Wrapped both comparisons in COALESCE(..., '') so a genuinely-unpaid period exports '' as
+--   documented, not NULL. Source-only fix; not yet re-verified against live BigQuery or deployed
+--   per this project's single-deployer rule (see AGENT_RULES.md).
 -------------------------------------------------------------------------------------------------------------------------
 WITH
 charges AS (
@@ -116,14 +125,14 @@ rcl_voluntary_installment_details AS (
     order_items.human_id AS OrderItem,
 CASE WHEN charges.installment_number = 1 THEN CONCAT('2_',COALESCE(charges.third_party_id,order_items.human_id))
   WHEN charges.third_party_id is null AND charges.status = 'SUCCESSFUL' THEN order_items.human_id
-  WHEN charges.third_party_id is null AND charges.status <> 'SUCCESSFUL' THEN ''
-  ELSE  charges.third_party_id 
+  WHEN charges.third_party_id is null AND COALESCE(charges.status,'') <> 'SUCCESSFUL' THEN ''  -- 2026-08-24: COALESCE guards the NULL-charge case (unpaid period surfaced by the 2026-08-06 LEFT JOIN fix); bare `<>` against NULL charges.status was falling through to ELSE and returning literal NULL instead of ''
+  ELSE  charges.third_party_id
 END AS InvoiceNo,
     orders.create_time AS OrderDate,
-    CASE 
-      WHEN JSON_VALUE(orders.data, '$.policyHolder.isCompany') ='true' THEN 
-    JSON_VALUE(orders.data, '$.policyHolder.companyTaxId') 
-      ELSE JSON_VALUE(orders.data, '$.idNumber') 
+    CASE
+      WHEN JSON_VALUE(orders.data, '$.policyHolder.isCompany') ='true' THEN
+    JSON_VALUE(orders.data, '$.policyHolder.companyTaxId')
+      ELSE JSON_VALUE(orders.data, '$.idNumber')
     END AS InsuredID,
     JSON_VALUE(orders.data, '$.policyHolder.title') AS Title,
     COALESCE(JSON_VALUE(orders.data, '$.policyHolder.firstName'),JSON_VALUE(orders.data, '$.policyHolder.policyAddress.companyName')) AS FirstName,
@@ -131,8 +140,8 @@ END AS InvoiceNo,
     order_items.insurer AS InsurerCode,
     order_items.product AS InsuranceGroup,
     order_items.motor_item_type AS InsuranceType,
-    CASE WHEN JSON_VALUE(orders.data, '$.oicCode') in ('TYPE_610','TYPE_620', 'TYPE_630') 
-    THEN 'MotorBike'  
+    CASE WHEN JSON_VALUE(orders.data, '$.oicCode') in ('TYPE_610','TYPE_620', 'TYPE_630')
+    THEN 'MotorBike'
     ELSE 'Motor'
     END AS InsuranceProduct,
     'Insurance' ProductType,
@@ -419,7 +428,7 @@ transformation AS (
     CompanyDB,
     OrderID,
     OrderItem,
-    CASE WHEN InvoiceNo IS NULL AND TransactionStatus <> 'SUCCESSFUL' THEN '' ELSE InvoiceNo END AS InvoiceNo,
+    CASE WHEN InvoiceNo IS NULL AND COALESCE(TransactionStatus,'') <> 'SUCCESSFUL' THEN '' ELSE InvoiceNo END AS InvoiceNo,  -- 2026-08-24: same NULL-safety fix as the CTE above -- TransactionStatus (raw charges.status) is NULL for unpaid periods, so bare `<>` was falling through to ELSE InvoiceNo (NULL) instead of ''
     CAST(FORMAT_DATE('%d%m%Y', OrderDate) AS STRING) AS OrderDate,
     case 
       WHEN InsuredID='' OR InsuredID is NULL THEN '-' 
