@@ -1,5 +1,15 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-24 23:08 ICT — supplied missing InvoiceNo parity provenance
+
+- Added a saved read-only same-scan verifier against the current live wrapped installment view.
+- Job `bqjob_r2a81c6b245bb258a_000001a034880d51_1` (776,589,829 bytes; source timestamp
+  2026-08-24 16:08:47 UTC) proves 454,039 non-paid NULL→blank changes, zero paid InvoiceNo changes,
+  one retained paid NULL residual, and the expected 0/5 scoped behavior for `L77833033-V1`.
+- Recorded the direct source, 13 underlying source tables, saved query, job/timestamps, and fresh
+  distributions required by blocked checklist items 1/11. No view deployment or production write.
+  Final BLOCK disposition remains Boat's decision under the one-round rule.
+
 ## 2026-08-24 23:04 ICT — verified August cutoff already live; approved attempt failed closed
 
 - Boat approved reviewed commit `623d1db`; wrapper self-test passed 7/7 and dry-run was 0 bytes.

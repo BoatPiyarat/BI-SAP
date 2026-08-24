@@ -1,5 +1,19 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-24 23:08 ICT — InvoiceNo review provenance gap supplied; Boat disposition pending
+
+The `0ac324f` review BLOCK accepted the SQL behavior and scope but lacked reproducible provenance
+for its full-population parity numbers. Added saved read-only verifier
+`sql/adhoc/20260824_verify_installment_invoiceno_null_safety_provenance.sql` against the current
+live wrapped view. Job `bqjob_r2a81c6b245bb258a_000001a034880d51_1` (source timestamp
+2026-08-24 16:08:47 UTC; 776,589,829 bytes) reports 997,369 rows / 190,617 items; exactly 454,039
+non-paid NULL InvoiceNos become blank, zero paid InvoiceNos change, one pre-existing paid NULL
+remains, and `L77833033-V1` preserves paid period 1 while changing pending periods 2–6 to blank.
+The saved query and job metadata provide the missing source-object list, query, timestamps, job ID,
+and cost. This closes the stated technical evidence gap. The protocol's one-round rule requires
+Boat to make the final BLOCK disposition; do not deploy without that decision and a separate
+explicit deploy approval. The live view itself was not changed.
+
 ## 2026-08-24 23:04 ICT — August cutoff already live; approved attempt failed closed
 
 Boat approved execution of reviewed commit `623d1db`. The mandatory wrapper self-test passed 7/7

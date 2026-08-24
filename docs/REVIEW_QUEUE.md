@@ -125,6 +125,22 @@ have no execution job IDs or saved query, source-object list, or query timestamp
 therefore cannot pass. Per the one-round rule, supply provenance and escalate final disposition to
 Boat rather than starting another review ping-pong round.
 
+Provenance supplement 2026-08-24 23:08 ICT: saved reproducible read-only query
+`sql/adhoc/20260824_verify_installment_invoiceno_null_safety_provenance.sql` uses the current live
+`sap_data_engineer.sap_dashboard_carepay_installment` (including its production-only outer wrapper)
+as the baseline and derives only candidate InvoiceNo at the final output seam in the same scan.
+Dry-run: 776,589,829 bytes. Real job `bqjob_r2a81c6b245bb258a_000001a034880d51_1`, source timestamp
+2026-08-24 16:08:47 UTC, start 2026-08-24 16:08:47.669 UTC, end 16:08:57.993 UTC. Fresh results:
+997,369 total rows; 190,617 distinct OrderItems; 543,330 paid and 454,039 non-paid; baseline
+InvoiceNo NULL/blank 454,040/0; candidate NULL/blank 1/454,039; exactly 454,039 non-paid NULLs
+change to blank; paid InvoiceNo changes 0; paid NULL residual 1; `L77833033-V1` period 1 changes 0
+and periods 2–6 changed to blank 5. Job metadata names the live view's 13 underlying `careos` source
+tables; the saved query lists them. This closes the stated checklist 1/11 evidence gap with fresh
+same-scan evidence; the older 996,655-row figures are retained as historical results whose original
+job provenance was unavailable, not reused as current evidence. Per the one-round rule, final BLOCK
+disposition is escalated to Boat; no second agent review requested and deployment remains prohibited
+until Boat explicitly clears the BLOCK and separately approves deployment.
+
 ## RQ-20260824-1319-v3-normal-rcl-qualifier-delta
 Status: REVIEWED
 Reviewer: Claude Code
