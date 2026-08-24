@@ -3,6 +3,45 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+## RQ-20260824-1338-installment-invoiceno-null-safety-resubmit
+Status: OPEN
+Reviewer: Codex
+Class: A
+Artifact: commit `0ac324f` (on top of `a3d0305`); `sql/production/sap_dashboard_carepay_installment.sql`
+Opened: 2026-08-24T13:38:12+07:00
+Claim: resubmission of `RQ-20260824-1319-installment-invoiceno-null-safety` (BLOCK,
+`docs/reviews/2026-08-24-a3d0305-codex.md`) addressing both raised blockers.
+Correction 1 (checklist 9, non-surgical formatting): `0ac324f` reverts the trailing-whitespace
+churn `a3d0305` incidentally introduced in the `InsuredID`/`InsuranceProduct` CASE blocks. Diff
+against `a3d0305^` is now 7 insertions / 7 deletions (only the changelog comment and the two
+COALESCE predicate changes) — confirmed via `diff -u` against `git show a3d0305^:...` before commit.
+Correction 2 (checklist 7/11, no dry-run/parity evidence): ran the exact changed definition live,
+`--maximum_bytes_billed` capped, both dry-run first:
+- Scoped check, `L77833033-V1` (dry-run 803,268,176 bytes; job `bqjob_r2661d5ecd2aa88a_000001a03274343e_1`):
+  period 1 (paid) keeps `InvoiceNo='2_chrg_66378krdcm0ku2fjfyg'`, `ActualReceived=1349.98`; periods
+  2–6 (pending) now show `InvoiceNo=''` (confirmed `IS NULL=false`, `=''` true via job
+  `bqjob_r242594b2ed98cf60_000001a0327494ac_1`), `ActualReceived=0.0` — matches the intended contract.
+- Full-population before/after parity, original (`a3d0305^`) vs fixed (working tree), each dry-run
+  776,063,480 bytes before running: `total_rows` 996,655 vs 996,655 (identical), `distinct_orderitems`
+  190,504 vs 190,504 (identical), `paid_rows` 542,947 vs 542,947 (identical), `pending_rows` 453,708
+  vs 453,708 (identical) — no row-grain or paid-behavior regression. `invoiceno_null_count` 453,709 →
+  1; `invoiceno_blank_count` 0 → 453,708 — matches the fix's intent (NULL→'' for the unpaid
+  population) with one residual exception noted below.
+Residual exception (not fixed in this artifact, flagging not hiding): the 1 remaining NULL-InvoiceNo
+row after the fix is `L80174076-M1`, `TransactionStatus='paid'` (raw `charges.status='SUCCESSFUL'`).
+Traced to a **separate, pre-existing bug** in `compulsary_installment_details` (line ~295, untouched
+by this artifact): `WHEN charges.installment_number = 1 THEN CONCAT('2_',charges.third_party_id)` —
+unlike the sibling branch in `rcl_voluntary_installment_details` (line 126), this one does not
+`COALESCE(charges.third_party_id, order_items.human_id)` before `CONCAT`, so `CONCAT('2_', NULL)`
+returns `NULL` in BigQuery when `third_party_id` is itself NULL on a successful installment_number=1
+charge. Confirmed present in both `a3d0305^` and the fixed tree — not introduced or touched by this
+change. Out of scope for this artifact per the surgical-change rule; recommend a follow-up RQ.
+Review focus: confirm the whitespace-only diff is now truly surgical; confirm the parity/scoped
+evidence supports the claim; confirm the residual-exception writeup is accurate and appropriately
+out-of-scope rather than something this fix should have also covered.
+Deployment still prohibited until PASS and Boat's explicit deploy OK; live-wrapper preservation
+note from the prior review still stands unchanged.
+
 ## RQ-20260824-1319-v3-normal-rcl-qualifier-delta
 Status: REVIEWED
 Reviewer: Claude Code
