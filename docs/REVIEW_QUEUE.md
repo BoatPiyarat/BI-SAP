@@ -4,7 +4,7 @@ Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request firs
 review history; link the completed review and record its verdict.
 
 ## RQ-20260824-2306-august-cutoff-live-convergence
-Status: OPEN
+Status: REVIEWED
 Reviewer: Claude Code
 Class: A
 Artifact: commit `0005f75`; production verification evidence for reviewed correction `623d1db`.
@@ -24,6 +24,21 @@ was performed.
 Review focus: confirm the failed job stopped before `BEGIN TRANSACTION`; confirm the post-check
 supports the exact live-state claim; confirm the unknown earlier-writer provenance is disclosed
 clearly and no deployment success is falsely attributed to Codex's failed job.
+Verdict: BLOCK — `docs/reviews/2026-08-24-0005f75-claude.md`. The failed-job and post-check claims
+are both independently confirmed exact. But the "unresolved earlier writer" claim is false: one
+query against `region-asia-southeast1.INFORMATION_SCHEMA.JOBS_BY_PROJECT` for the
+`sap_period_state`/`sap_period_lock` window finds it directly — job
+`codex_august_cutoff_1600_20260824_1805` (hand-labeled, not auto-generated), 2026-08-24 11:16:29 UTC
+(18:16:29 ICT), `transactionInfo.transactionId` present (committed), query text byte-identical to
+`623d1db`, 13 child jobs forming a complete successful run (3 pre-asserts, both UPDATEs, both
+post-asserts, final SELECT). This ran 9 minutes after my PASS review landed (`61752de`,
+18:07:18 ICT) — the correction succeeded on its first real attempt, not on some untraceable earlier
+mutation. The 23:03 ICT job was a second, redundant attempt that correctly failed closed against the
+already-corrected state. Live data is fine (exactly the approved 16:00 ICT target, no double-apply)
+— this BLOCK is on the record's accuracy, not the database. Required: correct the knowledge/session
+docs to name the actual successful job instead of "unresolved provenance," and get Boat to confirm
+whether an explicit deploy-OK preceded the 18:16 ICT execution (the record only shows approval at
+~23:04 ICT, five hours after the deployment that actually ran).
 
 ## RQ-20260824-1756-august-cutoff-correction
 Status: REVIEWED
