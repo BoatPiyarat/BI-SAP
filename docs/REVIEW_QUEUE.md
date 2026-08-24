@@ -4,7 +4,7 @@ Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request firs
 review history; link the completed review and record its verdict.
 
 ## RQ-20260824-2358-installment-invoiceno-exact-live-deploy
-Status: OPEN
+Status: REVIEWED
 Reviewer: Claude Code
 Class: A
 Artifact: commit `ba1ca7d`; `docs/AGENT_RULES.md` and
@@ -31,6 +31,17 @@ Review focus: narrowness and safety of the one-time rule exception; exact-live s
 identity proof; only the two authorized predicates changed; compulsory predicate and inline date
 logic preserved; DDL targets only the authorized view; dry-run and behavioral evidence are adequate.
 Deployment remains prohibited until PASS and a separate explicit Boat deploy approval.
+Verdict: PASS — `docs/reviews/2026-08-25-ba1ca7d-claude.md`. Independently reproduced every cited
+hash and timestamp from the live object: `INFORMATION_SCHEMA.VIEWS` gives the exact same live
+`view_definition` SHA-256, `bq show` gives the exact same `lastModifiedTime`, and hashing the local
+candidate body reproduces the exact same candidate SHA-256. Strongest check: mechanically reverting
+the two claimed predicate edits in the candidate and rehashing reproduces the live definition
+byte-for-byte — proving both correct derivation and that nothing else in the 31KB view differs.
+`grep` counts confirm exactly one voluntary fix, one transformation fix, one untouched bare
+compulsory predicate, zero remaining unfixed occurrences. Exactly one DDL statement in the file,
+targeting only the authorized view; dry-run independently reproduced at 0 bytes. Non-blocking note:
+no standalone rollback file included (recoverable via the already-hashed live definition, but worth
+saving explicitly). Deployment remains gated on separate explicit Boat approval, executed by Codex.
 
 ## RQ-20260824-2306-august-cutoff-live-convergence
 Status: REVIEWED
