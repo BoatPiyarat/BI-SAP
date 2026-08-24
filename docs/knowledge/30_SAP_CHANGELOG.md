@@ -1,5 +1,15 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-24 13:24 ICT — reviewed normal-RCL qualifier delta fix: PASS
+
+- `RQ-20260824-1319-v3-normal-rcl-qualifier-delta` — Verdict: PASS,
+  `docs/reviews/2026-08-24-a01f4cb-claude.md`.
+- Independently reran the qualifier; reproduced the cited job's output exactly, both required
+  corrections from the prior BLOCK confirmed closed.
+- Flagged the natural next step: check this morning's 39 real undelivered RCL items
+  (`FINDINGS_RCL_NEWPAYMENT_NOT_INTERFACED_20260824.md`) against a fresh (non-stale) run of this
+  qualifier once available.
+
 ## 2026-08-24 — fixed normal-RCL qualifier change-link grain and evidence totals
 
 - Replaced the raw `cancelled_change_orders` OR join with a one-row-per-order relationship summary;

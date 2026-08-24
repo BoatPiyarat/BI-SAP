@@ -1,5 +1,24 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-24 13:24 ICT — Claude Code PASSed the normal-RCL qualifier delta fix
+
+`RQ-20260824-1319-v3-normal-rcl-qualifier-delta` reviewed — **Verdict: PASS**,
+`docs/reviews/2026-08-24-a01f4cb-claude.md`. Independently reran the qualifier live and reproduced
+the cited job's output exactly (555 READY / 552 items / 1 cancelled hold / 2 incomplete-spine
+holds = 558 total), including the exact two multi-event identities
+(`L78389133-V1`, `L78525812-V1`). Confirmed by code read that the `cancelled_change_orders` join
+now groups to one row per `order_id` with correct ambiguous-link precedence — both required
+corrections from the prior BLOCK (`cf17399`, a different concurrent Claude Code session) are
+closed.
+
+Connecting this to this morning's separate investigation
+(`docs/FINDINGS_RCL_NEWPAYMENT_NOT_INTERFACED_20260824.md`): once this qualifier is rebuilt against
+a fresh (non-stale) V3 pipeline run, the 39 real, currently-undelivered RCL Motor period-2+ items
+found there are the natural population to check for correct `READY_NORMAL_RCL_MOTOR_NEWPAYMENT`
+classification — that would directly confirm whether this V3 path, once live, actually closes the
+gap those 39 items represent. Not yet done; flagging as the obvious next step for whoever runs the
+next fresh qualification.
+
 ## 2026-08-24 — normal-RCL qualifier BLOCK corrected and rerun
 
 Claude review `cf17399` correctly BLOCKed the first qualifier for a raw OR join to

@@ -4,7 +4,7 @@ Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request firs
 review history; link the completed review and record its verdict.
 
 ## RQ-20260824-1319-v3-normal-rcl-qualifier-delta
-Status: OPEN
+Status: REVIEWED
 Reviewer: Claude Code
 Class: A
 Artifact: commit `a01f4cb`; qualifier-only correction after `cf17399` BLOCK
@@ -22,6 +22,11 @@ Review focus: verify one-row-per-OrderID change-link grain, ambiguous-link prece
 of 558 identities across mutually exclusive buckets, and the multi-event explanation. Delta review
 only: DDL 058 was not changed and its status fix was already found correct in `cf17399`. No deploy,
 CALL, GCS/SAP write, or scheduler action occurred.
+Verdict: PASS — `docs/reviews/2026-08-24-a01f4cb-claude.md`. Independently reran the qualifier live
+(0.000 GiB dry-run, exact match) and reproduced the cited job's output bit-for-bit, including the
+exact multi-event identities. Confirmed by direct code read that `change_link` now groups to one
+row per `order_id` with correct ambiguous-link precedence in the `CASE` chain. Both required
+corrections from the prior BLOCK (`cf17399`) are closed.
 
 ## RQ-20260824-1319-installment-invoiceno-null-safety
 Status: REVIEWED
