@@ -126,13 +126,13 @@ rcl_voluntary_installment_details AS (
 CASE WHEN charges.installment_number = 1 THEN CONCAT('2_',COALESCE(charges.third_party_id,order_items.human_id))
   WHEN charges.third_party_id is null AND charges.status = 'SUCCESSFUL' THEN order_items.human_id
   WHEN charges.third_party_id is null AND COALESCE(charges.status,'') <> 'SUCCESSFUL' THEN ''  -- 2026-08-24: COALESCE guards the NULL-charge case (unpaid period surfaced by the 2026-08-06 LEFT JOIN fix); bare `<>` against NULL charges.status was falling through to ELSE and returning literal NULL instead of ''
-  ELSE  charges.third_party_id
+  ELSE  charges.third_party_id 
 END AS InvoiceNo,
     orders.create_time AS OrderDate,
-    CASE
-      WHEN JSON_VALUE(orders.data, '$.policyHolder.isCompany') ='true' THEN
-    JSON_VALUE(orders.data, '$.policyHolder.companyTaxId')
-      ELSE JSON_VALUE(orders.data, '$.idNumber')
+    CASE 
+      WHEN JSON_VALUE(orders.data, '$.policyHolder.isCompany') ='true' THEN 
+    JSON_VALUE(orders.data, '$.policyHolder.companyTaxId') 
+      ELSE JSON_VALUE(orders.data, '$.idNumber') 
     END AS InsuredID,
     JSON_VALUE(orders.data, '$.policyHolder.title') AS Title,
     COALESCE(JSON_VALUE(orders.data, '$.policyHolder.firstName'),JSON_VALUE(orders.data, '$.policyHolder.policyAddress.companyName')) AS FirstName,
@@ -140,8 +140,8 @@ END AS InvoiceNo,
     order_items.insurer AS InsurerCode,
     order_items.product AS InsuranceGroup,
     order_items.motor_item_type AS InsuranceType,
-    CASE WHEN JSON_VALUE(orders.data, '$.oicCode') in ('TYPE_610','TYPE_620', 'TYPE_630')
-    THEN 'MotorBike'
+    CASE WHEN JSON_VALUE(orders.data, '$.oicCode') in ('TYPE_610','TYPE_620', 'TYPE_630') 
+    THEN 'MotorBike'  
     ELSE 'Motor'
     END AS InsuranceProduct,
     'Insurance' ProductType,
