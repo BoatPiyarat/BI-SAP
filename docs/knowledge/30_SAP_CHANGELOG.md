@@ -1,5 +1,18 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-24 09:28 ICT — documented Boat's V2-stop/V3-cutover order; flagged undisclosed delivery gap
+
+- Boat ordered Codex to stop V2 production/schedules and get V3 running tonight. Recorded verbatim
+  in `docs/INPUTS_NEEDED.md` (URGENT OPEN) with three open questions before execution.
+- Checked V3 readiness first: `delivery_enabled` still false, control-plane doc SUPERSEDED with 6
+  open gates, 3/12 case-type views drifted/unbaselined, column-contract guard not wired in, no
+  cutover runbook exists. V3 has never written a production interface file.
+- New `docs/tasks/TASK_V2_STOP_V3_CUTOVER_20260824.md`: readiness checklist + three options for
+  Boat/Codex. No V2 schedule stopped, no delivery flag changed, by Claude Code.
+- Also re-verified the now-live legacy CreditShell fix live (job
+  `bqjob_r6afad09918f32cee_000001a031958856_1`): figures match prior claims exactly, all four
+  known trigger cases correct, zero blank-PaymentMethod regression.
+
 ## 2026-08-23 23:24 ICT — reviewed post-import activation evidence: PASS
 
 - `RQ-20260823-2304-post-import-activation` — Verdict: PASS,

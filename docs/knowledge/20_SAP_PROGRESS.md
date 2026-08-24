@@ -1,5 +1,28 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-24 09:28 ICT — Boat ordered V2 stop + V3 cutover tonight; readiness gap documented before any action
+
+Boat instructed Codex directly (relayed via Claude Code): "stop the V2 production and all
+schedule... push V3 up and running tonight." Before any action, checked V3's actual readiness
+against its own design docs (read-only, no mutation): `delivery_enabled: false` remains live
+(`AS_BUILT_V3.md`), the delivery control plane doc is headed SUPERSEDED — DO NOT RUN with 6 unclosed
+gates, 3 of 12 case-type interface views have unreviewed drift or no baseline
+(`RQ-20260801-0040`), the column-contract guard is not wired into the nightly chain, and no
+V2→V3 cutover runbook exists anywhere in the repo. V3 has never written a real interface file to
+GCS. Recorded as an URGENT entry in `docs/INPUTS_NEEDED.md` with three open questions for Boat
+(full-stop-accept-the-gap vs. narrow stop vs. scoped V3-tonight) and a readiness checklist/options
+doc for Codex at `docs/tasks/TASK_V2_STOP_V3_CUTOVER_20260824.md`. No V2 schedule stopped, no
+`delivery_enabled` flag changed, by Claude Code.
+
+Also independently re-verified, per Boat's separate instruction to treat the now-live legacy
+CreditShell fix as applied and confirm correctness: live query against
+`sap_integration_v2.\`RCL 04_new order credit shell new tunning\`` (job
+`bqjob_r6afad09918f32cee_000001a031958856_1`, 2026-08-24) reproduces the exact previously-claimed
+figures — 59,494 rows / 12,084 items total, 7,557 items now `RCB-CreditShell`, 4,526 items still
+`RCL-Credit Shell` (the disclosed, unchanged RABBIT_CARE_INSTALLMENT/unknown residual), zero blank
+`PaymentMethod` on paid rows, and all four known trigger-case items
+(`L80569331-M1/-V1`, `L80482368-M1/-V1`) correctly `RCB-CreditShell`.
+
 ## 2026-08-23 23:24 ICT — Claude Code PASSed the post-import activation evidence
 
 `RQ-20260823-2304-post-import-activation` reviewed — **Verdict: PASS**,

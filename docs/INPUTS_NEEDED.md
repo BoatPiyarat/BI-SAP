@@ -1,5 +1,62 @@
 # INPUTS NEEDED — things only Boat / Aware / Attila / Finance can answer
 
+## URGENT OPEN 2026-08-24 09:28 ICT — Boat ordered V2 production + all schedules stopped tonight, V3 cutover; V3 delivery has never been enabled
+
+Boat's instruction, verbatim, given directly to Codex outside this file: **"Please stop the V2
+production and all schedule, I found a lot of continuing productions errors. We will push V3 up
+and running tonight."** Relayed to Claude Code with the ask to document it and help Codex
+plan/review/recheck the result.
+
+**Readiness check performed before any action was taken (read-only, no BigQuery mutation, no
+gcloud mutation):**
+
+V3 has never produced a real 56-column interface file for SAP.
+- `docs/AS_BUILT_V3.md` (2026-08-05, live-cross-checked, not memory): *"the unattended V3
+  workflow still writes no production interface file: `delivery_enabled: false` remains live and
+  there is no recurring workflow trigger."*
+- `docs/design/V3_DELIVERY_CONTROL_PLANE.md` is headed **SUPERSEDED — DO NOT RUN** and lists 6
+  sequential, still-open gates before `delivery_enabled` may even be flipped to `true` (deploy
+  contract DDLs, complete Apps Script rehearsal, a separately-scoped GCS-write approval, flip the
+  flag for one bounded execution, verify generation/CRC/SHA/SAP pickup, *then* a separate atomic
+  cutover review). None is marked complete.
+- Of the 12 case-type interface producers under `sql/sap_view/*.sql`, the last live drift check
+  (`RQ-20260801-0040`, PASSed) found 9 match their reviewed baseline, 2 drift
+  (`RCL_Motor_process_1_create`, `RCL_NonMotor_process_2_newpayment`), and 1 has no baseline at
+  all (`RCL_Motor_process_2_newpayment`); a separate production copy of
+  `RCB_NonMotor_process_1_create` also drifts. No later evidence these were fixed or re-reviewed.
+- The column-contract guard (`sql/ddl/028_column_contract_guard.sql`) exists but is not called
+  from anywhere in the nightly chain — it would not catch a bad export tonight.
+- No V2→V3 cutover runbook exists anywhere in the repo. Cutover is explicitly framed in the
+  delivery-control-plane doc as its own future, separately-reviewed step — never drafted.
+- The most recent activation work (yesterday, `RQ-20260823-2304`, PASSed) only turned on **inert**
+  post-import infrastructure (Cloud Run revisions, a paused test-cadence scheduler); zero GCS
+  writes, zero SAP actions, `delivery_enabled` still false as of that review.
+
+**What this means literally**: if V2 production and its schedules are stopped tonight with nothing
+else changed, the business stops sending SAP any interface file at all — not a controlled
+migration to a working replacement, a full outage of invoice/commission delivery, until V3's
+6 delivery gates are closed and at least the 3 drifted/missing-baseline case-type views are fixed
+and re-reviewed.
+
+**Decision needed from Boat before Codex executes "stop V2" as literally worded:**
+1. Is the intent to stop ALL V2 schedules tonight regardless of the SAP-delivery gap above
+   (accepting a documented delivery outage until V3 closes its gates), or to stop only the
+   specific V2 objects/schedules causing "continuing production errors" (which ones?) while
+   V3 is finished in parallel?
+2. If a full stop-tonight is still wanted despite the gap: what is the accepted downtime window,
+   and does Finance/Aware need advance notice that no SAP interface file will post until V3 is
+   live?
+3. "Push V3 up and running tonight" — does this mean close all 6 delivery-control-plane gates and
+   flip `delivery_enabled: true` for full production tonight (large scope, multiple still-open
+   Class-A reviews, not achievable safely in one night per the control-plane doc's own sequencing),
+   or something narrower (e.g., just the CreditShell routing fixed today)?
+
+No V2 schedule has been stopped and no V3 delivery flag has been changed by Claude Code in
+response to this instruction — this entry exists so Codex has the same evidence before acting, and
+so this decision is recorded rather than inferred. See `docs/tasks/TASK_V2_STOP_V3_CUTOVER_20260824.md`
+for the readiness checklist and options laid out for Codex.
+
+
 ## RESOLVED 2026-08-23 20:43 ICT — RCB one-time change-order mislabelled RCL: both decisions made
 
 Boat decided both open questions below directly in chat:
