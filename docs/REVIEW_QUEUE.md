@@ -3,6 +3,33 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+## RQ-20260824-1319-installment-invoiceno-null-safety
+Status: OPEN
+Reviewer: Codex
+Class: A
+Artifact: commit `a3d0305`; `sql/production/sap_dashboard_carepay_installment.sql`
+Opened: 2026-08-24T13:19:43+07:00
+Claim: the 06/Aug/2026 fix (charges LEFT JOIN moved out of the WHERE clause) correctly stopped
+dropping unpaid installment periods, but this exposed that `InvoiceNo`'s CASE in
+`rcl_voluntary_installment_details` and in `transformation` tests `charges.status <> 'SUCCESSFUL'` /
+`TransactionStatus <> 'SUCCESSFUL'` — both NULL, not TRUE, for a period with no charge yet — so the
+intended `''` branch never fired and InvoiceNo fell through to `ELSE ... NULL`. Wrapped both
+comparisons in `COALESCE(...,'')` so an unpaid period exports `''` as originally intended, matching
+the same NULL-safety fix already applied to `ActualReceived` on 06/Aug/2026.
+Evidence: source-read diagnosis only — traced the CASE branches by hand against BigQuery's
+three-valued-logic rules (NULL WHEN predicate = falsy). Not yet re-run against live BigQuery; no
+dry-run or query job attached to this request. Needs verification scoped to a multi-installment
+order with at least one still-unpaid period (e.g. `L77833033-V1`, cited in the 06/Aug finding) to
+confirm those rows now show `InvoiceNo = ''` and not `NULL`, and that no previously-correct
+`InvoiceNo` value changed for paid periods.
+Review focus: (1) NULL-safety of the two COALESCE wraps — correct fallback value and no change to
+paid-period behavior; (2) whether any other nullable-column comparison in this file uses bare
+`<>`/`=` against a column that can be NULL post-06/Aug (same bug class, checklist item 3); (3) the
+known repo-vs-live drift noted in `docs/FINDINGS_RCB_ONETIME_CHANGE_ORDER_MISROUTED_RCL_20260803.md`
+— live view carries an additional outer `SELECT * REPLACE` (PaymentDate/BatchRunDate clamp rules)
+not present in this repo file; confirm that wrapper is preserved when/if this fix is deployed.
+Deployment prohibited until PASS and Boat's explicit deploy OK, per the single-deployer rule.
+
 ## RQ-20260824-1217-v3-normal-rcl-motor-newpayment
 Status: REVIEWED
 Reviewer: Claude Code
