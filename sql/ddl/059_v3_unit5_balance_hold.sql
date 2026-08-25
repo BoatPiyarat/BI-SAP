@@ -38,28 +38,46 @@ BEGIN
   DELETE FROM `pacific-plating-282708.sap_integration_v3.v3_unit5_balance_hold`
   WHERE pipeline_run_id=p_pipeline_run_id;
 
+  CREATE TEMP TABLE _period_identity_count AS
+  SELECT order_item,period,COUNT(*) AS identity_count
+  FROM `pacific-plating-282708.sap_integration_v3.v3_unit5_payload_identity`
+  WHERE pipeline_run_id=p_pipeline_run_id AND file_role='NEWPAYMENT'
+  GROUP BY order_item,period;
+
+  CREATE TEMP TABLE _payload_one AS
+  SELECT * EXCEPT(_identity_rank)
+  FROM (
+    SELECT p.*,
+      ROW_NUMBER() OVER (
+        PARTITION BY p.OrderItem,SAFE_CAST(p.Period AS INT64),p.InvoiceNo
+        ORDER BY TO_JSON_STRING(p)) AS _identity_rank
+    FROM `pacific-plating-282708.sap_integration_v3.v3_unit5_newpayment_ready` p)
+  WHERE _identity_rank=1;
+
   INSERT INTO `pacific-plating-282708.sap_integration_v3.v3_unit5_balance_hold`
   SELECT p_pipeline_run_id,p.OrderItem,SAFE_CAST(p.Period AS INT64),i.charge_id,p.InvoiceNo,
     SAFE_CAST(p.ExpectedReceived AS NUMERIC),SAFE_CAST(p.ActualReceived AS NUMERIC),
     SAFE_CAST(p.ActualReceived AS NUMERIC)-SAFE_CAST(p.ExpectedReceived AS NUMERIC),
     CASE
-      WHEN COUNT(*) OVER (PARTITION BY p.OrderItem,SAFE_CAST(p.Period AS INT64))>1
+      WHEN c.identity_count>1
         THEN 'HOLD_MULTIPLE_PAYMENT_EVENTS_SAME_PERIOD'
       ELSE 'HOLD_RECEIPT_BALANCE_MISMATCH'
     END,
     CASE
-      WHEN COUNT(*) OVER (PARTITION BY p.OrderItem,SAFE_CAST(p.Period AS INT64))>1
+      WHEN c.identity_count>1
         THEN 'More than one payment-event identity resolves to the same item-period'
       ELSE 'Absolute ActualReceived minus ExpectedReceived exceeds THB 10 for one item-period'
     END,
     CURRENT_TIMESTAMP()
-  FROM `pacific-plating-282708.sap_integration_v3.v3_unit5_newpayment_ready` p
-  JOIN `pacific-plating-282708.sap_integration_v3.v3_unit5_payload_identity` i
-    ON i.pipeline_run_id=p_pipeline_run_id AND i.file_role='NEWPAYMENT'
-   AND i.order_item=p.OrderItem AND i.period=SAFE_CAST(p.Period AS INT64)
-   AND i.invoice_no=p.InvoiceNo
-  QUALIFY COUNT(*) OVER (PARTITION BY p.OrderItem,SAFE_CAST(p.Period AS INT64))>1
-    OR ABS(SAFE_CAST(p.ActualReceived AS NUMERIC)-SAFE_CAST(p.ExpectedReceived AS NUMERIC))>10;
+  FROM `pacific-plating-282708.sap_integration_v3.v3_unit5_payload_identity` i
+  JOIN _period_identity_count c
+    ON c.order_item=i.order_item AND c.period=i.period
+  JOIN _payload_one p
+    ON p.OrderItem=i.order_item AND SAFE_CAST(p.Period AS INT64)=i.period
+   AND p.InvoiceNo=i.invoice_no
+  WHERE i.pipeline_run_id=p_pipeline_run_id AND i.file_role='NEWPAYMENT'
+    AND (c.identity_count>1
+      OR ABS(SAFE_CAST(p.ActualReceived AS NUMERIC)-SAFE_CAST(p.ExpectedReceived AS NUMERIC))>10);
 
   ASSERT (SELECT COUNT(*) FROM (
     SELECT order_item,period,charge_id,COUNT(*) n
@@ -69,7 +87,8 @@ BEGIN
 
   DELETE FROM `pacific-plating-282708.sap_integration_v3.v3_notification_item`
   WHERE pipeline_run_id=p_pipeline_run_id
-    AND reason_code='HOLD_RECEIPT_BALANCE_MISMATCH';
+    AND reason_code IN
+      ('HOLD_RECEIPT_BALANCE_MISMATCH','HOLD_MULTIPLE_PAYMENT_EVENTS_SAME_PERIOD');
 
   INSERT INTO `pacific-plating-282708.sap_integration_v3.v3_notification_item`
   SELECT h.pipeline_run_id,'VALIDATION_HOLD','PAYMENT_EVENT',h.order_item,u.order_id,h.period,

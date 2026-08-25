@@ -1,6 +1,6 @@
 -- Class A. Operator-facing event view; diagnostic only and never an SAP file contract.
 -- The 56-column delivery table is a complete period spine. This view exposes only the exact
--- payment-event identities from the most recently started nightly run so operators can inspect
+-- payment-event identities from the most recently completed Unit 5 nightly run so operators can inspect
 -- the actual new payments without mistaking Pending/context rows for current events.
 CREATE OR REPLACE VIEW
   `pacific-plating-282708.sap_integration_v3.vw_v3_current_newpayment_events` AS

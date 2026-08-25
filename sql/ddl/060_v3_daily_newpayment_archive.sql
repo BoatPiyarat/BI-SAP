@@ -85,7 +85,10 @@ BEGIN
   JOIN `pacific-plating-282708.sap_integration_v3.v3_unit2_event_shadow` e
     ON e.pipeline_run_id=i.pipeline_run_id AND e.order_item=i.order_item
    AND e.period=i.period AND e.charge_id=i.charge_id
-  WHERE i.pipeline_run_id=p_pipeline_run_id AND i.file_role='NEWPAYMENT';
+  WHERE i.pipeline_run_id=p_pipeline_run_id AND i.file_role='NEWPAYMENT'
+    AND NOT EXISTS (SELECT 1
+      FROM `pacific-plating-282708.sap_integration_v3.v3_unit5_balance_hold` h
+      WHERE h.pipeline_run_id=p_pipeline_run_id AND h.order_item=i.order_item);
 
   ASSERT (SELECT COUNT(*) FROM `pacific-plating-282708.sap_integration_v3.export_archive`
     WHERE export_run_id=v_export_run_id)=
