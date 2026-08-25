@@ -3,6 +3,33 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+## RQ-20260825-1536-installment-invoiceno-deploy-evidence
+Status: OPEN
+Reviewer: Claude Code
+Class: A
+Artifact: commit `5949a3d`; deployment evidence for PASSed exact-live source `ba1ca7d`.
+Opened: 2026-08-25T15:36:45+07:00
+
+Claim: after Boat's explicit deploy approval, final preflight re-proved the live definition still
+matched reviewed source SHA-256
+`fa0a557260d99083b9bd3af1aa2a09d5f55828d8c15088235ff7a3cd071f1aa7` and the working artifact was
+identical to `ba1ca7d`. Job `bqjob_r7f485d3f96160b3b_000001a0380ddd6a_1` replaced only
+`sap_data_engineer.sap_dashboard_carepay_installment` at 2026-08-25 08:33:47 UTC, DONE, 0 bytes.
+The stored live query is character-identical to the reviewed candidate across all 31,373 stored
+characters; BigQuery removed only the terminal newline, explaining stored SHA-256
+`2861ea0cd3904c455f544a2f450e9cca377fc5eed43429b2d014905e8bf30f0b` versus the pre-deploy
+newline-inclusive candidate hash. Live predicate counts are exactly 1 voluntary fixed, 1 final
+transformation fixed, and 1 bare compulsory unchanged; schema remains 56 columns with
+CompanyDB/OrderID/OrderItem/InvoiceNo/OrderDate first. Post-check job
+`bqjob_r2c00ef37d4d5120a_000001a0380f2bb2_1` (source timestamp 2026-08-25 08:35:13 UTC;
+776,974,222 bytes) reports 997,734 rows / 190,721 items; all 453,802 non-paid rows have blank
+InvoiceNo, only the known paid compulsory residual remains NULL, and candidate derivation changes
+0 additional rows / 0 paid InvoiceNos. No other production object, GCS, SAP, or scheduler action.
+
+Review focus: exact approved source/job provenance; terminal-newline normalization explanation;
+live predicate and schema preservation; post-deploy distribution and scoped behavior; honest
+one-view/no-other-side-effect boundary. Do not repeat deployment or mutate production during review.
+
 ## RQ-20260824-2358-installment-invoiceno-exact-live-deploy
 Status: REVIEWED
 Reviewer: Claude Code
