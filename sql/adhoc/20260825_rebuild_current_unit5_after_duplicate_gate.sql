@@ -1,0 +1,2 @@
+CALL `pacific-plating-282708.sap_integration_v3.sp_build_v3_newpayment_delivery_ready`(
+  'V3NIGHTLY-2026-08-25T11:17:18-ca7ee9e7');

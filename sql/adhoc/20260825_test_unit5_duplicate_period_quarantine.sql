@@ -11,6 +11,12 @@ SELECT 'L1-V1' OrderItem,'2' Period,'same-invoice' InvoiceNo,
 UNION ALL
 SELECT 'L1-V1','2','same-invoice','1870.00','1870.00';
 
+INSERT INTO identities
+VALUES ('run','NEWPAYMENT','L2-V1',3,'charge-c','invoice-c');
+INSERT INTO payload
+VALUES ('L2-V1','3','invoice-c','100.00','100.00'),
+       ('L2-V1','3','unbound-extra-invoice','0.00','100.00');
+
 CREATE TEMP TABLE period_identity_count AS
 SELECT order_item,period,COUNT(*) identity_count
 FROM identities GROUP BY order_item,period;
@@ -24,24 +30,29 @@ FROM (
   FROM payload p)
 WHERE identity_rank=1;
 
+CREATE TEMP TABLE payload_period_count AS
+SELECT OrderItem AS order_item,SAFE_CAST(Period AS INT64) AS period,COUNT(*) payload_count
+FROM payload GROUP BY order_item,period;
+
 CREATE TEMP TABLE holds AS
 SELECT i.order_item,i.period,i.charge_id,i.invoice_no,
   'HOLD_MULTIPLE_PAYMENT_EVENTS_SAME_PERIOD' hold_code
 FROM identities i
 JOIN period_identity_count c USING(order_item,period)
+JOIN payload_period_count pc USING(order_item,period)
 JOIN payload_one p
   ON p.OrderItem=i.order_item AND SAFE_CAST(p.Period AS INT64)=i.period
  AND p.InvoiceNo=i.invoice_no
-WHERE c.identity_count>1;
+WHERE c.identity_count>1 OR pc.payload_count>1;
 
-ASSERT (SELECT COUNT(*) FROM holds)=2
-  AS 'both same-period charge identities must be held';
+ASSERT (SELECT COUNT(*) FROM holds)=3
+  AS 'identity and payload duplicate shapes must hold every bound charge identity';
 ASSERT (SELECT COUNT(*) FROM (
   SELECT order_item,period,charge_id,COUNT(*) n
   FROM holds GROUP BY 1,2,3 HAVING n!=1))=0
   AS 'hold rows must remain unique at charge identity';
-ASSERT (SELECT COUNT(DISTINCT order_item) FROM holds)=1
-  AS 'duplicate-period quarantine must identify one whole item';
+ASSERT (SELECT COUNT(DISTINCT order_item) FROM holds)=2
+  AS 'duplicate-period quarantine must identify both whole items';
 
 CREATE TEMP TABLE notifications AS
 SELECT 'run' pipeline_run_id,'HOLD_RECEIPT_BALANCE_MISMATCH' reason_code
@@ -58,4 +69,4 @@ ASSERT (SELECT COUNT(*) FROM notifications WHERE pipeline_run_id='run')=0
 ASSERT (SELECT COUNT(*) FROM notifications WHERE pipeline_run_id='other-run')=1
   AS 'retry cleanup must not touch another run';
 
-SELECT 'PASS' AS fixture_status,2 AS held_identities,1 AS held_items;
+SELECT 'PASS' AS fixture_status,3 AS held_identities,2 AS held_items;
