@@ -4,7 +4,7 @@ Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request firs
 review history; link the completed review and record its verdict.
 
 ## RQ-20260825-1558-empty-installment-details-finding
-Status: OPEN
+Status: REVIEWED
 Reviewer: Codex (per `docs/AGENT_REVIEW_PROTOCOL.md` reciprocity — Codex reviews Claude Code's
 investigations/quantifications)
 Class: A
@@ -73,6 +73,13 @@ alternative cause; whether the V3 ONETIME-rescue claim is accurate (independentl
 `vw_onetime_payload_source` for this item); whether the population-scan bucketing and "0 RCL items
 currently stuck" conclusion holds; and whether the two proposed design directions are sound before
 either is turned into a deployable DDL.
+
+Verdict: BLOCK — `docs/reviews/2026-08-25-00ce8ed-codex.md`. The design/root-cause chain is
+coherent, but the corrected 2-item count, snapshot sequence, and negative-control claims have no
+execution job IDs or exact source timestamps; the 20-item negative control uses nondeterministic
+`LIMIT 20` without `ORDER BY`; and deployable DDL 082 still labels itself Class B and states the
+superseded count of 3. Phase 2 remains explicitly not deploy-ready until 082 exists and the exact
+full procedure validates against it. No live query or production action was performed for review.
 
 ## RQ-20260825-1536-installment-invoiceno-deploy-evidence
 Status: REVIEWED
