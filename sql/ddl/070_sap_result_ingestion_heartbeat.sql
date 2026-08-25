@@ -26,6 +26,7 @@ CREATE TABLE IF NOT EXISTS
     sap_file_name STRING NOT NULL,
     file_sha256 STRING NOT NULL,
     data_row_count INT64 NOT NULL,
+    event_identity_count INT64,
     delivery_status STRING NOT NULL,
     recorded_at TIMESTAMP NOT NULL,
     production_file_name STRING NOT NULL
@@ -38,6 +39,9 @@ OPTIONS (
 
 ALTER TABLE `pacific-plating-282708.sap_integration_v3.sap_delivery_manifest_v3`
 ADD COLUMN IF NOT EXISTS production_file_name STRING;
+
+ALTER TABLE `pacific-plating-282708.sap_integration_v3.sap_delivery_manifest_v3`
+ADD COLUMN IF NOT EXISTS event_identity_count INT64;
 
 -- Deployment gate: the runtime writer must MERGE exactly one logical row per ingestor_name and
 -- the independent monitor must alert before a 60-minute successful-poll gap. The promotion writer

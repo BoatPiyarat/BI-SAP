@@ -40,6 +40,7 @@ CREATE TABLE IF NOT EXISTS `pacific-plating-282708.sap_integration_v3.export_fil
   size_bytes INT64,
   header_column_count INT64,
   data_row_count INT64,
+  event_identity_count INT64,
   uat2_status STRING,
   uat2_accepted_by STRING,
   uat2_accepted_at TIMESTAMP,
@@ -47,6 +48,9 @@ CREATE TABLE IF NOT EXISTS `pacific-plating-282708.sap_integration_v3.export_fil
   recorded_at TIMESTAMP
 )
 CLUSTER BY export_run_id, delivery_status;
+
+ALTER TABLE `pacific-plating-282708.sap_integration_v3.export_file_manifest`
+ADD COLUMN IF NOT EXISTS event_identity_count INT64;
 
 CREATE TABLE IF NOT EXISTS `pacific-plating-282708.sap_integration_v3.july_export_hold` (
   order_item STRING,

@@ -80,10 +80,10 @@ BEGIN
     SELECT order_item,period,charge_id,payload_hash
     FROM _archive GROUP BY 1,2,3,4 HAVING COUNT(*)!=1))=0
     AS 'delivered export identity is duplicated';
-  ASSERT (SELECT data_row_count
+  ASSERT (SELECT COALESCE(event_identity_count,data_row_count)
     FROM `pacific-plating-282708.sap_integration_v3.sap_delivery_manifest_v3`
     WHERE export_run_id=p_export_run_id AND sap_file_name=p_sap_file_name)=v_rows
-    AS 'delivery manifest row count does not conserve against archive identities';
+    AS 'delivery manifest event identity count does not conserve against archive identities';
   ASSERT (SELECT COUNT(*) FROM _archive
     WHERE NULLIF(payload_hash,'') IS NULL
       OR NULLIF(JSON_VALUE(payload_json,'$.TransactionStatus'),'') IS NULL)=0

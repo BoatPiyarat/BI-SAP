@@ -3,6 +3,12 @@
 -- delivery evidence; it never infers SAP pickup or row-level acknowledgement from the copy.
 -- Deploy reviewed DDL 070's production_file_name schema delta before this replacement.
 
+ALTER TABLE `pacific-plating-282708.sap_integration_v3.export_file_manifest`
+ADD COLUMN IF NOT EXISTS event_identity_count INT64;
+
+ALTER TABLE `pacific-plating-282708.sap_integration_v3.sap_delivery_manifest_v3`
+ADD COLUMN IF NOT EXISTS event_identity_count INT64;
+
 CREATE OR REPLACE PROCEDURE `pacific-plating-282708.sap_integration_v3.sp_mark_v3_exact_delivery`(
   p_pipeline_run_id STRING,
   p_export_run_id STRING,
@@ -12,6 +18,8 @@ CREATE OR REPLACE PROCEDURE `pacific-plating-282708.sap_integration_v3.sp_mark_v
   p_production_generation STRING,
   p_size_bytes INT64,
   p_crc32c STRING,
+  p_header_column_count INT64,
+  p_data_row_count INT64,
   p_production_file_name STRING,
   p_sap_result_file_name STRING,
   p_file_sha256 STRING
@@ -34,6 +42,8 @@ BEGIN
     AS 'production generation evidence is required';
   ASSERT p_size_bytes>0 AS 'production object must be non-empty';
   ASSERT NULLIF(TRIM(p_crc32c),'') IS NOT NULL AS 'matching CRC32C evidence is required';
+  ASSERT p_header_column_count=56 AS 'physical CSV must have exactly 56 header columns';
+  ASSERT p_data_row_count>0 AS 'physical CSV must have at least one data row';
   ASSERT REGEXP_CONTAINS(p_production_file_name,
     r'^INSURANCE_RCB_[A-Za-z0-9._-]*[.]csv$')
     AS 'exact production filename must satisfy the INSURANCE_RCB CSV contract';
@@ -86,9 +96,17 @@ BEGIN
     AS 'archive ledger does not conserve against the same pipeline run identity';
   ASSERT v_identity_unmatched=0 AND v_archive_unmatched=0
     AS 'archive ledger identity set does not exactly match the same pipeline run payload';
+  ASSERT p_data_row_count>=v_archive_rows
+    AS 'physical CSV rows cannot be fewer than released event identities';
   ASSERT (SELECT COUNT(DISTINCT archive_uri)
     FROM `pacific-plating-282708.sap_integration_v3.export_archive`
     WHERE export_run_id=p_export_run_id)=1 AS 'export run has multiple archive URIs';
+  ASSERT STARTS_WITH(p_archive_uri,(SELECT REGEXP_REPLACE(ANY_VALUE(archive_uri),r'[*][.]csv$','')
+    FROM `pacific-plating-282708.sap_integration_v3.export_archive`
+    WHERE export_run_id=p_export_run_id))
+    AS 'archive object URI is outside the exact export-run URI pattern';
+  ASSERT REGEXP_EXTRACT(p_archive_uri,r'([^/]+)$')=p_production_file_name
+    AS 'archive and production basenames must match for exact-byte promotion';
   ASSERT (SELECT COUNT(*)
     FROM `pacific-plating-282708.sap_integration_v3.export_file_manifest`
     WHERE export_run_id=p_export_run_id OR production_uri=p_production_uri)=0
@@ -113,17 +131,19 @@ BEGIN
 
   INSERT INTO `pacific-plating-282708.sap_integration_v3.export_file_manifest`
     (export_run_id,archive_uri,production_uri,archive_generation,production_generation,sha256,
-     size_bytes,header_column_count,data_row_count,uat2_status,delivery_status,recorded_at)
+     size_bytes,header_column_count,data_row_count,event_identity_count,uat2_status,delivery_status,
+     recorded_at)
   VALUES
     (p_export_run_id,p_archive_uri,p_production_uri,p_archive_generation,p_production_generation,
-     p_file_sha256,p_size_bytes,56,v_archive_rows,NULL,'DELIVERED',CURRENT_TIMESTAMP());
+     p_file_sha256,p_size_bytes,p_header_column_count,p_data_row_count,v_archive_rows,NULL,
+     'DELIVERED',CURRENT_TIMESTAMP());
 
   INSERT INTO `pacific-plating-282708.sap_integration_v3.sap_delivery_manifest_v3`
     (export_run_id,production_uri,production_generation,sap_file_name,file_sha256,data_row_count,
-     delivery_status,recorded_at,production_file_name)
+     event_identity_count,delivery_status,recorded_at,production_file_name)
   VALUES
     (p_export_run_id,p_production_uri,p_production_generation,p_sap_result_file_name,p_file_sha256,
-     v_archive_rows,'DELIVERED',CURRENT_TIMESTAMP(),p_production_file_name);
+     p_data_row_count,v_archive_rows,'DELIVERED',CURRENT_TIMESTAMP(),p_production_file_name);
   COMMIT TRANSACTION;
 
   -- DELIVERED is only GCS evidence. PICKED_UP/ACKNOWLEDGED remain untouched until independent

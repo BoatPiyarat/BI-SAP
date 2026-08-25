@@ -428,7 +428,7 @@ main:
               - build_delivery_statement:
                   assign:
                     - delivery_call_head: '${"CALL `pacific-plating-282708.sap_integration_v3.sp_mark_v3_exact_delivery`(\u0027" + run_id + "\u0027,\u0027" + delivery.export_run_id + "\u0027,\u0027" + delivery.archive_uri + "\u0027,\u0027" + delivery.archive_generation + "\u0027,"}'
-                    - delivery_call_tail: '${"\u0027" + delivery.production_uri + "\u0027,\u0027" + delivery.production_generation + "\u0027," + string(delivery.size_bytes) + ",\u0027" + delivery.crc32c + "\u0027,\u0027" + delivery.production_file_name + "\u0027,\u0027" + delivery.sap_result_file_name + "\u0027,\u0027" + delivery.file_sha256 + "\u0027);"}'
+                    - delivery_call_tail: '${"\u0027" + delivery.production_uri + "\u0027,\u0027" + delivery.production_generation + "\u0027," + string(delivery.size_bytes) + ",\u0027" + delivery.crc32c + "\u0027," + string(delivery.header_column_count) + "," + string(delivery.data_row_count) + ",\u0027" + delivery.production_file_name + "\u0027,\u0027" + delivery.sap_result_file_name + "\u0027,\u0027" + delivery.file_sha256 + "\u0027);"}'
               - persist_delivery:
                   call: run_bq_call
                   args:
@@ -791,9 +791,11 @@ promote_daily_archive:
           - dest_crc: ${default(map.get(promotion, "crc32c"), "")}
           - promoted_production_file_name: ${default(map.get(promotion, "production_file_name"), "")}
           - file_sha256: ${default(map.get(promotion, "file_sha256"), "")}
+          - header_column_count: ${int(default(map.get(promotion, "header_column_count"), "0"))}
+          - data_row_count: ${int(default(map.get(promotion, "data_row_count"), "0"))}
     - gate_promotion:
         switch:
-          - condition: ${promoted_archive_uri != "gs://rcb-bronze-zone/" + source_name or promoted_archive_generation != source_generation or production_uri != expected_production_uri or dest_generation == "" or dest_size <= 0 or dest_crc == "" or promoted_production_file_name != production_file_name or file_sha256 == ""}
+          - condition: ${promoted_archive_uri != "gs://rcb-bronze-zone/" + source_name or promoted_archive_generation != source_generation or production_uri != expected_production_uri or dest_generation == "" or dest_size <= 0 or dest_crc == "" or promoted_production_file_name != production_file_name or file_sha256 == "" or header_column_count != 56 or data_row_count <= 0}
             steps:
               - fail_promotion:
                   call: fail_closed
@@ -816,6 +818,8 @@ promote_daily_archive:
           production_file_name: ${promoted_production_file_name}
           sap_result_file_name: ${sap_result_file_name}
           file_sha256: ${file_sha256}
+          header_column_count: ${header_column_count}
+          data_row_count: ${data_row_count}
 
 # ----------------------------------------------------------------------
 # F3 support: read the extract control object content (alt=media) with the
