@@ -27,12 +27,13 @@ BEGIN
     AS 'Unit 5 balance quarantine requires pipeline_run_id';
   ASSERT (SELECT COUNT(*) FROM `pacific-plating-282708.sap_integration_v3.v3_unit5_payload_identity`
     WHERE pipeline_run_id=p_pipeline_run_id AND file_role='NEWPAYMENT')=
-    (SELECT COUNT(*) FROM `pacific-plating-282708.sap_integration_v3.v3_unit5_newpayment_ready` p
-      WHERE EXISTS (SELECT 1
-        FROM `pacific-plating-282708.sap_integration_v3.v3_unit5_payload_identity` i
-        WHERE i.pipeline_run_id=p_pipeline_run_id AND i.file_role='NEWPAYMENT'
-          AND i.order_item=p.OrderItem AND i.period=SAFE_CAST(p.Period AS INT64)
-          AND i.invoice_no=p.InvoiceNo))
+    (SELECT COUNT(*)
+      FROM `pacific-plating-282708.sap_integration_v3.v3_unit5_payload_identity` i
+      WHERE i.pipeline_run_id=p_pipeline_run_id AND i.file_role='NEWPAYMENT'
+        AND EXISTS (SELECT 1
+          FROM `pacific-plating-282708.sap_integration_v3.v3_unit5_newpayment_ready` p
+          WHERE i.order_item=p.OrderItem AND i.period=SAFE_CAST(p.Period AS INT64)
+            AND i.invoice_no=p.InvoiceNo))
     AS 'Unit 5 balance quarantine requires exact candidate-to-identity conservation';
 
   DELETE FROM `pacific-plating-282708.sap_integration_v3.v3_unit5_balance_hold`
@@ -71,7 +72,7 @@ BEGIN
     END,
     CASE
       WHEN c.identity_count>1 OR pc.payload_count>1
-        THEN 'More than one payment-event identity resolves to the same item-period'
+        THEN 'More than one payment-event identity or physical payload row resolves to the same item-period'
       ELSE 'Absolute ActualReceived minus ExpectedReceived exceeds THB 10 for one item-period'
     END,
     CURRENT_TIMESTAMP()

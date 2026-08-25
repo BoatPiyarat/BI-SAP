@@ -16,6 +16,18 @@ VALUES ('run','NEWPAYMENT','L2-V1',3,'charge-c','invoice-c');
 INSERT INTO payload
 VALUES ('L2-V1','3','invoice-c','100.00','100.00'),
        ('L2-V1','3','unbound-extra-invoice','0.00','100.00');
+INSERT INTO identities
+VALUES ('run','NEWPAYMENT','L3-V1',4,'charge-d','same-invoice-d');
+INSERT INTO payload
+VALUES ('L3-V1','4','same-invoice-d','200.00','200.00'),
+       ('L3-V1','4','same-invoice-d','200.00','200.00');
+
+ASSERT (SELECT COUNT(*) FROM identities)=(
+  SELECT COUNT(*) FROM identities i
+  WHERE EXISTS (SELECT 1 FROM payload p
+    WHERE p.OrderItem=i.order_item AND SAFE_CAST(p.Period AS INT64)=i.period
+      AND p.InvoiceNo=i.invoice_no))
+  AS 'identity conservation must count matched identities, not multiplied payload rows';
 
 CREATE TEMP TABLE period_identity_count AS
 SELECT order_item,period,COUNT(*) identity_count
@@ -45,14 +57,14 @@ JOIN payload_one p
  AND p.InvoiceNo=i.invoice_no
 WHERE c.identity_count>1 OR pc.payload_count>1;
 
-ASSERT (SELECT COUNT(*) FROM holds)=3
+ASSERT (SELECT COUNT(*) FROM holds)=4
   AS 'identity and payload duplicate shapes must hold every bound charge identity';
 ASSERT (SELECT COUNT(*) FROM (
   SELECT order_item,period,charge_id,COUNT(*) n
   FROM holds GROUP BY 1,2,3 HAVING n!=1))=0
   AS 'hold rows must remain unique at charge identity';
-ASSERT (SELECT COUNT(DISTINCT order_item) FROM holds)=2
-  AS 'duplicate-period quarantine must identify both whole items';
+ASSERT (SELECT COUNT(DISTINCT order_item) FROM holds)=3
+  AS 'duplicate-period quarantine must identify all three whole items';
 
 CREATE TEMP TABLE notifications AS
 SELECT 'run' pipeline_run_id,'HOLD_RECEIPT_BALANCE_MISMATCH' reason_code
@@ -69,4 +81,4 @@ ASSERT (SELECT COUNT(*) FROM notifications WHERE pipeline_run_id='run')=0
 ASSERT (SELECT COUNT(*) FROM notifications WHERE pipeline_run_id='other-run')=1
   AS 'retry cleanup must not touch another run';
 
-SELECT 'PASS' AS fixture_status,3 AS held_identities,2 AS held_items;
+SELECT 'PASS' AS fixture_status,4 AS held_identities,3 AS held_items;
