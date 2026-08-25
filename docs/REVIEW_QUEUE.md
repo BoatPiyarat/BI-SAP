@@ -4,7 +4,7 @@ Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request firs
 review history; link the completed review and record its verdict.
 
 ## RQ-20260825-1536-installment-invoiceno-deploy-evidence
-Status: OPEN
+Status: REVIEWED
 Reviewer: Claude Code
 Class: A
 Artifact: commit `5949a3d`; deployment evidence for PASSed exact-live source `ba1ca7d`.
@@ -29,7 +29,14 @@ InvoiceNo, only the known paid compulsory residual remains NULL, and candidate d
 Review focus: exact approved source/job provenance; terminal-newline normalization explanation;
 live predicate and schema preservation; post-deploy distribution and scoped behavior; honest
 one-view/no-other-side-effect boundary. Do not repeat deployment or mutate production during review.
-
+Verdict: PASS — `docs/reviews/2026-08-25-5949a3d-claude.md`. Independently reproduced every cited
+fact: deploy job (`CREATE_VIEW`, 0 bytes, exact timestamp), live `view_definition` SHA-256 exact
+match, and — critically — reproduced the claimed terminal-newline hash discrepancy myself (stripped
+one trailing newline from my own already-hashed prior-review candidate body and got the exact same
+new live hash), which is a strictly stronger proof than re-deriving the predicate/column facts from
+scratch since it confirms byte-for-byte equivalence to the already-PASSed source. Post-check job's
+actual result fetched and matches every cited figure exactly; schema confirmed 56 columns, correct
+ordinal order. No further action needed.
 ## RQ-20260824-2358-installment-invoiceno-exact-live-deploy
 Status: REVIEWED
 Reviewer: Claude Code
