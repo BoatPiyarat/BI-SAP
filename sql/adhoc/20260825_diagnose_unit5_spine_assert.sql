@@ -31,3 +31,20 @@ HAVING COUNT(DISTINCT SAFE_CAST(TotalPeriods AS INT64))!=1
   OR COUNT(DISTINCT SAFE_CAST(Period AS INT64))!=MAX(SAFE_CAST(TotalPeriods AS INT64))
   OR COUNT(*)!=MAX(SAFE_CAST(TotalPeriods AS INT64))
 ORDER BY evidence,key;
+
+SELECT
+  i.pipeline_run_id,i.order_item,i.period,i.charge_id,i.invoice_no,
+  (SELECT COUNT(*)
+   FROM `pacific-plating-282708.sap_integration_v3.v3_unit5_newpayment_ready` p
+   WHERE p.OrderItem=i.order_item AND SAFE_CAST(p.Period AS INT64)=i.period) AS payload_period_rows,
+  (SELECT COUNT(*)
+   FROM `pacific-plating-282708.sap_integration_v3.v3_unit5_newpayment_ready` p
+   WHERE p.OrderItem=i.order_item AND SAFE_CAST(p.Period AS INT64)=i.period
+     AND p.InvoiceNo=i.invoice_no) AS exact_payload_rows,
+  (SELECT COUNT(*)
+   FROM `pacific-plating-282708.sap_integration_v3.v3_unit5_balance_hold` h
+   WHERE h.pipeline_run_id=i.pipeline_run_id AND h.order_item=i.order_item) AS persisted_hold_rows
+FROM `pacific-plating-282708.sap_integration_v3.v3_unit5_payload_identity` i
+WHERE i.pipeline_run_id=target_run_id AND i.file_role='NEWPAYMENT'
+  AND i.order_item='L78597123-V1'
+ORDER BY i.period,i.charge_id;

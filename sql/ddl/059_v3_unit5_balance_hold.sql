@@ -61,17 +61,22 @@ BEGIN
   FROM `pacific-plating-282708.sap_integration_v3.v3_unit5_newpayment_ready`
   GROUP BY order_item,period;
 
+  CREATE TEMP TABLE _payload_duplicate_item AS
+  SELECT DISTINCT order_item
+  FROM _payload_period_count
+  WHERE payload_count>1;
+
   INSERT INTO `pacific-plating-282708.sap_integration_v3.v3_unit5_balance_hold`
   SELECT p_pipeline_run_id,p.OrderItem,SAFE_CAST(p.Period AS INT64),i.charge_id,p.InvoiceNo,
     SAFE_CAST(p.ExpectedReceived AS NUMERIC),SAFE_CAST(p.ActualReceived AS NUMERIC),
     SAFE_CAST(p.ActualReceived AS NUMERIC)-SAFE_CAST(p.ExpectedReceived AS NUMERIC),
     CASE
-      WHEN c.identity_count>1 OR pc.payload_count>1
+      WHEN c.identity_count>1 OR di.order_item IS NOT NULL
         THEN 'HOLD_MULTIPLE_PAYMENT_EVENTS_SAME_PERIOD'
       ELSE 'HOLD_RECEIPT_BALANCE_MISMATCH'
     END,
     CASE
-      WHEN c.identity_count>1 OR pc.payload_count>1
+      WHEN c.identity_count>1 OR di.order_item IS NOT NULL
         THEN 'More than one payment-event identity or physical payload row resolves to the same item-period'
       ELSE 'Absolute ActualReceived minus ExpectedReceived exceeds THB 10 for one item-period'
     END,
@@ -79,13 +84,13 @@ BEGIN
   FROM `pacific-plating-282708.sap_integration_v3.v3_unit5_payload_identity` i
   JOIN _period_identity_count c
     ON c.order_item=i.order_item AND c.period=i.period
-  JOIN _payload_period_count pc
-    ON pc.order_item=i.order_item AND pc.period=i.period
+  LEFT JOIN _payload_duplicate_item di
+    ON di.order_item=i.order_item
   JOIN _payload_one p
     ON p.OrderItem=i.order_item AND SAFE_CAST(p.Period AS INT64)=i.period
    AND p.InvoiceNo=i.invoice_no
   WHERE i.pipeline_run_id=p_pipeline_run_id AND i.file_role='NEWPAYMENT'
-    AND (c.identity_count>1 OR pc.payload_count>1
+    AND (c.identity_count>1 OR di.order_item IS NOT NULL
       OR ABS(SAFE_CAST(p.ActualReceived AS NUMERIC)-SAFE_CAST(p.ExpectedReceived AS NUMERIC))>10);
 
   ASSERT (SELECT COUNT(*) FROM (

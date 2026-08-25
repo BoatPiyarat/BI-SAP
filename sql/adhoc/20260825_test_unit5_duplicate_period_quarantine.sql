@@ -21,6 +21,12 @@ VALUES ('run','NEWPAYMENT','L3-V1',4,'charge-d','same-invoice-d');
 INSERT INTO payload
 VALUES ('L3-V1','4','same-invoice-d','200.00','200.00'),
        ('L3-V1','4','same-invoice-d','200.00','200.00');
+INSERT INTO identities
+VALUES ('run','NEWPAYMENT','L4-V1',4,'charge-e','invoice-e');
+INSERT INTO payload
+VALUES ('L4-V1','4','invoice-e','300.00','300.00'),
+       ('L4-V1','2','historical-a','300.00','300.00'),
+       ('L4-V1','2','historical-b','0.00','300.00');
 
 ASSERT (SELECT COUNT(*) FROM identities)=(
   SELECT COUNT(*) FROM identities i
@@ -46,25 +52,28 @@ CREATE TEMP TABLE payload_period_count AS
 SELECT OrderItem AS order_item,SAFE_CAST(Period AS INT64) AS period,COUNT(*) payload_count
 FROM payload GROUP BY order_item,period;
 
+CREATE TEMP TABLE payload_duplicate_item AS
+SELECT DISTINCT order_item FROM payload_period_count WHERE payload_count>1;
+
 CREATE TEMP TABLE holds AS
 SELECT i.order_item,i.period,i.charge_id,i.invoice_no,
   'HOLD_MULTIPLE_PAYMENT_EVENTS_SAME_PERIOD' hold_code
 FROM identities i
 JOIN period_identity_count c USING(order_item,period)
-JOIN payload_period_count pc USING(order_item,period)
+LEFT JOIN payload_duplicate_item di USING(order_item)
 JOIN payload_one p
   ON p.OrderItem=i.order_item AND SAFE_CAST(p.Period AS INT64)=i.period
  AND p.InvoiceNo=i.invoice_no
-WHERE c.identity_count>1 OR pc.payload_count>1;
+WHERE c.identity_count>1 OR di.order_item IS NOT NULL;
 
-ASSERT (SELECT COUNT(*) FROM holds)=4
+ASSERT (SELECT COUNT(*) FROM holds)=5
   AS 'identity and payload duplicate shapes must hold every bound charge identity';
 ASSERT (SELECT COUNT(*) FROM (
   SELECT order_item,period,charge_id,COUNT(*) n
   FROM holds GROUP BY 1,2,3 HAVING n!=1))=0
   AS 'hold rows must remain unique at charge identity';
-ASSERT (SELECT COUNT(DISTINCT order_item) FROM holds)=3
-  AS 'duplicate-period quarantine must identify all three whole items';
+ASSERT (SELECT COUNT(DISTINCT order_item) FROM holds)=4
+  AS 'duplicate-period quarantine must identify all four whole items';
 
 CREATE TEMP TABLE notifications AS
 SELECT 'run' pipeline_run_id,'HOLD_RECEIPT_BALANCE_MISMATCH' reason_code
@@ -81,4 +90,4 @@ ASSERT (SELECT COUNT(*) FROM notifications WHERE pipeline_run_id='run')=0
 ASSERT (SELECT COUNT(*) FROM notifications WHERE pipeline_run_id='other-run')=1
   AS 'retry cleanup must not touch another run';
 
-SELECT 'PASS' AS fixture_status,4 AS held_identities,3 AS held_items;
+SELECT 'PASS' AS fixture_status,5 AS held_identities,4 AS held_items;
