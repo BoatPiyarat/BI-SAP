@@ -4,7 +4,7 @@ Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request firs
 review history; link the completed review and record its verdict.
 
 ## RQ-20260825-2049-v3-net-new-archive-replay
-Status: OPEN
+Status: REVIEWED
 Reviewer: Claude Code
 Class: A
 Artifact: commit `da64485`; replay-safe deltas to DDL 060/061, new DDL 083 operator event view,
@@ -26,6 +26,11 @@ Review focus: verify identity-level anti-replay cannot duplicate or silently dro
 complete-spine filtering remains correct when one item has old and new events; archive ledger rows
 conserve against the exported item population; zero-net-new behavior is healthy; the latest-run
 view is deterministic; and the change does not weaken exact-generation Unit 6 promotion.
+
+Verdict: **BLOCK** — `docs/reviews/2026-08-25-da64485-codex.md`. Retry can silently skip a failed
+`PREPARED_ARCHIVE`; Unit 6 still requires all 559 run identities rather than the 66 net-new claim;
+manifest row count does not equal full-spine CSV rows; claim selection is not atomic; DDL 083 binds
+to Unit 1 rather than completed Unit 5; and exact ordinal/type evidence is absent.
 
 ## RQ-20260825-1558-empty-installment-details-finding
 Status: REVIEWED
