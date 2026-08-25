@@ -70,4 +70,3 @@ Only after those checks, replace `REPLACE_WITH_PRODUCTION_GENERATION` in
 `sql/operator/20260826_mark_fresh_v3_delivery_after_manual_upload.sql` and run it through
 `scripts/bq_safe_query.sh`. That transaction records both 4,288 physical file rows and 641 event
 identities. `DELIVERED` means GCS evidence only; SAP pickup/import/acknowledgement remain separate.
-

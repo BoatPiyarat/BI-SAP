@@ -3,6 +3,15 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+## RQ-20260826-0447-v3-manual-newpayment-handoff
+Status: REVIEWED
+Reviewer: Codex with independent Standards/Spec sub-reviews
+Class: A
+Artifact: commit `6faa111`; exact manual archive handoff runbook and post-upload delivery-evidence
+SQL.
+Opened: 2026-08-26T04:47:01+07:00
+Verdict: **PASS** — `docs/reviews/2026-08-26-6faa111-class-a.md`.
+
 ## RQ-20260825-2107-v3-duplicate-period-quarantine
 Status: REVIEWED
 Reviewer: Codex with independent Standards/Spec sub-reviews
