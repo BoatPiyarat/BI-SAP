@@ -3,6 +3,30 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+## RQ-20260825-2049-v3-net-new-archive-replay
+Status: OPEN
+Reviewer: Claude Code
+Class: A
+Artifact: commit `da64485`; replay-safe deltas to DDL 060/061, new DDL 083 operator event view,
+and `sql/adhoc/20260825_repro_unit5_missing_august.sql`.
+Opened: 2026-08-25T20:49:56+07:00
+
+Claim: the reported missing-August symptom is disproved against the fresh production run: all 559
+current-run identities join to Paid rows with August 2026 PaymentDate, while the 56-column delivery
+table correctly expands them to 2,245 August Paid rows plus 1,651 Pending context rows with blank
+PaymentDate. The actual defect is archive replay granularity: 493 identities already belong to the
+24-Aug archive and block 66 net-new identities. The delta makes DDL 060 archive only identities not
+already in an active archive/delivery state, exports complete spines only for items owning those
+net-new identities, and makes DDL 061 skip archive creation on a zero-net-new night. DDL 083 exposes
+only the latest run's payment-event identities for operators and is explicitly not an SAP file
+contract. All three DDLs dry-run clean at 0 bytes; no definition was deployed, no procedure called,
+and no GCS object written.
+
+Review focus: verify identity-level anti-replay cannot duplicate or silently drop a new event;
+complete-spine filtering remains correct when one item has old and new events; archive ledger rows
+conserve against the exported item population; zero-net-new behavior is healthy; the latest-run
+view is deterministic; and the change does not weaken exact-generation Unit 6 promotion.
+
 ## RQ-20260825-1558-empty-installment-details-finding
 Status: REVIEWED
 Reviewer: Codex (per `docs/AGENT_REVIEW_PROTOCOL.md` reciprocity — Codex reviews Claude Code's
