@@ -1,5 +1,24 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-25 15:35 ICT — InvoiceNo NULL-safety deployed and verified live
+
+Boat explicitly approved the PASSed exact-live artifact `ba1ca7d`. Final preflight proved the live
+definition still matched reviewed source SHA-256
+`fa0a557260d99083b9bd3af1aa2a09d5f55828d8c15088235ff7a3cd071f1aa7` and the working artifact was
+identical to `ba1ca7d`. Guarded deployment job `bqjob_r7f485d3f96160b3b_000001a0380ddd6a_1`
+completed DONE at 2026-08-25 08:33:47.837 UTC, 0 bytes processed/billed, replacing only
+`sap_data_engineer.sap_dashboard_carepay_installment`. The stored live query is character-for-
+character identical to the reviewed candidate body; BigQuery removed only its terminal newline,
+so the stored-text SHA-256 is `2861ea0cd3904c455f544a2f450e9cca377fc5eed43429b2d014905e8bf30f0b`.
+Live checks show exactly one voluntary COALESCE fix, one transformation COALESCE fix, one unchanged
+bare compulsory predicate, 56 columns, and the original first-five positional order.
+
+Post-verification job `bqjob_r2c00ef37d4d5120a_000001a0380f2bb2_1` (source timestamp
+2026-08-25 08:35:13 UTC; 776,974,222 bytes) reports 997,734 rows / 190,721 items; all 453,802
+non-paid rows now have blank InvoiceNo; SQL NULL count is 1, solely the known paid compulsory
+residual; candidate derivation changes 0 additional rows and paid InvoiceNo changes remain 0.
+No other view, GCS object, SAP interface file, scheduler, or production object was changed.
+
 ## 2026-08-24 23:56 ICT — exact live-wrapped InvoiceNo deployment artifact prepared; not deployed
 
 Boat authorized a one-time exception to the V3-only DDL rule for exactly

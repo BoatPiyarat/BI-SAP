@@ -1,5 +1,16 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-25 15:35 ICT — deployed InvoiceNo NULL-safety to legacy installment view
+
+- Boat approved PASSed artifact `ba1ca7d`; preflight re-proved live-source and Git identity.
+- Job `bqjob_r7f485d3f96160b3b_000001a0380ddd6a_1` replaced only
+  `sap_data_engineer.sap_dashboard_carepay_installment` (DONE, 0 bytes). Stored live text equals the
+  reviewed body except BigQuery removed one terminal newline; both COALESCE fixes and the untouched
+  compulsory predicate are exact, with 56-column order preserved.
+- Post-check `bqjob_r2c00ef37d4d5120a_000001a0380f2bb2_1` (776,974,222 bytes; source timestamp
+  2026-08-25 08:35:13 UTC) found 453,802 non-paid blank InvoiceNos, one known paid NULL residual,
+  and zero additional candidate or paid changes. No GCS/SAP/scheduler action.
+
 ## 2026-08-24 23:56 ICT — prepared exact-live InvoiceNo deployment artifact
 
 - Boat authorized a one-time, one-view exception for the two review-cleared predicates; recorded it
