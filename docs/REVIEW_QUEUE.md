@@ -39,6 +39,34 @@ per-item trace (`careos_order_items`, `stg_schedule`, `carepay_charges`,
 the population scan (~0.3 GiB) are cited inline in the findings doc with their result values. No
 DDL, procedure CALL, GCS write, SAP action, or scheduler mutation.
 
+Update 2026-08-25T17:05:34+07:00 (commit `00ce8ed`): built Phase 1 as a real source artifact —
+`sql/ddl/082_v3_rcl_empty_installment_detail_hold.sql` (`vw_v3_rcl_empty_installment_detail_hold`
+view + `v3_unit5_installment_detail_hold` table, dry-run 0 bytes, not deployed). Verified the
+view's exact logic via a plain read-only reproduction of its body (no `CREATE`, no persistence):
+correctly excludes `L78753909-V1` (ONETIME) and produces zero false positives against a 20-item
+sample of ordinary, currently-flowing RCL order_items with `TotalPeriods>1`
+(`sql/adhoc/20260825_verify_082_hold_view_logic.sql`,
+`sql/adhoc/20260825_verify_082_negative_controls.sql`). While verifying, found and corrected a real
+discrepancy in the original population scan: it deduped snapshots only among those already matching
+the zero-detail filter, not the true latest snapshot per transaction
+(`sql/adhoc/20260825_reconcile_rcl_3_vs_2.sql`,
+`sql/adhoc/20260825_check_L73472003_snapshots.sql`). One of the 3 originally-counted RCL items
+(`L73472003-1`) had its CareOS-side gap already fixed at the source in 2023 (4 snapshots exist; the
+3rd and truly-latest has all 10 detail rows) — **corrected RCL count is 2, not 3**. Also prepared
+(source only, in the same commit) a small Phase 2 diff to
+`sql/ddl/058_v3_unit5_newpayment_shadow.sql`'s `_target` construction (adds a `NOT EXISTS` filter
+against the new hold table, plus a run-scoped `DELETE`+`INSERT` populating it from the Phase 1 view)
+— disclosed honestly that this diff cannot be dry-run-verified as semantically correct until
+`082`'s objects are actually deployed (`CREATE OR REPLACE PROCEDURE` dry-run doesn't validate body
+references), so it is not claimed as deploy-ready. Both phases remain gated behind this review +
+Boat's explicit deploy approval, to be executed by Codex per SINGLE DEPLOYER.
+
+Review focus (updated): whether the corrected RCL count (2, not 3) and its evidence
+(`L73472003-1`'s 2023 snapshot-supersession) hold up; whether `082`'s view logic is sound and
+correctly scoped (flow='RCL' only, excludes RCL_CMI and ONETIME); whether the Phase 2 diff to `058`
+is a safe, minimal wiring (excludes only the held order_item, does not affect any other order_item
+in the same run) before it is ever deployed.
+
 Review focus: whether the root-cause chain (empty installment-details → Period NULL → spine-gate
 block → no submission → no error trail) is correctly traced and not missing an earlier or
 alternative cause; whether the V3 ONETIME-rescue claim is accurate (independently re-run
