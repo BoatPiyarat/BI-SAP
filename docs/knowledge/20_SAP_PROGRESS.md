@@ -1,5 +1,26 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-25 (later) — built and verified Phase 1 HOLD_EMPTY_INSTALLMENT_DETAILS gate; corrected RCL count to 2
+
+Built `sql/ddl/082_v3_rcl_empty_installment_detail_hold.sql` (source only, not deployed): a
+standalone `vw_v3_rcl_empty_installment_detail_hold` view + its hold table, per the plan approved
+for `docs/FINDINGS_EMPTY_INSTALLMENT_DETAILS_20260825.md`. Verified the view's exact logic via a
+plain read-only reproduction of its body (no `CREATE`, no persistence): correctly excludes
+`L78753909-V1` (ONETIME, not RCL) and produces zero false positives against a 20-item sample of
+ordinary, currently-flowing RCL order_items. In the process, found and corrected a real discrepancy
+in the earlier population scan: it counted 3 affected RCL order_items by deduping snapshots only
+among those already matching the zero-detail filter, rather than the true latest snapshot per
+transaction; re-checked properly, one of the three (`L73472003-1`) had its CareOS-side gap already
+fixed at the source in 2023 (a later snapshot has all 10 detail rows) — the correct current count is
+**2**, not 3. Dry-run of `082`: 0 bytes. Also prepared (source only, NOT dry-run-clean-verifiable
+yet since it references `082`'s not-yet-deployed objects) a Phase 2 diff to
+`sql/ddl/058_v3_unit5_newpayment_shadow.sql`'s `_target` construction, wiring the hold in as a
+`NOT EXISTS` filter alongside the existing `v3_unit3_mapping_hold` exclusion, plus a
+run-scoped DELETE+INSERT into the hold table. Both phases remain gated behind Class-A review +
+Boat's explicit deploy approval, to be executed by Codex per SINGLE DEPLOYER — nothing was deployed
+or mutated in production. Updated `RQ-20260825-1558-empty-installment-details-finding` with the new
+artifacts.
+
 ## 2026-08-25 15:58 ICT — root-caused L78753909-V1's missing-SAP/no-error-history gap
 
 Boat asked why `L78753909` never reached SAP with no interface-error history. Traced it to an

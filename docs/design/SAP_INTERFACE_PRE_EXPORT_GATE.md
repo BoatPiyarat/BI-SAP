@@ -77,6 +77,13 @@ Boat on 2026-08-17.
 - Every period has non-NULL status exactly `Paid` or `Pending`; no period or required value is NULL.
 - Reconcile total candidate rows to `SUM(TotalPeriods)` across accepted OrderItems.
 - RCL compulsory/CMI is a separate one-period flow and must not be folded into ordinary RCL.
+- An order_item whose declared period count is known (`stg_schedule.total_periods > 1`) but whose
+  `carepay_transaction_snapshot_installment_details` has zero rows for the current (latest) snapshot
+  is a CareOS-side data gap, not an ordinary in-progress schedule; it must be explicitly held as
+  `HOLD_EMPTY_INSTALLMENT_DETAILS` (not folded into the generic incomplete-spine hold) and never
+  silently resolved by a `Period=NULL` fallback row. See
+  `sql/ddl/082_v3_rcl_empty_installment_detail_hold.sql` and
+  `docs/FINDINGS_EMPTY_INSTALLMENT_DETAILS_20260825.md`.
 
 ## RCB / Onetime / EDC checks
 

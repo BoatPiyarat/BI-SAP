@@ -33,6 +33,17 @@ BEGIN
     FROM `pacific-plating-282708.sap_integration_v3.sap_period_state` WHERE status='OPEN');
   SET v_batch_date=LEAST(CURRENT_DATE('Asia/Bangkok'),DATE_SUB(v_period_end,INTERVAL 1 DAY));
 
+  -- PHASE 2 (docs/FINDINGS_EMPTY_INSTALLMENT_DETAILS_20260825.md): record this run's
+  -- HOLD_EMPTY_INSTALLMENT_DETAILS order_items (from 082_v3_rcl_empty_installment_detail_hold.sql)
+  -- before _target excludes them, so the gap is visible and queryable rather than silently
+  -- disappearing at the _resolved join below.
+  DELETE FROM `pacific-plating-282708.sap_integration_v3.v3_unit5_installment_detail_hold`
+  WHERE pipeline_run_id=p_pipeline_run_id;
+  INSERT INTO `pacific-plating-282708.sap_integration_v3.v3_unit5_installment_detail_hold`
+  SELECT p_pipeline_run_id,order_item,order_id,transaction_id,snapshot_id,
+    declared_total_periods,number_of_installment,detail_row_count,rule_code,detected_at
+  FROM `pacific-plating-282708.sap_integration_v3.vw_v3_rcl_empty_installment_detail_hold`;
+
   CREATE TEMP TABLE _target AS
   SELECT e.*
   FROM `pacific-plating-282708.sap_integration_v3.v3_unit2_event_shadow` e
@@ -42,7 +53,10 @@ BEGIN
     AND NOT EXISTS (SELECT 1
       FROM `pacific-plating-282708.sap_integration_v3.v3_unit3_mapping_hold` h
       WHERE h.pipeline_run_id=e.pipeline_run_id AND h.order_item=e.order_item
-        AND h.period=e.period AND h.charge_id=e.charge_id);
+        AND h.period=e.period AND h.charge_id=e.charge_id)
+    AND NOT EXISTS (SELECT 1
+      FROM `pacific-plating-282708.sap_integration_v3.v3_unit5_installment_detail_hold` d
+      WHERE d.pipeline_run_id=p_pipeline_run_id AND d.order_item=e.order_item);
 
   CREATE TEMP TABLE _source AS
   SELECT

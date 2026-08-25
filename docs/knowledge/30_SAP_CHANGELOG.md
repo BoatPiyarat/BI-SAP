@@ -1,5 +1,17 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-25 (later) — built Phase 1 hold gate (082), prepared Phase 2 diff to 058, corrected RCL count
+
+- Added `sql/ddl/082_v3_rcl_empty_installment_detail_hold.sql`: `vw_v3_rcl_empty_installment_detail_hold`
+  view + `v3_unit5_installment_detail_hold` table (source only, dry-run 0 bytes, not deployed).
+- Verified the view's logic via read-only reproduction: correctly excludes `L78753909-V1`, zero
+  false positives on a 20-item RCL sample. Corrected the earlier population scan's RCL count from 3
+  to 2 — one case's CareOS-side gap was already fixed at the source in 2023 (found via true
+  latest-snapshot-per-transaction dedup, not the scan's latest-*matching*-snapshot dedup).
+- Prepared (not deployed) a small diff to `sql/ddl/058_v3_unit5_newpayment_shadow.sql` wiring the
+  hold into `_target` via `NOT EXISTS`, plus a run-scoped DELETE+INSERT into the hold table.
+- Both remain gated behind Class-A review + Boat's explicit deploy approval, executed by Codex.
+
 ## 2026-08-25 15:58 ICT — investigated L78753909; found V3 partial coverage gap
 
 - Root-caused: empty `carepay_transaction_snapshot_installment_details` under a

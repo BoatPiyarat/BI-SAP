@@ -1,7 +1,38 @@
 # FINDINGS — empty `carepay_transaction_snapshot_installment_details` strands items silently, no interface error
 
-Status: **Not yet Class-A reviewed.** Investigation + design proposal only. No SQL deployed, no
-production mutation. Quantification below should not be cited as final until reviewed.
+Status: **Not yet Class-A reviewed.** Investigation, Phase 1 fix (source-only), and Phase 2 design
+proposal. No SQL deployed, no production mutation. Quantification below should not be cited as
+final until reviewed.
+
+## Update 2026-08-25 (later same day) — Phase 1 built and verified; RCL population count corrected to 2
+
+Built `sql/ddl/082_v3_rcl_empty_installment_detail_hold.sql` (the `HOLD_EMPTY_INSTALLMENT_DETAILS`
+detection view + hold table, source only — not deployed; deployment is Codex's job per SINGLE
+DEPLOYER). Verified its exact logic by running the view's body as a plain read-only `SELECT`
+(no `CREATE`, no persistence):
+
+- **Reproducing the population scan surfaced a real discrepancy, now corrected.** The original scan
+  (below) found 3 affected RCL order_items via `QUALIFY ROW_NUMBER()... = 1` applied *only among
+  snapshots already matching the zero-detail-row filter* — i.e. it picked the latest *empty*
+  snapshot per transaction, not the latest snapshot overall. Running 082's actual logic (which
+  dedupes to the true latest snapshot per transaction first, then checks whether *that* one has
+  zero detail rows — matching `stg_schedule`'s own established latest-snapshot pattern in
+  `012_stg_schedule.sql`) returns only **2** order_items: `L73382737-1`, `L74682069-V1`. The third,
+  `L73472003-1` (transaction `2b2e0899-...`), was excluded correctly: its transaction has 4
+  snapshots from 2023-03-16, and while the first three (02:44–03:39) had zero detail rows, a fourth,
+  truly-latest snapshot at 03:44:32 has all 10 detail rows populated — the CareOS-side gap for this
+  transaction was already fixed at the source over two years ago. **082's view is more correct than
+  the original quick scan**; the true current count of RCL items ever affected by this exact defect
+  and not since corrected at the source is **2, not 3** (both already reached SAP some other way,
+  per the original scan — this doesn't change).
+- **Negative controls both passed**: `L78753909-V1` (ONETIME, not RCL) correctly produces zero rows
+  from the view's logic; a 20-item sample of ordinary, currently-flowing RCL order_items with
+  `TotalPeriods>1` already in `v3_unit5_newpayment_ready` produced zero false positives.
+- Dry-run of `082` itself: 0 bytes (pure DDL, no live consumers yet).
+
+**Phase 2** (wiring this hold into `sql/ddl/058_v3_unit5_newpayment_shadow.sql`'s `_target`
+construction) is prepared as source only in the same spirit — see the diff described below — and
+remains gated behind Class-A review + Boat's explicit deploy approval, executed by Codex.
 
 ## Origin
 
@@ -73,7 +104,7 @@ Every transaction whose latest snapshot declares `number_of_installment > 1` wit
 |---|---|---:|---:|
 | ONETIME | CREDIT_CARD_INSTALLMENT | 20,793 | 20,485 |
 | NULL (not in schedule) | CREDIT_CARD_INSTALLMENT | 861 | 832 |
-| **RCL** | **RABBIT_CARE_INSTALLMENT** | **3** | **3** |
+| **RCL** | **RABBIT_CARE_INSTALLMENT** | **3*** | **3*** |
 | ONETIME | FULL_PAYMENT | 2 | 0 |
 
 Reading this:
@@ -83,38 +114,43 @@ Reading this:
   SAP (including `L78753909-V1`) are candidates that should resolve correctly once run through
   `vw_onetime_payload_source` (for the flow=NULL rows, `stg_schedule` itself needs checking
   separately — a missing schedule row is a different, prior gap).
-- **The RCL row is the one that matters for design purposes**: 3 items hit this exact defect under
-  a genuine installment flow, and — by luck, not by design — all 3 are already in SAP (likely
-  posted before this specific empty-detail condition arose for them, or reconciled by some other
-  path; not investigated further here as it's not blocking). **Zero RCL items are currently stuck**,
-  but nothing in V3 would catch a *future* one — it would silently strand exactly like
-  `L78753909-V1` did, with the same total absence of error/exclusion/validation trail.
+- **The RCL row is the one that matters for design purposes**: the original quick scan counted 3
+  items; re-verified against the true latest snapshot per transaction (see the 2026-08-25 update
+  above), the correct count is **2** items that hit this exact defect under a genuine installment
+  flow and were never since corrected at the CareOS source. Both are already in SAP some other way
+  (not investigated further here as it's not blocking). **Zero RCL items are currently stuck**, but
+  nothing in V3 would catch a *future* one — it would silently strand exactly like `L78753909-V1`
+  did, with the same total absence of error/exclusion/validation trail.
 
 ## Design proposal — close the RCL blind spot
 
-Two independent, non-conflicting fixes; either alone helps, both together is more robust:
+Two independent, non-conflicting fixes; either alone helps, both together is more robust.
 
-**1. Fail-closed detection gate (highest priority — makes the failure visible instead of silent).**
-Add an explicit hold check to the RCL sourcing branch of DDL 058 (or a pre-export gate assertion in
-`docs/design/SAP_INTERFACE_PRE_EXPORT_GATE.md`'s RCL section) that flags — by name — an order_item
-whose declared period count is known (`stg_schedule.total_periods > 1`, or the legacy view's own
-`TotalPeriods` column) but whose actual row(s) show `Period IS NULL` or a row count that doesn't
-match. Something in the shape of:
-```sql
--- illustrative only, not for deployment as-is
-COUNTIF(Period IS NULL AND SAFE_CAST(TotalPeriods AS INT64) > 1) AS declared_installment_no_detail_rows
-```
-routed to a distinctly named hold (e.g. `HOLD_EMPTY_INSTALLMENT_DETAILS`), not the generic
-`INCOMPLETE_RCL_SPINE` bucket — so this specific, actionable CareOS-side data gap is distinguishable
-from ordinary in-progress spines (an item still mid-payment legitimately has an incomplete spine;
-this is different — it has *zero* real period data at all despite a >1 period declaration).
+**1. Fail-closed detection gate — built (source only), verified, not yet deployed.**
+`sql/ddl/082_v3_rcl_empty_installment_detail_hold.sql` adds
+`vw_v3_rcl_empty_installment_detail_hold`, which flags — by name — an order_item whose
+`stg_schedule.total_periods > 1` for `flow='RCL'` but whose latest
+`carepay_transaction_snapshot_installment_details` count is zero, as `rule_code =
+'HOLD_EMPTY_INSTALLMENT_DETAILS'` (distinct from the generic `HOLD_INCOMPLETE_RCL_SPINE` bucket, per
+house naming convention from `081_v3_creditshell_flow_router.sql`). Verified via a plain read-only
+reproduction of the view body: correctly excludes `L78753909-V1` (ONETIME, not RCL) and produces
+zero false positives against a 20-item sample of ordinary, currently-flowing RCL order_items. This
+view has no live consumers yet — wiring it into `058`'s `_target` construction (so a held
+order_item is excluded before it silently vanishes at the `_resolved` join, without blocking any
+other order_item in the same nightly run) is Phase 2: a separate, small, later diff to
+`sql/ddl/058_v3_unit5_newpayment_shadow.sql`, gated behind Class-A review + Boat's explicit deploy
+approval and executed only by Codex (SINGLE DEPLOYER) — not bundled with Phase 1's build.
 
-**2. V3-owned RCL source, mirroring `050`'s pattern (larger, addresses root cause structurally).**
-Longer-term, an RCL-flow V3 source view that joins `charges` to `transactions` directly (like `050`
-does for ONETIME) rather than depending on
+**2. V3-owned RCL source, mirroring `050`'s pattern (larger, NOT designed or built — future work
+only).** An RCL-flow V3 source view that joins `charges` to `transactions` directly (like `050` does
+for ONETIME) rather than depending on
 `carepay_transaction_snapshot_installment_details`/`number_of_installment`, would make V3's RCL path
-as resilient to this CareOS data gap as its ONETIME path already is. This is a larger design (a new
-DDL, its own review cycle) and shouldn't block shipping fix #1 first.
+as resilient to this CareOS data gap as its ONETIME path already is. Two open questions must be
+resolved before anyone builds it: (a) whether `carepay_charges.installment_number` is reliably
+populated when `installment_details` is empty (unlike ONETIME's hardcoded `TotalPeriods=1`, RCL's
+period count can't be hardcoded) — needs row-level sampling first; (b) what the RCL-equivalent of
+the legacy view's `service_provider='RABBIT_LENDING'` filter should be in a from-scratch source,
+since that filter is business-meaningful for RCL specifically. Not scoped further here.
 
 Neither fix requires touching V2/legacy objects — both are additive V3-side changes, consistent with
 `AGENT_RULES.md`'s DDL scope rule.
@@ -124,7 +160,10 @@ Neither fix requires touching V2/legacy objects — both are additive V3-side ch
 - Does not claim `L78753909-V1` or any of the 339 not-yet-in-SAP ONETIME/FULL_PAYMENT items are
   ready to invoice today — each still needs to pass every other pre-export gate check
   (56-column contract, InvoiceNo immutability, master/exclusion checks) before submission.
-- Does not claim the 3 already-posted RCL items need correction — they're already in SAP; this
+- Does not claim the 2 already-posted RCL items need correction — they're already in SAP; this
   finding is about the *class of risk*, not those specific rows.
+- Does not claim Phase 1's view (`082`) is deployed — it is prepared, dry-run-clean, and read-only
+  verified, but creating it live in BigQuery is Codex's job per SINGLE DEPLOYER, after this finding
+  receives a Class-A review verdict.
 - Does not propose deploying anything. Both design options above are proposals for a separate,
   reviewed, Boat-approved unit of work.
