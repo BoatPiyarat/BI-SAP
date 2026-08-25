@@ -5,10 +5,12 @@ this change, and `delivery_enabled` remains `false` in the workflow.
 
 `POST /promote` accepts an archive bucket/object/generation and an explicit production-object
 filename.
-It streams SHA-256 over that immutable source generation, then uses GCS create-only rewrite to
-`$PRODUCTION_PREFIX/$production_file_name`. The response is accepted only after destination size and
-CRC32C equal the source. It returns the source/destination URIs and generations, exact filename,
-CRC32C, size, and SHA-256; it never returns file contents.
+It streams SHA-256 over that immutable source generation, strictly parses the UTF-8 CSV, requires
+the exact canonical 56-column header order and 56 fields in every logical record, then uses GCS
+create-only rewrite to `$PRODUCTION_PREFIX/$production_file_name`. The response is accepted only
+after destination size and CRC32C equal the source. It returns the source/destination URIs and
+generations, exact filename, CRC32C, size, SHA-256, header count, and physical CSV data-row count;
+it never returns file contents.
 
 Required service configuration:
 
