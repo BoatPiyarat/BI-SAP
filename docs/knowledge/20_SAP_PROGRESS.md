@@ -1,5 +1,19 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-25 15:58 ICT — root-caused L78753909-V1's missing-SAP/no-error-history gap
+
+Boat asked why `L78753909` never reached SAP with no interface-error history. Traced it to an
+empty `carepay_transaction_snapshot_installment_details` table under a `number_of_installment=10`
+snapshot whose one real charge (`service_provider='RCB'`, `SUCCESSFUL`, paid in full) never gets a
+`Period` value in the legacy `sap_dashboard_carepay_installment` view, so the item can never pass
+the pre-export spine gate and never reaches submission — explaining the total absence of any
+error/exclusion/validation row. Confirmed V3's `vw_onetime_payload_source` (050) already resolves
+this exact item correctly for ONETIME flow, but RCL-flow Unit 5 sourcing has no equivalent rescue
+and would inherit the same blind spot for a future genuinely-installment order (0 RCL items
+currently stuck; 3 known RCL cases already in SAP). Findings + two design proposals (detection gate;
+longer-term V3-owned RCL source) in `docs/FINDINGS_EMPTY_INSTALLMENT_DETAILS_20260825.md`.
+`RQ-20260825-1558-empty-installment-details-finding` opened for Codex review. No SQL deployed.
+
 ## 2026-08-25 15:35 ICT — InvoiceNo NULL-safety deployed and verified live
 
 Boat explicitly approved the PASSed exact-live artifact `ba1ca7d`. Final preflight proved the live

@@ -3,6 +3,49 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+## RQ-20260825-1558-empty-installment-details-finding
+Status: OPEN
+Reviewer: Codex (per `docs/AGENT_REVIEW_PROTOCOL.md` reciprocity — Codex reviews Claude Code's
+investigations/quantifications)
+Class: A
+Artifact: commit `57f9a30`; `docs/FINDINGS_EMPTY_INSTALLMENT_DETAILS_20260825.md`,
+`sql/adhoc/20260825_investigate_L78753909_missing_sap.sql`,
+`sql/adhoc/20260825_check_v3_onetime_covers_L78753909.sql`,
+`sql/adhoc/20260825_scan_empty_installment_details_population.sql`
+Opened: 2026-08-25T15:58:12+07:00
+
+Claim: root-causes why `L78753909-V1` never reached SAP with no interface-error history: its
+transaction_snapshot declares `number_of_installment=10` but
+`carepay_transaction_snapshot_installment_details` has zero rows; the one real charge is a
+successful `service_provider='RCB'` card payment (paid in full), which is why `flow='ONETIME'` in
+`stg_schedule`. The legacy `sap_dashboard_carepay_installment` view derives `Period` from the empty
+detail table, so the item falls through as a single `Period=NULL`/`TransactionStatus='Pending'`
+placeholder that can never pass the pre-export spine gate — it never reaches interface submission,
+hence zero rows in `sap_errors_logging`/`sap_excluded_records`/`sap_validation_error`. Empirically
+confirms V3's independent `vw_onetime_payload_source` (050) already resolves this exact item
+correctly for ONETIME flow (queried live: `TransactionStatus='paid'`, `Period=1/TotalPeriods=1`,
+`InvoiceNo` populated, `ActualReceived=6100.07`), but RCL-flow Unit 5 sourcing (DDL 058 line 105)
+still reads the same broken legacy view with no equivalent rescue. A population scan finds 0 RCL
+items currently stuck (3 known RCL cases already in SAP; large ONETIME/FULL_PAYMENT buckets mostly
+already resolved or expected to self-resolve via V3). Proposes (1) a fail-closed
+`HOLD_EMPTY_INSTALLMENT_DETAILS`-style detection gate and (2) a longer-term V3-owned RCL source
+mirroring 050's direct charge-to-transaction join, as illustrative design only — no SQL for
+deployment included.
+
+Evidence: all queries run read-only via `scripts/bq_safe_query.sh` (dry-run first) 2026-08-25;
+per-item trace (`careos_order_items`, `stg_schedule`, `carepay_charges`,
+`carepay_transaction_snapshots`/`_installment_details`, `sap_dashboard_carepay_installment`,
+`sap_errors_logging`, `sap_excluded_records`, `sap_validation_error`, `cancelled_change_orders`) and
+the population scan (~0.3 GiB) are cited inline in the findings doc with their result values. No
+DDL, procedure CALL, GCS write, SAP action, or scheduler mutation.
+
+Review focus: whether the root-cause chain (empty installment-details → Period NULL → spine-gate
+block → no submission → no error trail) is correctly traced and not missing an earlier or
+alternative cause; whether the V3 ONETIME-rescue claim is accurate (independently re-run
+`vw_onetime_payload_source` for this item); whether the population-scan bucketing and "0 RCL items
+currently stuck" conclusion holds; and whether the two proposed design directions are sound before
+either is turned into a deployable DDL.
+
 ## RQ-20260825-1536-installment-invoiceno-deploy-evidence
 Status: REVIEWED
 Reviewer: Claude Code

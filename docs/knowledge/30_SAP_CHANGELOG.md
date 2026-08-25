@@ -1,5 +1,15 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-25 15:58 ICT — investigated L78753909; found V3 partial coverage gap
+
+- Root-caused: empty `carepay_transaction_snapshot_installment_details` under a
+  `number_of_installment>1` snapshot strands an item as `Period=NULL` in the legacy installment
+  view, blocking the pre-export spine gate silently (no error/exclusion/validation row anywhere).
+- Confirmed V3's `vw_onetime_payload_source` already resolves this for ONETIME flow; RCL-flow Unit
+  5 has no equivalent rescue (0 RCL items currently stuck, but structural gap remains).
+- Proposed a fail-closed detection gate and a longer-term V3-owned RCL source; design only, not
+  deployed. Opened `RQ-20260825-1558-empty-installment-details-finding` for Codex review.
+
 ## 2026-08-25 15:35 ICT — deployed InvoiceNo NULL-safety to legacy installment view
 
 - Boat approved PASSed artifact `ba1ca7d`; preflight re-proved live-source and Git identity.
