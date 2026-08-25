@@ -3,6 +3,15 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+## RQ-20260825-2107-v3-duplicate-period-quarantine
+Status: REVIEWED
+Reviewer: Codex with independent Standards/Spec sub-reviews
+Class: A
+Artifact: commit `937885a`; DDL 059 duplicate-period quarantine, DDL 060 held-ledger exclusion,
+DDL 083 completed-run operator view, and exact duplicate/retry fixture.
+Opened: 2026-08-25T21:07:07+07:00
+Verdict: **PASS** — `docs/reviews/2026-08-25-937885a-codex.md`.
+
 ## RQ-20260825-2049-v3-net-new-archive-replay
 Status: REVIEWED
 Reviewer: Claude Code
