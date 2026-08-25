@@ -42,15 +42,24 @@ BEGIN
   SELECT p_pipeline_run_id,p.OrderItem,SAFE_CAST(p.Period AS INT64),i.charge_id,p.InvoiceNo,
     SAFE_CAST(p.ExpectedReceived AS NUMERIC),SAFE_CAST(p.ActualReceived AS NUMERIC),
     SAFE_CAST(p.ActualReceived AS NUMERIC)-SAFE_CAST(p.ExpectedReceived AS NUMERIC),
-    'HOLD_RECEIPT_BALANCE_MISMATCH',
-    'Absolute ActualReceived minus ExpectedReceived exceeds THB 10 for one item-period',
+    CASE
+      WHEN COUNT(*) OVER (PARTITION BY p.OrderItem,SAFE_CAST(p.Period AS INT64))>1
+        THEN 'HOLD_MULTIPLE_PAYMENT_EVENTS_SAME_PERIOD'
+      ELSE 'HOLD_RECEIPT_BALANCE_MISMATCH'
+    END,
+    CASE
+      WHEN COUNT(*) OVER (PARTITION BY p.OrderItem,SAFE_CAST(p.Period AS INT64))>1
+        THEN 'More than one payment-event identity resolves to the same item-period'
+      ELSE 'Absolute ActualReceived minus ExpectedReceived exceeds THB 10 for one item-period'
+    END,
     CURRENT_TIMESTAMP()
   FROM `pacific-plating-282708.sap_integration_v3.v3_unit5_newpayment_ready` p
   JOIN `pacific-plating-282708.sap_integration_v3.v3_unit5_payload_identity` i
     ON i.pipeline_run_id=p_pipeline_run_id AND i.file_role='NEWPAYMENT'
    AND i.order_item=p.OrderItem AND i.period=SAFE_CAST(p.Period AS INT64)
    AND i.invoice_no=p.InvoiceNo
-  WHERE ABS(SAFE_CAST(p.ActualReceived AS NUMERIC)-SAFE_CAST(p.ExpectedReceived AS NUMERIC))>10;
+  QUALIFY COUNT(*) OVER (PARTITION BY p.OrderItem,SAFE_CAST(p.Period AS INT64))>1
+    OR ABS(SAFE_CAST(p.ActualReceived AS NUMERIC)-SAFE_CAST(p.ExpectedReceived AS NUMERIC))>10;
 
   ASSERT (SELECT COUNT(*) FROM (
     SELECT order_item,period,charge_id,COUNT(*) n
@@ -82,13 +91,14 @@ BEGIN
     WHERE h.pipeline_run_id=p_pipeline_run_id AND h.order_item=p.OrderItem);
 
   ASSERT (SELECT COUNT(*) FROM (
-    SELECT OrderItem,COUNT(DISTINCT SAFE_CAST(Period AS INT64)) period_n,
+    SELECT OrderItem,COUNT(*) row_n,COUNT(DISTINCT SAFE_CAST(Period AS INT64)) period_n,
       MIN(SAFE_CAST(Period AS INT64)) first_period,MAX(SAFE_CAST(Period AS INT64)) last_period,
       COUNT(DISTINCT SAFE_CAST(TotalPeriods AS INT64)) total_value_n,
       MAX(SAFE_CAST(TotalPeriods AS INT64)) total_n
     FROM `pacific-plating-282708.sap_integration_v3.v3_unit5_newpayment_delivery_ready`
     GROUP BY OrderItem
-    HAVING total_value_n!=1 OR first_period!=1 OR last_period!=total_n OR period_n!=total_n))=0
+    HAVING total_value_n!=1 OR first_period!=1 OR last_period!=total_n
+      OR period_n!=total_n OR row_n!=total_n))=0
     AS 'Delivery-ready RCL item has an incomplete period spine';
   ASSERT (SELECT COUNT(*) FROM `pacific-plating-282708.sap_integration_v3.v3_unit5_payload_identity`
     WHERE pipeline_run_id=p_pipeline_run_id AND file_role='NEWPAYMENT'

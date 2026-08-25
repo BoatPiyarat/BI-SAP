@@ -5,10 +5,11 @@
 CREATE OR REPLACE VIEW
   `pacific-plating-282708.sap_integration_v3.vw_v3_current_newpayment_events` AS
 WITH latest_run AS (
-  SELECT run_id
+  SELECT run_id,MAX(ended_at) AS unit5_completed_at
   FROM `pacific-plating-282708.sap_integration_v3.pipeline_run_log`
-  WHERE run_type='NIGHTLY' AND step='UNIT1_START' AND status='SUCCESS'
-  QUALIFY ROW_NUMBER() OVER (ORDER BY started_at DESC,run_id DESC)=1
+  WHERE run_type='NIGHTLY' AND step='UNITS_2_5_ARCHIVE' AND status='SUCCESS'
+  GROUP BY run_id
+  QUALIFY ROW_NUMBER() OVER (ORDER BY unit5_completed_at DESC,run_id DESC)=1
 )
 SELECT
   i.pipeline_run_id,

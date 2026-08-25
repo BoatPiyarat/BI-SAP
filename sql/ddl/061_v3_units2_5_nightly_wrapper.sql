@@ -25,13 +25,7 @@ BEGIN
   CALL `pacific-plating-282708.sap_integration_v3.sp_build_v3_newpayment_delivery_ready`(
     p_pipeline_run_id);
   IF (SELECT COUNT(*)
-    FROM `pacific-plating-282708.sap_integration_v3.v3_unit5_payload_identity` i
-    WHERE i.pipeline_run_id=p_pipeline_run_id AND i.file_role='NEWPAYMENT'
-      AND NOT EXISTS (
-        SELECT 1 FROM `pacific-plating-282708.sap_integration_v3.export_archive` a
-        WHERE a.order_item=i.order_item AND a.period=i.period AND a.charge_id=i.charge_id
-          AND a.delivery_status IN ('PREPARED_ARCHIVE','ARCHIVED_PENDING_OBJECT_METADATA',
-            'ARCHIVED_PENDING_DELIVERY','DELIVERED','PICKED_UP','ACKNOWLEDGED')))>0 THEN
+    FROM `pacific-plating-282708.sap_integration_v3.v3_unit5_newpayment_delivery_ready`)>0 THEN
     CALL `pacific-plating-282708.sap_integration_v3.sp_export_v3_daily_newpayment_archive`(
       p_pipeline_run_id);
   END IF;
