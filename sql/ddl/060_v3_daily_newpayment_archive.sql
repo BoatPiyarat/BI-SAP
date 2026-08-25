@@ -20,22 +20,32 @@ BEGIN
     WHERE status='OPEN')=1 AS 'Daily archive requires exactly one OPEN period';
   SET (v_period_start,v_period_end)=(SELECT AS STRUCT period_start,period_end
     FROM `pacific-plating-282708.sap_integration_v3.sap_period_state` WHERE status='OPEN');
-  SET v_rows=(SELECT COUNT(*)
-    FROM `pacific-plating-282708.sap_integration_v3.v3_unit5_newpayment_delivery_ready`);
+  CREATE TEMP TABLE _release_identity AS
+  SELECT i.*
+  FROM `pacific-plating-282708.sap_integration_v3.v3_unit5_payload_identity` i
+  WHERE i.pipeline_run_id=p_pipeline_run_id AND i.file_role='NEWPAYMENT'
+    AND NOT EXISTS (
+      SELECT 1
+      FROM `pacific-plating-282708.sap_integration_v3.export_archive` a
+      WHERE a.order_item=i.order_item AND a.period=i.period AND a.charge_id=i.charge_id
+        AND a.delivery_status IN ('PREPARED_ARCHIVE','ARCHIVED_PENDING_OBJECT_METADATA',
+          'ARCHIVED_PENDING_DELIVERY','DELIVERED','PICKED_UP','ACKNOWLEDGED'));
+  CREATE TEMP TABLE _release_item AS
+  SELECT DISTINCT order_item FROM _release_identity;
+  SET v_rows=(SELECT COUNT(*) FROM _release_identity);
 
   ASSERT v_rows>0 AS 'No delivery-ready NEWPAYMENT rows; no archive object written';
   ASSERT (SELECT COUNT(*) FROM `pacific-plating-282708.sap_integration_v3.INFORMATION_SCHEMA.COLUMNS`
     WHERE table_name='v3_unit5_newpayment_delivery_ready')=56
     AS 'Daily NEWPAYMENT archive requires exactly 56 columns';
   ASSERT (SELECT COUNT(*)
-    FROM `pacific-plating-282708.sap_integration_v3.v3_unit5_payload_identity` i
+    FROM _release_identity i
     JOIN `pacific-plating-282708.sap_integration_v3.v3_unit5_newpayment_delivery_ready` p
       ON p.OrderItem=i.order_item AND SAFE_CAST(p.Period AS INT64)=i.period
      AND p.InvoiceNo=i.invoice_no
     WHERE i.pipeline_run_id=p_pipeline_run_id AND i.file_role='NEWPAYMENT')=
-    (SELECT COUNT(*) FROM `pacific-plating-282708.sap_integration_v3.v3_unit5_payload_identity` i
-      WHERE pipeline_run_id=p_pipeline_run_id AND file_role='NEWPAYMENT'
-        AND NOT EXISTS (SELECT 1
+    (SELECT COUNT(*) FROM _release_identity i
+      WHERE NOT EXISTS (SELECT 1
           FROM `pacific-plating-282708.sap_integration_v3.v3_unit5_balance_hold` h
           WHERE h.pipeline_run_id=p_pipeline_run_id AND h.order_item=i.order_item))
     AS 'Released payment identities do not exist in the expanded delivery spine';
@@ -55,14 +65,8 @@ BEGIN
       AND (SAFE.PARSE_DATE('%d%m%Y',p.PaymentDate)<v_period_start
         OR SAFE.PARSE_DATE('%d%m%Y',p.PaymentDate)>=v_period_end))=0
     AS 'Target payment event lies outside the OPEN period';
-  ASSERT (SELECT COUNT(*)
-    FROM `pacific-plating-282708.sap_integration_v3.v3_unit5_payload_identity` i
-    JOIN `pacific-plating-282708.sap_integration_v3.export_archive` a
-      ON a.order_item=i.order_item AND a.period=i.period AND a.charge_id=i.charge_id
-    WHERE i.pipeline_run_id=p_pipeline_run_id AND i.file_role='NEWPAYMENT'
-      AND a.delivery_status IN ('PREPARED_ARCHIVE','ARCHIVED_PENDING_OBJECT_METADATA',
-        'ARCHIVED_PENDING_DELIVERY','DELIVERED','PICKED_UP','ACKNOWLEDGED'))=0
-    AS 'A current-run identity already has an active archive/delivery record; refusing replay';
+  ASSERT (SELECT COUNT(*) FROM _release_identity)=v_rows
+    AS 'Release identity set changed during archive preparation';
 
   -- BU belongs only in the GCS folder (RCB_MOTOR/). SAP's basename contract always starts
   -- INSURANCE_RCB_; prefixing RCB_MOTOR_ changes the interface filename contract.
@@ -78,20 +82,21 @@ BEGIN
   SELECT v_export_run_id,i.order_item,i.period,i.charge_id,DATE(e.charge_time),v_file_name,NULL,
     v_archive_uri,'RCB_MOTOR','SAP_INSURANCE_56_V1',i.payload_hash,TO_JSON_STRING(p),
     'DAILY_NEWPAYMENT','PREPARED_ARCHIVE',CURRENT_TIMESTAMP()
-  FROM `pacific-plating-282708.sap_integration_v3.v3_unit5_payload_identity` i
+  FROM _release_identity i
   JOIN `pacific-plating-282708.sap_integration_v3.v3_unit5_newpayment_delivery_ready` p
     ON p.OrderItem=i.order_item AND SAFE_CAST(p.Period AS INT64)=i.period
    AND p.InvoiceNo=i.invoice_no
   JOIN `pacific-plating-282708.sap_integration_v3.v3_unit2_event_shadow` e
     ON e.pipeline_run_id=i.pipeline_run_id AND e.order_item=i.order_item
    AND e.period=i.period AND e.charge_id=i.charge_id
-  WHERE i.pipeline_run_id=p_pipeline_run_id AND i.file_role='NEWPAYMENT';
+  WHERE NOT EXISTS (SELECT 1
+    FROM `pacific-plating-282708.sap_integration_v3.v3_unit5_balance_hold` h
+    WHERE h.pipeline_run_id=p_pipeline_run_id AND h.order_item=i.order_item);
 
   ASSERT (SELECT COUNT(*) FROM `pacific-plating-282708.sap_integration_v3.export_archive`
     WHERE export_run_id=v_export_run_id)=
-    (SELECT COUNT(*) FROM `pacific-plating-282708.sap_integration_v3.v3_unit5_payload_identity` i
-      WHERE pipeline_run_id=p_pipeline_run_id AND file_role='NEWPAYMENT'
-        AND NOT EXISTS (SELECT 1
+    (SELECT COUNT(*) FROM _release_identity i
+      WHERE NOT EXISTS (SELECT 1
           FROM `pacific-plating-282708.sap_integration_v3.v3_unit5_balance_hold` h
           WHERE h.pipeline_run_id=p_pipeline_run_id AND h.order_item=i.order_item))
     AS 'Event-grain archive ledger conservation failed';
@@ -108,6 +113,7 @@ BEGIN
       PaymentChannel,ExpectedDate,RefOrder,RefundAmountBeforeFee,RefundAmountAfterFee,BillingAddress,
       BatchRunDate
     FROM `pacific-plating-282708.sap_integration_v3.v3_unit5_newpayment_delivery_ready`
+    WHERE OrderItem IN (SELECT order_item FROM _release_item)
   """,v_archive_uri);
 
   UPDATE `pacific-plating-282708.sap_integration_v3.export_archive`
