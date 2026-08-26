@@ -112,3 +112,7 @@ Operator-only Scenario 1 fallback artifacts (no GCS write):
   projects the exact 56-column event-bound source, conserves Unit-2 events, recognizes only the
   confirmed EDC/KASIKORN → `RCB-EDC-KBANK` mapping, and holds every row with zero interface output.
   Apply after 050, 051, 052, and 057.
+- `093_v3_plain_cancel_payload_hold_gate.sql` — source-only unlinked plain-cancellation split;
+  mirrors the SAP winner into the exact 56-column contract, applies confirmed Pending-row rules,
+  checks Paid-before-cancel and provisional SAP resolution, and holds every item with zero
+  interface output pending FA batch approval. Apply after 050, 051, and 089.
