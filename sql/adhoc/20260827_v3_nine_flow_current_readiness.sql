@@ -1,0 +1,5 @@
+SELECT flow_key,authoritative_scenario_number,evidence_run_id,evidence_at,
+  prepared_count,release_ready_count,interface_row_count,release_gate_state,
+  schedule_action,blocker_code,human_fallback
+FROM `pacific-plating-282708.sap_integration_v3.vw_v3_business_flow_activation_readiness`
+ORDER BY COALESCE(authoritative_scenario_number,999),flow_key;
