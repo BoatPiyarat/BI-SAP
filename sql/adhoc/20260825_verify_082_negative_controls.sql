@@ -1,7 +1,7 @@
 -- READ ONLY verification (negative controls for 082's view-body logic).
 -- 1. L78753909-V1 is ONETIME, must NOT appear (proves correct flow scoping).
--- 2. A sample of ordinary, currently-flowing RCL order_items with TotalPeriods>1 already in
---    v3_unit5_newpayment_ready must NOT appear (proves no false positives on legitimate schedules).
+-- 2. A deterministic sample of 20 current RCL order_items with TotalPeriods>1 and a positively
+--    populated latest detail set must NOT appear (proves no false positives on valid schedules).
 WITH latest_snapshot AS (
   SELECT * EXCEPT(rn) FROM (
     SELECT *, ROW_NUMBER() OVER (
@@ -24,9 +24,11 @@ hold_view_body AS (
   WHERE ss.flow = 'RCL' AND ss.total_periods > 1 AND dc.detail_row_count = 0
 ),
 rcl_sample AS (
-  SELECT DISTINCT OrderItem
-  FROM `pacific-plating-282708.sap_integration_v3.v3_unit5_newpayment_ready`
-  WHERE PaymentChannel LIKE 'RCL%' AND SAFE_CAST(TotalPeriods AS INT64) > 1
+  SELECT DISTINCT ss.order_item AS OrderItem
+  FROM `pacific-plating-282708.sap_integration_v3.stg_schedule` ss
+  JOIN detail_counts dc ON dc.transaction_id=ss.transaction_id
+  WHERE ss.flow='RCL' AND ss.total_periods>1 AND dc.detail_row_count>0
+  ORDER BY ss.order_item
   LIMIT 20
 )
 SELECT

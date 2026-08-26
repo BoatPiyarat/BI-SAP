@@ -1,5 +1,5 @@
 -- 082_v3_rcl_empty_installment_detail_hold.sql
--- Source only / Class B (read-only view, no live consumers yet). Phase 1 of the fix for
+-- Source only / Class A. Runtime dependency of the reviewed Unit 5 producer in DDL 058.
 -- docs/FINDINGS_EMPTY_INSTALLMENT_DETAILS_20260825.md.
 --
 -- Problem: a `careos.carepay_transaction_snapshots` row can declare `number_of_installment > 1`
@@ -14,15 +14,13 @@
 -- real integer period) - before ever reaching an ASSERT. It never fails loudly; it just vanishes,
 -- leaving zero trace in sap_errors_logging/sap_excluded_records/sap_validation_error.
 --
--- This file only detects and names the condition (HOLD_EMPTY_INSTALLMENT_DETAILS, following the
+-- This file detects and names the condition (HOLD_EMPTY_INSTALLMENT_DETAILS, following the
 -- house HOLD_* convention from 081_v3_creditshell_flow_router.sql and the
--- 20260824_qualify_v3_normal_motor_newpayment.sql adhoc qualifier). It is deliberately NOT wired
--- into 058 yet - that is Phase 2, a separate, later, reviewed change (058 already has live
--- consumers and any change to it requires the DEPLOY GATE). This file has no live consumers of its
--- own and needs no pre-approval to build/test per AGENT_RULES.md.
+-- 20260824_qualify_v3_normal_motor_newpayment.sql adhoc qualifier). DDL 058 stages this view's
+-- exact rows and publishes its run-scoped durable holds atomically with the Unit 5 producer claim.
 --
 -- Population scan (read-only, 2026-08-25): flow='RCL' + total_periods>1 + zero installment_details
--- rows currently affects 3 known order_items, all already separately reached SAP by some other
+-- rows currently affected 2 known order_items, both already separately reached SAP by another
 -- path (see docs/FINDINGS_EMPTY_INSTALLMENT_DETAILS_20260825.md). Zero RCL items are actively
 -- stuck by this defect today; this view exists so a FUTURE occurrence is visible instead of silent.
 
@@ -58,9 +56,7 @@ WHERE ss.flow = 'RCL'              -- excludes RCL_CMI (always 1 period) and ONE
   AND ss.total_periods > 1
   AND dc.detail_row_count = 0;
 
--- Durable, run-scoped hold record for Phase 2 (058) to populate. Not yet written to by anything
--- live - table creation alone needs no pre-approval; population/wiring is Phase 2's DEPLOY GATE
--- change.
+-- Durable, run-scoped hold record populated atomically by the reviewed DDL 058 producer.
 CREATE TABLE IF NOT EXISTS `pacific-plating-282708.sap_integration_v3.v3_unit5_installment_detail_hold` (
   pipeline_run_id STRING NOT NULL,
   order_item STRING NOT NULL,
