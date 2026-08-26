@@ -21,12 +21,25 @@ CREATE TABLE IF NOT EXISTS
 CLUSTER BY flow_key,evidence_run_id;
 
 CREATE TABLE IF NOT EXISTS
+  `pacific-plating-282708.sap_integration_v3.v3_scheduler_inventory_evidence` (
+    evidence_id STRING NOT NULL,
+    scheduler_inventory_evidence JSON NOT NULL,
+    evidence_sha256 STRING NOT NULL,
+    registered_by STRING NOT NULL,
+    registered_at TIMESTAMP NOT NULL,
+    verification_reference STRING NOT NULL
+  )
+CLUSTER BY evidence_id
+OPTIONS(enable_change_history=TRUE);
+
+CREATE TABLE IF NOT EXISTS
   `pacific-plating-282708.sap_integration_v3.v3_scenario_scheduler_prestate` (
     activation_id STRING NOT NULL,
     flow_key STRING NOT NULL,
     evidence_run_id STRING NOT NULL,
     scheduler_job_name STRING NOT NULL,
     scheduler_resource_json JSON NOT NULL,
+    scheduler_inventory_evidence_id STRING NOT NULL,
     scheduler_inventory_evidence JSON NOT NULL,
     scheduler_restore_hash STRING NOT NULL,
     scheduler_state STRING NOT NULL,
@@ -63,6 +76,9 @@ ADD COLUMN IF NOT EXISTS scheduler_inventory_evidence JSON;
 ALTER TABLE
   `pacific-plating-282708.sap_integration_v3.v3_scenario_scheduler_prestate`
 ADD COLUMN IF NOT EXISTS scheduler_restore_hash STRING;
+ALTER TABLE
+  `pacific-plating-282708.sap_integration_v3.v3_scenario_scheduler_prestate`
+ADD COLUMN IF NOT EXISTS scheduler_inventory_evidence_id STRING;
 
 CREATE TABLE IF NOT EXISTS
   `pacific-plating-282708.sap_integration_v3.v3_scenario_rollback_ledger` (
@@ -79,6 +95,103 @@ CREATE TABLE IF NOT EXISTS
     verification_reference STRING NOT NULL
   )
 CLUSTER BY rollback_id,activation_id;
+
+CREATE OR REPLACE FUNCTION
+  `pacific-plating-282708.sap_integration_v3.fn_v3_cron_field_matches`(
+    p_field STRING,p_value INT64,p_min INT64,p_max INT64,p_kind STRING)
+RETURNS BOOL AS ((
+  SELECT IFNULL(LOGICAL_OR(
+    candidate_value BETWEEN range_start AND range_end
+      AND MOD(candidate_value-range_start,step_value)=0),FALSE)
+  FROM UNNEST(IF(p_kind='DOW' AND p_value=0,[0,7],[p_value])) candidate_value,
+  (
+    SELECT
+      IF(base='*',p_min,SAFE_CAST(SPLIT(base,'-')[SAFE_OFFSET(0)] AS INT64)) range_start,
+      IF(base='*',p_max,COALESCE(
+        SAFE_CAST(SPLIT(base,'-')[SAFE_OFFSET(1)] AS INT64),
+        SAFE_CAST(SPLIT(base,'-')[SAFE_OFFSET(0)] AS INT64))) range_end,
+      SAFE_CAST(IFNULL(SPLIT(atom,'/')[SAFE_OFFSET(1)],'1') AS INT64) step_value
+    FROM (
+      SELECT atom,SPLIT(atom,'/')[SAFE_OFFSET(0)] base
+      FROM UNNEST(SPLIT(CASE p_kind
+        WHEN 'MONTH' THEN REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(
+          REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(UPPER(p_field),
+          'JAN','1'),'FEB','2'),'MAR','3'),'APR','4'),'MAY','5'),'JUN','6'),
+          'JUL','7'),'AUG','8'),'SEP','9'),'OCT','10'),'NOV','11'),'DEC','12')
+        WHEN 'DOW' THEN REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(
+          UPPER(p_field),'SUN','0'),'MON','1'),'TUE','2'),'WED','3'),'THU','4'),
+          'FRI','5'),'SAT','6')
+        ELSE p_field END,',')) atom))));
+
+CREATE OR REPLACE FUNCTION
+  `pacific-plating-282708.sap_integration_v3.fn_v3_cron_matches`(
+    p_cron STRING,p_at TIMESTAMP,p_time_zone STRING)
+RETURNS BOOL AS ((
+  WITH fields AS (SELECT SPLIT(p_cron,' ') f), local AS (SELECT
+    EXTRACT(MINUTE FROM p_at AT TIME ZONE p_time_zone) minute_value,
+    EXTRACT(HOUR FROM p_at AT TIME ZONE p_time_zone) hour_value,
+    EXTRACT(DAY FROM p_at AT TIME ZONE p_time_zone) dom_value,
+    EXTRACT(MONTH FROM p_at AT TIME ZONE p_time_zone) month_value,
+    CAST(FORMAT_TIMESTAMP('%w',p_at,p_time_zone) AS INT64) dow_value)
+  SELECT ARRAY_LENGTH(f)=5
+    AND `pacific-plating-282708.sap_integration_v3.fn_v3_cron_field_matches`(
+      f[SAFE_OFFSET(0)],minute_value,0,59,'NUMBER')
+    AND `pacific-plating-282708.sap_integration_v3.fn_v3_cron_field_matches`(
+      f[SAFE_OFFSET(1)],hour_value,0,23,'NUMBER')
+    AND `pacific-plating-282708.sap_integration_v3.fn_v3_cron_field_matches`(
+      f[SAFE_OFFSET(3)],month_value,1,12,'MONTH')
+    AND IF(f[SAFE_OFFSET(2)]='*' OR f[SAFE_OFFSET(4)]='*',
+      `pacific-plating-282708.sap_integration_v3.fn_v3_cron_field_matches`(
+        f[SAFE_OFFSET(2)],dom_value,1,31,'NUMBER')
+      AND `pacific-plating-282708.sap_integration_v3.fn_v3_cron_field_matches`(
+        f[SAFE_OFFSET(4)],dow_value,0,7,'DOW'),
+      `pacific-plating-282708.sap_integration_v3.fn_v3_cron_field_matches`(
+        f[SAFE_OFFSET(2)],dom_value,1,31,'NUMBER')
+      OR `pacific-plating-282708.sap_integration_v3.fn_v3_cron_field_matches`(
+        f[SAFE_OFFSET(4)],dow_value,0,7,'DOW'))
+  FROM fields,local));
+
+CREATE OR REPLACE PROCEDURE
+  `pacific-plating-282708.sap_integration_v3.sp_register_v3_scheduler_inventory_evidence`(
+    p_evidence_id STRING,p_scheduler_inventory_evidence JSON,
+    p_registered_by STRING,p_verification_reference STRING)
+BEGIN
+  ASSERT NULLIF(TRIM(p_evidence_id),'') IS NOT NULL
+    AND NULLIF(TRIM(p_registered_by),'') IS NOT NULL
+    AND NULLIF(TRIM(p_verification_reference),'') IS NOT NULL
+    AS 'Inventory registration requires identity, operator, and verification reference';
+  ASSERT JSON_VALUE(p_scheduler_inventory_evidence,'$.project')='pacific-plating-282708'
+    AND JSON_VALUE(p_scheduler_inventory_evidence,'$.region')='asia-southeast1'
+    AND JSON_VALUE(p_scheduler_inventory_evidence,'$.paginationComplete')='true'
+    AND JSON_VALUE(p_scheduler_inventory_evidence,'$.generator')
+      ='scripts/build_v3_scheduler_inventory.py:v1'
+    AND JSON_VALUE(p_scheduler_inventory_evidence,'$.sourceApi')
+      ='cloudscheduler.googleapis.com/v1'
+    AND SAFE_CAST(JSON_VALUE(p_scheduler_inventory_evidence,'$.pagesFetched') AS INT64)>0
+    AND NULLIF(JSON_VALUE(p_scheduler_inventory_evidence,'$.rawInventorySha256'),'') IS NOT NULL
+    AND SAFE_CAST(JSON_VALUE(p_scheduler_inventory_evidence,'$.horizonMinuteCount') AS INT64)>=10080
+    AND SAFE_CAST(JSON_VALUE(p_scheduler_inventory_evidence,'$.minimumWindowSeconds') AS INT64)>=1800
+    AND SAFE_CAST(JSON_VALUE(p_scheduler_inventory_evidence,'$.jobCount') AS INT64)
+      =ARRAY_LENGTH(JSON_QUERY_ARRAY(p_scheduler_inventory_evidence,'$.jobs'))
+    AND SAFE_CAST(JSON_VALUE(p_scheduler_inventory_evidence,'$.enabledJobCount') AS INT64)
+      =(SELECT COUNTIF(JSON_VALUE(j,'$.state')='ENABLED')
+        FROM UNNEST(JSON_QUERY_ARRAY(p_scheduler_inventory_evidence,'$.jobs')) j)
+    AND (SELECT COUNT(*) FROM (
+      SELECT JSON_VALUE(j,'$.name') name
+      FROM UNNEST(JSON_QUERY_ARRAY(p_scheduler_inventory_evidence,'$.jobs')) j
+      GROUP BY name HAVING COUNT(*)>1))=0
+    AS 'Only complete generator-produced production inventory can be registered';
+  INSERT INTO `pacific-plating-282708.sap_integration_v3.v3_scheduler_inventory_evidence`
+    (evidence_id,scheduler_inventory_evidence,evidence_sha256,registered_by,
+      registered_at,verification_reference)
+  SELECT p_evidence_id,p_scheduler_inventory_evidence,
+    TO_HEX(SHA256(TO_JSON_STRING(p_scheduler_inventory_evidence))),
+    p_registered_by,CURRENT_TIMESTAMP(),p_verification_reference
+  WHERE NOT EXISTS (SELECT 1
+    FROM `pacific-plating-282708.sap_integration_v3.v3_scheduler_inventory_evidence`
+    WHERE evidence_id=p_evidence_id);
+  ASSERT @@row_count=1 AS 'Inventory evidence ID already exists';
+END;
 
 CREATE OR REPLACE PROCEDURE
   `pacific-plating-282708.sap_integration_v3.sp_register_v3_scenario_activation_approval`(
@@ -135,12 +248,19 @@ END;
 CREATE OR REPLACE PROCEDURE
   `pacific-plating-282708.sap_integration_v3.sp_finalize_v3_scenario_activation`(
     p_activation_id STRING,p_scheduler_poststate_json JSON,p_non_overlap_evidence JSON,
+    p_non_overlap_evidence_id STRING,
     p_verified_by STRING,p_verification_reference STRING)
 BEGIN
   ASSERT (SELECT COUNT(*)
     FROM `pacific-plating-282708.sap_integration_v3.v3_scenario_activation_ledger`
     WHERE activation_id=p_activation_id AND activation_state='PRESTATE_CAPTURED')=1
     AS 'Activation must have exactly one captured prestate';
+  ASSERT (SELECT COUNT(*)
+    FROM `pacific-plating-282708.sap_integration_v3.v3_scheduler_inventory_evidence`
+    WHERE evidence_id=p_non_overlap_evidence_id
+      AND evidence_sha256=TO_HEX(SHA256(TO_JSON_STRING(p_non_overlap_evidence)))
+      AND TO_JSON_STRING(scheduler_inventory_evidence)=TO_JSON_STRING(p_non_overlap_evidence))=1
+    AS 'Finalization requires exact immutable registered inventory evidence';
   ASSERT JSON_VALUE(p_scheduler_poststate_json,'$.name')=(SELECT scheduler_job_name
     FROM `pacific-plating-282708.sap_integration_v3.v3_scenario_activation_ledger`
     WHERE activation_id=p_activation_id)
@@ -181,6 +301,7 @@ BEGIN
     AND SAFE_CAST(JSON_VALUE(p_non_overlap_evidence,'$.pagesFetched') AS INT64)>0
     AND NULLIF(JSON_VALUE(p_non_overlap_evidence,'$.rawInventorySha256'),'') IS NOT NULL
     AND SAFE_CAST(JSON_VALUE(p_non_overlap_evidence,'$.horizonMinuteCount') AS INT64)>=10080
+    AND SAFE_CAST(JSON_VALUE(p_non_overlap_evidence,'$.minimumWindowSeconds') AS INT64)>=1800
     AND (SELECT COUNTIF(JSON_VALUE(j,'$.state')='ENABLED'
         AND (JSON_VALUE(j,'$.cronExpansionVersion')!='V1_EXHAUSTIVE_MINUTE'
           OR SAFE_CAST(JSON_VALUE(j,'$.evaluatedMinuteCount') AS INT64)
@@ -202,6 +323,33 @@ BEGIN
             <TIMESTAMP(JSON_VALUE(p_non_overlap_evidence,'$.horizonStart'))
           OR TIMESTAMP(JSON_VALUE(w,'$.end'))
             >TIMESTAMP(JSON_VALUE(p_non_overlap_evidence,'$.horizonEnd'))))=0
+    AND (WITH jobs AS (
+      SELECT j FROM UNNEST(JSON_QUERY_ARRAY(p_non_overlap_evidence,'$.jobs')) j
+      WHERE JSON_VALUE(j,'$.state')='ENABLED'),
+    minutes AS (SELECT minute_at FROM UNNEST(GENERATE_TIMESTAMP_ARRAY(
+      TIMESTAMP(JSON_VALUE(p_non_overlap_evidence,'$.horizonStart')),
+      TIMESTAMP_SUB(TIMESTAMP(JSON_VALUE(p_non_overlap_evidence,'$.horizonEnd')),
+        INTERVAL 1 MINUTE),INTERVAL 1 MINUTE)) minute_at),
+    expected AS (
+      SELECT JSON_VALUE(j,'$.name') name,minute_at start_at,
+        LEAST(TIMESTAMP(JSON_VALUE(p_non_overlap_evidence,'$.horizonEnd')),
+          TIMESTAMP_ADD(minute_at,INTERVAL GREATEST(
+            SAFE_CAST(JSON_VALUE(p_non_overlap_evidence,'$.minimumWindowSeconds') AS INT64),
+            IFNULL(SAFE_CAST(REGEXP_EXTRACT(JSON_VALUE(j,'$.attemptDeadline'),
+              r'^(\d+)s$') AS INT64),0)) SECOND)) end_at
+      FROM jobs,minutes
+      WHERE `pacific-plating-282708.sap_integration_v3.fn_v3_cron_matches`(
+        JSON_VALUE(j,'$.schedule'),minute_at,JSON_VALUE(j,'$.timeZone'))),
+    submitted AS (
+      SELECT JSON_VALUE(j,'$.name') name,
+        TIMESTAMP(JSON_VALUE(w,'$.start')) start_at,
+        TIMESTAMP(JSON_VALUE(w,'$.end')) end_at
+      FROM jobs,UNNEST(JSON_QUERY_ARRAY(j,'$.windows')) w),
+    mismatch AS (
+      (SELECT * FROM expected EXCEPT DISTINCT SELECT * FROM submitted)
+      UNION ALL
+      (SELECT * FROM submitted EXCEPT DISTINCT SELECT * FROM expected))
+    SELECT COUNT(*) FROM mismatch)=0
     AND (WITH jobs AS (
       SELECT j FROM UNNEST(JSON_QUERY_ARRAY(p_non_overlap_evidence,'$.jobs')) j
       WHERE JSON_VALUE(j,'$.state')='ENABLED'),
@@ -252,6 +400,7 @@ BEGIN
   ASSERT (SELECT COUNT(*)
     FROM `pacific-plating-282708.sap_integration_v3.v3_scenario_scheduler_prestate`
     WHERE activation_id=p_activation_id
+      AND NULLIF(scheduler_inventory_evidence_id,'') IS NOT NULL
       AND scheduler_inventory_evidence IS NOT NULL
       AND NULLIF(scheduler_restore_hash,'') IS NOT NULL)=1
     AS 'Legacy prestate without exact inventory/hash evidence cannot be rolled back automatically';
@@ -311,6 +460,7 @@ CREATE OR REPLACE PROCEDURE
   `pacific-plating-282708.sap_integration_v3.sp_claim_v3_scenario_activation`(
     p_activation_id STRING,p_flow_key STRING,p_evidence_run_id STRING,p_approval_id STRING,
     p_scheduler_resource_json JSON,p_scheduler_inventory_evidence JSON,
+    p_scheduler_inventory_evidence_id STRING,
     p_workflow_revision STRING,p_activated_by STRING,p_verification_reference STRING)
 BEGIN
   ASSERT NULLIF(TRIM(p_activation_id),'') IS NOT NULL
@@ -323,6 +473,13 @@ BEGIN
     WHERE flow_key=p_flow_key AND evidence_run_id=p_evidence_run_id
       AND approval_id=p_approval_id AND expires_at>CURRENT_TIMESTAMP())=1
     AS 'Activation claim lacks exact unexpired approval';
+  ASSERT (SELECT COUNT(*)
+    FROM `pacific-plating-282708.sap_integration_v3.v3_scheduler_inventory_evidence`
+    WHERE evidence_id=p_scheduler_inventory_evidence_id
+      AND evidence_sha256=TO_HEX(SHA256(TO_JSON_STRING(p_scheduler_inventory_evidence)))
+      AND TO_JSON_STRING(scheduler_inventory_evidence)
+        =TO_JSON_STRING(p_scheduler_inventory_evidence))=1
+    AS 'Activation claim requires exact immutable registered inventory evidence';
   ASSERT JSON_VALUE(p_scheduler_resource_json,'$.name')=(SELECT scheduler_job_name
     FROM `pacific-plating-282708.sap_integration_v3.v3_scenario_activation_approval`
     WHERE flow_key=p_flow_key AND evidence_run_id=p_evidence_run_id
@@ -403,8 +560,12 @@ BEGIN
   ASSERT @@row_count=1
     AS 'Activation ID already exists, or flow/scheduler has a non-rolled-back claim';
   INSERT INTO `pacific-plating-282708.sap_integration_v3.v3_scenario_scheduler_prestate`
+    (activation_id,flow_key,evidence_run_id,scheduler_job_name,scheduler_resource_json,
+      scheduler_inventory_evidence_id,scheduler_inventory_evidence,scheduler_restore_hash,
+      scheduler_state,schedule,time_zone,workflow_revision,captured_by,captured_at)
   SELECT p_activation_id,p_flow_key,p_evidence_run_id,JSON_VALUE(
-    p_scheduler_resource_json,'$.name'),p_scheduler_resource_json,p_scheduler_inventory_evidence,
+    p_scheduler_resource_json,'$.name'),p_scheduler_resource_json,
+    p_scheduler_inventory_evidence_id,p_scheduler_inventory_evidence,
     TO_HEX(SHA256(TO_JSON_STRING(STRUCT(
       JSON_VALUE(p_scheduler_resource_json,'$.name') AS resource_name,
       JSON_VALUE(p_scheduler_resource_json,'$.description') AS description,

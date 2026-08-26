@@ -130,7 +130,11 @@ def main() -> None:
             cursor = start
             while cursor < end:
                 if cron_matches(item["schedule"], cursor.astimezone(zone)):
-                    windows.append({"start": iso(cursor), "end": iso(cursor + dt.timedelta(seconds=duration))})
+                    # Overlap is evaluated only inside the declared horizon. Clipping the
+                    # final occurrence preserves every in-horizon occupied minute without
+                    # producing evidence that the SQL horizon guard must reject.
+                    window_end = min(cursor + dt.timedelta(seconds=duration), end)
+                    windows.append({"start": iso(cursor), "end": iso(window_end)})
                 cursor += dt.timedelta(minutes=1)
             item.update(cronExpansionVersion="V1_EXHAUSTIVE_MINUTE",
                         evaluatedMinuteCount=minute_count, windowCount=len(windows), windows=windows)
@@ -139,6 +143,7 @@ def main() -> None:
         "generator": GENERATOR, "sourceApi": "cloudscheduler.googleapis.com/v1",
         "project": args.project, "region": args.region, "checkedAt": iso(checked),
         "horizonStart": iso(start), "horizonEnd": iso(end), "horizonMinuteCount": minute_count,
+        "minimumWindowSeconds": args.minimum_window_seconds,
         "jobCount": len(rendered), "enabledJobCount": sum(j.get("state") == "ENABLED" for j in rendered),
         "pagesFetched": pages, "paginationComplete": True, "rawInventorySha256": raw_hash, "jobs": rendered,
     }
