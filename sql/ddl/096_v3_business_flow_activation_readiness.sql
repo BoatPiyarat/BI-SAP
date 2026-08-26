@@ -1,29 +1,55 @@
 -- Class A / read-only production control plane for the nine named business populations.
 -- Only Scenarios 1-3 have authoritative numbers. Remaining flows deliberately keep number NULL.
--- This view never activates a scheduler; it states whether activation review is even permissible.
+-- These views never activate a scheduler; they state whether activation review is permissible.
+
+CREATE TABLE IF NOT EXISTS
+  `pacific-plating-282708.sap_integration_v3.v3_onetime_create_activation_summary` (
+    pipeline_run_id STRING NOT NULL,
+    held_count INT64 NOT NULL,
+    ready_count INT64 NOT NULL,
+    evidence_at TIMESTAMP NOT NULL
+  )
+CLUSTER BY pipeline_run_id;
+
+CREATE OR REPLACE PROCEDURE
+  `pacific-plating-282708.sap_integration_v3.sp_snapshot_v3_onetime_create_activation`(
+    p_pipeline_run_id STRING
+  )
+BEGIN
+  ASSERT NULLIF(TRIM(p_pipeline_run_id), '') IS NOT NULL AS 'pipeline_run_id is required';
+  ASSERT (SELECT COUNT(*)
+    FROM `pacific-plating-282708.sap_integration_v3.pipeline_run_log`
+    WHERE run_id = p_pipeline_run_id AND step = 'UNIT1_COMPLETE' AND status = 'SUCCESS') = 1
+    AS 'Scenario 1 activation summary requires exactly one successful Unit 1 row';
+  ASSERT NOT EXISTS (SELECT 1
+    FROM `pacific-plating-282708.sap_integration_v3.v3_onetime_create_activation_summary`
+    WHERE pipeline_run_id = p_pipeline_run_id) AS 'pipeline_run_id already snapshotted';
+
+  CREATE TEMP TABLE _summary AS
+  SELECT p_pipeline_run_id AS pipeline_run_id,
+    (SELECT COUNT(*)
+      FROM `pacific-plating-282708.sap_integration_v3.v3_onetime_create_hold`
+      WHERE pipeline_run_id = p_pipeline_run_id) AS held_count,
+    (SELECT COUNT(*)
+      FROM `pacific-plating-282708.sap_integration_v3.v3_onetime_create_identity`
+      WHERE pipeline_run_id = p_pipeline_run_id) AS ready_count,
+    CURRENT_TIMESTAMP() AS evidence_at;
+
+  ASSERT (SELECT held_count + ready_count > 0 FROM _summary)
+    AS 'Scenario 1 has no build evidence; refusing ambiguous empty snapshot';
+  INSERT INTO `pacific-plating-282708.sap_integration_v3.v3_onetime_create_activation_summary`
+  SELECT * FROM _summary;
+  ASSERT @@row_count = 1 AS 'Scenario 1 activation summary insertion failed';
+END;
 
 CREATE OR REPLACE VIEW
   `pacific-plating-282708.sap_integration_v3.vw_v3_business_flow_activation_readiness` AS
 WITH
-onetime_hold AS (
-  SELECT pipeline_run_id, COUNT(*) AS held_count, MAX(detected_at) AS evidence_at
-  FROM `pacific-plating-282708.sap_integration_v3.v3_onetime_create_hold`
-  GROUP BY pipeline_run_id
-),
-onetime_ready AS (
-  SELECT pipeline_run_id, COUNT(*) AS ready_count, MAX(built_at) AS evidence_at
-  FROM `pacific-plating-282708.sap_integration_v3.v3_onetime_create_identity`
-  GROUP BY pipeline_run_id
-),
 onetime AS (
-  SELECT COALESCE(hold.pipeline_run_id, ready.pipeline_run_id) AS evidence_run_id,
-    IFNULL(hold.held_count, 0) + IFNULL(ready.ready_count, 0) AS prepared_count,
-    IFNULL(ready.ready_count, 0) AS release_ready_count,
-    GREATEST(IFNULL(hold.evidence_at, TIMESTAMP '1970-01-01'),
-      IFNULL(ready.evidence_at, TIMESTAMP '1970-01-01')) AS evidence_at
-  FROM onetime_hold AS hold
-  FULL JOIN onetime_ready AS ready USING (pipeline_run_id)
-  QUALIFY ROW_NUMBER() OVER (ORDER BY evidence_at DESC, evidence_run_id DESC) = 1
+  SELECT pipeline_run_id AS evidence_run_id, held_count + ready_count AS prepared_count,
+    ready_count AS release_ready_count, evidence_at
+  FROM `pacific-plating-282708.sap_integration_v3.v3_onetime_create_activation_summary`
+  QUALIFY ROW_NUMBER() OVER (ORDER BY evidence_at DESC, pipeline_run_id DESC) = 1
 ),
 rcl_first AS (
   SELECT * FROM `pacific-plating-282708.sap_integration_v3.v3_rcl_first_create_gate_summary`
@@ -141,8 +167,7 @@ SELECT
   COALESCE(matrix.release_gate_state, 'BLOCKED_MISSING_EVIDENCE') AS release_gate_state,
   COALESCE(matrix.schedule_action, 'DO_NOT_ACTIVATE') AS schedule_action,
   COALESCE(matrix.blocker_code, 'MISSING_DURABLE_EVIDENCE') AS blocker_code,
-  catalog.human_fallback,
-  CURRENT_TIMESTAMP() AS observed_at
+  catalog.human_fallback
 FROM catalog
 LEFT JOIN matrix USING (flow_key);
 
@@ -150,6 +175,6 @@ CREATE OR REPLACE VIEW
   `pacific-plating-282708.sap_integration_v3.vw_v3_scheduler_activation_blockers` AS
 SELECT *
 FROM `pacific-plating-282708.sap_integration_v3.vw_v3_business_flow_activation_readiness`
-WHERE schedule_action != 'SCHEDULE_REVIEW_REQUIRED'
+WHERE schedule_action != 'ACTIVATION_APPROVED'
   OR release_ready_count <= 0
   OR interface_row_count != 0;
