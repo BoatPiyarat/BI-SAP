@@ -104,3 +104,7 @@ Operator-only Scenario 1 fallback artifacts (no GCS write):
   a human-approved old/new item map and complete exact row-level linked-cancel ACK, then retains the
   population in a named literal-approval hold with exactly zero interface rows. Apply after 081,
   064, 070, and 073.
+- `091_v3_rcl_cmi_hold_gate.sql` — source-only one-period compulsory RCL/CMI gate; conserves every
+  Unit-2 `RCL_CMI` payment event, proves the one-period compulsory route and exact 56-column source
+  variant, then retains it in a payment-mapping approval hold with zero interface rows. Apply after
+  012, 050, and 051.
