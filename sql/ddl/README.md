@@ -86,3 +86,8 @@ DAY))` in its `CREATE TABLE`, no exceptions. This does **not** apply retroactive
 pre-existing `_backfill_*`/`manual_close_*` tables are explicitly out of scope, waiting on a
 separate retention decision; do not set expiration on them. Always dry-run first
 (`scripts/bq_safe_query.sh`, per `docs/COST_CONTROL.md` §3.1).
+Operator-only Scenario 1 fallback artifacts (no GCS write):
+
+- `../operator/20260826_export_v3_onetime_create_manual.sql` — hash-bound 56-column manual export.
+- `../operator/20260826_report_v3_onetime_create_holds.sql` — summary and detail hold report.
+- `../../docs/V3_SCENARIO1_MANUAL_FALLBACK.md` — human upload, manifest, SAP ACK, and rollback steps.
