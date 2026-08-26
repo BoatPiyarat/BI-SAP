@@ -93,3 +93,5 @@ Operator-only Scenario 1 fallback artifacts (no GCS write):
 - `../../docs/V3_SCENARIO1_MANUAL_FALLBACK.md` — human upload, manifest, SAP ACK, and rollback steps.
 - `086_v3_onetime_manual_delivery_marker.sql` — source-only Scenario 1 exact archive/production
   generation marker; records evidence after human create-only uploads and never writes GCS.
+- `087_v3_rcl_first_create_hold_gate.sql` — source-only Scenario 2 durable hold gate; emits zero
+  interface rows until the RCL CREATE InvoiceNo transformation has separate business approval.
