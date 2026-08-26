@@ -6,7 +6,10 @@ WITH held AS (
   FROM `pacific-plating-282708.sap_integration_v3.v3_rcl_later_newpayment_hold`
   WHERE pipeline_run_id=v_run_id AND hold_code='HOLD_SPINE_REQUIRED_VALUE_INVALID'
 ), payload AS (
-  SELECT p.* EXCEPT(pipeline_run_id,snapshotted_at)
+  SELECT p.Period,p.TransactionStatus,p.CompanyDB,p.OrderID,p.OrderItem,p.InsurerCode,
+    p.FirstName,p.InsuranceGroup,p.InsuranceProduct,p.ProductType,p.PolicyType,p.PolicyDate,
+    p.PolicyNo,p.ExpectedDate,p.BillingAddress,p.InvoiceNo,p.PaymentDate,p.PaymentMethod,
+    p.PaymentChannel,p.EndorsementNo,p.RefOrder
   FROM `pacific-plating-282708.sap_integration_v3.v3_unit5_newpayment_run_snapshot` p
   JOIN held h ON h.order_item=p.OrderItem
   WHERE p.pipeline_run_id=v_run_id
