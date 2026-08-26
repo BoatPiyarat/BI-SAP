@@ -9,9 +9,13 @@ CREATE TABLE IF NOT EXISTS
     build_completed_at TIMESTAMP NOT NULL,
     held_count INT64 NOT NULL,
     ready_count INT64 NOT NULL,
-    evidence_at TIMESTAMP NOT NULL
+    evidence_at TIMESTAMP NOT NULL,
+    build_contract STRING
   )
 CLUSTER BY pipeline_run_id;
+
+ALTER TABLE `pacific-plating-282708.sap_integration_v3.v3_onetime_create_activation_summary`
+ADD COLUMN IF NOT EXISTS build_contract STRING;
 
 CREATE OR REPLACE PROCEDURE
   `pacific-plating-282708.sap_integration_v3.sp_snapshot_v3_onetime_create_activation`(
@@ -21,7 +25,7 @@ BEGIN
   ASSERT NULLIF(TRIM(p_pipeline_run_id), '') IS NOT NULL AS 'pipeline_run_id is required';
 
   CREATE TEMP TABLE _build_proof AS
-  SELECT build_job_id, completed_at AS build_completed_at, held_count, ready_count
+  SELECT build_job_id, completed_at AS build_completed_at, held_count, ready_count,build_contract
   FROM `pacific-plating-282708.sap_integration_v3.v3_onetime_create_build_manifest`
   WHERE pipeline_run_id = p_pipeline_run_id
     AND build_contract = 'DDL085_MANIFEST_V2';
@@ -35,7 +39,8 @@ BEGIN
     (SELECT build_completed_at FROM _build_proof) AS build_completed_at,
     (SELECT held_count FROM _build_proof) AS held_count,
     (SELECT ready_count FROM _build_proof) AS ready_count,
-    CURRENT_TIMESTAMP() AS evidence_at;
+    CURRENT_TIMESTAMP() AS evidence_at,
+    (SELECT build_contract FROM _build_proof) AS build_contract;
 
   BEGIN TRANSACTION;
   MERGE `pacific-plating-282708.sap_integration_v3.v3_onetime_create_activation_summary` AS target
@@ -53,10 +58,15 @@ CREATE OR REPLACE VIEW
   `pacific-plating-282708.sap_integration_v3.vw_v3_business_flow_activation_readiness` AS
 WITH
 onetime AS (
-  SELECT pipeline_run_id AS evidence_run_id, held_count + ready_count AS prepared_count,
-    ready_count AS release_ready_count, evidence_at
-  FROM `pacific-plating-282708.sap_integration_v3.v3_onetime_create_activation_summary`
-  QUALIFY ROW_NUMBER() OVER (ORDER BY evidence_at DESC, pipeline_run_id DESC) = 1
+  SELECT s.pipeline_run_id AS evidence_run_id, s.held_count + s.ready_count AS prepared_count,
+    s.ready_count AS release_ready_count, s.evidence_at
+  FROM `pacific-plating-282708.sap_integration_v3.v3_onetime_create_activation_summary` s
+  JOIN `pacific-plating-282708.sap_integration_v3.v3_onetime_create_build_manifest` m
+    ON m.pipeline_run_id=s.pipeline_run_id AND m.build_job_id=s.build_job_id
+    AND m.build_contract=s.build_contract AND m.held_count=s.held_count
+    AND m.ready_count=s.ready_count AND m.completed_at=s.build_completed_at
+  WHERE s.build_contract='DDL085_MANIFEST_V2'
+  QUALIFY ROW_NUMBER() OVER (ORDER BY s.evidence_at DESC, s.pipeline_run_id DESC) = 1
 ),
 rcl_first AS (
   SELECT * FROM `pacific-plating-282708.sap_integration_v3.v3_rcl_first_create_gate_summary`
