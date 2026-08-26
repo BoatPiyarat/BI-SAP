@@ -7,7 +7,8 @@ CREATE TABLE IF NOT EXISTS
     caught_up BOOL NOT NULL,extracted_rows INT64 NOT NULL,load_job_id STRING NOT NULL,
     load_output_rows INT64 NOT NULL,load_bad_records INT64 NOT NULL,load_input_files INT64 NOT NULL,
     load_job_api_evidence JSON NOT NULL,load_started_at TIMESTAMP NOT NULL,load_ended_at TIMESTAMP NOT NULL,
-    mirror_doc_run_id STRING NOT NULL,mirror_state_run_id STRING NOT NULL,
+    loader_log_evidence JSON NOT NULL,mirror_doc_run_id STRING NOT NULL,
+    mirror_state_run_id STRING NOT NULL,mirror_state_rows INT64 NOT NULL,
     verified_by STRING NOT NULL,evidence_reference STRING NOT NULL,recorded_at TIMESTAMP NOT NULL
   )
 CLUSTER BY pipeline_run_id;
@@ -18,8 +19,9 @@ CREATE OR REPLACE PROCEDURE
     p_source_object_uri STRING,p_watermark_before TIMESTAMP,p_watermark_after TIMESTAMP,
     p_caught_up BOOL,p_extracted_rows INT64,p_load_job_id STRING,p_load_output_rows INT64,
     p_load_bad_records INT64,p_load_input_files INT64,p_load_job_api_evidence JSON,
-    p_mirror_doc_run_id STRING,
-    p_mirror_state_run_id STRING,p_verified_by STRING,p_evidence_reference STRING)
+    p_loader_log_evidence JSON,p_mirror_doc_run_id STRING,
+    p_mirror_state_run_id STRING,p_mirror_state_rows INT64,p_verified_by STRING,
+    p_evidence_reference STRING)
 BEGIN
   ASSERT NULLIF(TRIM(p_pipeline_run_id),'') IS NOT NULL AS 'pipeline_run_id is required';
   ASSERT NULLIF(TRIM(p_extract_execution),'') IS NOT NULL AS 'extract execution is required';
@@ -61,6 +63,23 @@ BEGIN
       <=TIMESTAMP_MILLIS(SAFE_CAST(JSON_VALUE(
         p_load_job_api_evidence,'$.statistics.endTime') AS INT64))
     AS 'load timing is not causally after the extract';
+  ASSERT JSON_VALUE(p_loader_log_evidence,'$.service')='sap-order-payment-initial-phase'
+    AND JSON_VALUE(p_loader_log_evidence,'$.instanceId') IS NOT NULL
+    AND JSON_VALUE(p_loader_log_evidence,'$.successInsertId') IS NOT NULL
+    AND JSON_VALUE(p_loader_log_evidence,'$.removedInsertId') IS NOT NULL
+    AND JSON_VALUE(p_loader_log_evidence,'$.destination')
+      ='pacific-plating-282708.sap_integration_v2.SAP_LIVE'
+    AND JSON_VALUE(p_loader_log_evidence,'$.sourceObjectUri')=p_source_object_uri
+    AND TIMESTAMP(JSON_VALUE(p_loader_log_evidence,'$.successTimestamp'))
+      BETWEEN TIMESTAMP_MILLIS(SAFE_CAST(JSON_VALUE(
+        p_load_job_api_evidence,'$.statistics.endTime') AS INT64))
+        AND TIMESTAMP_ADD(TIMESTAMP_MILLIS(SAFE_CAST(JSON_VALUE(
+          p_load_job_api_evidence,'$.statistics.endTime') AS INT64)),INTERVAL 10 SECOND)
+    AND TIMESTAMP(JSON_VALUE(p_loader_log_evidence,'$.removedTimestamp'))
+      >=TIMESTAMP(JSON_VALUE(p_loader_log_evidence,'$.successTimestamp'))
+    AND TIMESTAMP_DIFF(TIMESTAMP(JSON_VALUE(p_loader_log_evidence,'$.removedTimestamp')),
+      TIMESTAMP(JSON_VALUE(p_loader_log_evidence,'$.successTimestamp')),SECOND)<=1
+    AS 'exact loader instance logs do not bind source object to successful load';
   ASSERT (SELECT COUNT(*) FROM `pacific-plating-282708.sap_integration_v3.pipeline_run_log`
     WHERE run_id=p_mirror_doc_run_id AND step='sap_mirror_doc_incremental'
       AND scope='ADHOC:manual-operator' AND status='SUCCESS'
@@ -71,7 +90,7 @@ BEGIN
   ASSERT (SELECT COUNT(*) FROM `pacific-plating-282708.sap_integration_v3.pipeline_run_log`
     WHERE run_id=p_mirror_state_run_id AND step='sap_mirror_state'
       AND scope='ADHOC:manual-operator' AND status='SUCCESS'
-      AND rows_out=1342203
+      AND rows_out=p_mirror_state_rows
       AND started_at>=(SELECT ended_at
         FROM `pacific-plating-282708.sap_integration_v3.pipeline_run_log`
         WHERE run_id=p_mirror_doc_run_id AND step='sap_mirror_doc_incremental'
@@ -88,8 +107,9 @@ BEGIN
     TIMESTAMP_MILLIS(SAFE_CAST(JSON_VALUE(p_load_job_api_evidence,'$.statistics.startTime') AS INT64))
       AS load_started_at,
     TIMESTAMP_MILLIS(SAFE_CAST(JSON_VALUE(p_load_job_api_evidence,'$.statistics.endTime') AS INT64))
-      AS load_ended_at,p_mirror_doc_run_id AS mirror_doc_run_id,
-    p_mirror_state_run_id AS mirror_state_run_id,p_verified_by AS verified_by,
+      AS load_ended_at,p_loader_log_evidence AS loader_log_evidence,
+    p_mirror_doc_run_id AS mirror_doc_run_id,p_mirror_state_run_id AS mirror_state_run_id,
+    p_mirror_state_rows AS mirror_state_rows,p_verified_by AS verified_by,
     p_evidence_reference AS evidence_reference,CURRENT_TIMESTAMP() AS recorded_at;
 
   BEGIN TRANSACTION;
