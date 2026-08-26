@@ -224,7 +224,17 @@ BEGIN
       OR UPPER(TRIM(payload.CompanyDB)) = 'NULL'
       OR UPPER(TRIM(payload.OrderID)) = 'NULL'
       OR UPPER(TRIM(payload.OrderItem)) = 'NULL'
+      OR UPPER(TRIM(payload.InsurerCode)) = 'NULL'
+      OR UPPER(TRIM(payload.FirstName)) = 'NULL'
+      OR UPPER(TRIM(payload.InsuranceGroup)) = 'NULL'
+      OR UPPER(TRIM(payload.InsuranceProduct)) = 'NULL'
+      OR UPPER(TRIM(payload.ProductType)) = 'NULL'
+      OR UPPER(TRIM(payload.PolicyType)) = 'NULL'
+      OR UPPER(TRIM(payload.PolicyDate)) = 'NULL'
       OR UPPER(TRIM(payload.PolicyNo)) = 'NULL'
+      OR UPPER(TRIM(payload.ExpectedDate)) = 'NULL'
+      OR UPPER(TRIM(payload.BillingAddress)) = 'NULL'
+      OR UPPER(TRIM(payload.BatchRunDate)) = 'NULL'
       OR (payload.PaymentDate != '' AND UPPER(TRIM(payload.PaymentDate)) = 'NULL')
       OR (payload.InvoiceNo != '' AND UPPER(TRIM(payload.InvoiceNo)) = 'NULL')
       OR (payload.PaymentMethod != '' AND UPPER(TRIM(payload.PaymentMethod)) = 'NULL')
