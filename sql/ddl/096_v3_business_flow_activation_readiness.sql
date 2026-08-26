@@ -5,6 +5,8 @@
 CREATE TABLE IF NOT EXISTS
   `pacific-plating-282708.sap_integration_v3.v3_onetime_create_activation_summary` (
     pipeline_run_id STRING NOT NULL,
+    build_job_id STRING NOT NULL,
+    build_completed_at TIMESTAMP NOT NULL,
     held_count INT64 NOT NULL,
     ready_count INT64 NOT NULL,
     evidence_at TIMESTAMP NOT NULL
@@ -13,20 +15,30 @@ CLUSTER BY pipeline_run_id;
 
 CREATE OR REPLACE PROCEDURE
   `pacific-plating-282708.sap_integration_v3.sp_snapshot_v3_onetime_create_activation`(
-    p_pipeline_run_id STRING
+    p_pipeline_run_id STRING,
+    p_build_job_id STRING
   )
 BEGIN
   ASSERT NULLIF(TRIM(p_pipeline_run_id), '') IS NOT NULL AS 'pipeline_run_id is required';
-  ASSERT (SELECT COUNT(*)
-    FROM `pacific-plating-282708.sap_integration_v3.pipeline_run_log`
-    WHERE run_id = p_pipeline_run_id AND step = 'UNIT1_COMPLETE' AND status = 'SUCCESS') = 1
-    AS 'Scenario 1 activation summary requires exactly one successful Unit 1 row';
-  ASSERT NOT EXISTS (SELECT 1
-    FROM `pacific-plating-282708.sap_integration_v3.v3_onetime_create_activation_summary`
-    WHERE pipeline_run_id = p_pipeline_run_id) AS 'pipeline_run_id already snapshotted';
+  ASSERT NULLIF(TRIM(p_build_job_id), '') IS NOT NULL AS 'build_job_id is required';
+
+  CREATE TEMP TABLE _build_proof AS
+  SELECT end_time AS build_completed_at
+  FROM `pacific-plating-282708.region-asia-southeast1`.INFORMATION_SCHEMA.JOBS_BY_PROJECT
+  WHERE job_id = p_build_job_id
+    AND state = 'DONE'
+    AND error_result IS NULL
+    AND statement_type = 'CALL'
+    AND CONTAINS_SUBSTR(query, 'sp_build_v3_onetime_create_shadow')
+    AND CONTAINS_SUBSTR(query, p_pipeline_run_id);
+
+  ASSERT (SELECT COUNT(*) FROM _build_proof) = 1
+    AS 'Scenario 1 snapshot requires the exact successful build CALL job';
 
   CREATE TEMP TABLE _summary AS
   SELECT p_pipeline_run_id AS pipeline_run_id,
+    p_build_job_id AS build_job_id,
+    (SELECT build_completed_at FROM _build_proof) AS build_completed_at,
     (SELECT COUNT(*)
       FROM `pacific-plating-282708.sap_integration_v3.v3_onetime_create_hold`
       WHERE pipeline_run_id = p_pipeline_run_id) AS held_count,
@@ -35,11 +47,16 @@ BEGIN
       WHERE pipeline_run_id = p_pipeline_run_id) AS ready_count,
     CURRENT_TIMESTAMP() AS evidence_at;
 
-  ASSERT (SELECT held_count + ready_count > 0 FROM _summary)
-    AS 'Scenario 1 has no build evidence; refusing ambiguous empty snapshot';
-  INSERT INTO `pacific-plating-282708.sap_integration_v3.v3_onetime_create_activation_summary`
-  SELECT * FROM _summary;
-  ASSERT @@row_count = 1 AS 'Scenario 1 activation summary insertion failed';
+  BEGIN TRANSACTION;
+  MERGE `pacific-plating-282708.sap_integration_v3.v3_onetime_create_activation_summary` AS target
+  USING _summary AS source
+  ON target.pipeline_run_id = source.pipeline_run_id
+    OR target.build_job_id = source.build_job_id
+  WHEN NOT MATCHED THEN
+    INSERT ROW;
+  ASSERT @@row_count = 1
+    AS 'pipeline_run_id or build_job_id already snapshotted';
+  COMMIT TRANSACTION;
 END;
 
 CREATE OR REPLACE VIEW
