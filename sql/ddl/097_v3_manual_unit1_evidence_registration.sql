@@ -6,6 +6,7 @@ CREATE TABLE IF NOT EXISTS
     watermark_before TIMESTAMP NOT NULL,watermark_after TIMESTAMP NOT NULL,
     caught_up BOOL NOT NULL,extracted_rows INT64 NOT NULL,load_job_id STRING NOT NULL,
     load_output_rows INT64 NOT NULL,load_bad_records INT64 NOT NULL,load_input_files INT64 NOT NULL,
+    load_job_api_evidence JSON NOT NULL,load_started_at TIMESTAMP NOT NULL,load_ended_at TIMESTAMP NOT NULL,
     mirror_doc_run_id STRING NOT NULL,mirror_state_run_id STRING NOT NULL,
     verified_by STRING NOT NULL,evidence_reference STRING NOT NULL,recorded_at TIMESTAMP NOT NULL
   )
@@ -16,7 +17,8 @@ CREATE OR REPLACE PROCEDURE
     p_pipeline_run_id STRING,p_extract_execution STRING,p_extract_run_uuid STRING,
     p_source_object_uri STRING,p_watermark_before TIMESTAMP,p_watermark_after TIMESTAMP,
     p_caught_up BOOL,p_extracted_rows INT64,p_load_job_id STRING,p_load_output_rows INT64,
-    p_load_bad_records INT64,p_load_input_files INT64,p_mirror_doc_run_id STRING,
+    p_load_bad_records INT64,p_load_input_files INT64,p_load_job_api_evidence JSON,
+    p_mirror_doc_run_id STRING,
     p_mirror_state_run_id STRING,p_verified_by STRING,p_evidence_reference STRING)
 BEGIN
   ASSERT NULLIF(TRIM(p_pipeline_run_id),'') IS NOT NULL AS 'pipeline_run_id is required';
@@ -24,12 +26,26 @@ BEGIN
   ASSERT NULLIF(TRIM(p_extract_run_uuid),'') IS NOT NULL AS 'extract run UUID is required';
   ASSERT STARTS_WITH(p_source_object_uri,
     'gs://rcb-bronze-zone/SAP/production_database/Results') AS 'unexpected SAP source object';
+  ASSERT ENDS_WITH(p_source_object_uri,CONCAT('_',p_extract_run_uuid,'.json'))
+    AS 'source object is not bound to extract UUID';
   ASSERT p_watermark_after>p_watermark_before AS 'extract watermark did not advance';
   ASSERT p_caught_up IS TRUE AS 'extract did not prove caught_up';
   ASSERT p_extracted_rows>=0 AND p_load_output_rows=p_extracted_rows
     AS 'extract/load row conservation failed';
   ASSERT p_load_bad_records=0 AND p_load_input_files=1
     AS 'load must have zero bad records and exactly one input file';
+  ASSERT JSON_VALUE(p_load_job_api_evidence,'$.jobReference.jobId')=p_load_job_id
+    AND JSON_VALUE(p_load_job_api_evidence,'$.jobReference.projectId')='pacific-plating-282708'
+    AND JSON_VALUE(p_load_job_api_evidence,'$.jobReference.location')='asia-southeast1'
+    AND JSON_VALUE(p_load_job_api_evidence,'$.configuration.jobType')='LOAD'
+    AND JSON_VALUE(p_load_job_api_evidence,'$.configuration.load.destinationTable.datasetId')='sap_integration_v2'
+    AND JSON_VALUE(p_load_job_api_evidence,'$.configuration.load.destinationTable.tableId')='SAP_LIVE'
+    AND JSON_VALUE(p_load_job_api_evidence,'$.status.state')='DONE'
+    AND JSON_QUERY(p_load_job_api_evidence,'$.status.errorResult') IS NULL
+    AND SAFE_CAST(JSON_VALUE(p_load_job_api_evidence,'$.statistics.load.outputRows') AS INT64)=p_load_output_rows
+    AND SAFE_CAST(JSON_VALUE(p_load_job_api_evidence,'$.statistics.load.badRecords') AS INT64)=p_load_bad_records
+    AND SAFE_CAST(JSON_VALUE(p_load_job_api_evidence,'$.statistics.load.inputFiles') AS INT64)=p_load_input_files
+    AS 'load Job API evidence does not match supplied exact job metrics';
   ASSERT NULLIF(TRIM(p_verified_by),'') IS NOT NULL
     AND NULLIF(TRIM(p_evidence_reference),'') IS NOT NULL AS 'manual verifier/evidence required';
   ASSERT (SELECT COUNT(*)
@@ -38,14 +54,29 @@ BEGIN
       AND destination_table=STRUCT('pacific-plating-282708' AS project_id,
         'sap_integration_v2' AS dataset_id,'SAP_LIVE' AS table_id))=1
     AS 'exact successful SAP_LIVE load job not found';
+  ASSERT p_watermark_after<=TIMESTAMP_MILLIS(SAFE_CAST(
+      JSON_VALUE(p_load_job_api_evidence,'$.statistics.startTime') AS INT64))
+    AND TIMESTAMP_MILLIS(SAFE_CAST(JSON_VALUE(
+      p_load_job_api_evidence,'$.statistics.startTime') AS INT64))
+      <=TIMESTAMP_MILLIS(SAFE_CAST(JSON_VALUE(
+        p_load_job_api_evidence,'$.statistics.endTime') AS INT64))
+    AS 'load timing is not causally after the extract';
   ASSERT (SELECT COUNT(*) FROM `pacific-plating-282708.sap_integration_v3.pipeline_run_log`
     WHERE run_id=p_mirror_doc_run_id AND step='sap_mirror_doc_incremental'
       AND scope='ADHOC:manual-operator' AND status='SUCCESS'
-      AND rows_out=p_load_output_rows)=1 AS 'exact mirror-doc evidence missing';
+      AND rows_out=p_load_output_rows
+      AND started_at>=TIMESTAMP_MILLIS(SAFE_CAST(JSON_VALUE(
+        p_load_job_api_evidence,'$.statistics.endTime') AS INT64))
+      AND ended_at>=started_at)=1 AS 'exact causal mirror-doc evidence missing';
   ASSERT (SELECT COUNT(*) FROM `pacific-plating-282708.sap_integration_v3.pipeline_run_log`
     WHERE run_id=p_mirror_state_run_id AND step='sap_mirror_state'
-      AND scope='ADHOC:manual-operator' AND status='SUCCESS')=1
-    AS 'exact mirror-state evidence missing';
+      AND scope='ADHOC:manual-operator' AND status='SUCCESS'
+      AND rows_out=1342203
+      AND started_at>=(SELECT ended_at
+        FROM `pacific-plating-282708.sap_integration_v3.pipeline_run_log`
+        WHERE run_id=p_mirror_doc_run_id AND step='sap_mirror_doc_incremental'
+          AND scope='ADHOC:manual-operator' AND status='SUCCESS')
+      AND ended_at>=started_at)=1 AS 'exact causal mirror-state evidence missing';
 
   CREATE TEMP TABLE _evidence AS
   SELECT p_pipeline_run_id AS pipeline_run_id,p_extract_execution AS extract_execution,
@@ -53,7 +84,11 @@ BEGIN
     p_watermark_before AS watermark_before,p_watermark_after AS watermark_after,
     p_caught_up AS caught_up,p_extracted_rows AS extracted_rows,p_load_job_id AS load_job_id,
     p_load_output_rows AS load_output_rows,p_load_bad_records AS load_bad_records,
-    p_load_input_files AS load_input_files,p_mirror_doc_run_id AS mirror_doc_run_id,
+    p_load_input_files AS load_input_files,p_load_job_api_evidence AS load_job_api_evidence,
+    TIMESTAMP_MILLIS(SAFE_CAST(JSON_VALUE(p_load_job_api_evidence,'$.statistics.startTime') AS INT64))
+      AS load_started_at,
+    TIMESTAMP_MILLIS(SAFE_CAST(JSON_VALUE(p_load_job_api_evidence,'$.statistics.endTime') AS INT64))
+      AS load_ended_at,p_mirror_doc_run_id AS mirror_doc_run_id,
     p_mirror_state_run_id AS mirror_state_run_id,p_verified_by AS verified_by,
     p_evidence_reference AS evidence_reference,CURRENT_TIMESTAMP() AS recorded_at;
 
@@ -61,7 +96,9 @@ BEGIN
   MERGE `pacific-plating-282708.sap_integration_v3.v3_manual_unit1_evidence` target
   USING _evidence source
   ON target.pipeline_run_id=source.pipeline_run_id
-    OR target.extract_execution=source.extract_execution OR target.load_job_id=source.load_job_id
+    OR target.extract_execution=source.extract_execution
+    OR target.extract_run_uuid=source.extract_run_uuid
+    OR target.source_object_uri=source.source_object_uri OR target.load_job_id=source.load_job_id
   WHEN NOT MATCHED THEN INSERT ROW;
   ASSERT @@row_count=1 AS 'Unit 1 evidence/run/extract/load already registered';
   MERGE `pacific-plating-282708.sap_integration_v3.pipeline_run_log` target
