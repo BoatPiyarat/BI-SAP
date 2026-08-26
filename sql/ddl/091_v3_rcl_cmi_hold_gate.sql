@@ -3,6 +3,55 @@
 -- A structurally valid event remains held until its SAP payment mapping/business scenario is
 -- approved. No GCS, SAP, or scheduler action exists in this artifact.
 
+CREATE OR REPLACE VIEW
+  `pacific-plating-282708.sap_integration_v3.vw_v3_rcl_cmi_payload_source` AS
+SELECT
+  CAST(src.CompanyDB AS STRING) AS CompanyDB, CAST(src.OrderID AS STRING) AS OrderID,
+  CAST(src.OrderItem AS STRING) AS OrderItem, CAST(src.InvoiceNo AS STRING) AS InvoiceNo,
+  CAST(src.OrderDate AS STRING) AS OrderDate, CAST(src.InsuredID AS STRING) AS InsuredID,
+  CAST(src.Title AS STRING) AS Title, CAST(src.FirstName AS STRING) AS FirstName,
+  CAST(src.LastName AS STRING) AS LastName, CAST(src.InsurerCode AS STRING) AS InsurerCode,
+  CAST(src.InsuranceGroup AS STRING) AS InsuranceGroup,
+  CAST(src.InsuranceType AS STRING) AS InsuranceType,
+  CAST(src.InsuranceProduct AS STRING) AS InsuranceProduct,
+  CAST(src.ProductType AS STRING) AS ProductType, CAST(src.PolicyType AS STRING) AS PolicyType,
+  CAST(src.Endorse AS STRING) AS Endorse, CAST(src.PolicyDate AS STRING) AS PolicyDate,
+  CAST(src.PolicyNo AS STRING) AS PolicyNo, CAST(src.EndorsementNo AS STRING) AS EndorsementNo,
+  CAST(src.ChassisNo AS STRING) AS ChassisNo, CAST(src.LicensePlate AS STRING) AS LicensePlate,
+  CAST(src.GrossPremium AS STRING) AS GrossPremium, CAST(src.StampDuty AS STRING) AS StampDuty,
+  CAST(src.VAT AS STRING) AS VAT, CAST(src.TotalPremium AS STRING) AS TotalPremium,
+  CAST(src.WHT AS STRING) AS WHT, CAST(src.TotalEIR AS STRING) AS TotalEIR,
+  CAST(src.TotalSBT AS STRING) AS TotalSBT, CAST(src.ProcessingFee AS STRING) AS ProcessingFee,
+  CAST(src.ProcessingFeeVat AS STRING) AS ProcessingFeeVat,
+  CAST(src.ShippingFee AS STRING) AS ShippingFee,
+  CAST(src.ShippingFeeVat AS STRING) AS ShippingFeeVat,
+  CAST(src.TotalAmount AS STRING) AS TotalAmount, CAST(src.Discount AS STRING) AS Discount,
+  CAST(src.TransactionStatus AS STRING) AS TransactionStatus,
+  CAST(src.SubmissionStatus AS STRING) AS SubmissionStatus,
+  CAST(src.ApprovalStatus AS STRING) AS ApprovalStatus,
+  CAST(src.PaymentStatus AS STRING) AS PaymentStatus,
+  CAST(src.ExpectedReceived AS STRING) AS ExpectedReceived,
+  CAST(src.ActualReceived AS STRING) AS ActualReceived,
+  CAST(src.InterestThisPeriod AS STRING) AS InterestThisPeriod,
+  CAST(src.PrincipleThisPeriod AS STRING) AS PrincipleThisPeriod,
+  CAST(src.InterestEIRThisPeriod AS STRING) AS InterestEIRThisPeriod,
+  CAST(src.PrincipleEIRThisPeriod AS STRING) AS PrincipleEIRThisPeriod,
+  CAST(src.PaymentDate AS STRING) AS PaymentDate, CAST(src.Period AS STRING) AS Period,
+  CAST(src.TotalPeriods AS STRING) AS TotalPeriods,
+  CAST(src.PendingPayment AS STRING) AS PendingPayment,
+  CAST(src.PaymentMethod AS STRING) AS PaymentMethod,
+  CAST(src.PaymentChannel AS STRING) AS PaymentChannel,
+  CAST(src.ExpectedDate AS STRING) AS ExpectedDate, CAST(src.RefOrder AS STRING) AS RefOrder,
+  CAST(src.RefundAmountBeforeFee AS STRING) AS RefundAmountBeforeFee,
+  CAST(src.RefundAmountAfterFee AS STRING) AS RefundAmountAfterFee,
+  CAST(src.BillingAddress AS STRING) AS BillingAddress,
+  CAST(src.BatchRunDate AS STRING) AS BatchRunDate
+FROM `pacific-plating-282708.sap_data_engineer.sap_dashboard_carepay_installment` AS src
+JOIN `pacific-plating-282708.sap_integration_v3.stg_schedule` AS schedule
+  ON schedule.order_item = src.OrderItem
+  AND schedule.period = SAFE_CAST(src.Period AS INT64)
+WHERE schedule.flow = 'RCL_CMI';
+
 CREATE TABLE IF NOT EXISTS
   `pacific-plating-282708.sap_integration_v3.v3_rcl_cmi_event_hold` (
     pipeline_run_id STRING NOT NULL,
@@ -46,15 +95,36 @@ BEGIN
     FROM `pacific-plating-282708.sap_integration_v3.v3_rcl_cmi_event_summary`
     WHERE pipeline_run_id = p_pipeline_run_id
   ) AS 'pipeline_run_id already published';
+  ASSERT (SELECT COUNT(*)
+    FROM `pacific-plating-282708.sap_integration_v3.INFORMATION_SCHEMA.COLUMNS`
+    WHERE table_name = 'vw_v3_rcl_cmi_payload_source') = 56
+    AS 'RCL_CMI source must have exactly 56 columns';
+  ASSERT (SELECT COUNT(*) FROM (
+    SELECT ordinal_position, column_name, data_type
+    FROM `pacific-plating-282708.sap_integration_v3.INFORMATION_SCHEMA.COLUMNS`
+    WHERE table_name = 'vw_v3_rcl_cmi_payload_source'
+    EXCEPT DISTINCT
+    SELECT ordinal_position, column_name, data_type
+    FROM `pacific-plating-282708.sap_integration_v3.INFORMATION_SCHEMA.COLUMNS`
+    WHERE table_name = 'v3_unit5_newpayment_delivery_ready')) = 0
+    AND (SELECT COUNT(*) FROM (
+    SELECT ordinal_position, column_name, data_type
+    FROM `pacific-plating-282708.sap_integration_v3.INFORMATION_SCHEMA.COLUMNS`
+    WHERE table_name = 'v3_unit5_newpayment_delivery_ready'
+    EXCEPT DISTINCT
+    SELECT ordinal_position, column_name, data_type
+    FROM `pacific-plating-282708.sap_integration_v3.INFORMATION_SCHEMA.COLUMNS`
+    WHERE table_name = 'vw_v3_rcl_cmi_payload_source')) = 0
+    AS 'RCL_CMI source names/types/ordinals differ from the reviewed 56-column contract';
 
   CREATE TEMP TABLE _event AS
-  SELECT *
-  FROM `pacific-plating-282708.sap_integration_v3.v3_unit2_event_shadow`
+  SELECT
+    e.*,
+    COUNT(*) OVER (PARTITION BY order_item, period, charge_id, invoice_no)
+      AS event_identity_rows,
+    COUNT(*) OVER (PARTITION BY charge_id) AS charge_rows
+  FROM `pacific-plating-282708.sap_integration_v3.v3_unit2_event_shadow` AS e
   WHERE pipeline_run_id = p_pipeline_run_id AND flow = 'RCL_CMI';
-
-  ASSERT NOT EXISTS (
-    SELECT charge_id FROM _event GROUP BY charge_id HAVING COUNT(*) != 1
-  ) AS 'RCL_CMI Unit-2 charge identity is duplicated';
 
   CREATE TEMP TABLE _schedule_shape AS
   SELECT
@@ -85,7 +155,7 @@ BEGIN
       AND SAFE_CAST(o.Period AS INT64) = 1
       AND SAFE_CAST(o.TotalPeriods AS INT64) = 1) AS exact_source_payload_rows
   FROM _event AS e
-  LEFT JOIN `pacific-plating-282708.sap_integration_v3.vw_onetime_payload_source` AS o
+  LEFT JOIN `pacific-plating-282708.sap_integration_v3.vw_v3_rcl_cmi_payload_source` AS o
     ON o.OrderItem = e.order_item AND SAFE_CAST(o.Period AS INT64) = e.period
   GROUP BY e.charge_id;
 
@@ -111,8 +181,11 @@ BEGIN
     period,
     charge_id,
     invoice_no,
-    outcome AS unit2_outcome,
+    COALESCE(outcome, '<NULL>') AS unit2_outcome,
     CASE
+      WHEN outcome IS NULL THEN 'HOLD_CMI_UNIT2_OUTCOME_NULL'
+      WHEN event_identity_rows != 1 OR charge_rows != 1
+        THEN 'HOLD_CMI_DUPLICATE_OR_CONFLICTING_EVENT'
       WHEN outcome = 'ACKNOWLEDGED' THEN 'NOT_ACTIONABLE_ALREADY_ACKNOWLEDGED'
       WHEN outcome != 'READY_CREATE_OR_PAYMENT' THEN CONCAT('HOLD_UNIT2_', outcome)
       WHEN NULLIF(TRIM(order_id), '') IS NULL OR NULLIF(TRIM(order_item), '') IS NULL
@@ -122,13 +195,13 @@ BEGIN
       WHEN raw_charge_rows != 1 THEN 'HOLD_CMI_RAW_CHARGE_CARDINALITY'
       WHEN service_provider IS DISTINCT FROM 'RABBIT_LENDING'
         THEN 'HOLD_CMI_SERVICE_PROVIDER_INVALID'
-      WHEN source_payload_rows = 0 OR exact_source_payload_rows = 0
+      WHEN exact_source_payload_rows = 0
         THEN 'HOLD_CMI_56_SOURCE_MISSING'
-      WHEN source_payload_rows != 1 OR exact_source_payload_rows != 1
+      WHEN exact_source_payload_rows != 1
         THEN 'HOLD_CMI_56_SOURCE_AMBIGUOUS'
       ELSE 'HOLD_CMI_PAYMENT_MAPPING_APPROVAL_REQUIRED'
     END AS hold_code,
-    source_payload_rows,
+    exact_source_payload_rows AS source_payload_rows,
     CURRENT_TIMESTAMP() AS classified_at
   FROM _shape;
 
