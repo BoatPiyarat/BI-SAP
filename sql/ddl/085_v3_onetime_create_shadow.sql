@@ -360,8 +360,9 @@ BEGIN
     AS 'ONETIME CREATE date contract failed';
 
   CREATE TEMP TABLE _released_identity AS
-  SELECT p_pipeline_run_id,'CREATE_ONETIME',r.order_item,r.period,r.charge_id,r.invoice_no,
-    TO_HEX(SHA256(TO_JSON_STRING(p))),CURRENT_TIMESTAMP()
+  SELECT p_pipeline_run_id pipeline_run_id,'CREATE_ONETIME' file_role,r.order_item,r.period,
+    r.charge_id,r.invoice_no,TO_HEX(SHA256(TO_JSON_STRING(p))) payload_hash,
+    CURRENT_TIMESTAMP() built_at
   FROM _resolved r JOIN _validated_ready p
     ON p.OrderItem=r.order_item AND p.Period=CAST(r.period AS STRING) AND p.InvoiceNo=r.invoice_no;
   ASSERT (SELECT COUNT(*) FROM _released_identity)=(SELECT COUNT(*) FROM _validated_ready)
