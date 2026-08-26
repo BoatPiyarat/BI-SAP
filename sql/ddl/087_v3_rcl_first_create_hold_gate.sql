@@ -16,7 +16,8 @@ CLUSTER BY pipeline_run_id,hold_code,order_item;
 CREATE TABLE IF NOT EXISTS
   `pacific-plating-282708.sap_integration_v3.v3_rcl_first_create_gate_summary` (
     pipeline_run_id STRING NOT NULL,input_event_rows INT64 NOT NULL,
-    canonical_identity_rows INT64 NOT NULL,held_identity_rows INT64 NOT NULL,
+    outside_scenario_sap_rows INT64 NOT NULL,canonical_identity_rows INT64 NOT NULL,
+    held_identity_rows INT64 NOT NULL,
     ready_identity_rows INT64 NOT NULL,gate_status STRING NOT NULL,built_at TIMESTAMP NOT NULL
   )
 PARTITION BY DATE(built_at)
@@ -33,17 +34,22 @@ BEGIN
   ASSERT (SELECT COUNT(*) FROM `pacific-plating-282708.sap_integration_v3.v3_unit3_run_summary`
     WHERE pipeline_run_id=p_pipeline_run_id)=1 AS 'Scenario 2 requires Unit 3 evaluation';
 
-  CREATE TEMP TABLE _event_raw AS
+  CREATE TEMP TABLE _router_raw AS
   SELECT e.pipeline_run_id,e.order_item,e.order_id,e.period,e.charge_id,e.invoice_no
   FROM `pacific-plating-282708.sap_integration_v3.v3_unit2_event_shadow` e
   WHERE e.pipeline_run_id=p_pipeline_run_id AND e.outcome='READY_CREATE_OR_PAYMENT'
-    AND e.flow='RCL'
-    AND NOT EXISTS (SELECT 1 FROM `pacific-plating-282708.sap_integration_v3.sap_mirror_doc` m
-      WHERE m.U_OrderItem=e.order_item)
-    AND NOT EXISTS (SELECT 1
-      FROM `pacific-plating-282708.sap_integration_v3.v3_unit3_mapping_hold` h
-      WHERE h.pipeline_run_id=e.pipeline_run_id AND h.order_item=e.order_item
-        AND h.period=e.period AND h.charge_id=e.charge_id);
+    AND e.flow='RCL';
+  CREATE TEMP TABLE _event_raw AS
+  SELECT e.* FROM _router_raw e
+  WHERE NOT EXISTS (SELECT 1 FROM `pacific-plating-282708.sap_integration_v3.sap_mirror_doc` m
+    WHERE m.U_OrderItem=e.order_item);
+  CREATE TEMP TABLE _sap_existing_raw AS
+  SELECT e.* FROM _router_raw e
+  WHERE EXISTS (SELECT 1 FROM `pacific-plating-282708.sap_integration_v3.sap_mirror_doc` m
+    WHERE m.U_OrderItem=e.order_item);
+  ASSERT (SELECT COUNT(*) FROM _router_raw)=
+    (SELECT COUNT(*) FROM _event_raw)+(SELECT COUNT(*) FROM _sap_existing_raw)
+    AS 'Scenario 2 router input must be owned or explicitly outside because SAP exists';
 
   CREATE TEMP TABLE _event AS
   SELECT pipeline_run_id,order_item,period,charge_id,ANY_VALUE(order_id) order_id,
@@ -65,7 +71,11 @@ BEGIN
     e.event_rows,e.order_id_values,e.invoice_values,e.raw_rows,e.raw_invoice_no;
 
   CREATE TEMP TABLE _shape AS
-  SELECT i.*,COUNT(src.OrderItem) period_source_rows,
+  SELECT i.*,
+    (SELECT COUNT(*) FROM `pacific-plating-282708.sap_integration_v3.v3_unit3_mapping_hold` h
+      WHERE h.pipeline_run_id=i.pipeline_run_id AND h.order_item=i.order_item
+        AND h.period=i.period AND h.charge_id=i.charge_id) mapping_hold_rows,
+    COUNT(src.OrderItem) period_source_rows,
     COUNTIF(src.InvoiceNo=i.invoice_no) exact_source_rows,
     COUNTIF(src.InvoiceNo=CONCAT('2_',i.invoice_no)) legacy_prefix_rows,
     ARRAY_AGG(DISTINCT src.InvoiceNo IGNORE NULLS ORDER BY src.InvoiceNo) source_invoice_variants
@@ -80,6 +90,7 @@ BEGIN
   SELECT s.*,co.current_human_id IS NOT NULL is_credit_shell,CASE
     WHEN event_rows!=1 OR order_id_values!=1 OR invoice_values!=1
       THEN 'HOLD_DUPLICATE_OR_CONFLICTING_EVENT'
+    WHEN mapping_hold_rows>0 THEN 'HOLD_UNIT3_MAPPING'
     WHEN raw_rows!=1 THEN IF(raw_rows=0,'HOLD_MISSING_RAW_CHARGE','HOLD_DUPLICATE_RAW_CHARGE')
     WHEN staged_rows!=1 THEN IF(staged_rows=0,'HOLD_MISSING_STAGED_EVENT','HOLD_DUPLICATE_STAGED_EVENT')
     WHEN period!=1 THEN 'HOLD_RCL_CREATE_PAYMENT_NOT_PERIOD_ONE'
@@ -118,7 +129,8 @@ BEGIN
   DELETE FROM `pacific-plating-282708.sap_integration_v3.v3_rcl_first_create_gate_summary`
   WHERE pipeline_run_id=p_pipeline_run_id;
   INSERT INTO `pacific-plating-282708.sap_integration_v3.v3_rcl_first_create_gate_summary`
-  SELECT p_pipeline_run_id,(SELECT COUNT(*) FROM _event_raw),(SELECT COUNT(*) FROM _classified),
-    (SELECT COUNT(*) FROM _classified),0,'BLOCKED_NO_APPROVED_INVOICE_MAPPING',CURRENT_TIMESTAMP();
+  SELECT p_pipeline_run_id,(SELECT COUNT(*) FROM _router_raw),(SELECT COUNT(*) FROM _sap_existing_raw),
+    (SELECT COUNT(*) FROM _classified),(SELECT COUNT(*) FROM _classified),0,
+    'BLOCKED_NO_APPROVED_INVOICE_MAPPING',CURRENT_TIMESTAMP();
   COMMIT TRANSACTION;
 END;
