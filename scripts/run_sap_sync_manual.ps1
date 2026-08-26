@@ -32,15 +32,25 @@ function Get-BronzeObjects {
   $savedErrorActionPreference = $ErrorActionPreference
   try {
     $ErrorActionPreference = 'Continue'
-    $output = & gcloud storage ls $bronzePath --project=$projectId 2>$null
+    $output = @(& gcloud storage ls $bronzePath --project=$projectId 2>&1)
+    $exitCode = $LASTEXITCODE
   }
   finally {
     $ErrorActionPreference = $savedErrorActionPreference
   }
-  if ($LASTEXITCODE -notin 0, 1) {
-    throw "Unable to inspect $bronzePath (exit $LASTEXITCODE)"
+  $diagnostic = (($output | ForEach-Object { $_.ToString() }) -join "`n").Trim()
+  if ($exitCode -eq 1 -and
+      $diagnostic -eq 'ERROR: (gcloud.storage.ls) One or more URLs matched no objects.') {
+    return @()
   }
-  return @($output | Where-Object { $_ })
+  if ($exitCode -ne 0) {
+    $safeDiagnostic = $diagnostic -replace '(?i)(token|password|secret)[=:]\s*\S+', '$1=<redacted>'
+    if ($safeDiagnostic.Length -gt 300) {
+      $safeDiagnostic = $safeDiagnostic.Substring(0, 300)
+    }
+    throw "Unable to inspect $bronzePath (exit $exitCode): $safeDiagnostic"
+  }
+  return @($output | ForEach-Object { $_.ToString() } | Where-Object { $_ })
 }
 
 function Invoke-V3Procedure {
