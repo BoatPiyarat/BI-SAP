@@ -57,6 +57,13 @@ CREATE TABLE IF NOT EXISTS
   )
 CLUSTER BY activation_id,flow_key;
 
+ALTER TABLE
+  `pacific-plating-282708.sap_integration_v3.v3_scenario_scheduler_prestate`
+ADD COLUMN IF NOT EXISTS scheduler_inventory_evidence JSON;
+ALTER TABLE
+  `pacific-plating-282708.sap_integration_v3.v3_scenario_scheduler_prestate`
+ADD COLUMN IF NOT EXISTS scheduler_restore_hash STRING;
+
 CREATE TABLE IF NOT EXISTS
   `pacific-plating-282708.sap_integration_v3.v3_scenario_rollback_ledger` (
     rollback_id STRING NOT NULL,
@@ -166,11 +173,35 @@ BEGIN
       SELECT JSON_VALUE(j,'$.name') name
       FROM UNNEST(JSON_QUERY_ARRAY(p_non_overlap_evidence,'$.jobs')) j
       GROUP BY name HAVING COUNT(*)>1))=0
+    AND JSON_VALUE(p_non_overlap_evidence,'$.paginationComplete')='true'
+    AND JSON_VALUE(p_non_overlap_evidence,'$.generator')
+      ='scripts/build_v3_scheduler_inventory.py:v1'
+    AND JSON_VALUE(p_non_overlap_evidence,'$.sourceApi')
+      ='cloudscheduler.googleapis.com/v1'
+    AND SAFE_CAST(JSON_VALUE(p_non_overlap_evidence,'$.pagesFetched') AS INT64)>0
+    AND NULLIF(JSON_VALUE(p_non_overlap_evidence,'$.rawInventorySha256'),'') IS NOT NULL
+    AND SAFE_CAST(JSON_VALUE(p_non_overlap_evidence,'$.horizonMinuteCount') AS INT64)>=10080
+    AND (SELECT COUNTIF(JSON_VALUE(j,'$.state')='ENABLED'
+        AND (JSON_VALUE(j,'$.cronExpansionVersion')!='V1_EXHAUSTIVE_MINUTE'
+          OR SAFE_CAST(JSON_VALUE(j,'$.evaluatedMinuteCount') AS INT64)
+            !=SAFE_CAST(JSON_VALUE(p_non_overlap_evidence,'$.horizonMinuteCount') AS INT64)))
+      FROM UNNEST(JSON_QUERY_ARRAY(p_non_overlap_evidence,'$.jobs')) j)=0
     AND (SELECT COUNTIF(JSON_VALUE(j,'$.state')='ENABLED'
         AND (ARRAY_LENGTH(JSON_QUERY_ARRAY(j,'$.windows'))=0
           OR SAFE_CAST(JSON_VALUE(j,'$.windowCount') AS INT64)
             !=ARRAY_LENGTH(JSON_QUERY_ARRAY(j,'$.windows'))))
       FROM UNNEST(JSON_QUERY_ARRAY(p_non_overlap_evidence,'$.jobs')) j)=0
+    AND (SELECT COUNT(*)
+      FROM UNNEST(JSON_QUERY_ARRAY(p_non_overlap_evidence,'$.jobs')) j,
+        UNNEST(JSON_QUERY_ARRAY(j,'$.windows')) w
+      WHERE JSON_VALUE(j,'$.state')='ENABLED'
+        AND (SAFE_CAST(JSON_VALUE(w,'$.start') AS TIMESTAMP) IS NULL
+          OR SAFE_CAST(JSON_VALUE(w,'$.end') AS TIMESTAMP) IS NULL
+          OR NOT (TIMESTAMP(JSON_VALUE(w,'$.start'))<TIMESTAMP(JSON_VALUE(w,'$.end')))
+          OR TIMESTAMP(JSON_VALUE(w,'$.start'))
+            <TIMESTAMP(JSON_VALUE(p_non_overlap_evidence,'$.horizonStart'))
+          OR TIMESTAMP(JSON_VALUE(w,'$.end'))
+            >TIMESTAMP(JSON_VALUE(p_non_overlap_evidence,'$.horizonEnd'))))=0
     AND (WITH jobs AS (
       SELECT j FROM UNNEST(JSON_QUERY_ARRAY(p_non_overlap_evidence,'$.jobs')) j
       WHERE JSON_VALUE(j,'$.state')='ENABLED'),
@@ -218,6 +249,12 @@ BEGIN
     FROM `pacific-plating-282708.sap_integration_v3.v3_scenario_scheduler_prestate`
     WHERE activation_id=p_activation_id)=1
     AS 'Rollback requires exactly one durable scheduler prestate';
+  ASSERT (SELECT COUNT(*)
+    FROM `pacific-plating-282708.sap_integration_v3.v3_scenario_scheduler_prestate`
+    WHERE activation_id=p_activation_id
+      AND scheduler_inventory_evidence IS NOT NULL
+      AND NULLIF(scheduler_restore_hash,'') IS NOT NULL)=1
+    AS 'Legacy prestate without exact inventory/hash evidence cannot be rolled back automatically';
   ASSERT JSON_VALUE(p_restored_scheduler_json,'$.name')=(SELECT scheduler_job_name
       FROM `pacific-plating-282708.sap_integration_v3.v3_scenario_scheduler_prestate`
       WHERE activation_id=p_activation_id)
@@ -308,6 +345,37 @@ BEGIN
       SELECT JSON_VALUE(j,'$.name') name
       FROM UNNEST(JSON_QUERY_ARRAY(p_scheduler_inventory_evidence,'$.jobs')) j
       GROUP BY name HAVING COUNT(*)>1))=0
+    AND JSON_VALUE(p_scheduler_inventory_evidence,'$.paginationComplete')='true'
+    AND JSON_VALUE(p_scheduler_inventory_evidence,'$.generator')
+      ='scripts/build_v3_scheduler_inventory.py:v1'
+    AND JSON_VALUE(p_scheduler_inventory_evidence,'$.sourceApi')
+      ='cloudscheduler.googleapis.com/v1'
+    AND SAFE_CAST(JSON_VALUE(p_scheduler_inventory_evidence,'$.pagesFetched') AS INT64)>0
+    AND NULLIF(JSON_VALUE(p_scheduler_inventory_evidence,'$.rawInventorySha256'),'') IS NOT NULL
+    AND (SELECT TO_HEX(SHA256(TO_JSON_STRING(STRUCT(
+        JSON_VALUE(j,'$.name') AS resource_name,
+        JSON_VALUE(j,'$.description') AS description,
+        JSON_VALUE(j,'$.schedule') AS schedule,
+        JSON_VALUE(j,'$.timeZone') AS time_zone,
+        JSON_VALUE(j,'$.state') AS scheduler_state,
+        JSON_VALUE(j,'$.attemptDeadline') AS attempt_deadline,
+        JSON_QUERY(j,'$.retryConfig') AS retry_config,
+        JSON_QUERY(j,'$.httpTarget') AS http_target,
+        JSON_QUERY(j,'$.pubsubTarget') AS pubsub_target,
+        JSON_QUERY(j,'$.appEngineHttpTarget') AS app_engine_target))))
+      FROM UNNEST(JSON_QUERY_ARRAY(p_scheduler_inventory_evidence,'$.jobs')) j
+      WHERE JSON_VALUE(j,'$.name')=JSON_VALUE(p_scheduler_resource_json,'$.name'))
+      =TO_HEX(SHA256(TO_JSON_STRING(STRUCT(
+        JSON_VALUE(p_scheduler_resource_json,'$.name') AS resource_name,
+        JSON_VALUE(p_scheduler_resource_json,'$.description') AS description,
+        JSON_VALUE(p_scheduler_resource_json,'$.schedule') AS schedule,
+        JSON_VALUE(p_scheduler_resource_json,'$.timeZone') AS time_zone,
+        JSON_VALUE(p_scheduler_resource_json,'$.state') AS scheduler_state,
+        JSON_VALUE(p_scheduler_resource_json,'$.attemptDeadline') AS attempt_deadline,
+        JSON_QUERY(p_scheduler_resource_json,'$.retryConfig') AS retry_config,
+        JSON_QUERY(p_scheduler_resource_json,'$.httpTarget') AS http_target,
+        JSON_QUERY(p_scheduler_resource_json,'$.pubsubTarget') AS pubsub_target,
+        JSON_QUERY(p_scheduler_resource_json,'$.appEngineHttpTarget') AS app_engine_target))))
     AS 'Fresh complete production-region scheduler inventory is required';
 
   BEGIN TRANSACTION;
