@@ -10,6 +10,8 @@ CREATE TABLE IF NOT EXISTS
     production_uri STRING NOT NULL,production_generation STRING NOT NULL,
     production_size_bytes INT64 NOT NULL,production_crc32c STRING NOT NULL,
     production_sha256 STRING NOT NULL,header_column_count INT64 NOT NULL,data_row_count INT64 NOT NULL,
+    archive_if_generation_match INT64 NOT NULL,production_if_generation_match INT64 NOT NULL,
+    serializer_sha256 STRING NOT NULL,serializer_size_bytes INT64 NOT NULL,
     production_file_name STRING NOT NULL,sap_result_file_name STRING NOT NULL,
     recorded_by STRING NOT NULL,marker_commit STRING NOT NULL,recorded_at TIMESTAMP NOT NULL
   )
@@ -23,10 +25,13 @@ CREATE OR REPLACE PROCEDURE
     p_archive_sha256 STRING,p_production_uri STRING,p_production_generation STRING,
     p_production_size_bytes INT64,p_production_crc32c STRING,p_production_sha256 STRING,
     p_header_column_count INT64,p_data_row_count INT64,p_production_file_name STRING,
-    p_sap_result_file_name STRING,p_recorded_by STRING,p_marker_commit STRING)
+    p_sap_result_file_name STRING,p_archive_if_generation_match INT64,
+    p_production_if_generation_match INT64,p_recorded_by STRING,p_marker_commit STRING)
 BEGIN
   DECLARE v_identity_rows INT64;
   DECLARE v_run_date STRING;
+  DECLARE v_serializer_sha256 STRING;
+  DECLARE v_serializer_size_bytes INT64;
 
   ASSERT NULLIF(TRIM(p_pipeline_run_id),'') IS NOT NULL AS 'pipeline_run_id is required';
   ASSERT REGEXP_CONTAINS(p_export_run_id,r'^V3MANUAL-ONETIME-[0-9]{8}-[A-Za-z0-9-]+$')
@@ -39,6 +44,8 @@ BEGIN
   ASSERT REGEXP_CONTAINS(p_archive_generation,r'^[1-9][0-9]*$')
     AND REGEXP_CONTAINS(p_production_generation,r'^[1-9][0-9]*$')
     AS 'exact archive and production generations are required';
+  ASSERT p_archive_if_generation_match=0 AND p_production_if_generation_match=0
+    AS 'both uploads must attest the create-only ifGenerationMatch=0 precondition';
   ASSERT p_archive_size_bytes>0 AND p_production_size_bytes>0
     AND NULLIF(TRIM(p_archive_crc32c),'') IS NOT NULL
     AND NULLIF(TRIM(p_production_crc32c),'') IS NOT NULL
@@ -83,6 +90,28 @@ BEGIN
   CREATE TEMP TABLE _payload AS
   SELECT * FROM `pacific-plating-282708.sap_integration_v3.v3_onetime_create_ready`;
 
+  ASSERT (SELECT COUNT(*)
+    FROM `pacific-plating-282708.sap_integration_v3.INFORMATION_SCHEMA.COLUMNS`
+    WHERE table_name='v3_onetime_create_ready')=56
+    AS 'Scenario 1 ready table no longer has exactly 56 columns';
+  ASSERT (SELECT COUNT(*) FROM (
+    SELECT ordinal_position,column_name,data_type
+    FROM `pacific-plating-282708.sap_integration_v3.INFORMATION_SCHEMA.COLUMNS`
+    WHERE table_name='v3_onetime_create_ready'
+    EXCEPT DISTINCT
+    SELECT ordinal_position,column_name,data_type
+    FROM `pacific-plating-282708.sap_integration_v3.INFORMATION_SCHEMA.COLUMNS`
+    WHERE table_name='v3_unit5_newpayment_delivery_ready'))=0
+    AND (SELECT COUNT(*) FROM (
+    SELECT ordinal_position,column_name,data_type
+    FROM `pacific-plating-282708.sap_integration_v3.INFORMATION_SCHEMA.COLUMNS`
+    WHERE table_name='v3_unit5_newpayment_delivery_ready'
+    EXCEPT DISTINCT
+    SELECT ordinal_position,column_name,data_type
+    FROM `pacific-plating-282708.sap_integration_v3.INFORMATION_SCHEMA.COLUMNS`
+    WHERE table_name='v3_onetime_create_ready'))=0
+    AS 'Scenario 1 ready schema differs from the reviewed 56-column contract';
+
   ASSERT (SELECT COUNT(DISTINCT DATE(a.built_at,'Asia/Bangkok'))
     FROM _identity i JOIN `pacific-plating-282708.sap_integration_v3.v3_onetime_create_identity` a
       ON a.pipeline_run_id=i.pipeline_run_id AND a.order_item=i.order_item AND a.period=i.period
@@ -112,6 +141,35 @@ BEGIN
       ON h.pipeline_run_id=i.pipeline_run_id AND h.order_item=i.order_item AND h.period=i.period
      AND h.invoice_no IS NOT DISTINCT FROM i.invoice_no AND h.charge_id=i.charge_id)=0
     AS 'Scenario 1 released identity intersects a durable hold';
+
+  CREATE TEMP TABLE _csv_rows AS
+  SELECT p.OrderItem,p.Period,p.InvoiceNo,ARRAY_TO_STRING(ARRAY(
+    SELECT IF(REGEXP_CONTAINS(v,r'[",\r\n]'),CONCAT('"',REPLACE(v,'"','""'),'"'),v)
+    FROM UNNEST([p.CompanyDB,p.OrderID,p.OrderItem,p.InvoiceNo,p.OrderDate,p.InsuredID,p.Title,
+      p.FirstName,p.LastName,p.InsurerCode,p.InsuranceGroup,p.InsuranceType,p.InsuranceProduct,
+      p.ProductType,p.PolicyType,p.Endorse,p.PolicyDate,p.PolicyNo,p.EndorsementNo,p.ChassisNo,
+      p.LicensePlate,p.GrossPremium,p.StampDuty,p.VAT,p.TotalPremium,p.WHT,p.TotalEIR,p.TotalSBT,
+      p.ProcessingFee,p.ProcessingFeeVat,p.ShippingFee,p.ShippingFeeVat,p.TotalAmount,p.Discount,
+      p.TransactionStatus,p.SubmissionStatus,p.ApprovalStatus,p.PaymentStatus,p.ExpectedReceived,
+      p.ActualReceived,p.InterestThisPeriod,p.PrincipleThisPeriod,p.InterestEIRThisPeriod,
+      p.PrincipleEIRThisPeriod,p.PaymentDate,p.Period,p.TotalPeriods,p.PendingPayment,p.PaymentMethod,
+      p.PaymentChannel,p.ExpectedDate,p.RefOrder,p.RefundAmountBeforeFee,p.RefundAmountAfterFee,
+      p.BillingAddress,p.BatchRunDate]) v),',') csv_line
+  FROM _payload p;
+  CREATE TEMP TABLE _serialized AS
+  SELECT CONCAT(
+    'CompanyDB,OrderID,OrderItem,InvoiceNo,OrderDate,InsuredID,Title,FirstName,LastName,InsurerCode,InsuranceGroup,InsuranceType,InsuranceProduct,ProductType,PolicyType,Endorse,PolicyDate,PolicyNo,EndorsementNo,ChassisNo,LicensePlate,GrossPremium,StampDuty,VAT,TotalPremium,WHT,TotalEIR,TotalSBT,ProcessingFee,ProcessingFeeVat,ShippingFee,ShippingFeeVat,TotalAmount,Discount,TransactionStatus,SubmissionStatus,ApprovalStatus,PaymentStatus,ExpectedReceived,ActualReceived,InterestThisPeriod,PrincipleThisPeriod,InterestEIRThisPeriod,PrincipleEIRThisPeriod,PaymentDate,Period,TotalPeriods,PendingPayment,PaymentMethod,PaymentChannel,ExpectedDate,RefOrder,RefundAmountBeforeFee,RefundAmountAfterFee,BillingAddress,BatchRunDate\n',
+    STRING_AGG(csv_line,'\n' ORDER BY OrderItem,SAFE_CAST(Period AS INT64),InvoiceNo),'\n') csv_bytes
+  FROM _csv_rows;
+  SET (v_serializer_sha256,v_serializer_size_bytes)=(SELECT AS STRUCT
+    TO_HEX(SHA256(csv_bytes)),BYTE_LENGTH(csv_bytes) FROM _serialized);
+  ASSERT LOWER(p_archive_sha256)=LOWER(v_serializer_sha256)
+    AND LOWER(p_production_sha256)=LOWER(v_serializer_sha256)
+    AS 'physical object SHA-256 differs from deterministic reviewed CSV serialization';
+  ASSERT p_archive_size_bytes=v_serializer_size_bytes
+    AND p_production_size_bytes=v_serializer_size_bytes
+    AS 'physical object size differs from deterministic reviewed CSV serialization';
+
   BEGIN TRANSACTION;
   MERGE `pacific-plating-282708.sap_integration_v3.v3_onetime_manual_delivery_evidence` t
   USING (SELECT p_export_run_id export_run_id,p_pipeline_run_id pipeline_run_id,
@@ -121,6 +179,9 @@ BEGIN
     p_production_generation production_generation,p_production_size_bytes production_size_bytes,
     p_production_crc32c production_crc32c,LOWER(p_production_sha256) production_sha256,
     p_header_column_count header_column_count,p_data_row_count data_row_count,
+    p_archive_if_generation_match archive_if_generation_match,
+    p_production_if_generation_match production_if_generation_match,
+    LOWER(v_serializer_sha256) serializer_sha256,v_serializer_size_bytes serializer_size_bytes,
     p_production_file_name production_file_name,p_sap_result_file_name sap_result_file_name,
     TRIM(p_recorded_by) recorded_by,p_marker_commit marker_commit,CURRENT_TIMESTAMP() recorded_at) s
   ON t.export_run_id=s.export_run_id OR t.archive_uri=s.archive_uri OR t.production_uri=s.production_uri
