@@ -9,6 +9,17 @@ CREATE TABLE IF NOT EXISTS `pacific-plating-282708.sap_integration_v3.v3_onetime
 PARTITION BY DATE(detected_at)
 CLUSTER BY pipeline_run_id,hold_code,order_item;
 
+CREATE TABLE IF NOT EXISTS `pacific-plating-282708.sap_integration_v3.v3_onetime_create_ready` AS
+SELECT * FROM `pacific-plating-282708.sap_integration_v3.v3_unit5_newpayment_delivery_ready` WHERE FALSE;
+
+CREATE TABLE IF NOT EXISTS `pacific-plating-282708.sap_integration_v3.v3_onetime_create_identity` (
+  pipeline_run_id STRING NOT NULL,order_item STRING NOT NULL,period INT64 NOT NULL,
+  charge_id STRING NOT NULL,invoice_no STRING,source_payment_date DATE,effective_payment_date DATE,
+  payment_date_clamped BOOL,period_id STRING,period_state_version INT64,period_start DATE,period_end DATE,
+  sap_payment_method STRING,sap_payment_channel STRING,resolved_insurance_group STRING,
+  payload_hash STRING NOT NULL,built_at TIMESTAMP NOT NULL
+);
+
 CREATE OR REPLACE PROCEDURE
   `pacific-plating-282708.sap_integration_v3.sp_build_v3_onetime_create_shadow`(
     p_pipeline_run_id STRING)
@@ -37,13 +48,7 @@ BEGIN
   SELECT e.pipeline_run_id,e.order_item,e.order_id,e.period,e.charge_id,e.invoice_no
   FROM `pacific-plating-282708.sap_integration_v3.v3_unit2_event_shadow` e
   WHERE e.pipeline_run_id=p_pipeline_run_id AND e.outcome='READY_CREATE_OR_PAYMENT'
-    AND e.flow='ONETIME'
-    AND NOT EXISTS (SELECT 1 FROM `pacific-plating-282708.sap_integration_v3.sap_mirror_doc` m
-      WHERE m.U_OrderItem=e.order_item)
-    AND NOT EXISTS (SELECT 1
-      FROM `pacific-plating-282708.sap_integration_v3.v3_unit3_mapping_hold` h
-      WHERE h.pipeline_run_id=e.pipeline_run_id AND h.order_item=e.order_item
-        AND h.period=e.period AND h.charge_id=e.charge_id);
+    AND e.flow='ONETIME';
 
   CREATE TEMP TABLE _event AS
   SELECT pipeline_run_id,order_item,period,charge_id,ANY_VALUE(order_id) order_id,
@@ -63,7 +68,13 @@ BEGIN
     e.event_rows,e.order_id_values,e.invoice_values;
 
   CREATE TEMP TABLE _shape AS
-  SELECT i.*,COUNT(o.OrderItem) source_rows,COUNTIF(o.InvoiceNo=i.invoice_no) exact_rows,
+  SELECT i.*,
+    (SELECT COUNT(*) FROM `pacific-plating-282708.sap_integration_v3.sap_mirror_doc` m
+      WHERE m.U_OrderItem=i.order_item) sap_rows,
+    (SELECT COUNT(*) FROM `pacific-plating-282708.sap_integration_v3.v3_unit3_mapping_hold` h
+      WHERE h.pipeline_run_id=i.pipeline_run_id AND h.order_item=i.order_item
+        AND h.period=i.period AND h.charge_id=i.charge_id) mapping_hold_rows,
+    COUNT(o.OrderItem) source_rows,COUNTIF(o.InvoiceNo=i.invoice_no) exact_rows,
     COUNTIF(o.InvoiceNo=i.invoice_no AND SAFE_CAST(o.Period AS INT64)=1
       AND SAFE_CAST(o.TotalPeriods AS INT64)=1) one_period_rows
   FROM _identity i
@@ -77,6 +88,8 @@ BEGIN
   SELECT s.*,co.current_human_id IS NOT NULL is_credit_shell,CASE
     WHEN event_rows!=1 OR order_id_values!=1 OR invoice_values!=1
       THEN 'HOLD_DUPLICATE_OR_CONFLICTING_EVENT'
+    WHEN sap_rows>0 THEN 'HOLD_SAP_ALREADY_EXISTS'
+    WHEN mapping_hold_rows>0 THEN 'HOLD_UNIT3_MAPPING'
     WHEN raw_rows!=1 THEN IF(raw_rows=0,'HOLD_MISSING_RAW_CHARGE','HOLD_DUPLICATE_RAW_CHARGE')
     WHEN staged_rows!=1 THEN IF(staged_rows=0,'HOLD_MISSING_STAGED_EVENT','HOLD_DUPLICATE_STAGED_EVENT')
     WHEN NULLIF(TRIM(order_item),'') IS NULL THEN 'HOLD_BLANK_ORDER_ITEM'
@@ -147,16 +160,13 @@ BEGIN
       ELSE 'READY' END final_readiness_code
   FROM _resolution_shape r;
 
-  DELETE FROM `pacific-plating-282708.sap_integration_v3.v3_onetime_create_hold`
-  WHERE pipeline_run_id=p_pipeline_run_id;
-  INSERT INTO `pacific-plating-282708.sap_integration_v3.v3_onetime_create_hold`
-  SELECT pipeline_run_id,order_item,order_id,period,charge_id,invoice_no,final_readiness_code,
-    CONCAT('Scenario 1 held by ',final_readiness_code),CURRENT_TIMESTAMP()
+  CREATE TEMP TABLE _base_hold AS
+  SELECT pipeline_run_id,order_item,order_id,period,charge_id,invoice_no,final_readiness_code hold_code,
+    CONCAT('Scenario 1 held by ',final_readiness_code) hold_reason
   FROM _final_classified WHERE final_readiness_code!='READY';
   ASSERT (SELECT COUNT(*) FROM _final_classified)=
     (SELECT COUNTIF(final_readiness_code='READY') FROM _final_classified)+
-    (SELECT COUNT(*) FROM `pacific-plating-282708.sap_integration_v3.v3_onetime_create_hold`
-      WHERE pipeline_run_id=p_pipeline_run_id) AS 'ONETIME CREATE final ready/hold conservation failed';
+    (SELECT COUNT(*) FROM _base_hold) AS 'ONETIME CREATE final ready/hold conservation failed';
 
   CREATE TEMP TABLE _target AS SELECT * EXCEPT(readiness_code,final_readiness_code)
     FROM _final_classified WHERE final_readiness_code='READY';
@@ -206,7 +216,7 @@ BEGIN
     UPPER(CONCAT(IFNULL(sap_payment_method,''),'|',IFNULL(sap_payment_channel,''))),r'(^|\|)RCL'))=0
     AS 'ONETIME CREATE resolved to RCL mapping';
 
-  CREATE OR REPLACE TABLE `pacific-plating-282708.sap_integration_v3.v3_onetime_create_ready` AS
+  CREATE TEMP TABLE _candidate_ready AS
   SELECT CAST(CompanyDB AS STRING) CompanyDB,CAST(order_id AS STRING) OrderID,
     CAST(order_item AS STRING) OrderItem,CAST(invoice_no AS STRING) InvoiceNo,
     CAST(OrderDate AS STRING) OrderDate,COALESCE(NULLIF(TRIM(CAST(InsuredID AS STRING)),''),'-') InsuredID,
@@ -268,7 +278,7 @@ BEGIN
     AS 'ONETIME CREATE names/types/ordinals differ from reviewed 56-column contract';
   CREATE TEMP TABLE _payload_validation AS
   SELECT r.pipeline_run_id,r.order_item,r.order_id,r.period,r.charge_id,r.invoice_no,CASE
-    WHEN (SELECT COUNT(*) FROM `pacific-plating-282708.sap_integration_v3.v3_onetime_create_ready` q
+    WHEN (SELECT COUNT(*) FROM _candidate_ready q
       WHERE q.OrderItem=p.OrderItem AND q.Period=p.Period AND q.InvoiceNo=p.InvoiceNo)!=1
       THEN 'HOLD_DUPLICATE_PAYLOAD_GRAIN'
     WHEN p.Period!='1' OR p.TotalPeriods!='1' OR p.TransactionStatus!='Paid'
@@ -312,55 +322,52 @@ BEGIN
       FORMAT('%.2f',SAFE_CAST(r.ActualReceived AS FLOAT64)),FORMAT('%.2f',SAFE_CAST(r.InterestThisPeriod AS FLOAT64)),
       FORMAT('%.2f',SAFE_CAST(r.PrincipleThisPeriod AS FLOAT64)),FORMAT('%.2f',SAFE_CAST(r.InterestEIRThisPeriod AS FLOAT64)),
       FORMAT('%.2f',SAFE_CAST(r.PrincipleEIRThisPeriod AS FLOAT64)),FORMAT('%.2f',SAFE_CAST(r.PendingPayment AS FLOAT64)),
-      FORMAT('%.2f',SAFE_CAST(r.RefundAmountBeforeFee AS FLOAT64)),FORMAT('%.2f',SAFE_CAST(r.RefundAmountAfterFee AS FLOAT64))]))
+      FORMAT('%.2f',SAFE_CAST(r.RefundAmountBeforeFee AS FLOAT64)),FORMAT('%.2f',SAFE_CAST(r.RefundAmountAfterFee AS FLOAT64))])
       THEN 'HOLD_CANONICAL_NUMERIC_MISMATCH'
     ELSE 'READY' END validation_code
   FROM (SELECT x.*,ROW_NUMBER() OVER (
       PARTITION BY order_item,period,invoice_no ORDER BY charge_id) identity_row FROM _resolved x) r
   JOIN (SELECT x.*,ROW_NUMBER() OVER (
       PARTITION BY OrderItem,Period,InvoiceNo ORDER BY TO_JSON_STRING(x)) identity_row
-    FROM `pacific-plating-282708.sap_integration_v3.v3_onetime_create_ready` x) p
+    FROM _candidate_ready x) p
     ON p.OrderItem=r.order_item AND p.Period=CAST(r.period AS STRING)
       AND p.InvoiceNo=r.invoice_no AND p.identity_row=r.identity_row;
 
-  INSERT INTO `pacific-plating-282708.sap_integration_v3.v3_onetime_create_hold`
-  SELECT pipeline_run_id,order_item,order_id,period,charge_id,invoice_no,validation_code,
-    CONCAT('Scenario 1 held by ',validation_code),CURRENT_TIMESTAMP()
+  CREATE TEMP TABLE _validation_hold AS
+  SELECT pipeline_run_id,order_item,order_id,period,charge_id,invoice_no,validation_code hold_code,
+    CONCAT('Scenario 1 held by ',validation_code) hold_reason
   FROM _payload_validation WHERE validation_code!='READY';
-  DELETE FROM `pacific-plating-282708.sap_integration_v3.v3_onetime_create_ready` p
-  WHERE EXISTS (SELECT 1 FROM _payload_validation v WHERE v.validation_code!='READY'
+  CREATE TEMP TABLE _validated_ready AS
+  SELECT p.* FROM _candidate_ready p
+  WHERE NOT EXISTS (SELECT 1 FROM _payload_validation v WHERE v.validation_code!='READY'
     AND v.order_item=p.OrderItem AND v.invoice_no=p.InvoiceNo);
   ASSERT (SELECT COUNT(*) FROM _target)=
-    (SELECT COUNT(*) FROM `pacific-plating-282708.sap_integration_v3.v3_onetime_create_ready`)+
+    (SELECT COUNT(*) FROM _validated_ready)+
     (SELECT COUNTIF(validation_code!='READY') FROM _payload_validation)
     AS 'ONETIME CREATE target must end as payload or durable validation hold';
-  ASSERT (SELECT COUNT(*) FROM `pacific-plating-282708.sap_integration_v3.v3_onetime_create_ready`
+  ASSERT (SELECT COUNT(*) FROM _validated_ready
     WHERE Period!='1' OR TotalPeriods!='1' OR TransactionStatus!='Paid')=0
     AS 'ONETIME CREATE released rows must be Paid period 1/1';
-  ASSERT (SELECT COUNT(*) FROM `pacific-plating-282708.sap_integration_v3.v3_onetime_create_ready`
+  ASSERT (SELECT COUNT(*) FROM _validated_ready
     WHERE LENGTH(InvoiceNo)>30 OR LENGTH(PolicyNo)>50)=0 AS 'ONETIME CREATE length limit failed';
   ASSERT (SELECT COUNT(*) FROM (SELECT OrderItem,Period,InvoiceNo,COUNT(*) n
-    FROM `pacific-plating-282708.sap_integration_v3.v3_onetime_create_ready`
+    FROM _validated_ready
     GROUP BY 1,2,3 HAVING n!=1))=0 AS 'ONETIME CREATE duplicate paid identity';
   ASSERT (SELECT COUNT(*) FROM (SELECT OrderItem,date_value
-    FROM `pacific-plating-282708.sap_integration_v3.v3_onetime_create_ready`
+    FROM _validated_ready
     UNPIVOT(date_value FOR date_column IN (OrderDate,PolicyDate,ExpectedDate,PaymentDate,BatchRunDate))
     WHERE LENGTH(IFNULL(date_value,''))!=8 OR SAFE.PARSE_DATE('%d%m%Y',date_value) IS NULL))=0
     AS 'ONETIME CREATE date contract failed';
 
-  DELETE FROM `pacific-plating-282708.sap_integration_v3.v3_unit5_payload_identity`
-  WHERE pipeline_run_id=p_pipeline_run_id AND file_role='CREATE_ONETIME';
-  INSERT INTO `pacific-plating-282708.sap_integration_v3.v3_unit5_payload_identity`
+  CREATE TEMP TABLE _released_identity AS
   SELECT p_pipeline_run_id,'CREATE_ONETIME',r.order_item,r.period,r.charge_id,r.invoice_no,
     TO_HEX(SHA256(TO_JSON_STRING(p))),CURRENT_TIMESTAMP()
-  FROM _resolved r JOIN `pacific-plating-282708.sap_integration_v3.v3_onetime_create_ready` p
+  FROM _resolved r JOIN _validated_ready p
     ON p.OrderItem=r.order_item AND p.Period=CAST(r.period AS STRING) AND p.InvoiceNo=r.invoice_no;
-  ASSERT (SELECT COUNT(*) FROM `pacific-plating-282708.sap_integration_v3.v3_unit5_payload_identity`
-    WHERE pipeline_run_id=p_pipeline_run_id AND file_role='CREATE_ONETIME')=
-    (SELECT COUNT(*) FROM `pacific-plating-282708.sap_integration_v3.v3_onetime_create_ready`)
+  ASSERT (SELECT COUNT(*) FROM _released_identity)=(SELECT COUNT(*) FROM _validated_ready)
     AS 'ONETIME CREATE identity conservation failed';
 
-  CREATE OR REPLACE TABLE `pacific-plating-282708.sap_integration_v3.v3_onetime_create_identity` AS
+  CREATE TEMP TABLE _identity_snapshot AS
   SELECT p_pipeline_run_id pipeline_run_id,r.order_item,r.period,r.charge_id,r.invoice_no,
     r.raw_payment_date source_payment_date,SAFE.PARSE_DATE('%d%m%Y',p.PaymentDate) effective_payment_date,
     SAFE.PARSE_DATE('%d%m%Y',p.PaymentDate)!=r.raw_payment_date payment_date_clamped,
@@ -368,6 +375,38 @@ BEGIN
     v_period_start period_start,v_period_end period_end,
     r.sap_payment_method,r.sap_payment_channel,r.resolved_insurance_group,
     TO_HEX(SHA256(TO_JSON_STRING(p))) payload_hash,CURRENT_TIMESTAMP() built_at
-  FROM _resolved r JOIN `pacific-plating-282708.sap_integration_v3.v3_onetime_create_ready` p
-    ON p.OrderItem=r.order_item AND p.InvoiceNo=r.invoice_no;
+  FROM _resolved r JOIN _validated_ready p
+    ON p.OrderItem=r.order_item AND p.Period=CAST(r.period AS STRING) AND p.InvoiceNo=r.invoice_no;
+  ASSERT (SELECT COUNT(*) FROM _identity_snapshot)=(SELECT COUNT(*) FROM _validated_ready)
+    AS 'ONETIME CREATE audit identity conservation failed';
+
+  CREATE TEMP TABLE _all_hold AS
+  SELECT * FROM _base_hold UNION ALL SELECT * FROM _validation_hold;
+  ASSERT (SELECT COUNT(*) FROM _event)=
+    (SELECT COUNT(*) FROM _validated_ready)+(SELECT COUNT(*) FROM _all_hold)
+    AS 'ONETIME CREATE every canonical identity must end ready or held';
+
+  BEGIN TRANSACTION;
+  DELETE FROM `pacific-plating-282708.sap_integration_v3.v3_onetime_create_hold`
+  WHERE pipeline_run_id=p_pipeline_run_id;
+  INSERT INTO `pacific-plating-282708.sap_integration_v3.v3_onetime_create_hold`
+  SELECT pipeline_run_id,order_item,order_id,period,charge_id,invoice_no,hold_code,hold_reason,
+    CURRENT_TIMESTAMP() FROM _all_hold;
+  ASSERT @@row_count=(SELECT COUNT(*) FROM _all_hold) AS 'ONETIME CREATE hold publication failed';
+  DELETE FROM `pacific-plating-282708.sap_integration_v3.v3_onetime_create_ready` WHERE TRUE;
+  INSERT INTO `pacific-plating-282708.sap_integration_v3.v3_onetime_create_ready`
+  SELECT * FROM _validated_ready;
+  ASSERT @@row_count=(SELECT COUNT(*) FROM _validated_ready) AS 'ONETIME CREATE ready publication failed';
+  DELETE FROM `pacific-plating-282708.sap_integration_v3.v3_unit5_payload_identity`
+  WHERE pipeline_run_id=p_pipeline_run_id AND file_role='CREATE_ONETIME';
+  INSERT INTO `pacific-plating-282708.sap_integration_v3.v3_unit5_payload_identity`
+  SELECT * FROM _released_identity;
+  ASSERT @@row_count=(SELECT COUNT(*) FROM _released_identity)
+    AS 'ONETIME CREATE payload identity publication failed';
+  DELETE FROM `pacific-plating-282708.sap_integration_v3.v3_onetime_create_identity` WHERE TRUE;
+  INSERT INTO `pacific-plating-282708.sap_integration_v3.v3_onetime_create_identity`
+  SELECT * FROM _identity_snapshot;
+  ASSERT @@row_count=(SELECT COUNT(*) FROM _identity_snapshot)
+    AS 'ONETIME CREATE audit identity publication failed';
+  COMMIT TRANSACTION;
 END;
