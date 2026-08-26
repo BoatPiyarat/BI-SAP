@@ -124,3 +124,6 @@ Operator-only Scenario 1 fallback artifacts (no GCS write):
   dependency gate; binds immutable Unit-5 adjustment-shaped payloads to exact event identities and
   a durable human-approved intent registry, while retaining every row in zero-interface release
   approval holds. Apply after 051 and 074.
+- `096_v3_business_flow_activation_readiness.sql` — read-only nine-population activation matrix;
+  preserves authoritative numbering only for Scenarios 1-3, exposes latest durable evidence and
+  human fallback per named flow, and centralizes fail-closed scheduler blockers. Apply after 095.
