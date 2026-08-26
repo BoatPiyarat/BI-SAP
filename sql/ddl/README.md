@@ -95,3 +95,5 @@ Operator-only Scenario 1 fallback artifacts (no GCS write):
   generation marker; records evidence after human create-only uploads and never writes GCS.
 - `087_v3_rcl_first_create_hold_gate.sql` — source-only Scenario 2 durable hold gate; emits zero
   interface rows until the RCL CREATE InvoiceNo transformation has separate business approval.
+- `088_v3_rcl_later_newpayment_split.sql` — source-only Scenario 3 split; isolates ordinary RCL
+  later-period non-CreditShell events while retaining each released item’s complete SAP spine.

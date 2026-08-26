@@ -14,6 +14,40 @@ CREATE TABLE IF NOT EXISTS `pacific-plating-282708.sap_integration_v3.v3_unit5_p
 PARTITION BY DATE(built_at)
 CLUSTER BY pipeline_run_id,file_role,order_item;
 
+CREATE TABLE IF NOT EXISTS `pacific-plating-282708.sap_integration_v3.v3_unit5_newpayment_ready` (
+  CompanyDB STRING,OrderID STRING,OrderItem STRING,InvoiceNo STRING,OrderDate STRING,
+  InsuredID STRING,Title STRING,FirstName STRING,LastName STRING,InsurerCode STRING,
+  InsuranceGroup STRING,InsuranceType STRING,InsuranceProduct STRING,ProductType STRING,
+  PolicyType STRING,Endorse STRING,PolicyDate STRING,PolicyNo STRING,EndorsementNo STRING,
+  ChassisNo STRING,LicensePlate STRING,GrossPremium STRING,StampDuty STRING,VAT STRING,
+  TotalPremium STRING,WHT STRING,TotalEIR STRING,TotalSBT STRING,ProcessingFee STRING,
+  ProcessingFeeVat STRING,ShippingFee STRING,ShippingFeeVat STRING,TotalAmount STRING,
+  Discount STRING,TransactionStatus STRING,SubmissionStatus STRING,ApprovalStatus STRING,
+  PaymentStatus STRING,ExpectedReceived STRING,ActualReceived STRING,InterestThisPeriod STRING,
+  PrincipleThisPeriod STRING,InterestEIRThisPeriod STRING,PrincipleEIRThisPeriod STRING,
+  PaymentDate STRING,Period STRING,TotalPeriods STRING,PendingPayment STRING,PaymentMethod STRING,
+  PaymentChannel STRING,ExpectedDate STRING,RefOrder STRING,RefundAmountBeforeFee STRING,
+  RefundAmountAfterFee STRING,BillingAddress STRING,BatchRunDate STRING
+);
+
+CREATE TABLE IF NOT EXISTS
+  `pacific-plating-282708.sap_integration_v3.v3_unit5_newpayment_delivery_ready` AS
+SELECT * FROM `pacific-plating-282708.sap_integration_v3.v3_unit5_newpayment_ready` WHERE FALSE;
+
+CREATE TABLE IF NOT EXISTS
+  `pacific-plating-282708.sap_integration_v3.v3_unit5_newpayment_snapshot_manifest` (
+    pipeline_run_id STRING NOT NULL,row_count INT64 NOT NULL,payload_set_hash STRING NOT NULL,
+    completed_at TIMESTAMP NOT NULL
+  )
+PARTITION BY DATE(completed_at) CLUSTER BY pipeline_run_id;
+
+CREATE TABLE IF NOT EXISTS
+  `pacific-plating-282708.sap_integration_v3.v3_unit5_newpayment_run_state` (
+    pipeline_run_id STRING NOT NULL,state STRING NOT NULL,producer_row_count INT64 NOT NULL,
+    producer_set_hash STRING NOT NULL,updated_at TIMESTAMP NOT NULL
+  )
+PARTITION BY DATE(updated_at) CLUSTER BY pipeline_run_id,state;
+
 CREATE OR REPLACE PROCEDURE `pacific-plating-282708.sap_integration_v3.sp_build_v3_newpayment_shadow`(
   p_pipeline_run_id STRING
 )
@@ -37,12 +71,14 @@ BEGIN
   -- HOLD_EMPTY_INSTALLMENT_DETAILS order_items (from 082_v3_rcl_empty_installment_detail_hold.sql)
   -- before _target excludes them, so the gap is visible and queryable rather than silently
   -- disappearing at the _resolved join below.
-  DELETE FROM `pacific-plating-282708.sap_integration_v3.v3_unit5_installment_detail_hold`
-  WHERE pipeline_run_id=p_pipeline_run_id;
-  INSERT INTO `pacific-plating-282708.sap_integration_v3.v3_unit5_installment_detail_hold`
+  CREATE TEMP TABLE _installment_detail_hold AS
   SELECT p_pipeline_run_id,order_item,order_id,transaction_id,snapshot_id,
     declared_total_periods,number_of_installment,detail_row_count,rule_code,detected_at
   FROM `pacific-plating-282708.sap_integration_v3.vw_v3_rcl_empty_installment_detail_hold`;
+  ASSERT (SELECT COUNT(*) FROM _installment_detail_hold)=(SELECT COUNT(*) FROM (
+    SELECT order_item,order_id,transaction_id,snapshot_id,rule_code
+    FROM _installment_detail_hold GROUP BY 1,2,3,4,5))
+    AS 'Unit 5 installment-detail hold source contains duplicate identities';
 
   CREATE TEMP TABLE _target AS
   SELECT e.*
@@ -55,8 +91,7 @@ BEGIN
       WHERE h.pipeline_run_id=e.pipeline_run_id AND h.order_item=e.order_item
         AND h.period=e.period AND h.charge_id=e.charge_id)
     AND NOT EXISTS (SELECT 1
-      FROM `pacific-plating-282708.sap_integration_v3.v3_unit5_installment_detail_hold` d
-      WHERE d.pipeline_run_id=p_pipeline_run_id AND d.order_item=e.order_item);
+      FROM _installment_detail_hold d WHERE d.order_item=e.order_item);
 
   CREATE TEMP TABLE _source AS
   SELECT
@@ -280,11 +315,48 @@ BEGIN
     AND (LENGTH(PaymentDate)!=8 OR SAFE.PARSE_DATE('%d%m%Y',PaymentDate) IS NULL))=0
     AS 'PAYMENT_DATE_FORMAT_INVALID';
 
-  CREATE OR REPLACE TABLE `pacific-plating-282708.sap_integration_v3.v3_unit5_newpayment_ready` AS
-  SELECT * FROM _candidate;
+  CREATE TABLE IF NOT EXISTS `pacific-plating-282708.sap_integration_v3.v3_unit5_newpayment_ready` AS
+  SELECT * FROM _candidate WHERE FALSE;
   ASSERT (SELECT COUNT(*) FROM `pacific-plating-282708.sap_integration_v3.INFORMATION_SCHEMA.COLUMNS`
     WHERE table_name='v3_unit5_newpayment_ready')=56 AS 'NEWPAYMENT payload must have exactly 56 columns';
+  ASSERT (SELECT COUNT(*) FROM (
+    SELECT ordinal_position,column_name,data_type
+    FROM `pacific-plating-282708.sap_integration_v3.INFORMATION_SCHEMA.COLUMNS`
+    WHERE table_name='v3_unit5_newpayment_ready'
+    EXCEPT DISTINCT
+    SELECT ordinal_position,column_name,data_type
+    FROM `pacific-plating-282708.sap_integration_v3.INFORMATION_SCHEMA.COLUMNS`
+    WHERE table_name='v3_unit5_newpayment_delivery_ready'))=0
+    AND (SELECT COUNT(*) FROM (
+    SELECT ordinal_position,column_name,data_type
+    FROM `pacific-plating-282708.sap_integration_v3.INFORMATION_SCHEMA.COLUMNS`
+    WHERE table_name='v3_unit5_newpayment_delivery_ready'
+    EXCEPT DISTINCT
+    SELECT ordinal_position,column_name,data_type
+    FROM `pacific-plating-282708.sap_integration_v3.INFORMATION_SCHEMA.COLUMNS`
+    WHERE table_name='v3_unit5_newpayment_ready'))=0
+    AS 'NEWPAYMENT names/types/ordinals differ from reviewed 56-column contract';
 
+  BEGIN TRANSACTION;
+  MERGE `pacific-plating-282708.sap_integration_v3.v3_unit5_newpayment_run_state` t
+  USING (SELECT p_pipeline_run_id pipeline_run_id,'BUILDING' state,COUNT(*) producer_row_count,
+    TO_HEX(SHA256(COALESCE(STRING_AGG(TO_HEX(SHA256(TO_JSON_STRING(c))),''
+      ORDER BY c.OrderItem,SAFE_CAST(c.Period AS INT64),c.InvoiceNo,TO_JSON_STRING(c)),
+      '<EMPTY>'))) producer_set_hash,CURRENT_TIMESTAMP() updated_at FROM _candidate c) s
+  ON t.pipeline_run_id=s.pipeline_run_id
+  WHEN NOT MATCHED THEN INSERT ROW;
+  ASSERT @@row_count=1 AS 'Unit 5 producer run already claimed; refusing rewrite or concurrent build';
+  DELETE FROM `pacific-plating-282708.sap_integration_v3.v3_unit5_installment_detail_hold`
+  WHERE pipeline_run_id=p_pipeline_run_id;
+  INSERT INTO `pacific-plating-282708.sap_integration_v3.v3_unit5_installment_detail_hold`
+  SELECT * FROM _installment_detail_hold;
+  ASSERT @@row_count=(SELECT COUNT(*) FROM _installment_detail_hold)
+    AS 'Unit 5 installment-detail hold publication failed';
+  DELETE FROM `pacific-plating-282708.sap_integration_v3.v3_unit5_newpayment_ready` WHERE TRUE;
+  INSERT INTO `pacific-plating-282708.sap_integration_v3.v3_unit5_newpayment_ready`
+  SELECT * FROM _candidate;
+  ASSERT @@row_count=(SELECT COUNT(*) FROM _candidate)
+    AS 'Unit 5 candidate publication row conservation failed';
   DELETE FROM `pacific-plating-282708.sap_integration_v3.v3_unit5_payload_identity`
   WHERE pipeline_run_id=p_pipeline_run_id AND file_role='NEWPAYMENT';
   INSERT INTO `pacific-plating-282708.sap_integration_v3.v3_unit5_payload_identity`
@@ -292,4 +364,8 @@ BEGIN
     TO_HEX(SHA256(TO_JSON_STRING(c))),CURRENT_TIMESTAMP()
   FROM _resolved r JOIN _candidate_target c
     ON c.OrderItem=r.order_item AND SAFE_CAST(c.Period AS INT64)=r.period AND c.InvoiceNo=r.invoice_no;
+  ASSERT @@row_count=(SELECT COUNT(*) FROM _resolved)
+    AS 'Unit 5 target identity row conservation failed';
+
+  COMMIT TRANSACTION;
 END;
