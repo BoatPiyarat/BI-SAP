@@ -135,11 +135,20 @@ BEGIN
     COUNT(*) AS staged_rows,
     COUNTIF(payment_option = 'CREDIT_CARD_INSTALLMENT') AS cci_rows,
     COUNT(DISTINCT payment_option) AS payment_option_count,
-    ANY_VALUE(payment_option HAVING MIN payment_option) AS payment_option,
-    ANY_VALUE(payment_method_source HAVING MIN payment_method_source) AS payment_method_source,
-    ANY_VALUE(payment_channel_source HAVING MIN payment_channel_source) AS payment_channel_source
+    ANY_VALUE(payment_option HAVING MIN payment_option) AS payment_option
   FROM `pacific-plating-282708.sap_integration_v3.stg_payment_events`
   GROUP BY charge_id;
+
+  CREATE TEMP TABLE _charge_shape AS
+  SELECT
+    id AS charge_id,
+    COUNT(*) AS raw_charge_rows,
+    COUNT(DISTINCT payment_method) AS payment_method_count,
+    COUNT(DISTINCT service_provider) AS payment_channel_count,
+    ANY_VALUE(payment_method HAVING MIN payment_method) AS payment_method_source,
+    ANY_VALUE(service_provider HAVING MIN service_provider) AS payment_channel_source
+  FROM `pacific-plating-282708.careos.carepay_charges`
+  GROUP BY id;
 
   CREATE TEMP TABLE _item_shape AS
   SELECT
@@ -157,8 +166,11 @@ BEGIN
     staged.cci_rows,
     staged.payment_option_count,
     staged.payment_option,
-    staged.payment_method_source,
-    staged.payment_channel_source,
+    charge.raw_charge_rows,
+    charge.payment_method_count,
+    charge.payment_channel_count,
+    charge.payment_method_source,
+    charge.payment_channel_source,
     item.item_rows,
     item.product_count,
     IF(item.item_product = 'products/car-insurance', 'MOTOR', 'NONMOTOR') AS product_scope,
@@ -168,6 +180,8 @@ BEGIN
   FROM `pacific-plating-282708.sap_integration_v3.v3_unit2_event_shadow` AS unit2
   LEFT JOIN _staged_shape AS staged
     ON staged.charge_id IS NOT DISTINCT FROM unit2.charge_id
+  LEFT JOIN _charge_shape AS charge
+    ON charge.charge_id IS NOT DISTINCT FROM unit2.charge_id
   LEFT JOIN _item_shape AS item
     ON item.order_item IS NOT DISTINCT FROM unit2.order_item
   WHERE unit2.pipeline_run_id = p_pipeline_run_id
@@ -242,6 +256,9 @@ BEGIN
         THEN 'HOLD_EDC_DUPLICATE_OR_CONFLICTING_EVENT'
       WHEN staged_rows != 1 OR cci_rows != 1 OR payment_option_count != 1
         THEN 'HOLD_EDC_STAGED_EVENT_CARDINALITY'
+      WHEN raw_charge_rows IS DISTINCT FROM 1 OR payment_method_count IS DISTINCT FROM 1
+        OR payment_channel_count IS DISTINCT FROM 1
+        THEN 'HOLD_EDC_RAW_CHARGE_CARDINALITY'
       WHEN outcome = 'ACKNOWLEDGED' THEN 'NOT_ACTIONABLE_ALREADY_ACKNOWLEDGED'
       WHEN outcome != 'READY_CREATE_OR_PAYMENT' THEN CONCAT('HOLD_UNIT2_', outcome)
       WHEN NULLIF(TRIM(order_id), '') IS NULL OR NULLIF(TRIM(order_item), '') IS NULL
