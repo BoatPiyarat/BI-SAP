@@ -220,7 +220,7 @@ BEGIN
     CAST(InsuranceType AS STRING) InsuranceType,CAST(InsuranceProduct AS STRING) InsuranceProduct,
     CAST(ProductType AS STRING) ProductType,CAST(PolicyType AS STRING) PolicyType,
     CAST(Endorse AS STRING) Endorse,CAST(PolicyDate AS STRING) PolicyDate,CAST(PolicyNo AS STRING) PolicyNo,
-    CAST(EndorsementNo AS STRING) EndorsementNo,CAST(ChassisNo AS STRING) ChassisNo,
+    IFNULL(CAST(EndorsementNo AS STRING),'') EndorsementNo,CAST(ChassisNo AS STRING) ChassisNo,
     CAST(LicensePlate AS STRING) LicensePlate,FORMAT('%.2f',GrossPremium) GrossPremium,
     FORMAT('%.2f',StampDuty) StampDuty,FORMAT('%.2f',VAT) VAT,
     FORMAT('%.2f',TotalPremium) TotalPremium,FORMAT('%.2f',WHT) WHT,
@@ -242,7 +242,8 @@ BEGIN
     CAST(period AS STRING) Period,CAST(TotalPeriods AS STRING) TotalPeriods,
     CAST(PendingPayment AS STRING) PendingPayment,CAST(sap_payment_method AS STRING) PaymentMethod,
     CAST(sap_payment_channel AS STRING) PaymentChannel,CAST(ExpectedDate AS STRING) ExpectedDate,
-    CAST(RefOrder AS STRING) RefOrder,FORMAT('%.2f',RefundAmountBeforeFee) RefundAmountBeforeFee,
+    IFNULL(CAST(RefOrder AS STRING),'') RefOrder,
+    FORMAT('%.2f',RefundAmountBeforeFee) RefundAmountBeforeFee,
     FORMAT('%.2f',RefundAmountAfterFee) RefundAmountAfterFee,CAST(BillingAddress AS STRING) BillingAddress,
     FORMAT_DATE('%d%m%Y',v_batch_date) BatchRunDate
   FROM _resolved;
@@ -259,7 +260,7 @@ BEGIN
     CAST(s.LastName AS STRING),CAST(s.InsurerCode AS STRING),CAST(s.InsuranceGroup AS STRING),
     CAST(s.InsuranceType AS STRING),CAST(s.InsuranceProduct AS STRING),CAST(s.ProductType AS STRING),
     CAST(s.PolicyType AS STRING),CAST(s.Endorse AS STRING),CAST(s.PolicyDate AS STRING),
-    CAST(s.PolicyNo AS STRING),CAST(s.EndorsementNo AS STRING),CAST(s.ChassisNo AS STRING),
+    CAST(s.PolicyNo AS STRING),IFNULL(CAST(s.EndorsementNo AS STRING),''),CAST(s.ChassisNo AS STRING),
     CAST(s.LicensePlate AS STRING),FORMAT('%.2f',s.GrossPremium),FORMAT('%.2f',s.StampDuty),
     FORMAT('%.2f',s.VAT),FORMAT('%.2f',s.TotalPremium),FORMAT('%.2f',s.WHT),
     FORMAT('%.2f',s.TotalEIR),FORMAT('%.2f',s.TotalSBT),FORMAT('%.2f',s.ProcessingFee),
@@ -277,7 +278,7 @@ BEGIN
     CAST(IFNULL(s.PaymentDate,'') AS STRING),CAST(s.Period AS STRING),CAST(s.TotalPeriods AS STRING),
     CAST(s.PendingPayment AS STRING),CAST(IFNULL(s.PaymentMethod,'') AS STRING),
     CAST(IFNULL(s.PaymentChannel,'') AS STRING),CAST(s.ExpectedDate AS STRING),
-    CAST(s.RefOrder AS STRING),FORMAT('%.2f',s.RefundAmountBeforeFee),
+    IFNULL(CAST(s.RefOrder AS STRING),''),FORMAT('%.2f',s.RefundAmountBeforeFee),
     FORMAT('%.2f',s.RefundAmountAfterFee),CAST(s.BillingAddress AS STRING),
     FORMAT_DATE('%d%m%Y',v_batch_date)
   FROM _source s
@@ -306,6 +307,9 @@ BEGIN
     AND (NULLIF(TRIM(InvoiceNo),'') IS NULL
     OR NULLIF(TRIM(PaymentDate),'') IS NULL OR NULLIF(TRIM(PaymentMethod),'') IS NULL
     OR NULLIF(TRIM(PaymentChannel),'') IS NULL))=0 AS 'Paid completeness failed';
+  ASSERT (SELECT COUNT(*) FROM _candidate c
+    WHERE REGEXP_CONTAINS(TO_JSON_STRING(c),r':null|:"NULL"'))=0
+    AS 'NEWPAYMENT candidate must not contain SQL NULL or literal NULL';
   ASSERT (SELECT COUNT(*) FROM (
     SELECT OrderItem,date_value FROM _candidate
     UNPIVOT(date_value FOR date_column IN (OrderDate,PolicyDate,ExpectedDate,BatchRunDate))
