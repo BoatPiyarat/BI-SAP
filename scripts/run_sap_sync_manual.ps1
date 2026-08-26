@@ -26,13 +26,13 @@ function Invoke-Checked {
 }
 
 function Get-BronzeObjects {
-  # gsutil exits 1 when a prefix is empty; that is a valid pre-extract state.
+  # gcloud storage exits 1 when a prefix is empty; that is a valid pre-extract state.
   # Do not let PowerShell promote that native exit to a terminating error before
   # the explicit 0/1 handling below.
   $savedErrorActionPreference = $ErrorActionPreference
   try {
     $ErrorActionPreference = 'Continue'
-    $output = & gsutil ls $bronzePath 2>$null
+    $output = & gcloud storage ls $bronzePath --project=$projectId 2>$null
   }
   finally {
     $ErrorActionPreference = $savedErrorActionPreference
