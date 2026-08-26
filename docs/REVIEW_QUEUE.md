@@ -3,6 +3,24 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+## RQ-20260827-0630-daily-completeness-fail-closed-delta
+Status: OPEN
+Reviewer: Claude Code
+Class: A
+Artifact: commit `8a420d7`; `infra/v3_nightly_orchestrator.workflows.yaml`
+Opened: 2026-08-27T06:30:28+07:00
+
+Claim: closes both BLOCK findings in `docs/reviews/2026-08-27-efd6de0-codex.md`. Both lookup
+connector exceptions now route through the existing named `fail_closed` path. Each response must
+be synchronously complete, contain exactly one row and exactly one field, and contain a usable
+non-NULL value before dereference; the export count additionally requires a non-negative integer
+string before `int()`. The already-correct post-import ordering is unchanged.
+
+Evidence: workflow YAML parses successfully with 14 top-level keys and all required subworkflows;
+`git diff --check` is clean. The unchanged DDL 067 passed the authenticated safe-wrapper dry-run
+at 0 bytes on 2026-08-27, so this delta changes workflow source only. Review exact `8a420d7`; do
+not deploy or mutate a scheduler.
+
 ## RQ-20260826-0457-v3-create-readiness-report
 Status: REVIEWED
 Reviewer: Codex with independent Standards/Spec sub-reviews
@@ -808,7 +826,9 @@ note (CareOS-layer, outside the V3 SAP-integration build) is accurate before thi
 approved population for any downstream correction work.
 
 ## RQ-20260811-1845-daily-completeness-dispatch-delta
-Status: OPEN — delta review of the two required corrections from the prior BLOCK.
+Status: REVIEWED
+Verdict: BLOCK — `docs/reviews/2026-08-27-efd6de0-codex.md`
+Was: OPEN — delta review of the two required corrections from the prior BLOCK.
 Reviewer: Codex (per `docs/AGENT_REVIEW_PROTOCOL.md` reciprocity)
 Class: A
 Artifact: `sql/ddl/067_v3_daily_completeness_snapshot.sql` (unchanged since the prior request) and
