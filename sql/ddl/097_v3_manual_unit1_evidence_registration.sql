@@ -28,8 +28,10 @@ BEGIN
   ASSERT NULLIF(TRIM(p_extract_run_uuid),'') IS NOT NULL AS 'extract run UUID is required';
   ASSERT STARTS_WITH(p_source_object_uri,
     'gs://rcb-bronze-zone/SAP/production_database/Results') AS 'unexpected SAP source object';
-  ASSERT ENDS_WITH(p_source_object_uri,CONCAT('_',p_extract_run_uuid,'.json'))
-    AS 'source object is not bound to extract UUID';
+  ASSERT REGEXP_CONTAINS(p_extract_run_uuid,
+      r'^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$')
+    AND ENDS_WITH(p_source_object_uri,CONCAT('_',SUBSTR(p_extract_run_uuid,1,8),'.json'))
+    AS 'source object is not bound to the extract UUID prefix naming contract';
   ASSERT p_watermark_after>p_watermark_before AS 'extract watermark did not advance';
   ASSERT p_caught_up IS TRUE AS 'extract did not prove caught_up';
   ASSERT p_extracted_rows>=0 AND p_load_output_rows=p_extracted_rows
