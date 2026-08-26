@@ -100,3 +100,7 @@ Operator-only Scenario 1 fallback artifacts (no GCS write):
 - `089_v3_cancel_ownership_hold_gate.sql` — source-only reusable cancellation ownership gate;
   classifies linked change-order versus unlinked plain-cancel populations into durable holds with
   atomic replay protection and exactly zero interface rows. Apply after 036 and 025.
+- `090_v3_creditshell_cancel_ack_hold_gate.sql` — source-only CreditShell dependency gate; requires
+  a human-approved old/new item map and complete exact row-level linked-cancel ACK, then retains the
+  population in a named literal-approval hold with exactly zero interface rows. Apply after 081,
+  064, 070, and 073.
