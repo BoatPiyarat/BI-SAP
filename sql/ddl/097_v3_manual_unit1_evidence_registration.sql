@@ -54,7 +54,11 @@ BEGIN
     AND NULLIF(TRIM(p_evidence_reference),'') IS NOT NULL AS 'manual verifier/evidence required';
   ASSERT (SELECT COUNT(*)
     FROM `pacific-plating-282708.region-asia-southeast1`.INFORMATION_SCHEMA.JOBS_BY_PROJECT
-    WHERE job_id=p_load_job_id AND job_type='LOAD' AND state='DONE' AND error_result IS NULL
+    WHERE creation_time BETWEEN TIMESTAMP_SUB(TIMESTAMP_MILLIS(SAFE_CAST(JSON_VALUE(
+        p_load_job_api_evidence,'$.statistics.startTime') AS INT64)),INTERVAL 1 MINUTE)
+      AND TIMESTAMP_ADD(TIMESTAMP_MILLIS(SAFE_CAST(JSON_VALUE(
+        p_load_job_api_evidence,'$.statistics.endTime') AS INT64)),INTERVAL 1 MINUTE)
+      AND job_id=p_load_job_id AND job_type='LOAD' AND state='DONE' AND error_result IS NULL
       AND destination_table=STRUCT('pacific-plating-282708' AS project_id,
         'sap_integration_v2' AS dataset_id,'SAP_LIVE' AS table_id))=1
     AS 'exact successful SAP_LIVE load job not found';
