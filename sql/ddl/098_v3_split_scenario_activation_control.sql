@@ -108,9 +108,10 @@ BEGIN
     AS 'exact flow/run is not eligible for activation approval';
   ASSERT (SELECT COUNT(*)
     FROM `pacific-plating-282708.sap_integration_v3.v3_scenario_activation_approval`
-    WHERE flow_key=p_flow_key OR evidence_run_id=p_evidence_run_id
-      OR approval_id=p_approval_id OR scheduler_job_name=p_scheduler_job_name)=0
-    AS 'flow/run/approval/scheduler binding already exists';
+    WHERE (flow_key=p_flow_key AND evidence_run_id=p_evidence_run_id)
+      OR approval_id=p_approval_id
+      OR (scheduler_job_name=p_scheduler_job_name AND flow_key!=p_flow_key))=0
+    AS 'flow/run or approval already exists, or scheduler is bound to another flow';
 
   INSERT INTO
     `pacific-plating-282708.sap_integration_v3.v3_scenario_activation_approval`
@@ -243,9 +244,11 @@ BEGIN
     AS 'Scheduler prestate is incomplete';
   ASSERT (SELECT COUNT(*)
     FROM `pacific-plating-282708.sap_integration_v3.v3_scenario_activation_ledger`
-    WHERE activation_id=p_activation_id OR flow_key=p_flow_key
-      OR scheduler_job_name=JSON_VALUE(p_scheduler_resource_json,'$.name'))=0
-    AS 'Activation ID, flow, or scheduler already claimed';
+    WHERE activation_id=p_activation_id
+      OR ((flow_key=p_flow_key
+        OR scheduler_job_name=JSON_VALUE(p_scheduler_resource_json,'$.name'))
+        AND activation_state!='ROLLED_BACK'))=0
+    AS 'Activation ID already exists, or flow/scheduler has a non-rolled-back claim';
 
   BEGIN TRANSACTION;
   INSERT INTO `pacific-plating-282708.sap_integration_v3.v3_scenario_scheduler_prestate`
