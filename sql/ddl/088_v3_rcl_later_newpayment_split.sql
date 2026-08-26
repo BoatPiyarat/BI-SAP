@@ -68,6 +68,13 @@ BEGIN
     COUNT(DISTINCT IFNULL(invoice_no,'<NULL>')) invoice_values
   FROM _event_raw GROUP BY pipeline_run_id,order_item,period,charge_id;
 
+  CREATE TEMP TABLE _identity AS
+  SELECT pipeline_run_id,order_item,period,charge_id,invoice_no,
+    COUNT(*) identity_rows,ANY_VALUE(payload_hash) identity_payload_hash
+  FROM `pacific-plating-282708.sap_integration_v3.v3_unit5_payload_identity`
+  WHERE pipeline_run_id=p_pipeline_run_id AND file_role='NEWPAYMENT'
+  GROUP BY pipeline_run_id,order_item,period,charge_id,invoice_no;
+
   CREATE TEMP TABLE _event_shape AS
   SELECT e.*,co.current_human_id IS NOT NULL is_credit_shell,
     (SELECT COUNT(*) FROM `pacific-plating-282708.sap_integration_v3.v3_unit3_mapping_hold` h
@@ -80,21 +87,16 @@ BEGIN
       WHERE d.pipeline_run_id=e.pipeline_run_id AND d.order_item=e.order_item) item_detail_hold_rows,
     (SELECT COUNT(*) FROM `pacific-plating-282708.sap_integration_v3.v3_unit5_balance_hold` b
       WHERE b.pipeline_run_id=e.pipeline_run_id AND b.order_item=e.order_item) item_balance_hold_rows,
-    (SELECT COUNT(*) FROM `pacific-plating-282708.sap_integration_v3.v3_unit5_payload_identity` i
-      WHERE i.pipeline_run_id=e.pipeline_run_id AND i.file_role='NEWPAYMENT'
-        AND i.order_item=e.order_item AND i.period=e.period AND i.charge_id=e.charge_id
-        AND i.invoice_no=e.invoice_no) identity_rows,
+    COALESCE(i.identity_rows,0) identity_rows,
     (SELECT COUNT(*) FROM _upstream p WHERE p.OrderItem=e.order_item
       AND SAFE_CAST(p.Period AS INT64)=e.period AND p.InvoiceNo=e.invoice_no) target_payload_rows,
     (SELECT COUNT(*) FROM _upstream p WHERE p.OrderItem=e.order_item
       AND SAFE_CAST(p.Period AS INT64)=e.period AND p.InvoiceNo=e.invoice_no
-      AND TO_HEX(SHA256(TO_JSON_STRING(p)))=(SELECT ANY_VALUE(i.payload_hash)
-        FROM `pacific-plating-282708.sap_integration_v3.v3_unit5_payload_identity` i
-        WHERE i.pipeline_run_id=e.pipeline_run_id AND i.file_role='NEWPAYMENT'
-          AND i.order_item=e.order_item AND i.period=e.period AND i.charge_id=e.charge_id
-          AND i.invoice_no=e.invoice_no)) hash_match_rows
+      AND TO_HEX(SHA256(TO_JSON_STRING(p)))=i.identity_payload_hash) hash_match_rows
   FROM _event e LEFT JOIN (SELECT DISTINCT current_human_id
-    FROM `pacific-plating-282708.careos.cancelled_change_orders`) co ON co.current_human_id=e.order_id;
+    FROM `pacific-plating-282708.careos.cancelled_change_orders`) co ON co.current_human_id=e.order_id
+  LEFT JOIN _identity i ON i.pipeline_run_id=e.pipeline_run_id AND i.order_item=e.order_item
+    AND i.period=e.period AND i.charge_id=e.charge_id AND i.invoice_no=e.invoice_no;
 
   CREATE TEMP TABLE _preclassified AS
   SELECT *,CASE
