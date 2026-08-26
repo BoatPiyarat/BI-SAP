@@ -181,16 +181,20 @@ BEGIN
       FROM UNNEST(JSON_QUERY_ARRAY(p_scheduler_inventory_evidence,'$.jobs')) j
       GROUP BY name HAVING COUNT(*)>1))=0
     AS 'Only complete generator-produced production inventory can be registered';
-  INSERT INTO `pacific-plating-282708.sap_integration_v3.v3_scheduler_inventory_evidence`
+  BEGIN TRANSACTION;
+  MERGE `pacific-plating-282708.sap_integration_v3.v3_scheduler_inventory_evidence` t
+  USING (SELECT p_evidence_id evidence_id,p_scheduler_inventory_evidence inventory,
+    TO_HEX(SHA256(TO_JSON_STRING(p_scheduler_inventory_evidence))) evidence_sha256,
+    p_registered_by registered_by,CURRENT_TIMESTAMP() registered_at,
+    p_verification_reference verification_reference) s
+  ON t.evidence_id=s.evidence_id
+  WHEN NOT MATCHED THEN INSERT
     (evidence_id,scheduler_inventory_evidence,evidence_sha256,registered_by,
       registered_at,verification_reference)
-  SELECT p_evidence_id,p_scheduler_inventory_evidence,
-    TO_HEX(SHA256(TO_JSON_STRING(p_scheduler_inventory_evidence))),
-    p_registered_by,CURRENT_TIMESTAMP(),p_verification_reference
-  WHERE NOT EXISTS (SELECT 1
-    FROM `pacific-plating-282708.sap_integration_v3.v3_scheduler_inventory_evidence`
-    WHERE evidence_id=p_evidence_id);
+  VALUES(s.evidence_id,s.inventory,s.evidence_sha256,s.registered_by,
+    s.registered_at,s.verification_reference);
   ASSERT @@row_count=1 AS 'Inventory evidence ID already exists';
+  COMMIT TRANSACTION;
 END;
 
 CREATE OR REPLACE PROCEDURE
