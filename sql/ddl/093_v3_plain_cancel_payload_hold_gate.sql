@@ -8,7 +8,8 @@ SELECT
   CAST(CompanyDB AS STRING) AS CompanyDB,
   CAST(U_OrderID AS STRING) AS OrderID,
   CAST(U_OrderItem AS STRING) AS OrderItem,
-  COALESCE(CAST(U_InvoiceNo AS STRING), '') AS InvoiceNo,
+  IF(LOWER(TransactionStatus) = 'pending', COALESCE(CAST(U_InvoiceNo AS STRING), ''),
+    CAST(U_InvoiceNo AS STRING)) AS InvoiceNo,
   CAST(OrderDate AS STRING) AS OrderDate,
   CAST(U_InsuredID AS STRING) AS InsuredID,
   CAST(U_Title AS STRING) AS Title,
@@ -26,43 +27,42 @@ SELECT
   CAST(EndorsementNo AS STRING) AS EndorsementNo,
   CAST(U_ChassisNo AS STRING) AS ChassisNo,
   CAST(U_LicensePlate AS STRING) AS LicensePlate,
-  FORMAT('%.2f', COALESCE(GrossPremium, 0)) AS GrossPremium,
-  FORMAT('%.2f', COALESCE(StampDuty, 0)) AS StampDuty,
-  FORMAT('%.2f', COALESCE(VAT, 0)) AS VAT,
-  FORMAT('%.2f', COALESCE(TotalPremium, 0)) AS TotalPremium,
-  FORMAT('%.2f', COALESCE(WHT, 0)) AS WHT,
-  FORMAT('%.2f', COALESCE(TotalEIR, 0)) AS TotalEIR,
-  FORMAT('%.2f', COALESCE(TotalSBT, 0)) AS TotalSBT,
-  FORMAT('%.2f', COALESCE(U_ProcessingFee, 0)) AS ProcessingFee,
-  FORMAT('%.2f', COALESCE(U_ProcessingFeeVat, 0)) AS ProcessingFeeVat,
-  FORMAT('%.2f', COALESCE(U_ShippingFee, 0)) AS ShippingFee,
-  FORMAT('%.2f', COALESCE(U_ShippingFeeVat, 0)) AS ShippingFeeVat,
-  FORMAT('%.2f', COALESCE(U_TotalAmount, 0)) AS TotalAmount,
-  FORMAT('%.2f', COALESCE(U_Discount, 0)) AS Discount,
+  FORMAT('%.2f', GrossPremium) AS GrossPremium,
+  FORMAT('%.2f', StampDuty) AS StampDuty,
+  FORMAT('%.2f', VAT) AS VAT,
+  FORMAT('%.2f', TotalPremium) AS TotalPremium,
+  FORMAT('%.2f', WHT) AS WHT,
+  FORMAT('%.2f', TotalEIR) AS TotalEIR,
+  FORMAT('%.2f', TotalSBT) AS TotalSBT,
+  FORMAT('%.2f', U_ProcessingFee) AS ProcessingFee,
+  FORMAT('%.2f', U_ProcessingFeeVat) AS ProcessingFeeVat,
+  FORMAT('%.2f', U_ShippingFee) AS ShippingFee,
+  FORMAT('%.2f', U_ShippingFeeVat) AS ShippingFeeVat,
+  FORMAT('%.2f', U_TotalAmount) AS TotalAmount,
+  FORMAT('%.2f', U_Discount) AS Discount,
   'Cancelled' AS TransactionStatus,
   CAST(U_SubmissionStatus AS STRING) AS SubmissionStatus,
   CAST(U_ApprovalStatus AS STRING) AS ApprovalStatus,
   CAST(U_PaymentStatus AS STRING) AS PaymentStatus,
   FORMAT('%.2f', COALESCE(ExpectedReceived, 0)) AS ExpectedReceived,
   FORMAT('%.2f', COALESCE(U_ActualReceived, 0)) AS ActualReceived,
-  FORMAT('%.2f', COALESCE(U_InterestThisPeriod, 0)) AS InterestThisPeriod,
-  FORMAT('%.2f', COALESCE(U_PrincipleThisPeriod, 0)) AS PrincipleThisPeriod,
-  FORMAT('%.2f', COALESCE(U_InterestEIRThisPeriod, 0)) AS InterestEIRThisPeriod,
-  FORMAT('%.2f', COALESCE(U_PrincipleEIRThisPeriod, 0)) AS PrincipleEIRThisPeriod,
-  COALESCE(CAST(PaymentDate AS STRING), '') AS PaymentDate,
+  FORMAT('%.2f', U_InterestThisPeriod) AS InterestThisPeriod,
+  FORMAT('%.2f', U_PrincipleThisPeriod) AS PrincipleThisPeriod,
+  FORMAT('%.2f', U_InterestEIRThisPeriod) AS InterestEIRThisPeriod,
+  FORMAT('%.2f', U_PrincipleEIRThisPeriod) AS PrincipleEIRThisPeriod,
+  IF(LOWER(TransactionStatus) = 'pending', COALESCE(CAST(PaymentDate AS STRING), ''),
+    CAST(PaymentDate AS STRING)) AS PaymentDate,
   CAST(U_Period AS STRING) AS Period,
   CAST(TotalPeriods AS STRING) AS TotalPeriods,
-  FORMAT('%.2f', COALESCE(PendingPayment, 0)) AS PendingPayment,
+  FORMAT('%.2f', PendingPayment) AS PendingPayment,
   IF(LOWER(TransactionStatus) = 'pending', '', COALESCE(CAST(PaymentMethod AS STRING), ''))
     AS PaymentMethod,
   IF(LOWER(TransactionStatus) = 'pending', '', COALESCE(CAST(PaymentChannel AS STRING), ''))
     AS PaymentChannel,
-  COALESCE(NULLIF(TRIM(CAST(ExpectedDate AS STRING)), ''),
-    NULLIF(TRIM(CAST(PaymentDate AS STRING)), ''),
-    NULLIF(TRIM(CAST(BatchRunDate AS STRING)), ''), '') AS ExpectedDate,
+  CAST(ExpectedDate AS STRING) AS ExpectedDate,
   CAST(RefOrder AS STRING) AS RefOrder,
-  FORMAT('%.2f', COALESCE(RefundAmountBeforeFee, 0)) AS RefundAmountBeforeFee,
-  FORMAT('%.2f', COALESCE(RefundAmountAfterFee, 0)) AS RefundAmountAfterFee,
+  FORMAT('%.2f', RefundAmountBeforeFee) AS RefundAmountBeforeFee,
+  FORMAT('%.2f', RefundAmountAfterFee) AS RefundAmountAfterFee,
   CAST(BillingAddress AS STRING) AS BillingAddress,
   CAST(BatchRunDate AS STRING) AS BatchRunDate
 FROM `pacific-plating-282708.sap_integration_v3.sap_mirror_state`;
@@ -155,6 +155,32 @@ BEGIN
     COUNTIF(LOWER(COALESCE(mirror.TransactionStatus, '')) NOT IN ('paid', 'pending'))
       AS invalid_predecessor_rows,
     COUNTIF(mirror.docs_considered > 1) AS multi_document_rows,
+    COUNTIF(EXISTS (
+      SELECT 1
+      FROM UNNEST([
+        STRUCT('GrossPremium' AS field_name, mirror.GrossPremium AS field_value),
+        STRUCT('StampDuty', mirror.StampDuty), STRUCT('VAT', mirror.VAT),
+        STRUCT('TotalPremium', mirror.TotalPremium), STRUCT('WHT', mirror.WHT),
+        STRUCT('TotalEIR', mirror.TotalEIR), STRUCT('TotalSBT', mirror.TotalSBT),
+        STRUCT('ProcessingFee', mirror.U_ProcessingFee),
+        STRUCT('ProcessingFeeVat', mirror.U_ProcessingFeeVat),
+        STRUCT('ShippingFee', mirror.U_ShippingFee),
+        STRUCT('ShippingFeeVat', mirror.U_ShippingFeeVat),
+        STRUCT('TotalAmount', mirror.U_TotalAmount), STRUCT('Discount', mirror.U_Discount),
+        STRUCT('ExpectedReceived', COALESCE(mirror.ExpectedReceived, 0)),
+        STRUCT('ActualReceived', COALESCE(mirror.U_ActualReceived, 0)),
+        STRUCT('InterestThisPeriod', mirror.U_InterestThisPeriod),
+        STRUCT('PrincipleThisPeriod', mirror.U_PrincipleThisPeriod),
+        STRUCT('InterestEIRThisPeriod', mirror.U_InterestEIRThisPeriod),
+        STRUCT('PrincipleEIRThisPeriod', mirror.U_PrincipleEIRThisPeriod),
+        STRUCT('PendingPayment', mirror.PendingPayment),
+        STRUCT('RefundAmountBeforeFee', mirror.RefundAmountBeforeFee),
+        STRUCT('RefundAmountAfterFee', mirror.RefundAmountAfterFee)
+      ]) AS numeric_field
+      WHERE numeric_field.field_value IS NULL
+        OR IS_NAN(numeric_field.field_value) OR IS_INF(numeric_field.field_value)
+        OR ROUND(numeric_field.field_value, 2) != numeric_field.field_value
+    )) AS invalid_numeric_source_rows,
     COUNTIF(LOWER(mirror.TransactionStatus) = 'pending'
       AND paid.payment_event_rows > 0) AS paid_transition_required_rows
   FROM _item AS item
@@ -180,12 +206,43 @@ BEGIN
       OR (payload.PaymentDate != '' AND (LENGTH(payload.PaymentDate) != 8
         OR SAFE.PARSE_DATE('%d%m%Y', payload.PaymentDate) IS NULL))) AS invalid_date_rows,
     COUNTIF(payload.TransactionStatus != 'Cancelled') AS invalid_target_status_rows,
+    COUNTIF(
+      NULLIF(TRIM(payload.CompanyDB), '') IS NULL
+      OR NULLIF(TRIM(payload.OrderID), '') IS NULL
+      OR NULLIF(TRIM(payload.OrderItem), '') IS NULL
+      OR NULLIF(TRIM(payload.InsurerCode), '') IS NULL
+      OR NULLIF(TRIM(payload.FirstName), '') IS NULL
+      OR NULLIF(TRIM(payload.InsuranceGroup), '') IS NULL
+      OR NULLIF(TRIM(payload.InsuranceProduct), '') IS NULL
+      OR NULLIF(TRIM(payload.ProductType), '') IS NULL
+      OR NULLIF(TRIM(payload.PolicyType), '') IS NULL
+      OR NULLIF(TRIM(payload.PolicyDate), '') IS NULL
+      OR NULLIF(TRIM(payload.PolicyNo), '') IS NULL
+      OR NULLIF(TRIM(payload.ExpectedDate), '') IS NULL
+      OR NULLIF(TRIM(payload.BillingAddress), '') IS NULL
+      OR NULLIF(TRIM(payload.BatchRunDate), '') IS NULL
+      OR UPPER(TRIM(payload.CompanyDB)) = 'NULL'
+      OR UPPER(TRIM(payload.OrderID)) = 'NULL'
+      OR UPPER(TRIM(payload.OrderItem)) = 'NULL'
+      OR UPPER(TRIM(payload.PolicyNo)) = 'NULL'
+      OR (payload.PaymentDate != '' AND UPPER(TRIM(payload.PaymentDate)) = 'NULL')
+      OR (payload.InvoiceNo != '' AND UPPER(TRIM(payload.InvoiceNo)) = 'NULL')
+      OR (payload.PaymentMethod != '' AND UPPER(TRIM(payload.PaymentMethod)) = 'NULL')
+      OR (payload.PaymentChannel != '' AND UPPER(TRIM(payload.PaymentChannel)) = 'NULL')
+      OR (LOWER(mirror.TransactionStatus) = 'paid' AND (
+        NULLIF(TRIM(payload.InvoiceNo), '') IS NULL
+        OR NULLIF(TRIM(payload.PaymentDate), '') IS NULL
+        OR NULLIF(TRIM(payload.PaymentMethod), '') IS NULL
+        OR NULLIF(TRIM(payload.PaymentChannel), '') IS NULL))
+    ) AS invalid_required_rows,
     TO_HEX(SHA256(COALESCE(STRING_AGG(TO_HEX(SHA256(TO_JSON_STRING(payload))), ''
       ORDER BY SAFE_CAST(payload.Period AS INT64), TO_JSON_STRING(payload)), '<EMPTY>')))
       AS payload_set_hash
   FROM _item AS item
   LEFT JOIN `pacific-plating-282708.sap_integration_v3.vw_v3_plain_cancel_payload_source` AS payload
     ON payload.OrderItem = item.order_item
+  LEFT JOIN `pacific-plating-282708.sap_integration_v3.sap_mirror_state` AS mirror
+    ON mirror.U_OrderItem = payload.OrderItem AND mirror.U_Period = SAFE_CAST(payload.Period AS INT64)
   GROUP BY item.order_item;
 
   CREATE TEMP TABLE _classified AS
@@ -199,11 +256,13 @@ BEGIN
         OR mirror.period_count != mirror.total_periods OR mirror.mirror_rows != mirror.total_periods
         THEN 'HOLD_PLAIN_CANCEL_SPINE_INVALID'
       WHEN mirror.invalid_predecessor_rows > 0 THEN 'HOLD_PLAIN_CANCEL_PREDECESSOR_STATUS_INVALID'
+      WHEN mirror.invalid_numeric_source_rows > 0 THEN 'HOLD_PLAIN_CANCEL_NUMERIC_SOURCE_INVALID'
       WHEN mirror.paid_transition_required_rows > 0
         THEN 'HOLD_PLAIN_CANCEL_PAID_TRANSITION_REQUIRED'
       WHEN payload.payload_row_count != mirror.mirror_rows
         THEN 'HOLD_PLAIN_CANCEL_PAYLOAD_CARDINALITY'
       WHEN payload.null_value_rows > 0 THEN 'HOLD_PLAIN_CANCEL_REQUIRED_VALUE_INVALID'
+      WHEN payload.invalid_required_rows > 0 THEN 'HOLD_PLAIN_CANCEL_REQUIRED_VALUE_INVALID'
       WHEN payload.invalid_date_rows > 0 THEN 'HOLD_PLAIN_CANCEL_DATE_INVALID'
       WHEN payload.invalid_target_status_rows > 0 THEN 'HOLD_PLAIN_CANCEL_STATUS_INVALID'
       ELSE 'HOLD_PLAIN_CANCEL_FA_BATCH_APPROVAL_REQUIRED'
