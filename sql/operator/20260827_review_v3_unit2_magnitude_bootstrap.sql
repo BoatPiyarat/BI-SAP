@@ -29,9 +29,9 @@ ASSERT (SELECT COUNT(*)
 
 CREATE TEMP TABLE distribution AS
 WITH event_cells AS (
-  SELECT pipeline_run_id,'PAYMENT_EVENT' AS population_grain,outcome,
-    COALESCE(flow,'UNKNOWN') AS flow,
-    IF(flow='ONETIME','RCB','RCL') AS business_unit,
+  SELECT e.pipeline_run_id,'PAYMENT_EVENT' AS population_grain,e.outcome,
+    COALESCE(e.flow,'UNKNOWN') AS flow,
+    IF(e.flow='ONETIME','RCB','RCL') AS business_unit,
     COALESCE(s.expected_status,'UNKNOWN') AS expected_status,
     COUNT(*) AS records,COUNT(DISTINCT e.order_id) AS distinct_orders,
     SUM(e.charge_amount) AS amount_satang
