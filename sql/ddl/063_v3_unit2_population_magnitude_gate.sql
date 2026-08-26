@@ -48,7 +48,7 @@ CREATE TABLE IF NOT EXISTS `pacific-plating-282708.sap_integration_v3.v3_unit2_m
   baseline_orders INT64 NOT NULL,
   current_amount_satang INT64,
   baseline_amount_satang INT64,
-  breach_reasons ARRAY<STRING> NOT NULL,
+  breach_reasons ARRAY<STRING>,
   evaluated_at TIMESTAMP NOT NULL
 )
 PARTITION BY DATE(evaluated_at)
