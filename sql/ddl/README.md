@@ -120,3 +120,7 @@ Operator-only Scenario 1 fallback artifacts (no GCS write):
   split; reuses the reviewed SAP-mirror projection with the exact change-order status literal,
   enforces one link, complete Paid/Pending spine, first-period Paid, and Paid-before-cancel, then
   holds every item with zero interface output pending Aware/FA approval. Apply after 089 and 093.
+- `095_v3_payment_adjustment_intent_hold_gate.sql` — source-only additional-payment/correction
+  dependency gate; binds immutable Unit-5 adjustment-shaped payloads to exact event identities and
+  a durable human-approved intent registry, while retaining every row in zero-interface release
+  approval holds. Apply after 051 and 074.
