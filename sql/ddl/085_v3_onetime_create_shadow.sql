@@ -100,6 +100,7 @@ BEGIN
     WHEN event_rows!=1 OR order_id_values!=1 OR invoice_values!=1
       THEN 'HOLD_DUPLICATE_OR_CONFLICTING_EVENT'
     WHEN sap_rows>0 THEN 'HOLD_SAP_ALREADY_EXISTS'
+    WHEN co.current_human_id IS NOT NULL THEN 'HOLD_WRONG_SCENARIO_CREDITSHELL'
     WHEN mapping_hold_rows>0 THEN 'HOLD_UNIT3_MAPPING'
     WHEN raw_rows!=1 THEN IF(raw_rows=0,'HOLD_MISSING_RAW_CHARGE','HOLD_DUPLICATE_RAW_CHARGE')
     WHEN staged_rows!=1 THEN IF(staged_rows=0,'HOLD_MISSING_STAGED_EVENT','HOLD_DUPLICATE_STAGED_EVENT')
@@ -114,7 +115,6 @@ BEGIN
     WHEN exact_rows=0 THEN 'HOLD_MISSING_EXACT_SOURCE_VARIANT'
     WHEN exact_rows!=1 THEN 'HOLD_AMBIGUOUS_EXACT_SOURCE_VARIANT'
     WHEN one_period_rows!=1 THEN 'HOLD_ONETIME_SOURCE_NOT_ONE_PERIOD'
-    WHEN co.current_human_id IS NOT NULL THEN 'HOLD_WRONG_SCENARIO_CREDITSHELL'
     ELSE 'READY' END readiness_code
   FROM _shape s LEFT JOIN (SELECT DISTINCT current_human_id
     FROM `pacific-plating-282708.careos.cancelled_change_orders`) co
@@ -231,13 +231,16 @@ BEGIN
   SELECT CAST(CompanyDB AS STRING) CompanyDB,CAST(order_id AS STRING) OrderID,
     CAST(order_item AS STRING) OrderItem,CAST(invoice_no AS STRING) InvoiceNo,
     CAST(OrderDate AS STRING) OrderDate,COALESCE(NULLIF(TRIM(CAST(InsuredID AS STRING)),''),'-') InsuredID,
-    CAST(Title AS STRING) Title,CAST(FirstName AS STRING) FirstName,CAST(LastName AS STRING) LastName,
+    IFNULL(CAST(Title AS STRING),'') Title,CAST(FirstName AS STRING) FirstName,
+    IFNULL(CAST(LastName AS STRING),'') LastName,
     CAST(InsurerCode AS STRING) InsurerCode,CAST(resolved_insurance_group AS STRING) InsuranceGroup,
     CAST(InsuranceType AS STRING) InsuranceType,CAST(InsuranceProduct AS STRING) InsuranceProduct,
     CAST(ProductType AS STRING) ProductType,CAST(PolicyType AS STRING) PolicyType,
     CAST(Endorse AS STRING) Endorse,CAST(PolicyDate AS STRING) PolicyDate,CAST(PolicyNo AS STRING) PolicyNo,
-    CAST(EndorsementNo AS STRING) EndorsementNo,CAST(ChassisNo AS STRING) ChassisNo,
-    CAST(LicensePlate AS STRING) LicensePlate,FORMAT('%.2f',SAFE_CAST(GrossPremium AS FLOAT64)) GrossPremium,
+    IFNULL(CAST(EndorsementNo AS STRING),'') EndorsementNo,
+    IFNULL(CAST(ChassisNo AS STRING),'') ChassisNo,
+    IFNULL(CAST(LicensePlate AS STRING),'') LicensePlate,
+    FORMAT('%.2f',SAFE_CAST(GrossPremium AS FLOAT64)) GrossPremium,
     FORMAT('%.2f',SAFE_CAST(StampDuty AS FLOAT64)) StampDuty,FORMAT('%.2f',SAFE_CAST(VAT AS FLOAT64)) VAT,
     FORMAT('%.2f',SAFE_CAST(TotalPremium AS FLOAT64)) TotalPremium,
     FORMAT('%.2f',SAFE_CAST(WHT AS FLOAT64)) WHT,FORMAT('%.2f',SAFE_CAST(TotalEIR AS FLOAT64)) TotalEIR,
@@ -262,7 +265,7 @@ BEGIN
       WHEN raw_payment_date<v_period_start THEN v_period_start ELSE raw_payment_date END) PaymentDate,
     '1' Period,'1' TotalPeriods,CAST(PendingPayment AS STRING) PendingPayment,
     CAST(sap_payment_method AS STRING) PaymentMethod,CAST(sap_payment_channel AS STRING) PaymentChannel,
-    CAST(ExpectedDate AS STRING) ExpectedDate,CAST(RefOrder AS STRING) RefOrder,
+    CAST(ExpectedDate AS STRING) ExpectedDate,IFNULL(CAST(RefOrder AS STRING),'') RefOrder,
     FORMAT('%.2f',SAFE_CAST(RefundAmountBeforeFee AS FLOAT64)) RefundAmountBeforeFee,
     FORMAT('%.2f',SAFE_CAST(RefundAmountAfterFee AS FLOAT64)) RefundAmountAfterFee,
     CAST(BillingAddress AS STRING) BillingAddress,FORMAT_DATE('%d%m%Y',v_batch_date) BatchRunDate
@@ -402,7 +405,7 @@ BEGIN
   SELECT p_pipeline_run_id AS pipeline_run_id,@@current_job_id AS build_job_id,
     (SELECT COUNT(*) FROM _all_hold) AS held_count,
     (SELECT COUNT(*) FROM _identity_snapshot) AS ready_count,
-    CURRENT_TIMESTAMP() AS completed_at,'DDL085_MANIFEST_V1' AS build_contract;
+    CURRENT_TIMESTAMP() AS completed_at,'DDL085_MANIFEST_V2' AS build_contract;
 
   BEGIN TRANSACTION;
   DELETE FROM `pacific-plating-282708.sap_integration_v3.v3_onetime_create_hold`

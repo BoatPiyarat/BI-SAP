@@ -24,7 +24,7 @@ BEGIN
   SELECT build_job_id, completed_at AS build_completed_at, held_count, ready_count
   FROM `pacific-plating-282708.sap_integration_v3.v3_onetime_create_build_manifest`
   WHERE pipeline_run_id = p_pipeline_run_id
-    AND build_contract = 'DDL085_MANIFEST_V1';
+    AND build_contract = 'DDL085_MANIFEST_V2';
 
   ASSERT (SELECT COUNT(*) FROM _build_proof) = 1
     AS 'Scenario 1 snapshot requires exactly one atomic DDL085 build manifest';
