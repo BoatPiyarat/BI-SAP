@@ -58,7 +58,7 @@ CREATE TABLE IF NOT EXISTS
     order_id STRING,
     order_item STRING,
     period INT64,
-    charge_id STRING NOT NULL,
+    charge_id STRING,
     invoice_no STRING,
     unit2_outcome STRING NOT NULL,
     hold_code STRING NOT NULL,
@@ -169,9 +169,9 @@ BEGIN
     o.source_payload_rows,
     o.exact_source_payload_rows
   FROM _event AS e
-  JOIN _schedule_shape AS s USING (charge_id)
-  JOIN _raw_shape AS r USING (charge_id)
-  JOIN _source_shape AS o USING (charge_id);
+  JOIN _schedule_shape AS s ON s.charge_id IS NOT DISTINCT FROM e.charge_id
+  JOIN _raw_shape AS r ON r.charge_id IS NOT DISTINCT FROM e.charge_id
+  JOIN _source_shape AS o ON o.charge_id IS NOT DISTINCT FROM e.charge_id;
 
   CREATE TEMP TABLE _classified AS
   SELECT
