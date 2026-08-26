@@ -187,8 +187,8 @@ BEGIN
     CURRENT_TIMESTAMP() AS classified_at
   FROM _candidate AS candidate
   JOIN _mirror_shape AS mirror
-    ON mirror.order_item = candidate.OrderItem
-    AND mirror.period = SAFE_CAST(candidate.Period AS INT64)
+    ON mirror.order_item IS NOT DISTINCT FROM candidate.OrderItem
+    AND mirror.period IS NOT DISTINCT FROM SAFE_CAST(candidate.Period AS INT64)
   LEFT JOIN _identity_shape AS identity
     ON identity.pipeline_run_id = p_pipeline_run_id
     AND identity.order_item = candidate.OrderItem
