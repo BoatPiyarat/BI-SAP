@@ -108,3 +108,7 @@ Operator-only Scenario 1 fallback artifacts (no GCS write):
   Unit-2 `RCL_CMI` payment event, proves the one-period compulsory route and exact 56-column source
   variant, then retains it in a payment-mapping approval hold with zero interface rows. Apply after
   012, 050, and 051.
+- `092_v3_edc_onetime_hold_gate.sql` — source-only `CREDIT_CARD_INSTALLMENT` ONETIME/EDC split;
+  projects the exact 56-column event-bound source, conserves Unit-2 events, recognizes only the
+  confirmed EDC/KASIKORN → `RCB-EDC-KBANK` mapping, and holds every row with zero interface output.
+  Apply after 050, 051, 052, and 057.
