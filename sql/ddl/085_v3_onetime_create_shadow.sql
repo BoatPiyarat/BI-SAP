@@ -20,6 +20,17 @@ CREATE TABLE IF NOT EXISTS `pacific-plating-282708.sap_integration_v3.v3_onetime
   payload_hash STRING NOT NULL,built_at TIMESTAMP NOT NULL
 );
 
+CREATE TABLE IF NOT EXISTS
+  `pacific-plating-282708.sap_integration_v3.v3_onetime_create_build_manifest` (
+    pipeline_run_id STRING NOT NULL,
+    build_job_id STRING NOT NULL,
+    held_count INT64 NOT NULL,
+    ready_count INT64 NOT NULL,
+    completed_at TIMESTAMP NOT NULL,
+    build_contract STRING NOT NULL
+  )
+CLUSTER BY pipeline_run_id;
+
 CREATE OR REPLACE PROCEDURE
   `pacific-plating-282708.sap_integration_v3.sp_build_v3_onetime_create_shadow`(
     p_pipeline_run_id STRING)
@@ -409,5 +420,12 @@ BEGIN
   SELECT * FROM _identity_snapshot;
   ASSERT @@row_count=(SELECT COUNT(*) FROM _identity_snapshot)
     AS 'ONETIME CREATE audit identity publication failed';
+  DELETE FROM `pacific-plating-282708.sap_integration_v3.v3_onetime_create_build_manifest`
+  WHERE pipeline_run_id=p_pipeline_run_id;
+  INSERT INTO `pacific-plating-282708.sap_integration_v3.v3_onetime_create_build_manifest`
+  SELECT p_pipeline_run_id,@@current_job_id,
+    (SELECT COUNT(*) FROM _all_hold),(SELECT COUNT(*) FROM _identity_snapshot),
+    CURRENT_TIMESTAMP(),'DDL085_MANIFEST_V1';
+  ASSERT @@row_count=1 AS 'ONETIME CREATE build manifest publication failed';
   COMMIT TRANSACTION;
 END;

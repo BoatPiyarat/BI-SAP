@@ -15,47 +15,26 @@ CLUSTER BY pipeline_run_id;
 
 CREATE OR REPLACE PROCEDURE
   `pacific-plating-282708.sap_integration_v3.sp_snapshot_v3_onetime_create_activation`(
-    p_pipeline_run_id STRING,
-    p_build_job_id STRING
+    p_pipeline_run_id STRING
   )
 BEGIN
-  DECLARE v_build_start_date DATE;
-  DECLARE v_build_end_date DATE;
-
   ASSERT NULLIF(TRIM(p_pipeline_run_id), '') IS NOT NULL AS 'pipeline_run_id is required';
-  ASSERT NULLIF(TRIM(p_build_job_id), '') IS NOT NULL AS 'build_job_id is required';
 
   CREATE TEMP TABLE _build_proof AS
-  SELECT creation_time AS build_started_at, end_time AS build_completed_at
-  FROM `pacific-plating-282708.region-asia-southeast1`.INFORMATION_SCHEMA.JOBS_BY_PROJECT
-  WHERE job_id = p_build_job_id
-    AND state = 'DONE'
-    AND error_result IS NULL
-    AND statement_type = 'CALL'
-    AND REGEXP_REPLACE(query, r'\s+', '') = FORMAT(
-      "CALL`pacific-plating-282708.sap_integration_v3.sp_build_v3_onetime_create_shadow`('%s');",
-      REPLACE(p_pipeline_run_id, "'", "''")
-    );
+  SELECT build_job_id, completed_at AS build_completed_at, held_count, ready_count
+  FROM `pacific-plating-282708.sap_integration_v3.v3_onetime_create_build_manifest`
+  WHERE pipeline_run_id = p_pipeline_run_id
+    AND build_contract = 'DDL085_MANIFEST_V1';
 
   ASSERT (SELECT COUNT(*) FROM _build_proof) = 1
-    AS 'Scenario 1 snapshot requires the exact successful build CALL job';
-
-  SET (v_build_start_date, v_build_end_date) = (
-    SELECT AS STRUCT DATE(build_started_at), DATE(build_completed_at)
-    FROM _build_proof
-  );
+    AS 'Scenario 1 snapshot requires exactly one atomic DDL085 build manifest';
 
   CREATE TEMP TABLE _summary AS
   SELECT p_pipeline_run_id AS pipeline_run_id,
-    p_build_job_id AS build_job_id,
+    (SELECT build_job_id FROM _build_proof) AS build_job_id,
     (SELECT build_completed_at FROM _build_proof) AS build_completed_at,
-    (SELECT COUNT(*)
-      FROM `pacific-plating-282708.sap_integration_v3.v3_onetime_create_hold`
-      WHERE _PARTITIONDATE BETWEEN v_build_start_date AND v_build_end_date
-        AND pipeline_run_id = p_pipeline_run_id) AS held_count,
-    (SELECT COUNT(*)
-      FROM `pacific-plating-282708.sap_integration_v3.v3_onetime_create_identity`
-      WHERE pipeline_run_id = p_pipeline_run_id) AS ready_count,
+    (SELECT held_count FROM _build_proof) AS held_count,
+    (SELECT ready_count FROM _build_proof) AS ready_count,
     CURRENT_TIMESTAMP() AS evidence_at;
 
   BEGIN TRANSACTION;
