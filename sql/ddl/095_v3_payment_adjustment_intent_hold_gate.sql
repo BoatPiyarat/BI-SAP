@@ -27,8 +27,9 @@ CLUSTER BY pipeline_run_id, order_item, period, charge_id;
 CREATE TABLE IF NOT EXISTS
   `pacific-plating-282708.sap_integration_v3.v3_payment_adjustment_intent_hold` (
     pipeline_run_id STRING NOT NULL,
-    order_item STRING NOT NULL,
-    period INT64 NOT NULL,
+    order_item STRING,
+    period INT64,
+    candidate_ordinal INT64 NOT NULL,
     charge_id STRING,
     invoice_no STRING,
     hold_code STRING NOT NULL,
@@ -109,32 +110,34 @@ BEGIN
     AS 'adjustment source hash differs from immutable manifest';
 
   CREATE TEMP TABLE _candidate AS
-  SELECT payload.*, TO_HEX(SHA256(TO_JSON_STRING(payload))) AS candidate_payload_hash
+  SELECT payload.*,
+    TO_HEX(SHA256(TO_JSON_STRING(payload))) AS candidate_payload_hash,
+    ROW_NUMBER() OVER (ORDER BY payload.OrderItem, SAFE_CAST(payload.Period AS INT64),
+      payload.InvoiceNo, TO_JSON_STRING(payload)) AS candidate_ordinal,
+    COUNT(*) OVER (PARTITION BY payload.OrderItem, SAFE_CAST(payload.Period AS INT64),
+      payload.InvoiceNo, TO_HEX(SHA256(TO_JSON_STRING(payload)))) AS candidate_identity_rows
   FROM _snapshot AS payload
   WHERE SAFE_CAST(payload.ExpectedReceived AS NUMERIC) = 0
-    AND SAFE_CAST(payload.ActualReceived AS NUMERIC) != 0
-    AND EXISTS (SELECT 1
-      FROM `pacific-plating-282708.sap_integration_v3.sap_mirror_state` AS mirror
-      WHERE mirror.U_OrderItem = payload.OrderItem
-        AND mirror.U_Period = SAFE_CAST(payload.Period AS INT64));
+    AND SAFE_CAST(payload.ActualReceived AS NUMERIC) != 0;
 
-  CREATE TEMP TABLE _identity AS
+  CREATE TEMP TABLE _mirror_shape AS
   SELECT
-    candidate.OrderItem AS order_item,
-    SAFE_CAST(candidate.Period AS INT64) AS period,
-    candidate.InvoiceNo AS invoice_no,
-    candidate.candidate_payload_hash AS payload_hash,
+    candidate.order_item, candidate.period,
+    COUNT(mirror.U_OrderItem) AS mirror_rows
+  FROM (SELECT DISTINCT OrderItem AS order_item, SAFE_CAST(Period AS INT64) AS period
+    FROM _candidate) AS candidate
+  LEFT JOIN `pacific-plating-282708.sap_integration_v3.sap_mirror_state` AS mirror
+    ON mirror.U_OrderItem = candidate.order_item AND mirror.U_Period = candidate.period
+  GROUP BY order_item, period;
+
+  CREATE TEMP TABLE _identity_shape AS
+  SELECT pipeline_run_id, order_item, period, invoice_no, payload_hash,
     COUNT(identity.charge_id) AS identity_rows,
     COUNT(DISTINCT identity.charge_id) AS charge_id_count,
     ANY_VALUE(identity.charge_id HAVING MIN identity.charge_id) AS charge_id
-  FROM _candidate AS candidate
-  LEFT JOIN `pacific-plating-282708.sap_integration_v3.v3_unit5_payload_identity` AS identity
-    ON identity.pipeline_run_id = p_pipeline_run_id AND identity.file_role = 'NEWPAYMENT'
-    AND identity.order_item = candidate.OrderItem
-    AND identity.period = SAFE_CAST(candidate.Period AS INT64)
-    AND identity.invoice_no IS NOT DISTINCT FROM candidate.InvoiceNo
-    AND identity.payload_hash = candidate.candidate_payload_hash
-  GROUP BY order_item, period, invoice_no, payload_hash;
+  FROM `pacific-plating-282708.sap_integration_v3.v3_unit5_payload_identity` AS identity
+  WHERE pipeline_run_id = p_pipeline_run_id AND file_role = 'NEWPAYMENT'
+  GROUP BY pipeline_run_id, order_item, period, invoice_no, payload_hash;
 
   CREATE TEMP TABLE _marker AS
   SELECT
@@ -154,14 +157,22 @@ BEGIN
   CREATE TEMP TABLE _classified AS
   SELECT
     p_pipeline_run_id AS pipeline_run_id,
-    identity.order_item,
-    identity.period,
+    candidate.OrderItem AS order_item,
+    SAFE_CAST(candidate.Period AS INT64) AS period,
+    candidate.candidate_ordinal,
     identity.charge_id,
-    identity.invoice_no,
+    candidate.InvoiceNo AS invoice_no,
     CASE
-      WHEN identity.period IS NULL OR NULLIF(TRIM(identity.order_item), '') IS NULL
+      WHEN SAFE_CAST(candidate.Period AS INT64) IS NULL
+        OR NULLIF(TRIM(candidate.OrderItem), '') IS NULL
+        OR NULLIF(TRIM(candidate.InvoiceNo), '') IS NULL
+        OR UPPER(TRIM(candidate.InvoiceNo)) = 'NULL'
         THEN 'HOLD_ADJUSTMENT_PAYLOAD_IDENTITY_INVALID'
-      WHEN identity.identity_rows = 0 THEN 'HOLD_ADJUSTMENT_EVENT_IDENTITY_MISSING'
+      WHEN candidate.candidate_identity_rows != 1
+        THEN 'HOLD_ADJUSTMENT_DUPLICATE_PHYSICAL_PAYLOAD'
+      WHEN mirror.mirror_rows = 0 THEN 'HOLD_ADJUSTMENT_SAP_PERIOD_MISSING'
+      WHEN mirror.mirror_rows != 1 THEN 'HOLD_ADJUSTMENT_SAP_PERIOD_AMBIGUOUS'
+      WHEN IFNULL(identity.identity_rows, 0) = 0 THEN 'HOLD_ADJUSTMENT_EVENT_IDENTITY_MISSING'
       WHEN identity.identity_rows != 1 OR identity.charge_id_count != 1
         THEN 'HOLD_ADJUSTMENT_EVENT_IDENTITY_AMBIGUOUS'
       WHEN IFNULL(marker.approved_marker_count, 0) = 0
@@ -172,13 +183,22 @@ BEGIN
     END AS hold_code,
     IFNULL(marker.approved_marker_count, 0) AS approved_marker_count,
     marker.approved_intent,
-    identity.payload_hash,
+    candidate.candidate_payload_hash AS payload_hash,
     CURRENT_TIMESTAMP() AS classified_at
-  FROM _identity AS identity
+  FROM _candidate AS candidate
+  JOIN _mirror_shape AS mirror
+    ON mirror.order_item = candidate.OrderItem
+    AND mirror.period = SAFE_CAST(candidate.Period AS INT64)
+  LEFT JOIN _identity_shape AS identity
+    ON identity.pipeline_run_id = p_pipeline_run_id
+    AND identity.order_item = candidate.OrderItem
+    AND identity.period = SAFE_CAST(candidate.Period AS INT64)
+    AND identity.invoice_no IS NOT DISTINCT FROM candidate.InvoiceNo
+    AND identity.payload_hash = candidate.candidate_payload_hash
   LEFT JOIN _marker AS marker
     ON marker.pipeline_run_id = p_pipeline_run_id
-    AND marker.order_item = identity.order_item
-    AND marker.period = identity.period
+    AND marker.order_item = candidate.OrderItem
+    AND marker.period = SAFE_CAST(candidate.Period AS INT64)
     AND marker.charge_id = identity.charge_id;
 
   ASSERT (SELECT COUNT(*) FROM _classified) = (SELECT COUNT(*) FROM _candidate)
