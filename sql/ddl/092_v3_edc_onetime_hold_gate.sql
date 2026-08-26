@@ -133,6 +133,7 @@ BEGIN
   SELECT
     charge_id,
     COUNT(*) AS staged_rows,
+    COUNTIF(payment_option = 'CREDIT_CARD_INSTALLMENT') AS cci_rows,
     COUNT(DISTINCT payment_option) AS payment_option_count,
     ANY_VALUE(payment_option HAVING MIN payment_option) AS payment_option,
     ANY_VALUE(payment_method_source HAVING MIN payment_method_source) AS payment_method_source,
@@ -153,6 +154,7 @@ BEGIN
   SELECT
     unit2.*,
     staged.staged_rows,
+    staged.cci_rows,
     staged.payment_option_count,
     staged.payment_option,
     staged.payment_method_source,
@@ -170,7 +172,7 @@ BEGIN
     ON item.order_item IS NOT DISTINCT FROM unit2.order_item
   WHERE unit2.pipeline_run_id = p_pipeline_run_id
     AND unit2.flow = 'ONETIME'
-    AND staged.payment_option = 'CREDIT_CARD_INSTALLMENT';
+    AND staged.cci_rows > 0;
 
   CREATE TEMP TABLE _schedule_shape AS
   SELECT
@@ -238,22 +240,24 @@ BEGIN
       WHEN outcome IS NULL THEN 'HOLD_EDC_UNIT2_OUTCOME_NULL'
       WHEN event_identity_rows != 1 OR charge_rows != 1
         THEN 'HOLD_EDC_DUPLICATE_OR_CONFLICTING_EVENT'
-      WHEN staged_rows != 1 OR payment_option_count != 1
+      WHEN staged_rows != 1 OR cci_rows != 1 OR payment_option_count != 1
         THEN 'HOLD_EDC_STAGED_EVENT_CARDINALITY'
       WHEN outcome = 'ACKNOWLEDGED' THEN 'NOT_ACTIONABLE_ALREADY_ACKNOWLEDGED'
       WHEN outcome != 'READY_CREATE_OR_PAYMENT' THEN CONCAT('HOLD_UNIT2_', outcome)
       WHEN NULLIF(TRIM(order_id), '') IS NULL OR NULLIF(TRIM(order_item), '') IS NULL
         OR period IS NULL OR NULLIF(TRIM(charge_id), '') IS NULL
         OR NULLIF(TRIM(invoice_no), '') IS NULL THEN 'HOLD_EDC_EVENT_IDENTITY_INVALID'
-      WHEN item_rows != 1 OR product_count != 1 THEN 'HOLD_EDC_PRODUCT_SCOPE_AMBIGUOUS'
+      WHEN item_rows IS DISTINCT FROM 1 OR product_count IS DISTINCT FROM 1
+        THEN 'HOLD_EDC_PRODUCT_SCOPE_AMBIGUOUS'
       WHEN schedule_rows != 1 OR exact_schedule_rows != 1 THEN 'HOLD_EDC_ONETIME_ROUTE_INVALID'
       WHEN exact_payload_rows = 0 THEN 'HOLD_EDC_56_SOURCE_MISSING'
       WHEN exact_payload_rows != 1 THEN 'HOLD_EDC_56_SOURCE_AMBIGUOUS'
+      WHEN product_scope != 'MOTOR' THEN 'HOLD_EDC_PRODUCT_SCOPE_MAPPING_REQUIRED'
       WHEN payment_method_source = 'EDC' AND payment_channel_source = 'KASIKORN'
         AND mapping_rows != 1 THEN 'HOLD_EDC_KBANK_REGISTRY_INVALID'
-      WHEN payment_method_source != 'EDC' OR payment_channel_source != 'KASIKORN'
+      WHEN payment_method_source IS DISTINCT FROM 'EDC'
+        OR payment_channel_source IS DISTINCT FROM 'KASIKORN'
         THEN 'HOLD_EDC_BANK_OR_METHOD_APPROVAL_REQUIRED'
-      WHEN product_scope != 'MOTOR' THEN 'HOLD_EDC_PRODUCT_SCOPE_MAPPING_REQUIRED'
       WHEN sap_payment_method IS DISTINCT FROM 'EDC EDC'
         OR sap_payment_channel IS DISTINCT FROM 'RCB-EDC-KBANK'
         THEN 'HOLD_EDC_KBANK_LITERAL_INVALID'
