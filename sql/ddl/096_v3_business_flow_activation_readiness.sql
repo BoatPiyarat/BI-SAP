@@ -19,6 +19,9 @@ CREATE OR REPLACE PROCEDURE
     p_build_job_id STRING
   )
 BEGIN
+  DECLARE v_build_start_date DATE;
+  DECLARE v_build_end_date DATE;
+
   ASSERT NULLIF(TRIM(p_pipeline_run_id), '') IS NOT NULL AS 'pipeline_run_id is required';
   ASSERT NULLIF(TRIM(p_build_job_id), '') IS NOT NULL AS 'build_job_id is required';
 
@@ -37,15 +40,18 @@ BEGIN
   ASSERT (SELECT COUNT(*) FROM _build_proof) = 1
     AS 'Scenario 1 snapshot requires the exact successful build CALL job';
 
+  SET (v_build_start_date, v_build_end_date) = (
+    SELECT AS STRUCT DATE(build_started_at), DATE(build_completed_at)
+    FROM _build_proof
+  );
+
   CREATE TEMP TABLE _summary AS
   SELECT p_pipeline_run_id AS pipeline_run_id,
     p_build_job_id AS build_job_id,
     (SELECT build_completed_at FROM _build_proof) AS build_completed_at,
     (SELECT COUNT(*)
       FROM `pacific-plating-282708.sap_integration_v3.v3_onetime_create_hold`
-      WHERE _PARTITIONDATE BETWEEN
-          (SELECT DATE(build_started_at) FROM _build_proof)
-          AND (SELECT DATE(build_completed_at) FROM _build_proof)
+      WHERE _PARTITIONDATE BETWEEN v_build_start_date AND v_build_end_date
         AND pipeline_run_id = p_pipeline_run_id) AS held_count,
     (SELECT COUNT(*)
       FROM `pacific-plating-282708.sap_integration_v3.v3_onetime_create_identity`
