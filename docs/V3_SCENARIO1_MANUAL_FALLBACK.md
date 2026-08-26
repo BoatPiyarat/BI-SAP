@@ -23,11 +23,11 @@ procedure call for the exact pipeline run. It does not authorize an automated GC
    precondition values passed to the marker, plus each resulting immutable generation and CRC32C.
    A normal overwrite/copy command is prohibited. Retain the run ID, commit, operator, timestamp,
    local hash, object metadata, and exact upload commands in the delivery evidence.
-5. **Current fail-closed gate:** do not upload this Scenario 1 file yet. The deployed
-   `sp_mark_v3_exact_delivery` in DDL 062 is hard-coded to `file_role='NEWPAYMENT'` and cannot safely
-   register `CREATE_ONETIME`. A separately reviewed Scenario 1 archive/manifest marker must first be
-   deployed and must prove exact identity/hash bijection. Reusing DDL 062 would create false evidence.
-6. After that marker is deployed, a human with current session authority may copy the exact reviewed
+5. Use only the deployed Scenario 1 marker
+   `sp_mark_v3_onetime_create_manual_delivery`; never reuse `sp_mark_v3_exact_delivery` from DDL 062,
+   which is hard-coded to `file_role='NEWPAYMENT'`. The Scenario 1 marker refuses zero rows, schema
+   drift, byte/hash mismatch, held identities, replays, or missing create-only attestations.
+6. A human with current session authority may copy the exact reviewed
    archive generation to `gs://interface-file/RCB_MOTOR/<the exact filename>` using create-only
    generation semantics. Record source/destination URI, generation, size, CRC32C, SHA-256, 56 header
    columns, data rows, event identities, production filename, and expected SAP result filename in

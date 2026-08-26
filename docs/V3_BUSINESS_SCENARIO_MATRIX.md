@@ -5,8 +5,8 @@ An unnumbered design or legacy view is not production authorization.
 
 | No. | Business scenario | Current production state | Release gate |
 |---:|---|---|---|
-| 1 | Ordinary RCB/ONETIME successful-payment CREATE | Routine deployed; fresh run built; zero released, all candidates held | Resolve named mapping/required-value holds before activation |
-| 2 | Ordinary RCL first-period paid CREATE, not Credit Shell | Hold-only source; corrected artifact awaits final Class-A review | Business approval of RCL CREATE InvoiceNo mapping plus 56-column builder |
+| 1 | Ordinary RCB/ONETIME successful-payment CREATE | Build and byte-bound manual-delivery marker deployed; fresh run built; zero released, all candidates held | Resolve named mapping/required-value holds before activation |
+| 2 | Ordinary RCL first-period paid CREATE, not Credit Shell | Hold-only gate deployed and fresh run reconciled; zero interface rows by design | Business approval of RCL CREATE InvoiceNo mapping plus 56-column builder |
 | 3 | Ordinary RCL later-period NEWPAYMENT, not Credit Shell | Routine deployed; fresh run built; zero released, all candidates held | Resolve named mapping/balance/contract holds before activation |
 | 4–9 | Number-to-flow mapping not defined in an authoritative repository source | Not deployable by scenario number | Boat must confirm numbering before implementation/deployment |
 
