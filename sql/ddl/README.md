@@ -97,3 +97,6 @@ Operator-only Scenario 1 fallback artifacts (no GCS write):
   interface rows until the RCL CREATE InvoiceNo transformation has separate business approval.
 - `088_v3_rcl_later_newpayment_split.sql` — source-only Scenario 3 split; isolates ordinary RCL
   later-period non-CreditShell events while retaining each released item’s complete SAP spine.
+- `089_v3_cancel_ownership_hold_gate.sql` — source-only reusable cancellation ownership gate;
+  classifies linked change-order versus unlinked plain-cancel populations into durable holds with
+  atomic replay protection and exactly zero interface rows. Apply after 036 and 025.

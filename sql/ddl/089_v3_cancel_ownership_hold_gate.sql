@@ -42,12 +42,10 @@ BEGIN
 
   CREATE TEMP TABLE _cancelled_items AS
   SELECT
-    o.human_id AS order_id,
-    i.human_id AS order_item
-  FROM `pacific-plating-282708.careos.careos_order_items` AS i
-  JOIN `pacific-plating-282708.careos.careos_orders` AS o
-    ON o.id = i.order_id
-  WHERE i.is_cancelled IS TRUE OR i.cancel_time IS NOT NULL;
+    order_id,
+    order_item
+  FROM `pacific-plating-282708.sap_integration_v3.stg_order_dim`
+  WHERE is_cancelled_effective IS TRUE;
 
   ASSERT NOT EXISTS (
     SELECT order_item FROM _cancelled_items GROUP BY order_item HAVING COUNT(*) != 1
@@ -129,27 +127,42 @@ BEGIN
   ) AS 'classifier produced duplicate order_item rows';
 
   BEGIN TRANSACTION;
+    MERGE `pacific-plating-282708.sap_integration_v3.v3_cancel_ownership_summary` AS target
+    USING (
+      SELECT
+        p_run_id AS run_id,
+        COUNT(*) AS cancelled_item_count,
+        COUNTIF(ownership_lane = 'LINKED_CHANGE_ORDER') AS linked_change_order_count,
+        COUNTIF(ownership_lane = 'UNLINKED_PLAIN_CANCEL') AS unlinked_plain_cancel_count,
+        COUNT(*) AS classified_item_count,
+        0 AS interface_row_count,
+        'HOLD_ONLY_ZERO_INTERFACE_ROWS' AS gate_status,
+        CURRENT_TIMESTAMP() AS built_at
+      FROM _classified
+    ) AS source
+    ON target.run_id = source.run_id
+    WHEN NOT MATCHED THEN INSERT ROW;
+
+    ASSERT @@row_count = 1 AS 'run_id claim failed or already exists';
+
     INSERT INTO `pacific-plating-282708.sap_integration_v3.v3_cancel_ownership_hold`
     SELECT * FROM _classified;
 
-    INSERT INTO `pacific-plating-282708.sap_integration_v3.v3_cancel_ownership_summary`
-    SELECT
-      p_run_id,
-      COUNT(*),
-      COUNTIF(ownership_lane = 'LINKED_CHANGE_ORDER'),
-      COUNTIF(ownership_lane = 'UNLINKED_PLAIN_CANCEL'),
-      COUNT(*),
-      0,
-      'HOLD_ONLY_ZERO_INTERFACE_ROWS',
-      CURRENT_TIMESTAMP()
-    FROM _classified;
-  COMMIT TRANSACTION;
+    ASSERT @@row_count = (SELECT COUNT(*) FROM _classified)
+      AS 'hold insert cardinality mismatch';
 
-  ASSERT (
-    SELECT classified_item_count = cancelled_item_count
-      AND linked_change_order_count + unlinked_plain_cancel_count = cancelled_item_count
-      AND interface_row_count = 0
-    FROM `pacific-plating-282708.sap_integration_v3.v3_cancel_ownership_summary`
-    WHERE run_id = p_run_id
-  ) AS 'published hold-only conservation failed';
+    ASSERT (
+      SELECT classified_item_count = cancelled_item_count
+        AND linked_change_order_count + unlinked_plain_cancel_count = cancelled_item_count
+        AND interface_row_count = 0
+      FROM `pacific-plating-282708.sap_integration_v3.v3_cancel_ownership_summary`
+      WHERE run_id = p_run_id
+    ) AS 'published hold-only conservation failed';
+
+    ASSERT (
+      SELECT COUNT(*)
+      FROM `pacific-plating-282708.sap_integration_v3.v3_cancel_ownership_hold`
+      WHERE run_id = p_run_id
+    ) = (SELECT COUNT(*) FROM _classified) AS 'published hold detail count mismatch';
+  COMMIT TRANSACTION;
 END;
