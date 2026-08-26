@@ -398,6 +398,12 @@ BEGIN
     (SELECT COUNT(*) FROM _validated_ready)+(SELECT COUNT(*) FROM _all_hold)
     AS 'ONETIME CREATE every canonical identity must end ready or held';
 
+  CREATE TEMP TABLE _build_manifest AS
+  SELECT p_pipeline_run_id AS pipeline_run_id,@@current_job_id AS build_job_id,
+    (SELECT COUNT(*) FROM _all_hold) AS held_count,
+    (SELECT COUNT(*) FROM _identity_snapshot) AS ready_count,
+    CURRENT_TIMESTAMP() AS completed_at,'DDL085_MANIFEST_V1' AS build_contract;
+
   BEGIN TRANSACTION;
   DELETE FROM `pacific-plating-282708.sap_integration_v3.v3_onetime_create_hold`
   WHERE pipeline_run_id=p_pipeline_run_id;
@@ -420,12 +426,11 @@ BEGIN
   SELECT * FROM _identity_snapshot;
   ASSERT @@row_count=(SELECT COUNT(*) FROM _identity_snapshot)
     AS 'ONETIME CREATE audit identity publication failed';
-  DELETE FROM `pacific-plating-282708.sap_integration_v3.v3_onetime_create_build_manifest`
-  WHERE pipeline_run_id=p_pipeline_run_id;
-  INSERT INTO `pacific-plating-282708.sap_integration_v3.v3_onetime_create_build_manifest`
-  SELECT p_pipeline_run_id,@@current_job_id,
-    (SELECT COUNT(*) FROM _all_hold),(SELECT COUNT(*) FROM _identity_snapshot),
-    CURRENT_TIMESTAMP(),'DDL085_MANIFEST_V1';
-  ASSERT @@row_count=1 AS 'ONETIME CREATE build manifest publication failed';
+  MERGE `pacific-plating-282708.sap_integration_v3.v3_onetime_create_build_manifest` AS target
+  USING _build_manifest AS source
+  ON target.pipeline_run_id=source.pipeline_run_id
+  WHEN NOT MATCHED THEN INSERT ROW;
+  ASSERT @@row_count=1
+    AS 'ONETIME CREATE pipeline_run_id already completed; replay refused';
   COMMIT TRANSACTION;
 END;
