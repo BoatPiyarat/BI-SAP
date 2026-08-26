@@ -114,5 +114,9 @@ Operator-only Scenario 1 fallback artifacts (no GCS write):
   Apply after 050, 051, 052, and 057.
 - `093_v3_plain_cancel_payload_hold_gate.sql` — source-only unlinked plain-cancellation split;
   mirrors the SAP winner into the exact 56-column contract, applies confirmed Pending-row rules,
-  checks Paid-before-cancel and provisional SAP resolution, and holds every item with zero
+  checks Paid-before-cancel and records confirmed multi-document resolution evidence, and holds every item with zero
   interface output pending FA batch approval. Apply after 050, 051, and 089.
+- `094_v3_change_order_cancel_payload_hold_gate.sql` — source-only linked change-order cancellation
+  split; reuses the reviewed SAP-mirror projection with the exact change-order status literal,
+  enforces one link, complete Paid/Pending spine, first-period Paid, and Paid-before-cancel, then
+  holds every item with zero interface output pending Aware/FA approval. Apply after 089 and 093.
