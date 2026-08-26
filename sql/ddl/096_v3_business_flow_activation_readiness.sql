@@ -23,7 +23,7 @@ BEGIN
   ASSERT NULLIF(TRIM(p_build_job_id), '') IS NOT NULL AS 'build_job_id is required';
 
   CREATE TEMP TABLE _build_proof AS
-  SELECT end_time AS build_completed_at
+  SELECT creation_time AS build_started_at, end_time AS build_completed_at
   FROM `pacific-plating-282708.region-asia-southeast1`.INFORMATION_SCHEMA.JOBS_BY_PROJECT
   WHERE job_id = p_build_job_id
     AND state = 'DONE'
@@ -43,7 +43,10 @@ BEGIN
     (SELECT build_completed_at FROM _build_proof) AS build_completed_at,
     (SELECT COUNT(*)
       FROM `pacific-plating-282708.sap_integration_v3.v3_onetime_create_hold`
-      WHERE pipeline_run_id = p_pipeline_run_id) AS held_count,
+      WHERE _PARTITIONDATE BETWEEN
+          (SELECT DATE(build_started_at) FROM _build_proof)
+          AND (SELECT DATE(build_completed_at) FROM _build_proof)
+        AND pipeline_run_id = p_pipeline_run_id) AS held_count,
     (SELECT COUNT(*)
       FROM `pacific-plating-282708.sap_integration_v3.v3_onetime_create_identity`
       WHERE pipeline_run_id = p_pipeline_run_id) AS ready_count,
