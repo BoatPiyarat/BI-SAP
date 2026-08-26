@@ -29,8 +29,10 @@ BEGIN
     AND state = 'DONE'
     AND error_result IS NULL
     AND statement_type = 'CALL'
-    AND CONTAINS_SUBSTR(query, 'sp_build_v3_onetime_create_shadow')
-    AND CONTAINS_SUBSTR(query, p_pipeline_run_id);
+    AND REGEXP_REPLACE(query, r'\s+', '') = FORMAT(
+      "CALL`pacific-plating-282708.sap_integration_v3.sp_build_v3_onetime_create_shadow`('%s');",
+      REPLACE(p_pipeline_run_id, "'", "''")
+    );
 
   ASSERT (SELECT COUNT(*) FROM _build_proof) = 1
     AS 'Scenario 1 snapshot requires the exact successful build CALL job';
