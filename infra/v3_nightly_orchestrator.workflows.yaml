@@ -576,20 +576,32 @@ count_export_runs_for_pipeline:
   params: [project, run_id, alert_topic]
   steps:
     - count_exports:
-        call: googleapis.bigquery.v2.jobs.query
-        args:
-          projectId: ${project}
-          body:
-            query: "SELECT COUNT(DISTINCT a.export_run_id) FROM `pacific-plating-282708.sap_integration_v3.export_archive` a JOIN `pacific-plating-282708.sap_integration_v3.v3_unit5_payload_identity` i ON i.order_item=a.order_item AND i.period=a.period AND i.charge_id=a.charge_id AND i.payload_hash=a.payload_hash WHERE i.pipeline_run_id=@run_id"
-            useLegacySql: false
-            location: "asia-southeast1"
-            maximumBytesBilled: "21474836480"
-            parameterMode: "NAMED"
-            queryParameters:
-              - name: "run_id"
-                parameterType: { type: "STRING" }
-                parameterValue: { value: '${run_id}' }
-        result: export_count_query
+        try:
+          call: googleapis.bigquery.v2.jobs.query
+          args:
+            projectId: ${project}
+            body:
+              query: "SELECT COUNT(DISTINCT a.export_run_id) FROM `pacific-plating-282708.sap_integration_v3.export_archive` a JOIN `pacific-plating-282708.sap_integration_v3.v3_unit5_payload_identity` i ON i.order_item=a.order_item AND i.period=a.period AND i.charge_id=a.charge_id AND i.payload_hash=a.payload_hash WHERE i.pipeline_run_id=@run_id"
+              useLegacySql: false
+              location: "asia-southeast1"
+              maximumBytesBilled: "21474836480"
+              parameterMode: "NAMED"
+              queryParameters:
+                - name: "run_id"
+                  parameterType: { type: "STRING" }
+                  parameterValue: { value: '${run_id}' }
+          result: export_count_query
+        except:
+          as: e
+          steps:
+            - fail_query:
+                call: fail_closed
+                args:
+                  project: ${project}
+                  run_id: ${run_id}
+                  alert_topic: ${alert_topic}
+                  step: "DAILY_COMPLETENESS_EXPORT_COUNT"
+                  reason: '${"export-run count query failed: " + json.encode_to_string(e)}'
     # Codex review docs/reviews/2026-08-11-28686d6-codex.md: this previously dereferenced rows[0]
     # without checking jobComplete or row shape, bypassing the required fail_closed contract on an
     # async/malformed result. Both gates now route through fail_closed like every other CALL step.
@@ -620,27 +632,69 @@ count_export_runs_for_pipeline:
                     alert_topic: ${alert_topic}
                     step: "DAILY_COMPLETENESS_EXPORT_COUNT"
                     reason: '${"export-run count query returned an unexpected row count: " + string(len(count_rows))}'
+    - read_fields:
+        assign:
+          - count_fields: ${default(map.get(count_rows[0], "f"), [])}
+    - require_one_field:
+        switch:
+          - condition: ${len(count_fields) != 1}
+            steps:
+              - fail_field_shape:
+                  call: fail_closed
+                  args:
+                    project: ${project}
+                    run_id: ${run_id}
+                    alert_topic: ${alert_topic}
+                    step: "DAILY_COMPLETENESS_EXPORT_COUNT"
+                    reason: '${"export-run count query returned an unexpected field count: " + string(len(count_fields))}'
+    - read_value:
+        assign:
+          - count_value_text: ${string(default(map.get(count_fields[0], "v"), ""))}
+    - require_nonnegative_integer:
+        switch:
+          - condition: ${count_value_text == "" or not text.match_regex(count_value_text, "^[0-9]+$")}
+            steps:
+              - fail_count_value:
+                  call: fail_closed
+                  args:
+                    project: ${project}
+                    run_id: ${run_id}
+                    alert_topic: ${alert_topic}
+                    step: "DAILY_COMPLETENESS_EXPORT_COUNT"
+                    reason: "export-run count query returned a NULL or non-integer count"
     - out:
-        return: ${int(count_rows[0].f[0].v)}
+        return: ${int(count_value_text)}
 
 derive_original_pipeline_run_id:
   params: [project, run_id, alert_topic, export_run_id]
   steps:
     - lookup:
-        call: googleapis.bigquery.v2.jobs.query
-        args:
-          projectId: ${project}
-          body:
-            query: "SELECT DISTINCT i.pipeline_run_id FROM `pacific-plating-282708.sap_integration_v3.export_archive` a JOIN `pacific-plating-282708.sap_integration_v3.v3_unit5_payload_identity` i ON i.order_item=a.order_item AND i.period=a.period AND i.charge_id=a.charge_id AND i.payload_hash=a.payload_hash WHERE a.export_run_id=@export_run_id"
-            useLegacySql: false
-            location: "asia-southeast1"
-            maximumBytesBilled: "21474836480"
-            parameterMode: "NAMED"
-            queryParameters:
-              - name: "export_run_id"
-                parameterType: { type: "STRING" }
-                parameterValue: { value: '${export_run_id}' }
-        result: origin_query
+        try:
+          call: googleapis.bigquery.v2.jobs.query
+          args:
+            projectId: ${project}
+            body:
+              query: "SELECT DISTINCT i.pipeline_run_id FROM `pacific-plating-282708.sap_integration_v3.export_archive` a JOIN `pacific-plating-282708.sap_integration_v3.v3_unit5_payload_identity` i ON i.order_item=a.order_item AND i.period=a.period AND i.charge_id=a.charge_id AND i.payload_hash=a.payload_hash WHERE a.export_run_id=@export_run_id"
+              useLegacySql: false
+              location: "asia-southeast1"
+              maximumBytesBilled: "21474836480"
+              parameterMode: "NAMED"
+              queryParameters:
+                - name: "export_run_id"
+                  parameterType: { type: "STRING" }
+                  parameterValue: { value: '${export_run_id}' }
+          result: origin_query
+        except:
+          as: e
+          steps:
+            - fail_query:
+                call: fail_closed
+                args:
+                  project: ${project}
+                  run_id: ${run_id}
+                  alert_topic: ${alert_topic}
+                  step: "DAILY_COMPLETENESS_ORIGIN_LOOKUP"
+                  reason: '${"original pipeline_run_id lookup query failed: " + json.encode_to_string(e)}'
     # Codex review docs/reviews/2026-08-11-28686d6-codex.md: cardinality was checked but
     # jobComplete was not, so an async/incomplete result could bypass fail_closed.
     - gate_complete:
@@ -670,8 +724,38 @@ derive_original_pipeline_run_id:
                     alert_topic: ${alert_topic}
                     step: "DAILY_COMPLETENESS_ORIGIN_LOOKUP"
                     reason: '${"expected exactly one original pipeline_run_id for export_run_id " + export_run_id + "; found " + string(len(origin_rows))}'
+    - read_fields:
+        assign:
+          - origin_fields: ${default(map.get(origin_rows[0], "f"), [])}
+    - require_one_field:
+        switch:
+          - condition: ${len(origin_fields) != 1}
+            steps:
+              - fail_field_shape:
+                  call: fail_closed
+                  args:
+                    project: ${project}
+                    run_id: ${run_id}
+                    alert_topic: ${alert_topic}
+                    step: "DAILY_COMPLETENESS_ORIGIN_LOOKUP"
+                    reason: '${"original pipeline_run_id lookup returned an unexpected field count: " + string(len(origin_fields))}'
+    - read_value:
+        assign:
+          - original_pipeline_run_id: ${string(default(map.get(origin_fields[0], "v"), ""))}
+    - require_nonblank_value:
+        switch:
+          - condition: ${original_pipeline_run_id == ""}
+            steps:
+              - fail_blank_origin:
+                  call: fail_closed
+                  args:
+                    project: ${project}
+                    run_id: ${run_id}
+                    alert_topic: ${alert_topic}
+                    step: "DAILY_COMPLETENESS_ORIGIN_LOOKUP"
+                    reason: "original pipeline_run_id lookup returned a NULL or blank value"
     - out:
-        return: ${origin_rows[0].f[0].v}
+        return: ${original_pipeline_run_id}
 
 # Exact-generation production promotion. Zero archive rows is a healthy no-file night. Any
 # ambiguous ledger/object or copy mismatch fails closed before DELIVERED is persisted.
