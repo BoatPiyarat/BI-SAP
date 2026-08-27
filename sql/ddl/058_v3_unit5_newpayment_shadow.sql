@@ -31,8 +31,21 @@ CREATE TABLE IF NOT EXISTS `pacific-plating-282708.sap_integration_v3.v3_unit5_n
 );
 
 CREATE TABLE IF NOT EXISTS
-  `pacific-plating-282708.sap_integration_v3.v3_unit5_newpayment_delivery_ready` AS
-SELECT * FROM `pacific-plating-282708.sap_integration_v3.v3_unit5_newpayment_ready` WHERE FALSE;
+  `pacific-plating-282708.sap_integration_v3.v3_unit5_newpayment_delivery_ready` (
+  CompanyDB STRING,OrderID STRING,OrderItem STRING,InvoiceNo STRING,OrderDate STRING,
+  InsuredID STRING,Title STRING,FirstName STRING,LastName STRING,InsurerCode STRING,
+  InsuranceGroup STRING,InsuranceType STRING,InsuranceProduct STRING,ProductType STRING,
+  PolicyType STRING,Endorse STRING,PolicyDate STRING,PolicyNo STRING,EndorsementNo STRING,
+  ChassisNo STRING,LicensePlate STRING,GrossPremium STRING,StampDuty STRING,VAT STRING,
+  TotalPremium STRING,WHT STRING,TotalEIR STRING,TotalSBT STRING,ProcessingFee STRING,
+  ProcessingFeeVat STRING,ShippingFee STRING,ShippingFeeVat STRING,TotalAmount STRING,
+  Discount STRING,TransactionStatus STRING,SubmissionStatus STRING,ApprovalStatus STRING,
+  PaymentStatus STRING,ExpectedReceived STRING,ActualReceived STRING,InterestThisPeriod STRING,
+  PrincipleThisPeriod STRING,InterestEIRThisPeriod STRING,PrincipleEIRThisPeriod STRING,
+  PaymentDate STRING,Period STRING,TotalPeriods STRING,PendingPayment STRING,PaymentMethod STRING,
+  PaymentChannel STRING,ExpectedDate STRING,RefOrder STRING,RefundAmountBeforeFee STRING,
+  RefundAmountAfterFee STRING,BillingAddress STRING,BatchRunDate STRING
+);
 
 CREATE TABLE IF NOT EXISTS
   `pacific-plating-282708.sap_integration_v3.v3_unit5_newpayment_snapshot_manifest` (
@@ -52,7 +65,7 @@ CREATE TABLE IF NOT EXISTS
   `pacific-plating-282708.sap_integration_v3.v3_unit5_candidate_required_hold` (
     pipeline_run_id STRING NOT NULL,order_item STRING NOT NULL,
     hold_code STRING NOT NULL,hold_reason STRING NOT NULL,
-    invalid_fields ARRAY<STRING> NOT NULL,invalid_period_rows INT64 NOT NULL,
+    invalid_fields ARRAY<STRING> NOT NULL,invalid_period_count INT64 NOT NULL,
     detected_at TIMESTAMP NOT NULL
   )
 PARTITION BY DATE(detected_at) CLUSTER BY pipeline_run_id,hold_code,order_item;
@@ -261,7 +274,16 @@ BEGIN
   -- Preserve every non-target period from the proven source contract and replace only the exact
   -- target period/invoice row with the newly resolved Paid event. One event is not one file row.
   CREATE TEMP TABLE _candidate AS
-  SELECT * FROM _candidate_target
+  SELECT CompanyDB,OrderID,OrderItem,InvoiceNo,OrderDate,InsuredID,Title,FirstName,LastName,
+    InsurerCode,InsuranceGroup,InsuranceType,InsuranceProduct,ProductType,PolicyType,Endorse,
+    PolicyDate,PolicyNo,EndorsementNo,ChassisNo,LicensePlate,GrossPremium,StampDuty,VAT,
+    TotalPremium,WHT,TotalEIR,TotalSBT,ProcessingFee,ProcessingFeeVat,ShippingFee,ShippingFeeVat,
+    TotalAmount,Discount,TransactionStatus,SubmissionStatus,ApprovalStatus,PaymentStatus,
+    ExpectedReceived,ActualReceived,InterestThisPeriod,PrincipleThisPeriod,
+    InterestEIRThisPeriod,PrincipleEIRThisPeriod,PaymentDate,Period,TotalPeriods,PendingPayment,
+    PaymentMethod,PaymentChannel,ExpectedDate,RefOrder,RefundAmountBeforeFee,
+    RefundAmountAfterFee,BillingAddress,BatchRunDate
+  FROM _candidate_target
   UNION ALL
   SELECT CAST(s.CompanyDB AS STRING),CAST(s.OrderID AS STRING),CAST(s.OrderItem AS STRING),
     CAST(IFNULL(s.InvoiceNo,'') AS STRING),CAST(s.OrderDate AS STRING),
@@ -295,64 +317,116 @@ BEGIN
     AND NOT EXISTS (SELECT 1 FROM _candidate_target t
       WHERE t.OrderItem=s.OrderItem AND SAFE_CAST(t.Period AS INT64)=s.Period);
 
-  ASSERT (SELECT COUNT(*) FROM (
+  ASSERT (SELECT COUNT(*) FROM _candidate WHERE NULLIF(TRIM(OrderItem),'') IS NULL)=0
+    AS 'Candidate with missing OrderItem cannot be quarantined durably';
+
+  CREATE TEMP TABLE _spine_invalid_item AS
+  SELECT OrderItem FROM (
     SELECT OrderItem,COUNT(DISTINCT SAFE_CAST(Period AS INT64)) period_n,
       MIN(SAFE_CAST(Period AS INT64)) first_period,MAX(SAFE_CAST(Period AS INT64)) last_period,
       COUNT(DISTINCT SAFE_CAST(TotalPeriods AS INT64)) total_value_n,
       MAX(SAFE_CAST(TotalPeriods AS INT64)) total_n
-    FROM _candidate GROUP BY OrderItem
-    HAVING total_value_n!=1 OR first_period!=1 OR last_period!=total_n OR period_n!=total_n))=0
-    AS 'NEWPAYMENT full period spine is incomplete';
-  ASSERT (SELECT COUNT(*) FROM _candidate
-    WHERE TransactionStatus NOT IN ('Paid','Pending') OR TransactionStatus IS NULL)=0
-    AS 'NEWPAYMENT status must be exactly Paid or Pending';
-  ASSERT (SELECT COUNT(*) FROM (
-    SELECT OrderItem,Period,IFNULL(InvoiceNo,''),COUNT(*) n FROM _candidate
-    GROUP BY 1,2,3 HAVING n!=1))=0 AS 'NEWPAYMENT full period spine has duplicate identities';
+    FROM _candidate GROUP BY OrderItem)
+  WHERE total_value_n!=1 OR first_period!=1 OR last_period!=total_n OR period_n!=total_n;
 
-  ASSERT (SELECT COUNT(*) FROM _candidate WHERE LENGTH(PolicyNo)>50)=0
-    AS 'POLICYNO_TOO_LONG in NEWPAYMENT candidate';
-  ASSERT (SELECT COUNT(*) FROM _candidate WHERE TransactionStatus='Paid'
-    AND (NULLIF(TRIM(InvoiceNo),'') IS NULL
-    OR NULLIF(TRIM(PaymentDate),'') IS NULL OR NULLIF(TRIM(PaymentMethod),'') IS NULL
-    OR NULLIF(TRIM(PaymentChannel),'') IS NULL))=0 AS 'Paid completeness failed';
-  -- Boat's item-level quarantine rule applies before publication: one invalid period holds the
-  -- complete OrderItem spine, while unrelated clean items continue. Do not normalize a required
-  -- business value to an empty string merely to make the interface assertion pass.
-  CREATE TEMP TABLE _candidate_required_hold AS
-  SELECT p_pipeline_run_id pipeline_run_id,c.OrderItem order_item,
-    'HOLD_SPINE_REQUIRED_VALUE_INVALID' hold_code,
-    'Required interface field contains SQL NULL or literal NULL' hold_reason,
-    ARRAY_AGG(DISTINCT field_name ORDER BY field_name) invalid_fields,
-    COUNT(DISTINCT SAFE_CAST(c.Period AS INT64)) invalid_period_rows,
-    CURRENT_TIMESTAMP() detected_at
+  -- Every item-level pre-export failure becomes a PII-safe issue. One issue quarantines the
+  -- complete OrderItem spine while unrelated clean items continue.
+  CREATE TEMP TABLE _candidate_validation_issue AS
+  SELECT c.OrderItem order_item,SAFE_CAST(c.Period AS INT64) period,
+    'SPINE_INCOMPLETE' rule_code,CAST(NULL AS STRING) field_name
+  FROM _candidate c JOIN _spine_invalid_item b USING(OrderItem)
+  UNION ALL
+  SELECT OrderItem,SAFE_CAST(Period AS INT64),'STATUS_INVALID','TransactionStatus'
+  FROM _candidate
+  WHERE TransactionStatus NOT IN ('Paid','Pending') OR TransactionStatus IS NULL
+  UNION ALL
+  SELECT OrderItem,SAFE_CAST(Period AS INT64),'DUPLICATE_PERIOD_INVOICE_IDENTITY',
+    CAST(NULL AS STRING)
+  FROM (
+    SELECT OrderItem,Period,IFNULL(InvoiceNo,'') invoice_no,COUNT(*) row_count
+    FROM _candidate GROUP BY 1,2,3 HAVING row_count!=1)
+  UNION ALL
+  SELECT OrderItem,SAFE_CAST(Period AS INT64),'POLICYNO_TOO_LONG','PolicyNo'
+  FROM _candidate WHERE LENGTH(PolicyNo)>50
+  UNION ALL
+  SELECT c.OrderItem,SAFE_CAST(c.Period AS INT64),'PAID_REQUIRED_FIELD_BLANK',f.field_name
+  FROM _candidate c
+  CROSS JOIN UNNEST([
+    STRUCT('InvoiceNo' AS field_name,c.InvoiceNo AS field_value),
+    STRUCT('PaymentDate' AS field_name,c.PaymentDate AS field_value),
+    STRUCT('PaymentMethod' AS field_name,c.PaymentMethod AS field_value),
+    STRUCT('PaymentChannel' AS field_name,c.PaymentChannel AS field_value)
+  ]) f
+  WHERE c.TransactionStatus='Paid' AND NULLIF(TRIM(f.field_value),'') IS NULL
+  UNION ALL
+  SELECT c.OrderItem,SAFE_CAST(c.Period AS INT64),'REQUIRED_VALUE_NULL_OR_LITERAL_NULL',field_name
   FROM _candidate c,
   UNNEST(REGEXP_EXTRACT_ALL(TO_JSON_STRING(c),r'"([^"]+)":(?:null|"NULL")')) field_name
-  GROUP BY c.OrderItem;
+  UNION ALL
+  SELECT OrderItem,SAFE_CAST(Period AS INT64),'DATE_FORMAT_INVALID',date_column
+  FROM _candidate
+  UNPIVOT(date_value FOR date_column IN (OrderDate,PolicyDate,ExpectedDate,BatchRunDate))
+  WHERE LENGTH(IFNULL(date_value,''))!=8 OR SAFE.PARSE_DATE('%d%m%Y',date_value) IS NULL
+  UNION ALL
+  SELECT OrderItem,SAFE_CAST(Period AS INT64),'PAYMENT_DATE_FORMAT_INVALID','PaymentDate'
+  FROM _candidate
+  WHERE NULLIF(PaymentDate,'') IS NOT NULL
+    AND (LENGTH(PaymentDate)!=8 OR SAFE.PARSE_DATE('%d%m%Y',PaymentDate) IS NULL);
+
+  CREATE TEMP TABLE _candidate_invalid_field AS
+  SELECT order_item,ARRAY_AGG(DISTINCT field_name ORDER BY field_name) invalid_fields
+  FROM _candidate_validation_issue
+  WHERE field_name IS NOT NULL
+  GROUP BY order_item;
+
+  CREATE TEMP TABLE _candidate_required_hold AS
+  SELECT p_pipeline_run_id pipeline_run_id,i.order_item,
+    'HOLD_SPINE_PREEXPORT_VALIDATION' hold_code,
+    STRING_AGG(DISTINCT i.rule_code,'|' ORDER BY i.rule_code) hold_reason,
+    IFNULL(ANY_VALUE(f.invalid_fields),ARRAY<STRING>[]) invalid_fields,
+    COUNT(DISTINCT i.period) invalid_period_count,
+    CURRENT_TIMESTAMP() detected_at
+  FROM _candidate_validation_issue i
+  LEFT JOIN _candidate_invalid_field f USING(order_item)
+  GROUP BY i.order_item;
   ASSERT (SELECT COUNT(*) FROM _candidate_required_hold WHERE order_item IS NULL)=0
-    AS 'Required-value hold cannot preserve a NULL OrderItem identity';
+    AS 'Validation hold cannot preserve a NULL OrderItem identity';
 
   CREATE TEMP TABLE _candidate_release AS
-  SELECT c.* FROM _candidate c
+  SELECT c.CompanyDB,c.OrderID,c.OrderItem,c.InvoiceNo,c.OrderDate,c.InsuredID,c.Title,c.FirstName,
+    c.LastName,c.InsurerCode,c.InsuranceGroup,c.InsuranceType,c.InsuranceProduct,c.ProductType,
+    c.PolicyType,c.Endorse,c.PolicyDate,c.PolicyNo,c.EndorsementNo,c.ChassisNo,c.LicensePlate,
+    c.GrossPremium,c.StampDuty,c.VAT,c.TotalPremium,c.WHT,c.TotalEIR,c.TotalSBT,c.ProcessingFee,
+    c.ProcessingFeeVat,c.ShippingFee,c.ShippingFeeVat,c.TotalAmount,c.Discount,
+    c.TransactionStatus,c.SubmissionStatus,c.ApprovalStatus,c.PaymentStatus,c.ExpectedReceived,
+    c.ActualReceived,c.InterestThisPeriod,c.PrincipleThisPeriod,c.InterestEIRThisPeriod,
+    c.PrincipleEIRThisPeriod,c.PaymentDate,c.Period,c.TotalPeriods,c.PendingPayment,c.PaymentMethod,
+    c.PaymentChannel,c.ExpectedDate,c.RefOrder,c.RefundAmountBeforeFee,c.RefundAmountAfterFee,
+    c.BillingAddress,c.BatchRunDate
+  FROM _candidate c
   WHERE NOT EXISTS (SELECT 1 FROM _candidate_required_hold h WHERE h.order_item=c.OrderItem);
+  ASSERT (SELECT COUNT(*) FROM _candidate_validation_issue i
+    WHERE EXISTS (SELECT 1 FROM _candidate_release r WHERE r.OrderItem=i.order_item))=0
+    AS 'Released NEWPAYMENT item still has a validation issue';
   ASSERT (SELECT COUNT(*) FROM _candidate_release c
     WHERE REGEXP_CONTAINS(TO_JSON_STRING(c),r':null|:"NULL"'))=0
     AS 'Released NEWPAYMENT candidate must not contain SQL NULL or literal NULL';
   ASSERT (SELECT COUNT(DISTINCT OrderItem) FROM _candidate)=
     (SELECT COUNT(DISTINCT OrderItem) FROM _candidate_release)
       +(SELECT COUNT(*) FROM _candidate_required_hold)
-    AS 'Released plus required-value-held NEWPAYMENT items do not conserve';
-  ASSERT (SELECT COUNT(*) FROM (
-    SELECT OrderItem,date_value FROM _candidate_release
-    UNPIVOT(date_value FOR date_column IN (OrderDate,PolicyDate,ExpectedDate,BatchRunDate))
-    WHERE LENGTH(IFNULL(date_value,''))!=8
-       OR SAFE.PARSE_DATE('%d%m%Y',date_value) IS NULL))=0 AS 'DATE_FORMAT_INVALID';
-  ASSERT (SELECT COUNT(*) FROM _candidate_release WHERE NULLIF(PaymentDate,'') IS NOT NULL
-    AND (LENGTH(PaymentDate)!=8 OR SAFE.PARSE_DATE('%d%m%Y',PaymentDate) IS NULL))=0
-    AS 'PAYMENT_DATE_FORMAT_INVALID';
+    AS 'Released plus validation-held NEWPAYMENT items do not conserve';
 
   CREATE TABLE IF NOT EXISTS `pacific-plating-282708.sap_integration_v3.v3_unit5_newpayment_ready` AS
-  SELECT * FROM _candidate WHERE FALSE;
+  SELECT CompanyDB,OrderID,OrderItem,InvoiceNo,OrderDate,InsuredID,Title,FirstName,LastName,
+    InsurerCode,InsuranceGroup,InsuranceType,InsuranceProduct,ProductType,PolicyType,Endorse,
+    PolicyDate,PolicyNo,EndorsementNo,ChassisNo,LicensePlate,GrossPremium,StampDuty,VAT,
+    TotalPremium,WHT,TotalEIR,TotalSBT,ProcessingFee,ProcessingFeeVat,ShippingFee,ShippingFeeVat,
+    TotalAmount,Discount,TransactionStatus,SubmissionStatus,ApprovalStatus,PaymentStatus,
+    ExpectedReceived,ActualReceived,InterestThisPeriod,PrincipleThisPeriod,
+    InterestEIRThisPeriod,PrincipleEIRThisPeriod,PaymentDate,Period,TotalPeriods,PendingPayment,
+    PaymentMethod,PaymentChannel,ExpectedDate,RefOrder,RefundAmountBeforeFee,
+    RefundAmountAfterFee,BillingAddress,BatchRunDate
+  FROM _candidate WHERE FALSE;
   ASSERT (SELECT COUNT(*) FROM `pacific-plating-282708.sap_integration_v3.INFORMATION_SCHEMA.COLUMNS`
     WHERE table_name='v3_unit5_newpayment_ready')=56 AS 'NEWPAYMENT payload must have exactly 56 columns';
   ASSERT (SELECT COUNT(*) FROM (
@@ -385,18 +459,43 @@ BEGIN
   DELETE FROM `pacific-plating-282708.sap_integration_v3.v3_unit5_candidate_required_hold`
   WHERE pipeline_run_id=p_pipeline_run_id;
   INSERT INTO `pacific-plating-282708.sap_integration_v3.v3_unit5_candidate_required_hold`
-  SELECT * FROM _candidate_required_hold;
+    (pipeline_run_id,order_item,hold_code,hold_reason,invalid_fields,invalid_period_count,detected_at)
+  SELECT pipeline_run_id,order_item,hold_code,hold_reason,invalid_fields,invalid_period_count,
+    detected_at
+  FROM _candidate_required_hold;
   ASSERT @@row_count=(SELECT COUNT(*) FROM _candidate_required_hold)
     AS 'Unit 5 required-value hold publication failed';
   DELETE FROM `pacific-plating-282708.sap_integration_v3.v3_unit5_installment_detail_hold`
   WHERE pipeline_run_id=p_pipeline_run_id;
   INSERT INTO `pacific-plating-282708.sap_integration_v3.v3_unit5_installment_detail_hold`
-  SELECT * FROM _installment_detail_hold;
+    (pipeline_run_id,order_item,order_id,transaction_id,snapshot_id,declared_total_periods,
+      number_of_installment,detail_row_count,rule_code,detected_at)
+  SELECT pipeline_run_id,order_item,order_id,transaction_id,snapshot_id,declared_total_periods,
+    number_of_installment,detail_row_count,rule_code,detected_at
+  FROM _installment_detail_hold;
   ASSERT @@row_count=(SELECT COUNT(*) FROM _installment_detail_hold)
     AS 'Unit 5 installment-detail hold publication failed';
   DELETE FROM `pacific-plating-282708.sap_integration_v3.v3_unit5_newpayment_ready` WHERE TRUE;
   INSERT INTO `pacific-plating-282708.sap_integration_v3.v3_unit5_newpayment_ready`
-  SELECT * FROM _candidate_release;
+    (CompanyDB,OrderID,OrderItem,InvoiceNo,OrderDate,InsuredID,Title,FirstName,LastName,InsurerCode,
+      InsuranceGroup,InsuranceType,InsuranceProduct,ProductType,PolicyType,Endorse,PolicyDate,
+      PolicyNo,EndorsementNo,ChassisNo,LicensePlate,GrossPremium,StampDuty,VAT,TotalPremium,WHT,
+      TotalEIR,TotalSBT,ProcessingFee,ProcessingFeeVat,ShippingFee,ShippingFeeVat,TotalAmount,
+      Discount,TransactionStatus,SubmissionStatus,ApprovalStatus,PaymentStatus,ExpectedReceived,
+      ActualReceived,InterestThisPeriod,PrincipleThisPeriod,InterestEIRThisPeriod,
+      PrincipleEIRThisPeriod,PaymentDate,Period,TotalPeriods,PendingPayment,PaymentMethod,
+      PaymentChannel,ExpectedDate,RefOrder,RefundAmountBeforeFee,RefundAmountAfterFee,
+      BillingAddress,BatchRunDate)
+  SELECT CompanyDB,OrderID,OrderItem,InvoiceNo,OrderDate,InsuredID,Title,FirstName,LastName,
+    InsurerCode,InsuranceGroup,InsuranceType,InsuranceProduct,ProductType,PolicyType,Endorse,
+    PolicyDate,PolicyNo,EndorsementNo,ChassisNo,LicensePlate,GrossPremium,StampDuty,VAT,
+    TotalPremium,WHT,TotalEIR,TotalSBT,ProcessingFee,ProcessingFeeVat,ShippingFee,ShippingFeeVat,
+    TotalAmount,Discount,TransactionStatus,SubmissionStatus,ApprovalStatus,PaymentStatus,
+    ExpectedReceived,ActualReceived,InterestThisPeriod,PrincipleThisPeriod,
+    InterestEIRThisPeriod,PrincipleEIRThisPeriod,PaymentDate,Period,TotalPeriods,PendingPayment,
+    PaymentMethod,PaymentChannel,ExpectedDate,RefOrder,RefundAmountBeforeFee,
+    RefundAmountAfterFee,BillingAddress,BatchRunDate
+  FROM _candidate_release;
   ASSERT @@row_count=(SELECT COUNT(*) FROM _candidate_release)
     AS 'Unit 5 candidate publication row conservation failed';
   DELETE FROM `pacific-plating-282708.sap_integration_v3.v3_unit5_payload_identity`
