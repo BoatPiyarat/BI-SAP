@@ -16,8 +16,9 @@ report = Path("sql/operator/20260827_report_fresh_v3_units1_5_pilot_v1.sql").rea
 for required in (
     "$ErrorActionPreference = 'Stop'",
     "Set-StrictMode -Version Latest",
-    "[Parameter(Mandatory)]",
     "[ValidatePattern('^Boat-chat-[A-Za-z0-9._-]+$')]",
+    "[switch]$PreflightOnly",
+    "-not $PreflightOnly -and [string]::IsNullOrWhiteSpace($ApprovalReference)",
     "$expectedRevision = '000011-291'",
     "build_v3_common_execution_census.ps1",
     "$v3Job.state -ne 'PAUSED'",
@@ -30,11 +31,14 @@ for required in (
     "--flags-file=$flagsFile",
     "'run', 'jobs', 'executions', 'list'",
     "$activeExtractExecutions.Count -ne 0",
-    "gcloud storage ls --recursive 'gs://rcb-bronze-zone/SAP/production_database/**'",
+    "'storage', 'objects', 'list', 'gs://rcb-bronze-zone'",
+    "'--filter=name~^SAP/production_database/', '--limit=1'",
     "$execution.state -ne 'SUCCEEDED'",
     "$execution.workflowRevisionId -ne $expectedRevision",
     "$runId.StartsWith('V3NIGHTLY-')",
     '"--parameter=run_id::$runId"',
+    "FRESH_UNITS1_5_PREFLIGHT=PASS",
+    "PREFLIGHT_EXECUTION_CREATED=false",
 ):
     assert required in runner, required
 

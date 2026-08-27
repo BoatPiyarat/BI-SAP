@@ -1,8 +1,8 @@
 [CmdletBinding()]
 param(
-  [Parameter(Mandatory)]
   [ValidatePattern('^Boat-chat-[A-Za-z0-9._-]+$')]
-  [string]$ApprovalReference
+  [string]$ApprovalReference,
+  [switch]$PreflightOnly
 )
 
 $ErrorActionPreference = 'Stop'
@@ -20,6 +20,10 @@ $safeQuery = 'scripts/bq_safe_query.sh'
 $preflightSql = 'sql/operator/20260827_preflight_fresh_v3_units1_5_pilot_v1.sql'
 $reportSql = 'sql/operator/20260827_report_fresh_v3_units1_5_pilot_v1.sql'
 $bash = 'C:\Program Files\Git\bin\bash.exe'
+
+if (-not $PreflightOnly -and [string]::IsNullOrWhiteSpace($ApprovalReference)) {
+  throw 'A Boat chat approval reference is mandatory for production execution'
+}
 
 function Invoke-GcloudJson {
   param([Parameter(Mandatory)] [string[]]$CommandArgs)
@@ -73,11 +77,11 @@ try {
   }
 
   $bronzeObjects = @(
-    & gcloud storage ls --recursive 'gs://rcb-bronze-zone/SAP/production_database/**'
+    Invoke-GcloudJson @(
+      'storage', 'objects', 'list', 'gs://rcb-bronze-zone',
+      '--filter=name~^SAP/production_database/', '--limit=1'
+    )
   )
-  if ($LASTEXITCODE -ne 0) {
-    throw 'Unable to census the exact SAP bronze data prefix'
-  }
   if ($bronzeObjects.Count -ne 0) {
     throw 'SAP bronze data prefix is not empty; refusing to take ownership of an existing batch'
   }
@@ -97,6 +101,13 @@ try {
   & $bash $safeQuery --project $project -f $preflightSql -- --location=$region
   if ($LASTEXITCODE -ne 0) {
     throw 'Exact Unit 2 pilot BigQuery preflight failed'
+  }
+
+  if ($PreflightOnly) {
+    Write-Output 'FRESH_UNITS1_5_PREFLIGHT=PASS'
+    Write-Output "PREFLIGHT_WORKFLOW_REVISION=$expectedRevision"
+    Write-Output 'PREFLIGHT_EXECUTION_CREATED=false'
+    return
   }
 
   $lowerBound = [DateTimeOffset]::UtcNow.ToString('o')
