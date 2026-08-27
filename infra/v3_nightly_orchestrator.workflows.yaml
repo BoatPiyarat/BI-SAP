@@ -56,6 +56,9 @@ main:
           # The caller supplies only the authenticated promoter URL. After exactly-one object
           # census, the workflow validates and persists the distinct production/SAP-result names.
           - promotion_service_url: ${default(map.get(args, "promotion_service_url"), "")}
+          # Explicit no-write entry used only to prove Workflows -> private Cloud Run permission.
+          # It exits before logs, extract, storage, BigQuery, delivery, or post-import work.
+          - permission_rehearsal_only: ${default(map.get(args, "permission_rehearsal_only"), false)}
           # A post-import execution must atomically bind its server-assigned identity before any
           # extract/load/mirror side effect. A duplicate execution exits without entering Unit 1.
           - post_import_log_id: ${default(map.get(args, "post_import_log_id"), "")}
@@ -63,6 +66,43 @@ main:
           - post_import_mode: ${post_import_log_id != "" or post_import_claim_token != ""}
           - workflow_execution_name: '${"projects/" + sys.get_env("GOOGLE_CLOUD_PROJECT_NUMBER") + "/locations/" + sys.get_env("GOOGLE_CLOUD_LOCATION") + "/workflows/" + sys.get_env("GOOGLE_CLOUD_WORKFLOW_ID") + "/executions/" + sys.get_env("GOOGLE_CLOUD_WORKFLOW_EXECUTION_ID")}'
           - pre_watermark: {}
+
+    - maybe_rehearse_promoter_permission:
+        switch:
+          - condition: ${permission_rehearsal_only}
+            steps:
+              - gate_permission_rehearsal_contract:
+                  switch:
+                    - condition: ${promotion_service_url != "https://sap-delivery-promoter-3uymtccdma-as.a.run.app" or post_import_log_id != "" or post_import_claim_token != ""}
+                      raise: "permission rehearsal requires the exact promoter URL and no post-import arguments"
+              - invoke_expected_invalid_probe:
+                  try:
+                    call: http.post
+                    args:
+                      url: '${promotion_service_url + "/promote"}'
+                      auth:
+                        type: OIDC
+                        audience: ${promotion_service_url}
+                      body: {}
+                    result: unexpected_rehearsal_success
+                  except:
+                    as: e
+                    steps:
+                      - inspect_rehearsal_rejection:
+                          assign:
+                            - rehearsal_http_code: ${default(map.get(e, "code"), 0)}
+                            - rehearsal_error_text: ${json.encode_to_string(default(map.get(e, "body"), {}))}
+                      - return_expected_validator_rejection:
+                          switch:
+                            - condition: '${rehearsal_http_code == 400 and text.match_regex(rehearsal_error_text, "missing required field: archive_bucket")}'
+                              return:
+                                permission_rehearsal: "PROMOTER_AUTH_REACHED_VALIDATOR"
+                                http_code: ${rehearsal_http_code}
+                                production_write_expected: false
+                      - raise_unexpected_rehearsal_failure:
+                          raise: '${"promoter permission rehearsal failed before expected validator response; HTTP " + string(rehearsal_http_code)}'
+              - reject_unexpected_rehearsal_success:
+                  raise: "invalid permission rehearsal unexpectedly succeeded"
 
     - maybe_bind_post_import_execution:
         switch:
