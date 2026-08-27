@@ -253,6 +253,10 @@ BEGIN
   CREATE TEMP TABLE _validation_hold AS
   SELECT OrderItem order_item,SAFE_CAST(Period AS INT64) period,InvoiceNo invoice_no,validation_code
   FROM _validated WHERE validation_code!='READY';
+  ASSERT (SELECT COUNT(*) FROM (
+    SELECT order_item,period,invoice_no,COUNT(*) row_count
+    FROM _validation_hold GROUP BY 1,2,3 HAVING row_count!=1))=0
+    AS 'Validation holds must be unique by order item, period, and invoice number';
 
   CREATE TEMP TABLE _hold AS
   SELECT p_snapshot_run_id snapshot_run_id,p_pipeline_run_id pipeline_run_id,v_flow_key flow_key,

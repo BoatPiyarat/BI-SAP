@@ -42,6 +42,8 @@ require("source_event_count" in ddl and "payload_count" in ddl and "hold_count" 
         "manifest population conservation fields missing")
 require("Every event must end in the immutable payload or durable hold" in ddl,
         "build-time population conservation assertion missing")
+require("Validation holds must be unique by order item, period, and invoice number" in ddl,
+        "validation-hold join-key uniqueness assertion missing")
 require("TO_JSON_STRING(STRUCT(" in ddl and "payload_hash" in ddl,
         "exact positional payload hash missing")
 require("scripts/bq_safe_query.sh" in operator and "Never use direct `bq query`" in operator,
