@@ -32,11 +32,15 @@ ownership invariant.
    later-payment paths. The other seven flows cannot yet prove exact export, pickup, import, and row
    ACK under a common universal contract.
 
-Source DDL 102 now proposes the common cutover approval/runtime-evidence/claim/finalize/abort/
-rollback ledger plus a serialized singleton claim mutex. It is neither independently reviewed nor
-deployed. The seven-flow lifecycle gap remains. These are implementation blockers, not
-documentation notes; Tier 1 must remain PAUSED until DDL 102 is independently reviewed, dry-run,
-deployed, and rehearsed and the selected released flow has lifecycle coverage.
+DDL 102's common cutover approval/runtime-evidence/claim/finalize/abort/rollback ledger and
+serialized singleton claim mutex were independently reviewed, dry-run, and installed definition-
+only on 2026-08-27 as job `codex_v3_ddl102_20260827_2041`. Its approval, runtime-evidence, and
+cutover-ledger tables remain empty; no procedure has been called. The first real cutover `CALL`
+still requires the review note's second pass, exact Unit 2 thresholds, a fresh non-bootstrap PASS,
+and separately scoped cutover approval. The seven-flow lifecycle gap remains. These are execution
+blockers, not documentation notes; Tier 1 must remain PAUSED until DDL 102 is rehearsed and the
+selected released flow has lifecycle coverage. Exact installation/poststate evidence is in
+`docs/reviews/2026-08-27-ddl102-deploy-evidence-codex.md`.
 
 The exact per-flow lifecycle inventory and adapter contract are maintained in
 `docs/design/V3_FLOW_LIFECYCLE_ADAPTER_MATRIX.md`. It distinguishes the two real export fallbacks
