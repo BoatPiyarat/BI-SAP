@@ -12,7 +12,8 @@ $promoterName = 'sap-delivery-promoter'
 $schedulerName = 'v3-nightly-orchestrator'
 $defaultServiceAccountEmail =
   '919786098205-compute@developer.gserviceaccount.com'
-$promoterServiceAccountEmail = $defaultServiceAccountEmail
+$promoterServiceAccountEmail =
+  'data-extraction@pacific-plating-282708.iam.gserviceaccount.com'
 $triggerServiceAccountEmail = $defaultServiceAccountEmail
 $executionUri =
   "https://workflowexecutions.googleapis.com/v1/projects/$project/locations/$region/" +
@@ -199,10 +200,12 @@ else {
   checked_at = [DateTimeOffset]::UtcNow.ToString('o')
   project = $project
   project_number = $projectNumber
-  activation_model = 'existing-default-compute-service-account-no-iam-mutation'
+  activation_model =
+    'default-compute-caller-legacy-data-extraction-runtime-no-iam-mutation'
   default_service_account = $defaultServiceAccountEmail
   workflow_revision = $workflow.revisionId
   workflow_service_account = $workflowServiceAccountEmail
+  promoter_service_account = $promoterServiceAccountEmail
   delivery_enabled = $false
   promoter_revision = if ($null -eq $promoter) {
     $null

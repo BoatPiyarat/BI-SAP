@@ -2,8 +2,9 @@
 
 Decision date: 2026-08-06 (Boat).
 
-Status: binding source/runbook direction; production remains fail-closed and delivery remains
-disabled until the replacement activation artifacts pass Class-A review.
+Status: binding source/runbook direction, amended 2026-08-27 for the promoter-only exception below;
+production remains fail-closed and delivery remains disabled until the replacement activation
+artifacts pass Class-A review.
 
 ## Decision
 
@@ -22,11 +23,35 @@ accepts the broader pre-existing identity instead of creating the dedicated leas
 identities described in the superseded administrator runbooks. It does **not** authorize adding a
 role to that identity.
 
+## 2026-08-27 promoter-only exception
+
+Boat explicitly authorized reusing the existing legacy identity
+`data-extraction@pacific-plating-282708.iam.gserviceaccount.com` for
+`sap-delivery-promoter` after stating that no new role can be granted. This newer, narrower decision
+supersedes the default-Compute runtime choice for that one component only. The V3 workflow caller,
+Scheduler OAuth identity, dispatcher, watchdog, and other unattended components remain on the
+default Compute service account unless separately superseded.
+
+Read-only IAM and live-resource inventory established that `data-extraction` already runs the
+legacy `sap-interface-pipeline` workflow and `demo-nonmotor-bucket` Cloud Run service, has project
+`roles/storage.objectAdmin`, and is a legacy bucket owner on `gs://interface-file`. The V3 workflow
+caller already has `run.routes.invoke` through its own pre-existing project Editor role, and the
+deployer already has `run.services.create` plus `iam.serviceAccounts.actAs`. Therefore the promoter
+can be created with the legacy runtime and no IAM or bucket-policy mutation.
+
+This exception knowingly accepts a broad, shared identity. Its IAM permissions allow more than the
+promoter contract: object overwrite/delete across project buckets and legacy bucket/ACL control on
+`interface-file`. Exact-generation reads and create-only production writes are application-level
+controls, not IAM controls. Reuse also shares blast radius with the two named legacy workloads.
+Those facts are accepted for this no-new-role path and must remain visible in deployment review and
+rollback evidence.
+
 ## Binding constraints
 
 1. No command containing `add-iam-policy-binding`, `set-iam-policy`, custom-role creation, or
    service-account IAM mutation is part of this path.
-2. Deploy runtime resources with the default Compute service account only.
+2. Deploy runtime resources with the default Compute service account only, except the explicitly
+   authorized `sap-delivery-promoter` legacy-runtime exception above.
 3. Reuse existing effective permissions. Before activation, use read-only describes/checkers to
    prove that each required operation is available.
 4. If a deploy or rehearsal reports a missing permission, stop and record the exact denied
@@ -44,7 +69,7 @@ role to that identity.
 | Component | Runtime/caller identity |
 |---|---|
 | `v3-nightly-orchestrator` | default Compute service account |
-| `sap-delivery-promoter` | default Compute service account |
+| `sap-delivery-promoter` | `data-extraction@pacific-plating-282708.iam.gserviceaccount.com` (2026-08-27 exception) |
 | recurring `v3-nightly-orchestrator` scheduler OAuth | default Compute service account |
 | `sap-post-import-dispatcher` | default Compute service account |
 | `sap-post-import-watchdog` | default Compute service account |
@@ -93,4 +118,3 @@ The IAM/deployment command sequences in:
 
 are retained as history only. Their dedicated identities and IAM mutations must not be run unless
 Boat makes a newer explicit decision.
-

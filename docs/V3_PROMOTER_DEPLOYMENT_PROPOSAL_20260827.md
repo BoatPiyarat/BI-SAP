@@ -44,6 +44,20 @@ runtime identity, and that runtime can read the archive object and create the pr
 No service, project, service-account, or bucket IAM binding needs to be added. This proposal does
 not broaden or otherwise modify any existing grant.
 
+The IAM ceiling is materially broader than the promoter's intended behavior. Project-level
+`roles/storage.objectAdmin` permits the legacy runtime to read, create, overwrite, and delete
+objects across project buckets including `rcb-bronze-zone`; its direct
+`roles/storage.legacyBucketOwner` on `gs://interface-file` also carries legacy bucket/ACL control.
+Archive-read and production-create-only safety are therefore enforced by reviewed application
+logic—especially the exact-generation source read and `if_generation_match=0` destination
+rewrite—not by least-privilege IAM. Deployment acceptance must verify the reviewed image/source;
+it must not describe the identity itself as read/create-only.
+
+This identity is shared with the live `sap-interface-pipeline` workflow and
+`demo-nonmotor-bucket` Cloud Run service. Reuse avoids an unavailable IAM grant but creates shared
+credential/blast-radius coupling with those legacy paths. No change to either legacy resource is
+authorized.
+
 The pre-existing broad Editor role is not presented as an ideal least-privilege end state; changing
 it is outside this deployment and would require a separately planned IAM migration.
 
