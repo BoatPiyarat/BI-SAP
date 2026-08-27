@@ -1,6 +1,7 @@
 # V3 recurring Scheduler PAUSED deployment proposal — 2026-08-27
 
-Status: proposed only; no Scheduler mutation has occurred.
+Status: partially deployed. The canonical job exists PAUSED on the dormant January-only cadence;
+only the corrected PAUSED update to 20:30 ICT remains proposed. Do not rerun the create step.
 
 ## Purpose and boundary
 
@@ -86,11 +87,17 @@ gcloud scheduler jobs update http $scheduler `
   --uri=$executionUri --http-method=POST `
   --oauth-service-account-email=$triggerSa `
   --oauth-token-scope='https://www.googleapis.com/auth/cloud-platform' `
-  --headers='Content-Type=application/json' `
+  --update-headers='Content-Type=application/json' `
   --message-body=$messageBody `
   --max-retry-attempts=0 --quiet
 if ($LASTEXITCODE -ne 0) { throw 'Scheduler update failed; keep job PAUSED' }
 ```
+
+CLI correction recorded after the first staged attempt: this installed gcloud accepts `--headers`
+for `jobs create http` but requires `--update-headers` for `jobs update http`. Local
+`gcloud scheduler jobs update http --help` is the red/green feedback source. The initial update
+failed on the old flag after pause, leaving the job safely PAUSED on its dormant schedule; see
+`docs/reviews/2026-08-27-v3-paused-scheduler-partial-deploy-evidence-codex.md`.
 
 Do not run `gcloud scheduler jobs run` or `resume`.
 
