@@ -65,6 +65,14 @@ BEGIN
     WHERE pipeline_run_id = p_pipeline_run_id) = 0
     AS 'completeness snapshot already exists; immutable replay refused';
   ASSERT (SELECT COUNT(*)
+    FROM `pacific-plating-282708.sap_integration_v3.v3_daily_completeness_metric`
+    WHERE pipeline_run_id = p_pipeline_run_id) = 0
+    AS 'completeness metric rows already exist; immutable replay refused';
+  ASSERT (SELECT COUNT(*)
+    FROM `pacific-plating-282708.sap_integration_v3.v3_daily_completeness_evidence`
+    WHERE pipeline_run_id = p_pipeline_run_id) = 0
+    AS 'completeness evidence rows already exist; immutable replay refused';
+  ASSERT (SELECT COUNT(*)
     FROM `pacific-plating-282708.sap_integration_v3.v3_unit2_summary`
     WHERE pipeline_run_id = p_pipeline_run_id) > 0 AS 'Unit 2 summary is required';
   ASSERT (SELECT COUNT(*)
@@ -123,6 +131,7 @@ BEGIN
       AS 'nonzero export requires a terminal delivery manifest (ACKNOWLEDGED/PARTIAL_REJECT/REJECTED); a merely DELIVERED/PICKED_UP manifest is not yet final and must not produce an immutable snapshot';
   END IF;
 
+  BEGIN TRANSACTION;
   INSERT INTO `pacific-plating-282708.sap_integration_v3.v3_daily_completeness_metric`
     (pipeline_run_id, metric_group, population_grain, metric_code,
      records, orders, amount_satang, created_at)
@@ -184,4 +193,5 @@ BEGIN
   VALUES (p_pipeline_run_id, 'READY_TO_ALERT', 'PENDING', v_unit1, v_units2_5,
     v_magnitude_status, v_gate_blockers, v_notification_rows, v_export_runs, v_manifests,
     CURRENT_TIMESTAMP());
+  COMMIT TRANSACTION;
 END;
