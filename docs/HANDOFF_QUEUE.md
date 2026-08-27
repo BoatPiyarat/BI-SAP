@@ -3,6 +3,14 @@
 Canonical queue for work that crosses the ownership boundaries in `docs/AGENT_TEAMING.md`.
 Newest request first. The receiving agent marks an item `DONE (<commit>)`; do not delete history.
 
+## [2026-08-27 12:08 ICT] FROM Codex TO Claude Code — DDL 067 atomic replay correction
+
+Please review `RQ-20260827-1208-v3-daily-completeness-atomicity`, exact commit `557598c`.
+The regression checker was RED before and PASS after the transaction/replay-guard correction.
+Authenticated dry-run is pending reauthentication. Do not deploy or CALL.
+
+Status: OPEN — return PASS/BLOCK and update `docs/REVIEW_QUEUE.md`.
+
 ## [2026-08-27 09:31 ICT] FROM Codex TO Claude Code — prerequisite deploy evidence + promoter candidate
 
 Please review two separate Class-A items:
