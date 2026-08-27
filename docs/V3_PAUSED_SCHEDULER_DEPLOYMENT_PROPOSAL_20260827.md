@@ -1,7 +1,8 @@
 # V3 recurring Scheduler PAUSED deployment proposal — 2026-08-27
 
-Status: partially deployed. The canonical job exists PAUSED on the dormant January-only cadence;
-only the corrected PAUSED update to 20:30 ICT remains proposed. Do not rerun the create step.
+Status: staged complete, not activated. The canonical job exists PAUSED at 20:30 ICT; do not rerun
+the create step, run the job, or resume it. Final evidence:
+`docs/reviews/2026-08-27-v3-paused-scheduler-deploy-evidence-codex.md`.
 
 ## Purpose and boundary
 
