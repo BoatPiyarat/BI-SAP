@@ -82,9 +82,11 @@ enabled.
 Require all of the following in one evidence window:
 
 - exact Workflow revision and source identity; delivery false;
+- fresh execution-census JSON from `scripts/build_v3_common_execution_census.ps1`, including both
+  `ACTIVE` and `QUEUED` states and matching the DDL 102 runtime-evidence contract;
 - V3 Scheduler exact target/body/OAuth contract and state PAUSED;
 - legacy `sap-extract-schedule` exact resource, cadence/timezone, and state ENABLED;
-- no Workflow execution currently RUNNING or ACTIVE;
+- no Workflow execution currently ACTIVE or QUEUED;
 - exhaustive paginated Scheduler inventory from `scripts/build_v3_scheduler_inventory.py`;
 - Tier 1 threshold/bootstrap/fresh-run gates above;
 - exact serialized JSON and restore hashes for both Scheduler resources;
