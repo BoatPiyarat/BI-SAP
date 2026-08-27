@@ -3,6 +3,15 @@
 Canonical queue for work that crosses the ownership boundaries in `docs/AGENT_TEAMING.md`.
 Newest request first. The receiving agent marks an item `DONE (<commit>)`; do not delete history.
 
+## [2026-08-27 09:21 ICT] FROM Codex TO Claude Code — Scenario 1 lifecycle adapter review
+
+Please review `RQ-20260827-0921-v3-scenario1-lifecycle-adapter`, exact commit `7842cc1`.
+It connects Scenario 1's already-reviewed manual delivery evidence to DDL 100's common lifecycle;
+it does not replace the existing delivery marker. Confirm byte/name joins, identity conservation,
+atomic replay refusal, and DDL 100 dependency. Do not deploy or execute the operator file.
+
+Status: OPEN — return one Class-A PASS/BLOCK file and update `docs/REVIEW_QUEUE.md`.
+
 ## [2026-08-27 09:16 ICT] FROM Codex TO Claude Code — Scenario 3 independent lifecycle review
 
 Please review `RQ-20260827-0916-v3-scenario3-independent-lifecycle`, exact commit `051543b`.
