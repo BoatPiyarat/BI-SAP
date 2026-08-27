@@ -16,15 +16,38 @@ must remain undeployed until this service contract exists. The workflow continue
 - Region: `asia-southeast1`.
 - Ingress: internal only.
 - Authentication: no unauthenticated/public invocation.
-- Runtime identity: `919786098205-compute@developer.gserviceaccount.com`.
+- Runtime identity: legacy SAP interface identity
+  `data-extraction@pacific-plating-282708.iam.gserviceaccount.com`.
 - Environment:
   - `ARCHIVE_BUCKET=rcb-bronze-zone`
   - `PRODUCTION_BUCKET=interface-file`
   - `PRODUCTION_PREFIX=RCB_MOTOR`
-- Invoker: only the workflow's approved default Compute service account (plus any Google-managed
-  identities Cloud Run requires internally); never `allUsers` or `allAuthenticatedUsers`.
+- Invoker: the workflow's approved default Compute service account already has
+  `run.routes.invoke` through its project Editor role. Other pre-existing project principals whose
+  roles contain that permission may also invoke; this deployment adds no principal. Never add
+  `allUsers` or `allAuthenticatedUsers`.
 
-## Proposed production actions — require explicit scoped approval
+## Verified no-new-role path
+
+Read-only project and bucket IAM inspection on 2026-08-27 established this no-new-role split:
+
+- deployer `user:data@rabbit.co.th` has project `roles/editor`, including
+  `run.services.create` and `iam.serviceAccounts.actAs`;
+- caller `serviceAccount:919786098205-compute@developer.gserviceaccount.com` is the existing V3
+  workflow identity and has project `roles/editor`, including `run.routes.invoke`;
+- runtime `serviceAccount:data-extraction@pacific-plating-282708.iam.gserviceaccount.com` is the
+  legacy `sap-interface-pipeline` workflow identity and already has project
+  `roles/storage.objectAdmin`; it is also a legacy owner on `gs://interface-file`.
+
+Therefore the workflow already has invocation permission, the deployer can attach the legacy
+runtime identity, and that runtime can read the archive object and create the production object.
+No service, project, service-account, or bucket IAM binding needs to be added. This proposal does
+not broaden or otherwise modify any existing grant.
+
+The pre-existing broad Editor role is not presented as an ideal least-privilege end state; changing
+it is outside this deployment and would require a separately planned IAM migration.
+
+## Proposed production action — requires explicit scoped approval
 
 From `infra/sap_delivery_promoter/`:
 
@@ -33,25 +56,20 @@ gcloud run deploy sap-delivery-promoter `
   --project pacific-plating-282708 `
   --region asia-southeast1 `
   --source . `
-  --service-account 919786098205-compute@developer.gserviceaccount.com `
+  --service-account data-extraction@pacific-plating-282708.iam.gserviceaccount.com `
   --ingress internal `
   --no-allow-unauthenticated `
   --set-env-vars ARCHIVE_BUCKET=rcb-bronze-zone,PRODUCTION_BUCKET=interface-file,PRODUCTION_PREFIX=RCB_MOTOR
-
-gcloud run services add-iam-policy-binding sap-delivery-promoter `
-  --project pacific-plating-282708 `
-  --region asia-southeast1 `
-  --member serviceAccount:919786098205-compute@developer.gserviceaccount.com `
-  --role roles/run.invoker
 ```
 
-These actions create a Cloud Run service and change its IAM policy. They must not be inferred from
-SQL deployment approval.
+This action creates a Cloud Run service but makes no IAM-policy change. Service creation must not
+be inferred from SQL deployment approval.
 
 ## Acceptance before workflow replacement
 
 1. Source tests pass with the pinned `requirements.txt`; image build and revision reach Ready.
-2. Service ingress is exactly `internal`; no public invoker member exists.
+2. Service ingress is exactly `internal`; no public invoker member exists and no IAM binding was
+   added by this deployment.
 3. Service account and all three environment values match exactly.
 4. A non-mutating/invalid-request probe fails without copying an object; no production-path probe
    is allowed before separate exact-object rehearsal approval.
@@ -61,7 +79,7 @@ SQL deployment approval.
 
 ## Rollback
 
-The prestate is **service absent**. Restoring it requires deleting the exact Cloud Run service and
-removing its service-scoped IAM policy, which is destructive and requires separate rollback
-approval. Until workflow/scheduler references exist, leaving a private, uninvoked service deployed
-is safer than an unapproved deletion.
+The prestate is **service absent**. Restoring it requires deleting the exact Cloud Run service,
+which is destructive and requires separate rollback approval. There is no deployment-created IAM
+binding to remove. Until workflow/scheduler references exist, leaving a private, uninvoked service
+deployed is safer than an unapproved deletion.
