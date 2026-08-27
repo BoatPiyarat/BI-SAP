@@ -1,8 +1,9 @@
 # Claude Code Class-A request — reusable month-end ONETIME candidate/export query
 
-Status: **NOT SENT / awaiting exact external-egress approval**. The safety reviewer rejected the
-Claude Code invocation because this internal SQL plus the named deployment standards would be sent
-to an external Claude destination. No repository source was transmitted.
+Status: **SENT / BLOCK**. The user explicitly approved sending the six named files to Claude Code
+(Anthropic) for a read-only Class-A review. Claude returned `BLOCK`; see
+`docs/reviews/2026-08-27-monthend-onetime-claude.md`. This result authorizes no execution, export,
+deployment, GCS write, or SAP action.
 
 Artifact under review:
 `sql/operator/20260827_monthend_missing_sap_onetime.sql`
