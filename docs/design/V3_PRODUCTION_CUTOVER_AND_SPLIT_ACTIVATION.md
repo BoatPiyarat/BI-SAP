@@ -38,6 +38,10 @@ deployed. The seven-flow lifecycle gap remains. These are implementation blocker
 documentation notes; Tier 1 must remain PAUSED until DDL 102 is independently reviewed, dry-run,
 deployed, and rehearsed and the selected released flow has lifecycle coverage.
 
+The exact per-flow lifecycle inventory and adapter contract are maintained in
+`docs/design/V3_FLOW_LIFECYCLE_ADAPTER_MATRIX.md`. It distinguishes the two real export fallbacks
+from the seven hold/report-only paths; a hold report is not an interface export fallback.
+
 ## Required two-tier operating model
 
 ### Tier 1 — common preparation
