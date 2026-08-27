@@ -63,6 +63,14 @@ flow-scoped Workflow/procedure entrypoint exists; it must never call the current
 This permits shorter production releases without relabelling edge cases or waiting for all nine
 business approvals.
 
+## Deployment progress invariant
+
+Every production deployment attempt—successful, partial, rejected, or rolled back—must be recorded
+in the OneDrive-backed progress evidence before the next deployment begins. The update must name the
+reviewed commit/artifact, exact deployed resource and revision or job ID, observed live state,
+verification result, rollback state, and remaining blockers. A source commit is not a deployment;
+production progress must never be inferred from Git history alone.
+
 ## Fail-closed common-schedule cutover
 
 The Scheduler API has no cross-job transaction. “Atomic non-overlap” therefore means ordered
