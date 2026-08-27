@@ -142,9 +142,11 @@ route the failed flow through a broader payload view.
 - Credit-shell replacement: item mapping, exact cancel ACK, payload object, and release approval.
 - Payment adjustment: durable correction intent and release approval.
 
-These holds come from the last readable nine-flow audit. A newer SELECT job completed but its rows
-could not be retrieved after the workspace approval service exhausted credits, so no blocker is
-claimed to have changed. The holds are independent; clearing one does not authorize another.
+These holds are confirmed by completed SELECT job
+`codex_v3_nine_flow_audit_20260827_115853`; its nine result rows were retrieved metadata-only on
+2026-08-27 without rerunning the query. Exact evidence is in
+`docs/reviews/2026-08-27-v3-nine-flow-audit-result-evidence.md`. The holds are independent; clearing
+one does not authorize another.
 
 ## Review and execution gate
 
