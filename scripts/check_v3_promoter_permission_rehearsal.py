@@ -60,6 +60,13 @@ assert [next(iter(step)) for step in except_steps] == [
     "return_expected_validator_rejection",
     "raise_unexpected_rehearsal_failure",
 ]
+inspection_assignments = {
+    next(iter(item)): next(iter(item.values()))
+    for item in except_steps[0]["inspect_rehearsal_rejection"]["assign"]
+}
+assert inspection_assignments["rehearsal_error_text"] == (
+    '${json.encode_to_string(default(map.get(e, "body"), ""))}'
+)
 accepted = except_steps[1]["return_expected_validator_rejection"]["switch"]
 assert len(accepted) == 1
 assert "rehearsal_http_code == 400" in accepted[0]["condition"]

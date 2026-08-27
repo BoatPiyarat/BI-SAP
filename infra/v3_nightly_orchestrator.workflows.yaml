@@ -91,7 +91,7 @@ main:
                       - inspect_rehearsal_rejection:
                           assign:
                             - rehearsal_http_code: ${default(map.get(e, "code"), 0)}
-                            - rehearsal_error_text: ${json.encode_to_string(default(map.get(e, "body"), {}))}
+                            - rehearsal_error_text: ${json.encode_to_string(default(map.get(e, "body"), ""))}
                       - return_expected_validator_rejection:
                           switch:
                             - condition: '${rehearsal_http_code == 400 and text.match_regex(rehearsal_error_text, "missing required field: archive_bucket")}'
