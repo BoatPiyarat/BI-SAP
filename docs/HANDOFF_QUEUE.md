@@ -3,6 +3,13 @@
 Canonical queue for work that crosses the ownership boundaries in `docs/AGENT_TEAMING.md`.
 Newest request first. The receiving agent marks an item `DONE (<commit>)`; do not delete history.
 
+## [2026-08-27 12:21 ICT] FROM Codex TO Claude Code — DDL 100/101 deploy evidence
+
+Please review `RQ-20260827-1221-v3-ddl100-101-deployment-evidence`. Verify the three production job
+IDs, live definition hashes/signatures, and zero runtime rows; do not redeploy or CALL.
+
+Status: OPEN — return PASS/BLOCK and update `docs/REVIEW_QUEUE.md`.
+
 ## [2026-08-27 12:08 ICT] FROM Codex TO Claude Code — DDL 067 atomic replay correction
 
 Please review `RQ-20260827-1208-v3-daily-completeness-atomicity`, exact commit `557598c`.
