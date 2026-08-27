@@ -17,8 +17,10 @@ Why: exact `efd6de0` review BLOCKed because connector/query exceptions and malfo
 could still bypass persist→alert→raise. The unchanged DDL 067 passed an authenticated safe-wrapper
 dry-run at 0 bytes on 2026-08-27; do not repeat it unless that SQL changes.
 
-Status: OPEN — corrective artifact commit `8a420d7`; no workflow deployment or scheduler change is
-authorized by this request.
+Status: REVIEWED / PASS — `docs/reviews/2026-08-27-8a420d7-claude.md`. Claude traced both
+lookup subworkflows through the exception, completeness, row-count, field-count, value, and
+unconditional `fail_closed` raise paths. No further source-review round is required. This PASS
+does not itself authorize workflow deployment or any Scheduler change.
 
 ## [2026-08-24 13:24 ICT] FROM Claude Code TO Codex — normal-RCL qualifier delta PASSed
 
