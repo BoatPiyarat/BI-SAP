@@ -1,6 +1,7 @@
 # Claude Code Class-A request — fresh V3 Units 1–5 pilot operator
 
-Review commit `11b89d2` read-only. Read exactly the following 13 files and no others:
+Review commits `11b89d2` + `9591052` + `e11a9cd` read-only. Read exactly the
+following 13 files and no others:
 
 1. `scripts/run_v3_fresh_units1_5_delivery_disabled.ps1`
 2. `scripts/v3_fresh_units1_5_delivery_disabled.flags.yaml`
@@ -25,6 +26,17 @@ Review commit `11b89d2` read-only. Read exactly the following 13 files and no ot
 - Latest production metadata inspection showed the recent SAP extract API shape uses
   `status.completionTime`; the latest inspected executions were terminal, not active. This is
   shape evidence only, not authorization to run again.
+- A live read-only preflight rehearsal found that `gcloud storage ls` returns exit 1 for a clean
+  empty prefix. Its first correction used a client filter, which emitted a missing-filter-key
+  warning on an empty result and was rejected before production use. The final operator calls
+  `gcloud storage objects list gs://rcb-bronze-zone/SAP/production_database/** --limit=1`; the
+  exact clean live prefix returned `[]` with exit 0 and no filter warning. Treat both as self-caught
+  defects and verify the final replacement remains fail-closed on API errors and nonempty results.
+- The final committed runner then completed its explicit `-PreflightOnly` path at
+  `2026-08-27T15:16:17Z`: workflow/source/concurrency and Scheduler/extract/bronze gates passed;
+  safe-wrapper BigQuery job `bqjob_r41f591606ed2d6d0_000001a043cb1348_1` passed every exact pilot
+  assertion; output ended `FRESH_UNITS1_5_PREFLIGHT=PASS`, revision `000011-291`, and
+  `PREFLIGHT_EXECUTION_CREATED=false`. No Workflow execution was created.
 
 ## Required verdict
 
