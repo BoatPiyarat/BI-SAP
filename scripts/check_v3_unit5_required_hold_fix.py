@@ -33,6 +33,7 @@ required_tokens = (
     "FROM _candidate_release c) s",
     "SELECT * FROM _candidate_release;",
     "WHERE EXISTS (SELECT 1 FROM _candidate_release q WHERE q.OrderItem=c.OrderItem)",
+    "invalid_fields ARRAY<STRING>,invalid_period_rows INT64 NOT NULL",
 )
 missing = [required for required in required_tokens if required not in ddl]
 if missing:
@@ -44,6 +45,9 @@ unsafe_abort = (
 )
 if unsafe_abort in ddl:
     raise SystemExit("RED: candidate-wide NULL assertion still aborts unrelated clean items")
+
+if "invalid_fields ARRAY<STRING> NOT NULL" in ddl:
+    raise SystemExit("RED: BigQuery does not permit NOT NULL on ARRAY fields")
 
 release_build = ddl.index("CREATE TEMP TABLE _candidate_release")
 transaction = ddl.index("BEGIN TRANSACTION;", release_build)

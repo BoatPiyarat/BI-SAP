@@ -52,7 +52,7 @@ CREATE TABLE IF NOT EXISTS
   `pacific-plating-282708.sap_integration_v3.v3_unit5_candidate_required_hold` (
     pipeline_run_id STRING NOT NULL,order_item STRING NOT NULL,
     hold_code STRING NOT NULL,hold_reason STRING NOT NULL,
-    invalid_fields ARRAY<STRING> NOT NULL,invalid_period_rows INT64 NOT NULL,
+    invalid_fields ARRAY<STRING>,invalid_period_rows INT64 NOT NULL,
     detected_at TIMESTAMP NOT NULL
   )
 PARTITION BY DATE(detected_at) CLUSTER BY pipeline_run_id,hold_code,order_item;
