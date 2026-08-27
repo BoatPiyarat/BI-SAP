@@ -6,7 +6,7 @@ import re
 
 ROOT = Path(__file__).resolve().parents[1]
 DDL = ROOT / "sql/ddl/103_v3_monthend_onetime_immutable_snapshot.sql"
-OPERATOR = ROOT / "sql/operator/20260827_monthend_missing_sap_onetime.sql"
+OPERATOR = ROOT / "sql/operator/20260827_export_v3_monthend_onetime_snapshot.sql"
 
 
 def require(condition: bool, message: str) -> None:
