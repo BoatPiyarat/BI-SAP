@@ -132,11 +132,14 @@ else {
     "--project=$project", "--region=$region"
   )
   $promoterEnv = Get-EnvMap $promoter.spec.template.spec.containers[0].env
-  $promoterMembers = @(
-    $promoterPolicy.bindings |
-      ForEach-Object { $_.members } |
-      Where-Object { $_ }
-  )
+  $promoterMembers = @()
+  if ($promoterPolicy.PSObject.Properties.Name -contains 'bindings') {
+    $promoterMembers = @(
+      $promoterPolicy.bindings |
+        ForEach-Object { $_.members } |
+        Where-Object { $_ }
+    )
+  }
   if ($promoter.metadata.annotations.'run.googleapis.com/ingress' -ne 'internal') {
     $readinessBlockers += 'promoter ingress is not internal'
   }
