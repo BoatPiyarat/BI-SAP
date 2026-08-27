@@ -48,6 +48,15 @@ CREATE TABLE IF NOT EXISTS
   )
 PARTITION BY DATE(updated_at) CLUSTER BY pipeline_run_id,state;
 
+CREATE TABLE IF NOT EXISTS
+  `pacific-plating-282708.sap_integration_v3.v3_unit5_candidate_required_hold` (
+    pipeline_run_id STRING NOT NULL,order_item STRING NOT NULL,
+    hold_code STRING NOT NULL,hold_reason STRING NOT NULL,
+    invalid_fields ARRAY<STRING> NOT NULL,invalid_period_rows INT64 NOT NULL,
+    detected_at TIMESTAMP NOT NULL
+  )
+PARTITION BY DATE(detected_at) CLUSTER BY pipeline_run_id,hold_code,order_item;
+
 CREATE OR REPLACE PROCEDURE `pacific-plating-282708.sap_integration_v3.sp_build_v3_newpayment_shadow`(
   p_pipeline_run_id STRING
 )
@@ -307,15 +316,38 @@ BEGIN
     AND (NULLIF(TRIM(InvoiceNo),'') IS NULL
     OR NULLIF(TRIM(PaymentDate),'') IS NULL OR NULLIF(TRIM(PaymentMethod),'') IS NULL
     OR NULLIF(TRIM(PaymentChannel),'') IS NULL))=0 AS 'Paid completeness failed';
-  ASSERT (SELECT COUNT(*) FROM _candidate c
+  -- Boat's item-level quarantine rule applies before publication: one invalid period holds the
+  -- complete OrderItem spine, while unrelated clean items continue. Do not normalize a required
+  -- business value to an empty string merely to make the interface assertion pass.
+  CREATE TEMP TABLE _candidate_required_hold AS
+  SELECT p_pipeline_run_id pipeline_run_id,c.OrderItem order_item,
+    'HOLD_SPINE_REQUIRED_VALUE_INVALID' hold_code,
+    'Required interface field contains SQL NULL or literal NULL' hold_reason,
+    ARRAY_AGG(DISTINCT field_name ORDER BY field_name) invalid_fields,
+    COUNT(DISTINCT SAFE_CAST(c.Period AS INT64)) invalid_period_rows,
+    CURRENT_TIMESTAMP() detected_at
+  FROM _candidate c,
+  UNNEST(REGEXP_EXTRACT_ALL(TO_JSON_STRING(c),r'"([^"]+)":(?:null|"NULL")')) field_name
+  GROUP BY c.OrderItem;
+  ASSERT (SELECT COUNT(*) FROM _candidate_required_hold WHERE order_item IS NULL)=0
+    AS 'Required-value hold cannot preserve a NULL OrderItem identity';
+
+  CREATE TEMP TABLE _candidate_release AS
+  SELECT c.* FROM _candidate c
+  WHERE NOT EXISTS (SELECT 1 FROM _candidate_required_hold h WHERE h.order_item=c.OrderItem);
+  ASSERT (SELECT COUNT(*) FROM _candidate_release c
     WHERE REGEXP_CONTAINS(TO_JSON_STRING(c),r':null|:"NULL"'))=0
-    AS 'NEWPAYMENT candidate must not contain SQL NULL or literal NULL';
+    AS 'Released NEWPAYMENT candidate must not contain SQL NULL or literal NULL';
+  ASSERT (SELECT COUNT(DISTINCT OrderItem) FROM _candidate)=
+    (SELECT COUNT(DISTINCT OrderItem) FROM _candidate_release)
+      +(SELECT COUNT(*) FROM _candidate_required_hold)
+    AS 'Released plus required-value-held NEWPAYMENT items do not conserve';
   ASSERT (SELECT COUNT(*) FROM (
-    SELECT OrderItem,date_value FROM _candidate
+    SELECT OrderItem,date_value FROM _candidate_release
     UNPIVOT(date_value FOR date_column IN (OrderDate,PolicyDate,ExpectedDate,BatchRunDate))
     WHERE LENGTH(IFNULL(date_value,''))!=8
        OR SAFE.PARSE_DATE('%d%m%Y',date_value) IS NULL))=0 AS 'DATE_FORMAT_INVALID';
-  ASSERT (SELECT COUNT(*) FROM _candidate WHERE NULLIF(PaymentDate,'') IS NOT NULL
+  ASSERT (SELECT COUNT(*) FROM _candidate_release WHERE NULLIF(PaymentDate,'') IS NOT NULL
     AND (LENGTH(PaymentDate)!=8 OR SAFE.PARSE_DATE('%d%m%Y',PaymentDate) IS NULL))=0
     AS 'PAYMENT_DATE_FORMAT_INVALID';
 
@@ -346,10 +378,16 @@ BEGIN
   USING (SELECT p_pipeline_run_id pipeline_run_id,'BUILDING' state,COUNT(*) producer_row_count,
     TO_HEX(SHA256(COALESCE(STRING_AGG(TO_HEX(SHA256(TO_JSON_STRING(c))),''
       ORDER BY c.OrderItem,SAFE_CAST(c.Period AS INT64),c.InvoiceNo,TO_JSON_STRING(c)),
-      '<EMPTY>'))) producer_set_hash,CURRENT_TIMESTAMP() updated_at FROM _candidate c) s
+      '<EMPTY>'))) producer_set_hash,CURRENT_TIMESTAMP() updated_at FROM _candidate_release c) s
   ON t.pipeline_run_id=s.pipeline_run_id
   WHEN NOT MATCHED THEN INSERT ROW;
   ASSERT @@row_count=1 AS 'Unit 5 producer run already claimed; refusing rewrite or concurrent build';
+  DELETE FROM `pacific-plating-282708.sap_integration_v3.v3_unit5_candidate_required_hold`
+  WHERE pipeline_run_id=p_pipeline_run_id;
+  INSERT INTO `pacific-plating-282708.sap_integration_v3.v3_unit5_candidate_required_hold`
+  SELECT * FROM _candidate_required_hold;
+  ASSERT @@row_count=(SELECT COUNT(*) FROM _candidate_required_hold)
+    AS 'Unit 5 required-value hold publication failed';
   DELETE FROM `pacific-plating-282708.sap_integration_v3.v3_unit5_installment_detail_hold`
   WHERE pipeline_run_id=p_pipeline_run_id;
   INSERT INTO `pacific-plating-282708.sap_integration_v3.v3_unit5_installment_detail_hold`
@@ -358,8 +396,8 @@ BEGIN
     AS 'Unit 5 installment-detail hold publication failed';
   DELETE FROM `pacific-plating-282708.sap_integration_v3.v3_unit5_newpayment_ready` WHERE TRUE;
   INSERT INTO `pacific-plating-282708.sap_integration_v3.v3_unit5_newpayment_ready`
-  SELECT * FROM _candidate;
-  ASSERT @@row_count=(SELECT COUNT(*) FROM _candidate)
+  SELECT * FROM _candidate_release;
+  ASSERT @@row_count=(SELECT COUNT(*) FROM _candidate_release)
     AS 'Unit 5 candidate publication row conservation failed';
   DELETE FROM `pacific-plating-282708.sap_integration_v3.v3_unit5_payload_identity`
   WHERE pipeline_run_id=p_pipeline_run_id AND file_role='NEWPAYMENT';
@@ -367,8 +405,10 @@ BEGIN
   SELECT p_pipeline_run_id,'NEWPAYMENT',r.order_item,r.period,r.charge_id,r.invoice_no,
     TO_HEX(SHA256(TO_JSON_STRING(c))),CURRENT_TIMESTAMP()
   FROM _resolved r JOIN _candidate_target c
-    ON c.OrderItem=r.order_item AND SAFE_CAST(c.Period AS INT64)=r.period AND c.InvoiceNo=r.invoice_no;
-  ASSERT @@row_count=(SELECT COUNT(*) FROM _resolved)
+    ON c.OrderItem=r.order_item AND SAFE_CAST(c.Period AS INT64)=r.period AND c.InvoiceNo=r.invoice_no
+  WHERE EXISTS (SELECT 1 FROM _candidate_release q WHERE q.OrderItem=c.OrderItem);
+  ASSERT @@row_count=(SELECT COUNT(*) FROM _resolved r
+    WHERE EXISTS (SELECT 1 FROM _candidate_release q WHERE q.OrderItem=r.order_item))
     AS 'Unit 5 target identity row conservation failed';
 
   COMMIT TRANSACTION;
