@@ -32,8 +32,11 @@ ownership invariant.
    later-payment paths. The other seven flows cannot yet prove exact export, pickup, import, and row
    ACK under a common universal contract.
 
-These are implementation blockers, not documentation notes. Tier 1 must remain PAUSED until the
-common cutover ledger and abort/rollback path are built, reviewed, deployed, and rehearsed.
+Source DDL 102 now proposes the common cutover approval/runtime-evidence/claim/finalize/abort/
+rollback ledger plus a serialized singleton claim mutex. It is neither independently reviewed nor
+deployed. The seven-flow lifecycle gap remains. These are implementation blockers, not
+documentation notes; Tier 1 must remain PAUSED until DDL 102 is independently reviewed, dry-run,
+deployed, and rehearsed and the selected released flow has lifecycle coverage.
 
 ## Required two-tier operating model
 
@@ -108,6 +111,11 @@ If V3 resume or postcheck fails after legacy was paused:
 6. run no valid promoter request and write no interface file;
 7. if the next legacy extract window was missed, the human may use the already-reviewed
    `scripts/run_sap_sync_manual.ps1` only after its own preflight and explicit run approval.
+
+The reviewed SQL fallback path must be
+`sql/operator/20260827_v3_common_scheduler_cutover_manual_fallback.sql`. It reports the exact
+durable resource/state/configuration hashes and required `ABORTED` versus `ROLLED_BACK` transition;
+it never performs the external Scheduler mutation.
 
 If a single flow's Tier 2 release fails, leave Tier 1 preparation running, hold that flow, and use
 its reviewed `sql/operator/` manual fallback. Do not disable unrelated prepared flows and do not
