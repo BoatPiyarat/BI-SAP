@@ -78,8 +78,8 @@ try {
 
   $bronzeObjects = @(
     Invoke-GcloudJson @(
-      'storage', 'objects', 'list', 'gs://rcb-bronze-zone',
-      '--filter=name~^SAP/production_database/', '--limit=1'
+      'storage', 'objects', 'list',
+      'gs://rcb-bronze-zone/SAP/production_database/**', '--limit=1'
     )
   )
   if ($bronzeObjects.Count -ne 0) {
