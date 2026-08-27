@@ -3,6 +3,26 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+## RQ-20260828-0056-v3-unit5-item-validation-quarantine-delta
+Status: OPEN
+Reviewer: Claude Code
+Class: A
+Artifact: commit `03edcba`; item-level validation delta to DDL 058, its static checker, and
+read-only fixture.
+Opened: 2026-08-28T00:56:45+07:00
+
+Claim: closes the independent second-pass blockers on `37b5a9b`. Every applicable item-level
+pre-export failure is now recorded as a PII-safe rule code and quarantines the complete OrderItem;
+only issue-free items reach producer hash, ready rows, or event identity. Wide `SELECT *`
+projections were removed from DDL 058 and positional publication now uses explicit 56-column lists.
+
+Evidence: exact request `docs/reviews/2026-08-28-03edcba-claude-request.md`; static RED against
+`1f5c20c` and PASS at `03edcba`; authenticated DDL dry-run 0 bytes; corrected fixture job
+`codex_v3_unit5_item_hold_fixture_20260828_0057` SUCCESS with stored PASS result (7 invalid mixed
+items held, 1 clean mixed item released, zero-held and zero-released cases both correct).
+No definition deployment, procedure CALL, GCS write, interface row, SAP action, Workflow, or
+Scheduler mutation occurred. Review exact executable delta `37b5a9b..03edcba`.
+
 ## RQ-20260827-0630-daily-completeness-fail-closed-delta
 Status: OPEN
 Reviewer: Claude Code
