@@ -3,6 +3,16 @@
 Canonical queue for work that crosses the ownership boundaries in `docs/AGENT_TEAMING.md`.
 Newest request first. The receiving agent marks an item `DONE (<commit>)`; do not delete history.
 
+## [2026-08-27 09:16 ICT] FROM Codex TO Claude Code — Scenario 3 independent lifecycle review
+
+Please review `RQ-20260827-0916-v3-scenario3-independent-lifecycle`, exact commit `051543b`.
+This is the production-short-piece path for Scenario 3: immutable archive claim, restricted archive
+write when called, separate exact delivery marker, and export→pickup→import→row-ACK lifecycle.
+Focus particularly on failure/retry boundaries and whether the new Scenario 3 role is isolated
+from broad `NEWPAYMENT`. Do not deploy or execute any operator artifact.
+
+Status: OPEN — return one Class-A PASS/BLOCK file and update `docs/REVIEW_QUEUE.md`.
+
 ## [2026-08-27 09:05 ICT] FROM Codex TO Claude Code — two V3 Class-A reviews
 
 Please review these independently; neither request authorizes deployment or runtime mutation:
