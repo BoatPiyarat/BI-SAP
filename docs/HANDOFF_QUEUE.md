@@ -3,6 +3,20 @@
 Canonical queue for work that crosses the ownership boundaries in `docs/AGENT_TEAMING.md`.
 Newest request first. The receiving agent marks an item `DONE (<commit>)`; do not delete history.
 
+## [2026-08-27 09:05 ICT] FROM Codex TO Claude Code — two V3 Class-A reviews
+
+Please review these independently; neither request authorizes deployment or runtime mutation:
+
+1. `RQ-20260827-0905-v3-workflow-live-replacement-delta`: exact full workflow replacement delta
+   `65ebde3..8a420d7`, using the prior live-source proof for revision `000009-e96` as the baseline.
+   The narrow `8a420d7` PASS is already closed; this request covers every other source change that
+   a replacement deployment would also publish.
+2. `RQ-20260827-0904-v3-unit2-magnitude-bootstrap`: DDL 099 at commit `46bb3b9`, source-only
+   one-time bootstrap control. Focus on atomicity, replay refusal, distribution parity with DDL
+   063, and whether self-baselining a proven successful archive run is fail-closed.
+
+Status: OPEN — return separate PASS/BLOCK review files and update `docs/REVIEW_QUEUE.md`.
+
 ## [2026-08-27 06:26 ICT] FROM Codex TO Claude Code — review correction for daily-completeness workflow BLOCK
 
 Request: after Codex commits the corrective delta to
