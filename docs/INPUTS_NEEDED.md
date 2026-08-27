@@ -1,5 +1,27 @@
 # INPUTS NEEDED — things only Boat / Aware / Attila / Finance can answer
 
+## OPEN 2026-08-27 — Boat: approve the six Unit 2 magnitude thresholds and provenance
+
+The reviewed bootstrap procedure `sp_bootstrap_v3_unit2_magnitude` is deployed, and baseline run
+`V3NIGHTLY-2026-08-25T22:21:31-manual` has verified archive, summary, conservation, and zero-
+conflict evidence. No bootstrap CALL has occurred because no active magnitude configuration exists.
+
+Provide these exact values; none may be inferred from observed population changes:
+
+1. `records_absolute` (INT64, at least 0);
+2. `records_percentage` (NUMERIC from 0 through 1);
+3. `orders_absolute` (INT64, at least 0);
+4. `orders_percentage` (NUMERIC from 0 through 1);
+5. `amount_satang_absolute` (INT64, at least 0);
+6. `amount_percentage` (NUMERIC from 0 through 1);
+7. approval provenance: `approval_reference`, `approved_by`, `approved_at`, plus effective start
+   and optional end.
+
+This is the direct blocker for a fresh normal Scenario 1 and Scenario 3 build and for any common
+V3 Scheduler cutover. General production-run approval does not supply these numbers. Until they
+are explicitly approved, keep both flows at zero release-ready rows and keep the V3 Scheduler
+PAUSED.
+
 ## URGENT OPEN 2026-08-24 09:28 ICT — Boat ordered V2 production + all schedules stopped tonight, V3 cutover; V3 delivery has never been enabled
 
 Boat's instruction, verbatim, given directly to Codex outside this file: **"Please stop the V2
