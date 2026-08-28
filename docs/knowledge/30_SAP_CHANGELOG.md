@@ -1,5 +1,22 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-28 14:30 ICT — V4 failed closed on stale magnitude-disabled wrapper
+
+- V4 execution `30f56286-124a-47a2-9afa-d22ce34e31a4`, run
+  `V3NIGHTLY-2026-08-28T07:09:51-ce263eb9`, consumed with no retry.
+- Unit 1 and Units 2–5 success; magnitude rows/results 0/0; daily completeness correctly failed.
+- Root cause: live DDL 061 exact stale `3ac75bf` omits magnitude evaluation; reviewed source includes
+  it. Archive/delivery rows zero; delivery false; Scheduler PAUSED.
+- Source-only `d815f98` adds ordered-call regression and exact live-wrapper runner pin. Claude packet
+  prepared but not transmitted; exact user approval required by safety reviewer.
+
+## 2026-08-28 13:35 ICT — deployed definition-only Unit 5 fix `68928dc`
+
+- Job `codex_v3_ddl058_68928dc_20260828_1334_ict` DONE, error null, 0/0 bytes.
+- All existing table DDL skipped; only Unit 5 procedure replaced.
+- Exact body hash `689c0363...` live; delivery false, Scheduler PAUSED, zero active executions.
+- No CALL, fresh run, interface delivery, GCS, SAP, IAM, or ACK action in the deployment.
+
 ## 2026-08-28 13:15 ICT — hardened fresh runner against stale Unit 5 definitions
 
 - Added source-only exact live Unit 5 signature/body-hash gate in `b982d10`.

@@ -1,5 +1,37 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-28 14:30 ICT — Unit 5 fix live; V4 exposed stale Units 2–5 wrapper
+
+Boat approved exact definition-only Unit 5 `68928dc`. Deployment job
+`codex_v3_ddl058_68928dc_20260828_1334_ict` completed DONE, error null, 0/0 bytes; all table DDL
+skipped and only `sp_build_v3_newpayment_shadow` was replaced. Live body hash is exact
+`689c0363...`, corrected alias present, delivery false, V3 Scheduler PAUSED, zero active executions.
+Rollback was not needed.
+
+Claude separately PASSed hardened runner `b982d10` WITH NOTES. Its authenticated preflight passed
+against live Unit 5. V3 was then consumed at parameter binding because an invalid reference prefix
+never entered the script; bounded postcheck proved zero external impact. Distinct V4 passed every
+gate and created execution `30f56286-124a-47a2-9afa-d22ce34e31a4`, run
+`V3NIGHTLY-2026-08-28T07:09:51-ce263eb9`.
+
+V4 progressed beyond the repaired Unit 5 path: Unit 1 and Units 2–5 both logged success, then daily
+completeness failed closed because magnitude evidence was 0/0. Exact report: Unit 2 summary 14,
+archive runs 0, delivery rows 0, final `FAILED_OR_INCOMPLETE_REVIEW_REQUIRED`. Root cause is stale
+live `sp_run_v3_units2_5` body `c6921bc5...` (historical `3ac75bf`), which omits the magnitude call
+present in reviewed current DDL 061 (`a419bf2b...`).
+
+Source-only `d815f98` adds the ordered magnitude-call regression and pins future runner preflight to
+exact reviewed DDL 061. Static/parse gates PASS and read-only preflight is RED against stale live.
+The exact Claude packet is prepared, but the workspace safety reviewer requires explicit Boat
+approval for this sensitive eight-file transmission; nothing was sent. No retry is authorized.
+
+## 2026-08-28 13:35 ICT — definition-only Unit 5 `68928dc` deployed successfully
+
+Exact reviewed DDL 058 replaced only `sp_build_v3_newpayment_shadow`; job
+`codex_v3_ddl058_68928dc_20260828_1334_ict` is DONE, 0/0 bytes. Postdeploy body hash and signature
+match the manifest, corrected run-id alias is live, delivery remains disabled, Scheduler PAUSED,
+and no Workflow, data run, GCS, SAP, IAM, or ACK action occurred.
+
 ## 2026-08-28 13:15 ICT — new-run guard now pins the live Unit 5 definition
 
 The previously reviewed fresh runner pinned Workflow revision/source but did not pin the separately
