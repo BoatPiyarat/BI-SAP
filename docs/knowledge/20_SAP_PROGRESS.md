@@ -1,5 +1,21 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-28 22:39 ICT — Scenario 2 definitions released independently; build remains gated
+
+Released the independently Class-A-PASSed Scenario 2 RCL first-CREATE definition set from reviewed
+artifact `60b6978` (review record commit `c5da21b`). Preflight proved all six targets absent, so this
+was a new-object deployment and did not replace another scenario or consumer. Mandatory-wrapper job
+`codex_v3_scenario2_ddl105_60b6978_20260828_2237_ict` completed DONE in
+`asia-southeast1`, no error, 0 bytes processed/billed, creating the append-only 59-column run
+snapshot, release-hold, private-identity and manifest tables, exact 56-column all-STRING latest-ready
+view, and one-STRING-argument build procedure.
+
+Post-deploy aggregate job `codex_v3_scenario2_postdeploy_zero_20260828_2240_ict` returned zero rows
+in snapshot, release hold, identity, manifest, and ready. Therefore no build CALL, payload, GCS,
+Scheduler, SAP delivery, pickup/import, or ACK occurred. Scenario 2 definitions are live separately;
+the next gate is a separately scoped one-time production CALL for the durable run after explicit
+mutation approval. The five Unit 3 identities and one ambiguous identity remain held by design.
+
 ## 2026-08-28 20:50 ICT — exact August Scenario 1 result is zero READY; Class-A PASS
 
 The three apparent current-run READY identities were resolved without changing production: their

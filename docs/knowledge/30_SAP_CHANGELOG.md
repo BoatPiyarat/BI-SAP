@@ -1,5 +1,16 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-28 22:39 ICT — released Scenario 2 new definitions independently
+
+- Claude Class-A delta for `60b6978`: PASS WITH NOTES, no BLOCK; append-only concurrency,
+  56-column order, 59-field publication, live-source provenance, mapping scope, and NULL safety pass.
+- Metadata preflight proved the four tables, ready view, and procedure were all absent.
+- Mandatory-wrapper job `codex_v3_scenario2_ddl105_60b6978_20260828_2237_ict` DONE, no error,
+  0/0 bytes; created only the six new Scenario 2 objects.
+- Live ready view is 56 all-STRING columns; procedure signature is exactly one STRING run ID.
+- Postcheck returned snapshot/hold/identity/manifest/ready counts all zero. No CALL, file, GCS,
+  Scheduler, SAP delivery, import, or ACK; other scenarios were not coupled to this release.
+
 ## 2026-08-28 20:50 ICT — closed Scenario 1 August qualification at zero READY
 
 - Exact run `V3NIGHTLY-2026-08-28T08:21:49-ad4cc398`: 6,812 identities conserved as 4,226
