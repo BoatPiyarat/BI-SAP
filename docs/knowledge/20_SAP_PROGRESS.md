@@ -1,5 +1,18 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-28 20:50 ICT — exact August Scenario 1 result is zero READY; Class-A PASS
+
+The three apparent current-run READY identities were resolved without changing production: their
+payment dates are 2026-04-28, 2026-05-15, and 2026-06-08, before the approved mapping effective
+start of 2026-08-01 and outside the August snapshot. Backdating is not authorized.
+
+The exact August-only distribution for run `V3NIGHTLY-2026-08-28T08:21:49-ad4cc398` conserves
+6,812 identities: 4,226 acknowledged, 2,551 held because a different InvoiceNo would mutate
+immutable live state, 26 held because the matching live invoice is already cancelled, 9 explicit
+rule exclusions, and **0 READY**. Claude's final narrow Class-A delta verdict is PASS. Therefore the
+approved one-time DDL 103 snapshot CALL remains unconsumed and no August 56-column file is produced.
+No further BigQuery population query, snapshot, GCS, delivery, Scheduler, SAP, or ACK action occurred.
+
 ## 2026-08-28 20:17 ICT — DDL 103 uniqueness delta live; snapshot CALL correctly retained
 
 Boat approved exact definition-only DDL 103 commit `9a2b9e7` plus one bounded immutable August

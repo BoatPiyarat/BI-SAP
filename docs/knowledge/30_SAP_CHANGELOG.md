@@ -1,5 +1,14 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-28 20:50 ICT — closed Scenario 1 August qualification at zero READY
+
+- Exact run `V3NIGHTLY-2026-08-28T08:21:49-ad4cc398`: 6,812 identities conserved as 4,226
+  acknowledged, 2,551 immutable-InvoiceNo holds, 26 already-cancelled holds, 9 exclusions, 0 READY.
+- Three apparent candidates are April–June payments and cannot be backdated into the August mapping
+  effective period or snapshot.
+- Claude final Class-A delta: PASS; no BLOCK and no production action authorized by the review.
+- Approved one-time DDL 103 CALL remains unconsumed; no snapshot/file/GCS/Scheduler/SAP/ACK action.
+
 ## 2026-08-28 20:17 ICT — deployed reviewed DDL 103 uniqueness delta
 
 - Explicitly approved commit `9a2b9e7`; mandatory-wrapper job
