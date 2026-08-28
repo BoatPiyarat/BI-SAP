@@ -1,5 +1,16 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-28 23:44 ICT — released Scenario 2 archive adapter independently
+
+- Claude Class-A base/delta: PASS WITH NOTES, no BLOCK; NULL-boundary and exact rollback notes closed.
+- Metadata preflight proved `sp_export_v3_scenario2_archive` absent.
+- Mandatory-wrapper job `codex_v3_scenario2_ddl106_d91148e_20260828_2344_ict` DONE; created only
+  the new three-STRING-argument SQL procedure.
+- Live definition hash `5ef7bcf991153429b8450dac96fa64f9a205e2af54d98e5b0179f1f0c44e0340`;
+  bronze-only path, no interface bucket, Scheduler, or nested CALL.
+- No procedure CALL, snapshot, archive file, delivery, SAP pickup/import, or ACK. Readiness-view
+  replacement and the DDL 105 snapshot build remain separately gated.
+
 ## 2026-08-28 22:39 ICT — released Scenario 2 new definitions independently
 
 - Claude Class-A delta for `60b6978`: PASS WITH NOTES, no BLOCK; append-only concurrency,

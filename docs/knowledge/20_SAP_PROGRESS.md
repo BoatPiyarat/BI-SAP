@@ -1,5 +1,23 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-28 23:44 ICT — Scenario 2 archive/lifecycle adapter released independently
+
+Released only the new Scenario 2 RCL-first immutable archive adapter procedure from hardened
+artifact `d91148e`. Claude Class-A reviewed base `0424e59` and delta `d91148e`: PASS WITH NOTES,
+no BLOCK; the explicit NULL-boundary and exact rollback notes are closed. Read-only metadata
+preflight proved `sp_export_v3_scenario2_archive` absent, so this was a new-object deployment.
+Mandatory-wrapper job `codex_v3_scenario2_ddl106_d91148e_20260828_2344_ict` completed DONE and
+created exactly that one SQL procedure.
+
+Live postcheck confirms signature `(p_pipeline_run_id STRING, p_export_run_id STRING,
+p_requested_by STRING)`, live definition SHA-256
+`5ef7bcf991153429b8450dac96fa64f9a205e2af54d98e5b0179f1f0c44e0340`, no interface-bucket
+reference, no Scheduler reference, no nested procedure CALL, and the restricted bronze archive
+prefix only. Rollback is the reviewed single-object `DROP PROCEDURE IF EXISTS` artifact. No CALL,
+snapshot build, archive object, production delivery, Scheduler, SAP pickup/import, or ACK occurred.
+The separately reviewed readiness-view replacement still requires explicit `Deploy OK`; the DDL 105
+snapshot build remains a separately scoped mutation approval.
+
 ## 2026-08-28 22:39 ICT — Scenario 2 definitions released independently; build remains gated
 
 Released the independently Class-A-PASSed Scenario 2 RCL first-CREATE definition set from reviewed
