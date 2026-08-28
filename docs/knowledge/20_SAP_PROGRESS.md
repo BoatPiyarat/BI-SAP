@@ -1,5 +1,24 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-29 00:12 ICT — authorized Scenario 2 snapshot CALL failed closed; zero rows committed
+
+Boat authorized exactly one production CALL of
+`sp_build_v3_rcl_first_create_snapshot('V3NIGHTLY-2026-08-26T13:23:38-e830fff2')` with no retry,
+GCS, Scheduler, delivery, import, or ACK. Final preflight job
+`codex_v3_scenario2_precall_final_20260828_2359_ict` confirmed the exact zero state and live one-STRING
+procedure. The single authorized job `codex_v3_scenario2_snapshot_call_20260829_0005_ict` reached
+terminal DONE with query error `Column name Period is ambiguous` at live procedure line 286. It was
+not retried and its authorization is consumed.
+
+Aggregate post-failure job `codex_v3_scenario2_failed_call_zero_postcheck_20260829_0008_ict` proved
+manifest, run snapshot, release hold, private identity, and shared `CREATE_RCL_FIRST` identity all
+remain zero; no lifecycle claim or SAP intersection exists. The failure occurred before the
+transactional publication block, so no approved mutation boundary row was committed. Root cause is
+the case-insensitive collision between payload `p.Period` and identity `i.period` in the final joined
+snapshot INSERT projection. Source fix qualifies the entire payload projection; pre-fix static RED,
+fixed static PASS, and TEMP-only fixture job `codex_v3_scenario2_period_fixture_20260829_0012_ict`
+PASS. Definition replacement and any replacement CALL remain separately gated after Class-A review.
+
 ## 2026-08-29 00:03 ICT — Scenario 2 readiness view replaced independently
 
 Boat explicitly approved the definition-only Scenario 2 activation-readiness view artifact from

@@ -1,5 +1,16 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-29 00:12 ICT — Scenario 2 snapshot CALL failed closed on ambiguous Period
+
+- One exact authorized CALL job `codex_v3_scenario2_snapshot_call_20260829_0005_ict`; terminal DONE
+  with `Column name Period is ambiguous` at live procedure line 286; no retry.
+- Post-failure aggregate proof: manifest/snapshot/hold/private/shared identity all zero; no claim or
+  SAP intersection. Authorization consumed.
+- Root cause: unqualified payload `Period` collides case-insensitively with joined identity `period`.
+- Source fix qualifies the full payload projection. Pre-fix static RED, fixed static PASS, and
+  TEMP-only publication fixture job `codex_v3_scenario2_period_fixture_20260829_0012_ict` PASS.
+- No GCS, Scheduler, delivery, SAP, import, or ACK; replacement definition/CALL remain gated.
+
 ## 2026-08-29 00:03 ICT — deployed Scenario 2 readiness view independently
 
 - Explicit definition-only approval for reviewed artifact `63d4eea`.
