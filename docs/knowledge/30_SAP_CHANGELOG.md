@@ -1,5 +1,12 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-28 13:09 ICT — post-V2 nine-flow audit remains fully closed
+
+- Read-only job `bqjob_r3584ac0c8caef208_000001a046fbd63c_1` DONE; 20,972,416 bytes processed.
+- All nine flows: not activated, no exact approval, zero interface rows, `DO_NOT_ACTIVATE`.
+- Scenario 1: missing durable evidence. Scenario 3: stale evidence, 367 prepared / 0 ready.
+- No activation or mutation occurred; next gate remains definition-only `68928dc` Deploy OK.
+
 ## 2026-08-28 13:05 ICT — Unit 5 alias fix cleared Class-A review
 
 - Claude Code review of exact `68928dc`: PASS WITH NOTES, no functional BLOCK.

@@ -1,5 +1,19 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-28 13:09 ICT — fresh audit confirms no clean scenario is live-ready yet
+
+Read-only canonical audit job `bqjob_r3584ac0c8caef208_000001a046fbd63c_1` completed DONE under
+the mandatory wrapper (20,972,416 bytes processed). Zero of nine flows is activation-ready; all
+nine have zero interface rows and `DO_NOT_ACTIVATE`. Scenario 1 has a passing 56-column contract
+but no durable build evidence. Scenario 3 also has a passing 56-column contract, but its stale
+August 26 evidence has 367 prepared and zero release-ready rows.
+
+Therefore no normal clean-case scenario may be activated from current evidence. Today remains
+possible only through the ordered gates: definition-only `68928dc` deployment approval, a distinct
+new single-use delivery-disabled fresh run authorization, then a new audit and independent exact
+activation approval for any positive clean Scenario 1 or Scenario 3 result. Scenarios 2 and the six
+hold/edge flows remain explicitly blocked by business mappings or approvals.
+
 ## 2026-08-28 13:05 ICT — Unit 5 runtime fix Class-A PASS; definition deploy ready for approval
 
 Boat approved the exact hash-frozen packet and Claude Code returned **PASS WITH NOTES**, with no
