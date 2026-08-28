@@ -1,5 +1,12 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-28 13:15 ICT — hardened fresh runner against stale Unit 5 definitions
+
+- Added source-only exact live Unit 5 signature/body-hash gate in `b982d10`.
+- Gate runs before SAP-extract census and Workflow execution on preflight and real paths.
+- Static/parse gates PASS; read-only preflight rejects current `0c25117` hash as designed.
+- Queued exact seven-file Claude Class-A review; no production mutation occurred.
+
 ## 2026-08-28 13:09 ICT — post-V2 nine-flow audit remains fully closed
 
 - Read-only job `bqjob_r3584ac0c8caef208_000001a046fbd63c_1` DONE; 20,972,416 bytes processed.

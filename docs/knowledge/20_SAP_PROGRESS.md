@@ -1,5 +1,18 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-28 13:15 ICT — new-run guard now pins the live Unit 5 definition
+
+The previously reviewed fresh runner pinned Workflow revision/source but did not pin the separately
+deployed Unit 5 routine. Source-only commit `b982d10` closes that gap: before Scheduler/extract
+checks or any production-reachable action, it reads the live routine metadata and requires the
+exact `p_pipeline_run_id STRING` signature plus reviewed `68928dc` body hash.
+
+Static checks and PowerShell parsing pass. A read-only `-PreflightOnly` test rejects the currently
+live old body exactly (`expected=689c0363...`, `actual=bbe7a3eb...`) before SAP extraction or
+Workflow execution. The hardening is not deployed or used for a production run; its exact seven-file
+Claude Class-A packet is awaiting transmission approval. The definition-only `68928dc` deployment
+remains a separate, already-reviewed approval gate.
+
 ## 2026-08-28 13:09 ICT — fresh audit confirms no clean scenario is live-ready yet
 
 Read-only canonical audit job `bqjob_r3584ac0c8caef208_000001a046fbd63c_1` completed DONE under
