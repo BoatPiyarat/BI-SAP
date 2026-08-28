@@ -1,5 +1,14 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-29 00:18 ICT — reactivated V2 legacy daily interface jobs
+
+- Prestate: `sap-order-payment` and `sap-order-payment-non-motor` PAUSED, both `30 1 * * *`
+  Asia/Bangkok, with exact Motor/NonMotor Pub/Sub targets.
+- Resumed exactly those two jobs; poststate ENABLED, next run 2026-08-29 01:30 ICT.
+- `sap-extract-schedule` remained ENABLED; `v3-nightly-orchestrator` remained PAUSED.
+- No manual run, target/cadence/time-zone change, Workflow, GCS, IAM, delivery, import, or ACK.
+- Reversible rollback: pause only the two resumed V2 jobs; prestates captured before mutation.
+
 ## 2026-08-29 00:12 ICT — Scenario 2 snapshot CALL failed closed on ambiguous Period
 
 - One exact authorized CALL job `codex_v3_scenario2_snapshot_call_20260829_0005_ict`; terminal DONE

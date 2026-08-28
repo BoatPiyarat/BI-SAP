@@ -1,5 +1,21 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-29 00:18 ICT — V2 legacy daily interface Schedulers reactivated
+
+Boat stopped the unfinished V3 recovery path and explicitly prioritized daily V2 interface
+continuity. Read-only prestate proved the exact legacy interface jobs `sap-order-payment` and
+`sap-order-payment-non-motor` were PAUSED at `30 1 * * *`, `Asia/Bangkok`, targeting respectively
+`motor-order-payment-sap-interface` and `non-motor-order-payment-sap-interface`. The legacy extract
+anchor `sap-extract-schedule` was already ENABLED at 20:30 ICT, while `v3-nightly-orchestrator` was
+PAUSED; neither was mutated.
+
+Resumed exactly the two V2 jobs with Cloud Scheduler. Postcheck confirms both ENABLED with unchanged
+01:30 ICT cadence and exact Pub/Sub targets; next schedule time is `2026-08-28T18:30:00Z`
+(2026-08-29 01:30 ICT). `sap-extract-schedule` remains ENABLED and V3 remains PAUSED. No manual
+Scheduler run, Workflow execution, GCS write, BigQuery business-data mutation, delivery marker,
+SAP ACK, IAM, target, cadence, or time-zone change occurred. Exact prestates were captured; rollback
+is to pause only these two jobs if the legacy owner requests it.
+
 ## 2026-08-29 00:12 ICT — authorized Scenario 2 snapshot CALL failed closed; zero rows committed
 
 Boat authorized exactly one production CALL of
