@@ -1,5 +1,23 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-29 00:03 ICT — Scenario 2 readiness view replaced independently
+
+Boat explicitly approved the definition-only Scenario 2 activation-readiness view artifact from
+commit `63d4eea`, with no CALL, GCS, Scheduler, SAP, import, or ACK. Immediate metadata preflight
+proved the live pre-deploy query still matched exact rollback SHA-256
+`6a3759d1555ba3b6ba1f7471448be2ae57a8e27796f5bd1482833fc0db17f2b9` and captured etag
+`DjFNhj0tXrlRA8eEFo61+g==`. Mandatory-wrapper job
+`codex_v3_scenario2_readiness_view_63d4eea_20260829_0002_ict` completed DONE and replaced exactly
+`vw_v3_business_flow_activation_readiness`.
+
+Post-deploy live query SHA-256
+`7e657d9c79ac9db5a57fb1110a0779c2aba6ce8696363d17f29cfed8a77dbb21` matches the reviewed
+candidate exactly; live etag is `NCvz/ON8vkx9H/QvQsbEGw==`. Aggregate postcheck job
+`codex_v3_scenario2_readiness_postdeploy_20260829_0003_ict` returned the exact pre-build Scenario 2
+run with 183 prepared, 0 ready, 0 interface rows, `DO_NOT_ACTIVATE`, and the expected mapping-required
+fallback state. Rollback was not needed and remains the exact reviewed pre-deploy view artifact.
+No snapshot CALL, GCS, delivery, Scheduler, SAP, import, or ACK occurred in this deployment.
+
 ## 2026-08-28 23:44 ICT — Scenario 2 archive/lifecycle adapter released independently
 
 Released only the new Scenario 2 RCL-first immutable archive adapter procedure from hardened

@@ -1,5 +1,15 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-29 00:03 ICT — deployed Scenario 2 readiness view independently
+
+- Explicit definition-only approval for reviewed artifact `63d4eea`.
+- Pre-deploy live query matched exact rollback hash `6a3759d1555ba3b6ba1f7471448be2ae57a8e27796f5bd1482833fc0db17f2b9`.
+- Job `codex_v3_scenario2_readiness_view_63d4eea_20260829_0002_ict` DONE; replaced only
+  `vw_v3_business_flow_activation_readiness`.
+- Live candidate hash match: `7e657d9c79ac9db5a57fb1110a0779c2aba6ce8696363d17f29cfed8a77dbb21`.
+- Postcheck: 183 prepared, 0 ready/interface, `DO_NOT_ACTIVATE`; rollback not needed.
+- No snapshot CALL, GCS, delivery, Scheduler, SAP, import, or ACK in this deployment.
+
 ## 2026-08-28 23:44 ICT — released Scenario 2 archive adapter independently
 
 - Claude Class-A base/delta: PASS WITH NOTES, no BLOCK; NULL-boundary and exact rollback notes closed.
