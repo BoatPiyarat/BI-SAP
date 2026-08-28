@@ -1,5 +1,16 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-28 20:17 ICT — deployed reviewed DDL 103 uniqueness delta
+
+- Explicitly approved commit `9a2b9e7`; mandatory-wrapper job
+  `codex_v3_ddl103_9a2b9e7_20260828_2030_ict` DONE, no error, 0/0 bytes.
+- Existing snapshot tables skipped; only `sp_build_v3_monthend_onetime_snapshot` replaced.
+- Live body contains the reviewed validation-hold uniqueness assertion; rollback not needed.
+- Approved snapshot CALL remains unconsumed: no DDL085 V2 manifest, split-approval rows 0, and
+  current 3-event Scenario 1 cell has no approved mapping/exact payload evidence.
+- EDC independent clean-case result is zero: 2,800 already in SAP, 68 credit-shell.
+- No snapshot, file, GCS, delivery, Scheduler, SAP, pickup/import, or ACK action occurred.
+
 ## 2026-08-28 15:32 ICT — V5 consumed at fail-closed Unit 2 magnitude hold
 
 - Execution `9e7d4b6b-3e20-4d7f-9364-bfe31cb9080b`; run

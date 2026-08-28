@@ -1,5 +1,25 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-28 20:17 ICT — DDL 103 uniqueness delta live; snapshot CALL correctly retained
+
+Boat approved exact definition-only DDL 103 commit `9a2b9e7` plus one bounded immutable August
+ONETIME snapshot CALL, with no GCS or Scheduler change. Mandatory-wrapper job
+`codex_v3_ddl103_9a2b9e7_20260828_2030_ict` completed DONE, 0/0 bytes: the four existing snapshot
+tables were skipped and only `sp_build_v3_monthend_onetime_snapshot` was replaced. Live metadata
+confirms the reviewed validation-hold uniqueness assertion is present. Rollback was not needed;
+the prior reviewed definition is commit `59a4521`.
+
+The one-time CALL is deliberately unconsumed. Zero-billing preflight found no
+`DDL085_MANIFEST_V2`; the only DDL 085 manifest is V1 with ready 0. Current V5 Scenario 1 has an
+exact 3-record / 3-order / 2,211,419-satang ready cell, but the run-bound split approval table is
+empty and prior row evidence shows 0/3 approved mappings and 0/3 exact payload variants. A CALL
+would therefore fail the upstream manifest assertion or create no qualified payload. No snapshot,
+GCS, delivery, Scheduler, SAP, or ACK action occurred. The next legitimate gate is an exact
+business-approved mapping/payload resolution and run-bound split approval, not another census.
+
+Separately, the plain-paid EDC requalification ended at zero clean rows: 2,800 already exist in
+SAP and 68 are credit-shell. Those rows must not be re-exported.
+
 ## 2026-08-28 15:32 ICT — V5 fresh build held correctly on material classification redistribution
 
 Single-use V5 execution `9e7d4b6b-3e20-4d7f-9364-bfe31cb9080b`, run
