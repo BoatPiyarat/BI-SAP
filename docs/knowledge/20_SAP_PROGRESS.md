@@ -1,5 +1,21 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-28 15:32 ICT — V5 fresh build held correctly on material classification redistribution
+
+Single-use V5 execution `9e7d4b6b-3e20-4d7f-9364-bfe31cb9080b`, run
+`V3NIGHTLY-2026-08-28T08:21:49-ad4cc398`, is consumed with no retry. Unit 1 completed: SAP extract,
+22/22 clean load envelopes, mirror refresh, and exact `UNIT1_COMPLETE`. The repaired magnitude
+evaluator then compared 39 cells and held 16 before Unit 3.
+
+This is not incomplete source data: payment events increased 198,853→201,130 and schedules
+1,500,513→1,503,486. It is a material redistribution: schedule ready -3,347, acknowledged +5,073,
+held-validation +1,568; payment-event ready -1,275, acknowledged +2,560, held-validation +970.
+Zero archive/delivery rows. Delivery false, promoter unchanged/private, Scheduler PAUSED, control
+plane ready, zero active executions, bronze prefix empty.
+
+Do not widen thresholds or rebaseline automatically. Next gate is Class-A review plus explicit
+business approval of any numeric bridge/rebaseline mechanism; all nine activations remain blocked.
+
 ## 2026-08-28 15:18 ICT — magnitude-enabled Units 2–5 wrapper deployed; hardened preflight PASS
 
 Claude returned PASS WITH NOTES for exact `d815f98`/DDL 061; no BLOCK. The acknowledged residuals

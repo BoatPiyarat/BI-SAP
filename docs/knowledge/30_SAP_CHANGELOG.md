@@ -1,5 +1,15 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-28 15:32 ICT — V5 consumed at fail-closed Unit 2 magnitude hold
+
+- Execution `9e7d4b6b-3e20-4d7f-9364-bfe31cb9080b`; run
+  `V3NIGHTLY-2026-08-28T08:21:49-ad4cc398`; no retry.
+- Unit 1/extract/load/mirror refresh succeeded; magnitude held 16/39 cells before Unit 3.
+- Populations conserved and grew; material ready→acknowledged/held-validation redistribution.
+- Archive/delivery rows zero; delivery false, promoter unchanged/private, Scheduler PAUSED, zero
+  active executions, bronze input empty.
+- No threshold weakening or rebaseline; independent review and explicit business approval required.
+
 ## 2026-08-28 15:18 ICT — deployed reviewed magnitude-enabled DDL 061
 
 - Claude Class-A result for `d815f98`: PASS WITH NOTES, no BLOCK.
