@@ -1,5 +1,24 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-28 13:05 ICT — Unit 5 runtime fix Class-A PASS; definition deploy ready for approval
+
+Boat approved the exact hash-frozen packet and Claude Code returned **PASS WITH NOTES**, with no
+functional BLOCK, for source-only commit `68928dc`. The one-line alias is minimal and does not
+change candidate selection, holds, conservation, release, archive, or delivery. The two accepted
+notes distinguish the narrow CTAS fixture from the live error stage and flag one unchanged direct
+positional INSERT as later hardening.
+
+Post-review static gates PASS, safe-wrapper self-test is 7/7, and a fresh authenticated exact-DDL
+dry-run-only estimates 0 bytes with no real query. Live procedure remains the reviewed `0c25117`
+definition (`bbe7a3eb...` body hash). Control plane is safe and ready: Workflow `000011-291`,
+delivery false, promoter unchanged/private, V3 Scheduler PAUSED, and zero ACTIVE/QUEUED executions.
+
+Definition-only deployment manifest `docs/reviews/2026-08-28-68928dc-definition-deploy-request.md`
+is pending Boat's exact `Deploy OK`. This is the shortest safe production step today. After that,
+a separately approved fresh delivery-disabled run is still required before normal clean Scenario 1
+or Scenario 3 rows can be reassessed for activation; no scenario is activated by the definition
+deployment itself.
+
 ## 2026-08-28 12:52 ICT — fresh Units 1–5 V2 failed closed in Unit 5; source fix pending review
 
 Boat authorized one replacement execution with approval reference

@@ -1,5 +1,14 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-28 13:05 ICT — Unit 5 alias fix cleared Class-A review
+
+- Claude Code review of exact `68928dc`: PASS WITH NOTES, no functional BLOCK.
+- Post-review source gates PASS; safe-wrapper self-test 7/7; fresh exact-DDL dry-run-only 0 bytes.
+- Live remains `0c25117`; Workflow delivery false, promoter unchanged, V3 Scheduler PAUSED, zero
+  ACTIVE/QUEUED executions.
+- Exact definition-only deployment request prepared. No deploy, CALL, fresh run, delivery, GCS,
+  Scheduler/IAM, SAP, or ACK action occurred.
+
 ## 2026-08-28 12:52 ICT — V2 fresh run stopped at Unit 5; delivery stayed closed
 
 - One authorized V2 Workflow execution: `b1268f4e-29d2-44a6-9c4a-387da542beed`, pipeline run
