@@ -1,5 +1,21 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-28 15:18 ICT — magnitude-enabled Units 2–5 wrapper deployed; hardened preflight PASS
+
+Claude returned PASS WITH NOTES for exact `d815f98`/DDL 061; no BLOCK. The acknowledged residuals
+are the preflight-to-CALL TOCTOU window and lack of independent body pins for every called Units
+2–5 sub-procedure. Exact definition-only job
+`codex_v3_ddl061_d815f98_20260828_1516_ict` completed DONE with no error and 0/0 bytes.
+
+Live `sp_run_v3_units2_5` now has the reviewed body hash `a419bf2b...` and exact one-STRING signature,
+replacing stale `c6921bc5...`. Delivery remains false, promoter unchanged/private, V3 Scheduler
+PAUSED, control plane ready, and zero active/queued executions. Hardened `-PreflightOnly` passed,
+pinning wrapper `a419bf2b...` and Unit 5 `689c0363...`, and created no execution. Rollback was not
+needed. No fresh run, GCS, SAP, Scheduler, IAM, pickup/import/ACK, or automatic retry occurred.
+
+Next gate: freeze a distinct single-use, delivery-disabled fresh Units 1–5 production-run manifest;
+run once; audit all nine scenarios and activate only clean non-overlapping slices.
+
 ## 2026-08-28 14:30 ICT — Unit 5 fix live; V4 exposed stale Units 2–5 wrapper
 
 Boat approved exact definition-only Unit 5 `68928dc`. Deployment job

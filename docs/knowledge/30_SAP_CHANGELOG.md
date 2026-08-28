@@ -1,5 +1,15 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-28 15:18 ICT — deployed reviewed magnitude-enabled DDL 061
+
+- Claude Class-A result for `d815f98`: PASS WITH NOTES, no BLOCK.
+- Definition-only job `codex_v3_ddl061_d815f98_20260828_1516_ict` DONE, no error, 0/0 bytes.
+- Live Units 2–5 wrapper exact body hash `a419bf2b...`; stale `c6921bc5...` replaced.
+- Hardened preflight pinned wrapper `a419bf2b...` and Unit 5 `689c0363...`; no execution created.
+- Delivery false, promoter unchanged/private, Scheduler PAUSED, control plane ready, zero active
+  executions; rollback not needed.
+- No CALL, fresh run, GCS/interface delivery, SAP, Scheduler/IAM, pickup/import/ACK, or retry.
+
 ## 2026-08-28 14:30 ICT — V4 failed closed on stale magnitude-disabled wrapper
 
 - V4 execution `30f56286-124a-47a2-9afa-d22ce34e31a4`, run
