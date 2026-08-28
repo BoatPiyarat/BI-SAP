@@ -3957,3 +3957,30 @@ replayed export runs or destination URIs. REST dry-run at `2026-08-03T08:45:58.5
 at 0 bytes; deploy job `codex_deploy_062_20260803_154635_317` completed DONE, error null, 0/0
 processed/billed. No procedure CALL, GCS copy, or scheduler mutation occurred. `DELIVERED` remains
 strictly distinct from SAP pickup and acknowledgement.
+
+## 2026-08-28 18:29 ICT — Scenario 1 isolated control definitions deployed; zero clean rows, not live
+
+Focused today's shortest production increment on Scenario 1 `ORDINARY_ONETIME_CREATE`. Claude's
+exact sixteen-file Class-A review returned PASS WITH NOTES/no BLOCK. The required row-level sample
+then checked all 3 Unit 2 READY identities, all 16 mixed ACK/hold identities, and 10 held identities
+against raw, staged, SAP mirror, payload, and approved mapping sources. The exclusions are supported,
+but none of the three nominal READY rows is clean: 0/3 has an exact approved payment mapping and
+0/3 has an exact invoice-matched payload source. Do not widen mappings or release these rows.
+
+Definition-only jobs completed DONE at 0/0 processed/billed:
+
+- `codex_v3_ddl104_02bd87c_20260828_1826_ict` — created empty split-approval table, exact one-cell
+  mapping view, and run-bound assertion procedure;
+- `codex_v3_ddl085_02bd87c_20260828_1827_ict` — replaced only the isolated Scenario 1 build
+  procedure with the reviewed two-argument gate;
+- `codex_v3_ddl086_02bd87c_20260828_1828_ict` — replaced only the manual-delivery marker with the
+  exact activation-approval requirement.
+
+Live hashes/signatures match candidates, the new approval table has zero rows, static and mapping
+postchecks pass, delivery remains false, canonical V3 Scheduler remains PAUSED, and no Workflow
+execution was created. No approval insert, build CALL, GCS, SAP, pickup/import, or ACK occurred.
+Therefore Scenario 1—and all nine scenarios—remain **not live**. The control definitions are ready
+for a future clean run, but a fresh single-use approval is still required.
+
+Canonical evidence is on branch `codex/unit5-array-merge-20260828`, commit `b8f697a`, file
+`docs/reviews/2026-08-28-02bd87c-scenario1-definition-deploy-evidence-codex.md`.

@@ -3685,3 +3685,13 @@ Decided: ไม่ใช้ custom MCP server (ADC) สำหรับ BigQuery 
 workaround query-and-paste (OAuth bug redirect_uri_mismatch ฝั่ง Anthropic)
 
 Established: AI_BOOTSTRAP + CONTEXT/PROGRESS/CHANGELOG pattern; เชื่อม Gmail/Drive สำเร็จ
+
+## 2026-08-28 18:29 ICT
+
+Deployed Scenario 1 control definitions only: DDL 104/085/086 jobs
+`codex_v3_ddl104_02bd87c_20260828_1826_ict`,
+`codex_v3_ddl085_02bd87c_20260828_1827_ict`, and
+`codex_v3_ddl086_02bd87c_20260828_1828_ict` all DONE at 0/0 bytes. Claude Class-A review was PASS
+WITH NOTES/no BLOCK; required raw-row sampling found zero normal clean V5 candidates (0/3 approved
+payment mappings, 0/3 exact invoice-matched payload sources). No approval row, procedure CALL,
+delivery, or Scheduler action. Scenario 1 is not live; Scheduler remains PAUSED.
