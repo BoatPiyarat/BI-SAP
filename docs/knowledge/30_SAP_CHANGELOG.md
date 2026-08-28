@@ -1,5 +1,174 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-28 12:52 ICT — V2 fresh run stopped at Unit 5; delivery stayed closed
+
+- One authorized V2 Workflow execution: `b1268f4e-29d2-44a6-9c4a-387da542beed`, pipeline run
+  `V3NIGHTLY-2026-08-28T05:41:13-6c7d5995`; SAP extract and Unit 1 succeeded once.
+- Units 2–5 failed at Unit 5 procedure line 400: temp-table projection did not alias
+  `p_pipeline_run_id` as `pipeline_run_id`. No retry; V2 consumed.
+- Disposition evidence: Units 2–5 success 0, archive runs 0, delivery rows 0; delivery false,
+  promoter unchanged, V3 Scheduler PAUSED. No GCS interface write or SAP delivery/ACK.
+- Source-only fix `68928dc` adds the explicit alias and regression checks; deterministic fixture and
+  corrected DDL dry-run PASS. Fix remains undeployed pending Class-A review and new deployment
+  approval. A future production run needs a separate new single-use authorization.
+
+## 2026-08-28 12:36 ICT — V1 invocation consumed with zero production impact
+
+- Runner invocation omitted mandatory `-ApprovalReference`; failed at line 25 before all live
+  commands. No retry.
+- Bounded postcheck: zero Workflow executions, zero SAP-extract executions, V3 Scheduler PAUSED,
+  legacy Scheduler ENABLED.
+- V1 approval consumed. A separately approved V2 reference is required for a replacement run.
+
+## 2026-08-28 11:16 ICT — deployed reviewed Unit 5 `0c25117` definition only
+
+- Claude census review `ec776d5`: PASS WITH NOTES; corrected authenticated `-PreflightOnly` PASS,
+  `PREFLIGHT_EXECUTION_CREATED=false`, job `bqjob_r308539a0ffac567e_000001a0468fb343_1`.
+- Exact `0c25117` gates passed; deployment job
+  `codex_v3_ddl058_0c25117_20260828_1116_ict` finished DONE at 0/0 bytes.
+- Created empty exact-schema `v3_unit5_candidate_required_hold`; replaced only
+  `sp_build_v3_newpayment_shadow`; live body hash equals reviewed candidate.
+- Delivery remains false and V3 Scheduler PAUSED. No CALL, Workflow execution, GCS, SAP, or ACK.
+- Rollback: redeploy prior DDL 058 procedure from `6354d5b`; retain empty additive table inert.
+- Post-deploy nine-flow audit `codex_v3_nine_flow_post_0c25117_20260828_1123_ict`: all nine remain
+  unapproved/unactivated with zero interface rows and `DO_NOT_ACTIVATE`.
+
+## 2026-08-28 10:21 ICT — refreshed V3 control-plane safety state
+
+- Read-only checker PASS at `2026-08-28T03:21:35.7284446+00:00`: Workflow `000011-291`, delivery
+  false, expected private promoter revision ready, canonical Scheduler PAUSED, and no configuration
+  readiness blocker.
+- `permission_rehearsal_required=true` remains; source identity and execution concurrency are still
+  separate pending gates. Evidence commit `de0c8da`; no production mutation occurred.
+
+## 2026-08-28 10:04 ICT — fixed CRLF-driven quadratic Workflow census hang in source
+
+- Interrupted one hung `-PreflightOnly` attempt before any workflow execution.
+- Replaced quadratic mismatch diagnostics with a linear, detail-bounded, all-mismatch-counting pass.
+- Normalized only CRLF/CR to LF for identity comparison while retaining raw hashes and lengths.
+- Static census/operator checks and PowerShell parsing pass; live rerun awaits approval-service
+  capacity and Class-A review. No production mutation occurred.
+- Added an offline end-to-end fixture proving allowed serialization passes and executable drift
+  fails closed (`9e51c76`).
+- Closed local review findings in `ec776d5`: explicit normalized evidence labels, exact live-object
+  and lookup-time provenance, required session bookkeeping, and complete disallowed accounting for
+  unmatched executable tails. Pass/aligned-drift/tail-drift fixtures and both static checkers pass.
+- Refreshed the exact eight-file Claude handoff at `5c14626`. No live preflight, deployment,
+  Workflow execution, Scheduler change, GCS write, SAP action, or interface delivery occurred.
+
+## 2026-08-28 09:45 ICT — refreshed nine-flow production readiness without mutation
+
+- Canonical wrapped audit job `bqjob_r595795ade40859fc_000001a0463ff14b_1` found zero of nine flows
+  activation-ready; all interface-row counts remain zero.
+- Closed the reviewed DDL 082 dependency caveat from live view/table metadata.
+- Confirmed V3 and legacy payment writers remain PAUSED, the read-only SAP extract anchor remains
+  ENABLED, workflow revision `000011-291` is ACTIVE/delivery-disabled, and no execution is active.
+- No deploy, CALL, GCS, promoter, Scheduler, Workflow, IAM, SAP, or interface action occurred.
+
+## 2026-08-28 09:38 ICT — integrated Unit 5 candidate cleared review and runtime validation
+
+- Claude cumulative Class-A review of exact `0c25117`: PASS WITH NOTES, no BLOCK.
+- Exact integrated static checker and authenticated DDL dry-run passed.
+- ARRAY fixture job `codex_v3_0c25117_array_fixture_20260828_0937_ict`: PASS at 0 bytes.
+- Whole-item fixture job `codex_v3_0c25117_item_hold_fixture_20260828_0937_ict`: PASS at 0 bytes,
+  including mixed, zero-held, zero-released, duplicate-period, and Paid-required-field cases.
+- Live routine timestamp remains `1787786021961`; additive required-hold table remains absent.
+- No deployment or procedure CALL occurred; a new explicit `0c25117` deploy approval is required.
+
+## 2026-08-28 08:09 ICT — reviewed ARRAY fix integrated into latest Unit 5 candidate
+
+- Claude returned PASS WITH NOTES, no BLOCK, for `20809d1`; review recorded read-only.
+- Detected that newer parallel commits `03edcba` + `63d6943` still used BigQuery-invalid ARRAY
+  `NOT NULL`; did not deploy them.
+- Integration commit `0c25117` carries the fix onto latest source and generalizes the regression
+  guard; cumulative review request `39b9fa2` prepared.
+- Exact runtime verification is pending OAuth reauthentication. No BigQuery job was created by the
+  failed auth checks and no production state changed.
+
+## 2026-08-28 00:49 ICT — DDL 058 deployment rejected; no live mutation
+
+- Approved definition-only job `codex_v3_ddl058_required_hold_20260828_0049_ict` failed closed at
+  the new hold-table schema because BigQuery forbids `NOT NULL` on ARRAY fields.
+- Postchecks: hold table absent; live procedure timestamp/hash unchanged at the exact rollback
+  definition; no CALL, retry, delivery, GCS, promoter, Scheduler, Workflow, or IAM action.
+- Prepared a one-token source correction plus regression guard; corrected temporary-table fixture
+  `codex_v3_ddl058_array_fixture_20260828_0054_ict` passed at 0 bytes. New Class-A review and a new
+  exact deployment approval remain required.
+
+## 2026-08-27 22:26 ICT — ran one fresh delivery-disabled Units 1–5 pilot; failed closed
+
+- Ran the exact approved operator once on workflow revision `000011-291`.
+- Fresh SAP extract and load succeeded: 4,755 rows, zero bad records; mirror refreshes succeeded.
+- Units 2–5 stopped on the existing NEWPAYMENT SQL/literal-NULL assertion before magnitude or
+  archive completion. Retained 14 partial Unit 2 summary rows as append-only evidence.
+- Verified zero archive runs and zero production delivery rows for the run; no retry or cleanup.
+- Verified delivery false, V3 Scheduler PAUSED, legacy extract ENABLED, no active/queued workflow,
+  and an empty bronze production prefix after the attempt.
+- Diagnosed the exact failing values read-only: 22 installment spine rows with SQL NULL LastName
+  and 20 with SQL NULL PolicyNo; no other NULL/literal-NULL/invalid-numeric field appeared.
+- Added source-only commit `37b5a9b`: whole-OrderItem required-value quarantine and durable hold
+  evidence, with only clean spines contributing to ready/identity/hash state. Required fields were
+  not normalized or defaulted.
+- Regression checker is RED against `1f5c20c` and PASS against current source; zero-byte BigQuery
+  fixture and authenticated DDL dry-run both PASS. No deployment or production rerun occurred.
+- Claude Class-A review commit `1944208`: PASS WITH NOTES, no BLOCK. Live procedure definition
+  exactly equals rollback commit `6354d5b`; Codex receipt `4a3beec`. Deployment and rerun remain
+  separately approval-gated.
+- Full evidence: `docs/reviews/2026-08-27-fresh-units1-5-pilot-run-evidence-codex.md`.
+
+## 2026-08-27 — deployed split activation controls, fixed Scenario 3 optional NULLs, retained fail-closed cutover
+
+- Deployed DDL 098 split-scenario activation/rollback control; no Scheduler mutation occurred.
+- Deployed the reviewed DDL 058 Scenario 3 optional-field normalization; the old immutable run
+  remains held and no fresh run bypassed the missing magnitude configuration.
+- Verified live metadata presence of all nine preparation/hold routines and confirmed no recurring
+  V3 workflow trigger. Live workflow remains old revision `000009-e96`, source-drifted and
+  `delivery_enabled:false`; legacy/payment/watchdog paused states were preserved.
+- BLOCKed exact workflow delta `efd6de0` for query-exception and malformed-cell fail-closed gaps;
+  added correction `8a420d7`, isolated as `8d66b3b` + request `2e1b54c` for Claude review.
+- No production interface file, GCS object, schedule, SAP row, import, or ACK state was changed.
+  Per-flow blockers remain documented in `docs/sessions/2026-08-27-codex.md`.
+
+## 2026-08-26 — investigated AR 1134-01/1135-01 misposting to a code-level root cause + verified fix; read-only, not deployed
+
+- Full detail: `docs/FINDINGS_AR_1134_VS_1135_MISPOSTING_20260825.md` (2026-08-25/26, multi-session
+  with Boat, Aware's Sarawut/Kanjana, and Pui/Nong/Mo). `docs/INPUTS_NEEDED.md` carries the same
+  thread's open items.
+- Confirmed with Aware (ground truth): SAP posts the full `ActualReceived` to `1134-01` whenever
+  `ExpectedReceived=0`, and posts the `Expected≠Actual` residual to `1134-01` otherwise — both
+  designed exception-flagging behaviors, not SAP defects.
+- Root-caused the source of bad `ActualReceived`/`ExpectedReceived` for the July–August 2026
+  population (141 OrderItems, ฿1,640,393.50 — closely matches the originally-reported
+  142-order/฿1,601,582.47 population): genuine onetime `EDC`/`CREDIT_CARD_INSTALLMENT` payments
+  whose `carepay_transaction_snapshots.number_of_installment` drifted to `6`/`10` (the same
+  pre-existing, already-quantified artifact from `FINDINGS_EMPTY_INSTALLMENT_DETAILS_20260825.md`,
+  20,793 ONETIME-flow items system-wide) get excluded from `sap_dashboard_carepay_fully_paid`
+  (hard filter `number_of_installment=1`) and instead flow through Boat's own manual backfill —
+  confirmed to be the **live** definition of `sap_view.RCL_Motor_process_1_create` (the repo file
+  at `sql/sap_view/RCL_Motor_process_1_create.sql` is a stale baseline that does not match; pulled
+  live via `INFORMATION_SCHEMA.VIEWS`, per `AGENT_RULES.md`'s own "repo is not live truth" rule).
+- Pinned the exact bug: in that view's `rcl_voluntary_installment_details` CTE, `charges` is
+  `LEFT JOIN`ed on `charges.installment_number = transaction_snapshot_installment_details.period`;
+  for this population `installment_details` is empty so `period` is `NULL`, the join never matches,
+  `charges.amount` and `charge_rank` both resolve `NULL`, and the `ActualReceived` `CASE`'s `ELSE
+  COALESCE(charges.amount, installment_details.payment_amount)` fallback is also `NULL` on both
+  sides — SAP's import evidently treats that as `0`.
+- Proposed fix (not deployed — this is Boat's own script, outside normal `sap_view` governance, so
+  Boat decides the deploy path): add a `transaction_id`-only fallback join to `charges` (no
+  `installment_number` condition) when `installment_details.id IS NULL`, mirroring how V3's
+  `vw_onetime_payload_source` already handles this exact class of order correctly. **Verified
+  against real data**: this fallback join produces the exact correct amount (matching
+  `ExpectedReceived`/`TotalAmount`) for 12/12 sampled orders (`sql/adhoc/20260826_test_fix_rcl_process1_actualreceived.sql`).
+- Separately confirmed a second, smaller, distinct pattern (not the same defect): a WHT-sized
+  amount duplicating into `1134-01` alongside the dedicated `2142-10` "บัญชีส่วนขาด WHT" variance
+  account on orders where `Expected≠Actual` for reasons unrelated to the drift above (worked
+  example: `L80691957-V1`, WHT `฿225.66` correctly isolated in `2142-10` but an equal-sized residual
+  also lands net in `1134-01` from two `Expected≠Actual` interface events on the same order). Root
+  cause of *this* pattern not pinned to a specific line — flagged as a follow-up, not blocking.
+- Draft outreach to Aware prepared, not sent: `docs/DRAFT_MESSAGE_TO_AWARE_20260825.md`.
+- No SQL deployed, no `gs://**` write, no production mutation — read-only investigation throughout,
+  per this project's hard rules.
+
 ## 2026-08-25 (later) — built Phase 1 hold gate (082), prepared Phase 2 diff to 058, corrected RCL count
 
 - Added `sql/ddl/082_v3_rcl_empty_installment_detail_hold.sql`: `vw_v3_rcl_empty_installment_detail_hold`
