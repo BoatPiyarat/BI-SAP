@@ -1,5 +1,21 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-29 21:22 ICT — deployed Scenario 2 Period-qualified procedure fix
+
+- Boat held all other V3 work and issued `Deploy OK` for reviewed source `802d086`.
+- Procedure-only release `db20ded`; source review `21113f7` and exact release review PASS/no BLOCK.
+- Deploy and rollback statement hashes matched fixed `802d086` and pre-fix `ec7a201`; both zero-byte
+  dry-runs.
+- Job `codex_v3_scenario2_period_fix_db20ded_20260829_2122_ict` DONE; replaced only
+  `sp_build_v3_rcl_first_create_snapshot`.
+- Live body hash:
+  `429091197ebf1e684aa8fe8292606d0c40a6f1c552fa4cdf560193a1cc53f27a`.
+- Postcheck `codex_v3_scenario2_postdeploy_no_call_db20ded_20260829_2124_ict`: exact target run
+  remains gate `1`, every snapshot/publication/claim/SAP-intersection count `0`, state
+  `BLOCKED_SNAPSHOT_BUILD_REQUIRED`.
+- No procedure CALL, GCS, Scheduler, delivery, SAP import, ACK, retry, or non-Scenario-2 action.
+  The next snapshot CALL requires a new one-time authorization.
+
 ## 2026-08-29 00:18 ICT — reactivated V2 legacy daily interface jobs
 
 - Prestate: `sap-order-payment` and `sap-order-payment-non-motor` PAUSED, both `30 1 * * *`

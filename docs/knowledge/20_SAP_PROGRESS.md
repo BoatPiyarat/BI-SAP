@@ -1,5 +1,24 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-29 21:22 ICT — Scenario 2 Period-qualified procedure fix deployed independently
+
+Boat ordered all non-Scenario-2 work held and issued `Deploy OK` for the reviewed `802d086`
+Period-qualification fix. Codex isolated the exact procedure statement and rollback in release
+commit `db20ded`; source review `21113f7` and the exact nine-file release review both returned
+Class-A PASS with no BLOCK. Deploy and rollback artifacts each dry-ran at zero bytes and were
+statement-hash identical to the fixed `802d086` and pre-fix `ec7a201` sources respectively.
+
+Definition-only job `codex_v3_scenario2_period_fix_db20ded_20260829_2122_ict` completed DONE and
+replaced only `sp_build_v3_rcl_first_create_snapshot`. Live signature remains one STRING
+`p_pipeline_run_id`; live body hash is
+`429091197ebf1e684aa8fe8292606d0c40a6f1c552fa4cdf560193a1cc53f27a`. Read-only postcheck job
+`codex_v3_scenario2_postdeploy_no_call_db20ded_20260829_2124_ict` proved the exact target run still
+has one gate summary and zero manifest/snapshot/hold/private/shared identity, lifecycle claim, and
+SAP intersection rows; state remains `BLOCKED_SNAPSHOT_BUILD_REQUIRED`. No CALL, GCS, Scheduler,
+Workflow, Cloud Run, IAM, SAP import, delivery, ACK, retry, or other-scenario work occurred. A new
+one-time snapshot CALL authorization remains required because the earlier authorization was
+consumed by the failed CALL.
+
 ## 2026-08-29 00:18 ICT — V2 legacy daily interface Schedulers reactivated
 
 Boat stopped the unfinished V3 recovery path and explicitly prioritized daily V2 interface
