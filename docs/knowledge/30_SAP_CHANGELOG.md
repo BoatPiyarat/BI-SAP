@@ -1,5 +1,19 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-08-29 22:17 ICT — completed Scenario 2 replacement snapshot; no releasable rows
+
+- Exact authorized CALL job `codex_v3_scenario2_snapshot_call_db20ded_20260829_2211_ict` DONE,
+  no error and no retry; procedure fix `db20ded`, exact operator `fe60dd0`.
+- Immutable result: one manifest, 183 canonical identities conserved, 0 released, 183 held,
+  0 snapshot/private/shared `CREATE_RCL_FIRST` identity rows.
+- Postcheck `codex_v3_scenario2_postcall_db20ded_20260829_2213_ict`:
+  `BLOCKED_ZERO_RELEASED_IDENTITIES`.
+- Read-only hold diagnosis `codex_v3_scenario2_release_holds_fixed_20260829_2222_ict`: 177 already
+  in SAP, five Unit 3 mappings, one ambiguous period source.
+- No clean missing-from-SAP Scenario 2 row exists in this run, so no 56-column export was produced.
+- Evidence/operator commit `5908e11`; no GCS, Scheduler, delivery, SAP import/contact, archive CALL,
+  ACK, retry, or other-scenario work.
+
 ## 2026-08-29 21:22 ICT — deployed Scenario 2 Period-qualified procedure fix
 
 - Boat held all other V3 work and issued `Deploy OK` for reviewed source `802d086`.

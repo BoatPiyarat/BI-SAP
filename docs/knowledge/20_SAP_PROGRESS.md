@@ -1,5 +1,24 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-08-29 22:17 ICT — Scenario 2 replacement snapshot completed; zero clean rows to release
+
+Boat authorized one replacement production CALL of
+`sp_build_v3_rcl_first_create_snapshot('V3NIGHTLY-2026-08-26T13:23:38-e830fff2')` after the
+`db20ded` fix, limited to Scenario 2 snapshot state. Exact one-CALL operator commit `fe60dd0` ran
+once as job `codex_v3_scenario2_snapshot_call_db20ded_20260829_2211_ict`; it completed DONE with no
+error and no retry. The transaction conserved all 183 canonical identities into one manifest:
+0 released, 183 held, 0 snapshot/private/shared-identity rows.
+
+Read-only postcheck `codex_v3_scenario2_postcall_db20ded_20260829_2213_ict` returned
+`BLOCKED_ZERO_RELEASED_IDENTITIES`. Corrected read-only hold report job
+`codex_v3_scenario2_release_holds_fixed_20260829_2222_ict` proved the reason: 177 identities are
+already present in the current SAP mirror, five are `HOLD_UNIT3_MAPPING`, and one is
+`HOLD_RCL_AMBIGUOUS_PERIOD_SOURCE`. Therefore this run has no normal clean Scenario 2 row that is
+both exportable and absent from SAP. No 56-column export was generated because doing so would risk
+duplicates or bypass explicit edge-case holds. Evidence/operator commit: `5908e11`. No GCS,
+Scheduler, delivery, SAP import/contact, archive CALL, ACK, automatic retry, or other-scenario work
+occurred.
+
 ## 2026-08-29 21:22 ICT — Scenario 2 Period-qualified procedure fix deployed independently
 
 Boat ordered all non-Scenario-2 work held and issued `Deploy OK` for the reviewed `802d086`
