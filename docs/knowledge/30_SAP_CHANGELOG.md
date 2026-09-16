@@ -1,5 +1,373 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-09-16 — M06–M08 commission dispute activity inventory
+
+- Swept accessible Drive comments across M06, M07, and M08 Master/team workbooks; Roojai files were
+  excluded per instruction.
+- Joined comment OrderIDs to each cycle's `Raw order`/`RAW_orders` mapping to count distinct agents.
+- Provisional totals (Drive retrieval performed 2026-09-15; exact connector query timestamp not
+  retained): M06 **165 threads / 211 orders / 60 agents**; M07 **185 / 336 / 82**; M08 **129 /
+  331 / 72**.
+- Added the detailed mutually-exclusive subgroup taxonomy for PIP, resignation, incomplete period,
+  tier, fast-track, manual handling, carryover, raw-order gaps, amount corrections, cancellation,
+  cutoff, Tokio/Credit Terms, license, clawback/voucher/deduction, commission additions, and
+  duplicate/is_dup disputes.
+- Agent counts are limited to comments with an OrderID that could be mapped; Roojai and email-only
+  activity are not included. No production object or payroll data was modified.
+
+## 2026-09-15 — prepare full RCB cancel import-contract fix
+
+- Added `sql/production/RCB_Motor_process_2_cancel_new_import_contract_fix_20260915.sql` as a full
+  SELECT-only legacy replacement proposal.
+- Replaced lexicographic document selection with status, nonblank InvoiceNo, parsed BatchRunDate,
+  and DocEntry precedence; emits one document per OrderItem/Period.
+- Removed one-step cancellation of dashboard-only periods. Items wait until the complete spine is
+  present in SAP.
+- Added CareOS successful-charge reconciliation to hold SAP Pending periods that must receive Paid
+  first, plus Paid-first-period, predecessor-status, and EIR-consistency gates.
+- Normalized SQL NULL, blank, and literal NULL ProductType to Insurance.
+- Validation job `bqjob_r463f02b8f49c1d46_000001a0a3a258cd_1`: 681 candidates, 669 ready, 12 held;
+  all nine unsafe LogID 22049 items held and four valid ProductType-fixed items ready.
+- Runtime job `bqjob_r7bdfffa049cff65f_000001a0a3a48efe_1` returned the expected 56-column payload.
+  No deployment, interface execution, retry, or SAP mutation.
+
+## 2026-09-14 — diagnose Upload LogID 22049 cancel errors
+
+- Parsed the supplied import log: 77 row-error lines, 11 orders, seven overlapping error classes.
+- Added live cancel/SAP trace, V3 mirror comparison, and CareOS paid-anchor trace queries.
+- Confirmed four cancel anchors are still Pending in SAP but have successful CareOS charges; they
+  require Paid import and mirror refresh before Cancelled.
+- Confirmed four orders are rejected because the cancel view synthesizes periods absent from SAP.
+- Isolated `L74079056-V1` missing-first-period, TotalEIR, and balance defects and three orders with
+  blank ProductType.
+- Added `docs/FINDINGS_IMPORT_22049_20260914.md`. No SQL fix, deployment, re-import, or mutation.
+
+## 2026-09-13 14:27 ICT — prepare type-aware RCL CreditShell wrapper
+
+- Added a RED/GREEN event-grain reproduction for `L80700230-1`; live Period 2 is Health but uses
+  the BAY channel, and paid Periods 1–2 retain dates before the current month.
+- Added the full source-only legacy wrapper
+  `sql/production/RCL_Motor_process_4_creditshell_motor_nonmotor_payment_fix_20260913.sql`.
+- Split Motor and Health/TA routing inside the wrapper. Motor remains unchanged; paid NonMotor OME
+  QR rows use `RCL-Omise QR Prompt Pay-Health`; carried-over Period 1 CreditShell remains intact.
+- Added the approved PaymentDate clamp to day 1 of the current month for older paid events.
+- Regression job `bqjob_r9475c9e5dd7fa3e_000001a099a9d611_1` passed all row-conservation,
+  Motor-isolation, NonMotor-channel, pending-field, date, and target-item checks.
+- No DDL, deployment, interface execution, or SAP mutation.
+
+## 2026-09-13 14:04 ICT — verify L80570468-1 NonMotor CreditShell payment route
+
+- Added `sql/adhoc/20260913_trace_L80570468_payment_route.sql` at exact
+  `(OrderItem, Period, InvoiceNo/charge_id)` grain.
+- Confirmed one successful paid Health event in Period 1 and nine pending rows, forming a complete
+  1..10 spine in `RCL_Motor_process_4_creditshell`.
+- Confirmed the paid event's valid CreditShell labels are
+  `PaymentMethod=RCL-Credit Shell` and `PaymentChannel=RCL-Credit Shell`; the ordinary
+  `RCL-Omise QR Prompt Pay-Health` label does not apply after CreditShell classification.
+- Confirmed pending Periods 2–10 have blank InvoiceNo, PaymentDate, PaymentMethod, and
+  PaymentChannel.
+- Updated `docs/DAILY_EVENT_ASSURANCE_20260910.md`. No DDL, deployment, interface execution, or
+  SAP mutation.
+
+## 2026-09-10 17:46 ICT — add and execute event-level daily assurance pack
+
+- Added a read-only SAP-first assurance query for all 2026 `SUCCESSFUL` charges, preserving
+  charge-header amount conservation separately from multi-item/period SAP obligations.
+- Added route-specific exact legacy-view verifiers for RCB Motor, RCB NonMotor, and RCL Motor M1,
+  plus focused RCB/RCL root traces and a CreditShell route check.
+- Baseline job `bqjob_r7c6046823feb0ffb_000001a08adedb07_1` checked 266,613 distinct charges and
+  309,114 obligations; 60 obligations required view verification.
+- Confirmed two residual MS-05 M1 rows and known MS-06 absent from both SAP and the live owner view.
+- Reclassified `L80822481-V1` as correctly present in CreditShell and `L80830168-M1` as a
+  multi-charge/multi-item allocation hold rather than a missing event.
+- Added `docs/DAILY_EVENT_ASSURANCE_20260910.md` with the exact transaction list, job evidence,
+  daily output format, and progress checklist.
+- Updated the assurance query to route RCB Motor change orders to CreditShell and quarantine
+  ambiguous RCB bundled-charge allocation. No deployment, DDL, interface run, or SAP mutation.
+
+## 2026-09-09 04:30 ICT — confirm MS-06 compulsory FULL_PAYMENT/Rabbit Lending route gap
+
+- Added and ran an event-grain reconciliation for the proposed RCL NonMotor same-period
+  additional-payment gap; rejected it after all 30 distinct later events were covered by SAP or the
+  current wrapper.
+- Re-ran the active successful-charge/all-12-view inventory and isolated one remaining item,
+  `L80161278-M1`.
+- Traced the item to a successful Period-1 QR/RABBIT_LENDING charge on a `FULL_PAYMENT`
+  transaction whose one-installment snapshot has no installment details or follow-ups.
+- Confirmed absence from both Motor dashboards, all 12 `sap_view` interfaces, and SAP.
+- Identified the root filter in the installment dashboard compulsory CTE and recorded the safe
+  root-fix direction. No production query, DDL, deployment, SAP mutation, or interface execution.
+
+## 2026-09-09 03:56 ICT — close pending V1 hole in MS-05 wrapper proposal
+
+- Confirmed the dashboard creates phantom V1 schedules for bank `CREDIT_CARD_INSTALLMENT`
+  transactions using snapshot installment counts even when installment details, follow-ups, and a
+  Rabbit Lending charge are absent.
+- Updated `sql/production/RCL_Motor_process_1_create_compulsory_M1_rootfix_20260909.sql` to accept
+  only `RABBIT_CARE_INSTALLMENT` items with a successful `RABBIT_LENDING` charge.
+- Added an all-or-nothing V1 spine gate: one TotalPeriods version, periods exactly 1..TotalPeriods,
+  and no NULL ExpectedReceived, NULL ActualReceived, or blank ExpectedDate.
+- Preserved the pending contract: InvoiceNo, PaymentDate, PaymentMethod, and PaymentChannel remain
+  blank; ActualReceived remains zero. These values are not fabricated from another period.
+- Added focused reproduction, source-trace, and population-audit SQL under `sql/adhoc` and updated
+  the full candidate validator.
+- Regression job `bqjob_r4daddc19c596ecaa_000001a082c7a673_1` and candidate job
+  `bqjob_r23e4a7e5aaa62eb1_000001a082cd32d3_1` both passed. No deployment or data mutation.
+
+## 2026-09-09 03:20 ICT — prepare type-aware RCL Motor create wrapper for MS-05
+
+- Kept MS-05 in its existing owner `RCL_Motor_process_1_create` rather than repurposing
+  `RCL_Motor_process_3_cancel`; the dashboard upstream already emits the required compulsory row.
+- Added `sql/production/RCL_Motor_process_1_create_compulsory_M1_rootfix_20260909.sql` as a full
+  SELECT-only wrapper query.
+- Changed only the final eligibility seam: compulsory 1/1 rows pass, while non-compulsory rows keep
+  the legacy multiple-row and TotalPeriods-greater-than-one requirements.
+- Replaced the wrapper's Test-name OR expression with the confirmed exact FirstName/LastName
+  exclusions, NULL-safe and case-insensitive.
+- Added `sql/adhoc/20260909_validate_RCL_Motor_process_1_create_compulsory_M1_rootfix.sql` for
+  source-only before/after and contract checks.
+- BigQuery validation could not start because gcloud auth expired and non-interactive refresh was
+  rejected. No DDL, deployment, SAP mutation, or interface execution.
+
+## 2026-09-08 22:10 ICT — confirm MS-05 RCL Motor compulsory M1 silent drop
+
+- Added `sql/adhoc/20260908_discover_MS05_charge_driven_uncovered.sql` to reconcile active 2026
+  successful-charge items against SAP and all 12 legacy interface views.
+- Added `sql/adhoc/20260908_confirm_MS05_RCL_motor_compulsory_wrapper_gap.sql` to trace the dominant
+  candidate through the live installment dashboard, create wrapper, SAP, and voluntary sibling.
+- Confirmed 249 RCL Motor compulsory M1 items / 267 successful Rabbit Lending charges absent from
+  SAP and the current interface.
+- Proved all 249 exist in the dashboard as exactly one 1/1 row and are removed by the wrapper's
+  `COUNT(*) > 1` plus `TotalPeriods > 1` gate.
+- Proved the V1 sibling is covered for all 249 orders: 216 already in SAP, 33 in the current create
+  interface. Classified the M1-only loss as confirmed MS-05 rather than timing delay.
+- Proposed reserved `RCL_Motor_process_3_cancel` as the legacy reuse owner. No full replacement
+  query, DDL, deployment, SAP mutation, or interface execution.
+
+## 2026-09-08 13:15 ICT — prepare MS-01 full legacy query in reserved RCB NonMotor view
+
+- Reused `sap_view.RCB_NonMotor_process_2_cancel` for the confirmed RCB Health
+  new-order-after-Change scenario; the former cancel responsibility remains covered by the approved
+  universal cancel proposal.
+- Added `sql/production/RCB_NonMotor_process_2_cancel_change_create_rootfix_20260908.sql` as a full
+  56-column SELECT-only proposal.
+- Preserved all five distinct successful source charges across the three confirmed items. Later
+  same-period payments receive ExpectedReceived zero and distinct deterministic fallback InvoiceNo;
+  the first row carries TotalAmount less Discount as ExpectedReceived.
+- Preserved the legacy RCB Health insurer, financial, status, title, and payment mappings; verified
+  EDC/KRUNGSRI maps to `RCB-EDC-BAY` and Direct Payment maps to `RCB-DIRECT PAYMENT`.
+- Added two read-only evidence queries:
+  `sql/adhoc/20260908_trace_MS01_payload_sources.sql` and
+  `sql/adhoc/20260908_trace_MS01_order_item_allocation.sql`.
+- Dry-run passed at 1,730,971,666 bytes; shadow job
+  `bqjob_r7611af1cebb05526_000001a07fac1ce9_1` returned exactly five expected payload rows.
+- Flagged `L80799909-1` for human pre-deployment review because source ActualReceived is `3600.00`
+  against current TotalAmount/ExpectedReceived `2160.00`; no silent cap or rewrite was introduced.
+- No DDL, deployment, SAP mutation, or interface execution.
+
+## 2026-09-08 10:59 ICT — confirm first missing scenario for reserved-view reuse
+
+- Started `docs/FINDINGS_MISSING_INTERFACE_SCENARIOS_20260908.md` with status-separated scenario
+  IDs rather than mixing source-ready, human-blocked, historical, and intentionally ignored cases.
+- Confirmed MS-01: three active RCB NonMotor Health replacement/new-order items have successful
+  payments and SAP-present predecessors but appear in zero of 12 legacy interface views.
+- Recorded the exact current/predecessor IDs and the repeated-period/additional-payment constraint.
+- Recorded MS-03 (`L77754975-1`, `is_cancelled=true`, NULL `cancel_time`) in `INPUTS_NEEDED` for
+  human investigation; no accounting/underwriting fallback is authorized.
+- No reused-view query, DDL, deployment, SAP mutation, or interface execution.
+
+## 2026-09-08 10:51 ICT — reserve two legacy views for missing scenarios
+
+- Per Boat, skipped the remaining individual reviews of `RCB_NonMotor_process_2_cancel` and
+  `RCL_Motor_process_3_cancel`.
+- Marked the requested V2 legacy review scope complete at 10/10.
+- Reserved both skipped views for later reuse against explicitly identified missing scenarios;
+  no SQL change, DDL, deployment, SAP mutation, or interface run occurred.
+- Began a separate missing-scenario inventory.
+
+## 2026-09-08 00:09 ICT — validated RCB_HEALTH card-installment ONETIME root fix
+
+- Confirmed `sap_view.RCB_NonMotor_process_1_create` itself already has the year-hardcode fix.
+- Found 23 active 2026 Health `CREDIT_CARD_INSTALLMENT` items with successful RCB charges that are
+  absent from SAP and every legacy interface view.
+- Root cause is upstream `RCB_HEALTH`: it excludes that payment option and also accepts only
+  one-installment snapshots, while the confirmed rule classifies bank card installments as RCB
+  ONETIME.
+- Added full source-only query
+  `sql/production/RCB_HEALTH_credit_card_installment_rootfix_20260907.sql` and red-capable validator.
+- Final shadow job `bqjob_r622445d20c2c7dad_000001a07cd6cd4b_1` is GREEN at 40 rows/items; all 23
+  gaps appear exactly once with zero routing, status, date, required-value, period, Test/cancel, or
+  duplicate violations.
+- Confirmed the 29 `RCB_TRAVEL` null-status rows are old PENDING transactions with no charges; no
+  Travel change proposed. Parked three NonMotor change/credit-shell items for separate review.
+- No DDL, deployment, SAP mutation, or interface execution.
+
+## 2026-09-07 22:34 ICT — validated universal current-cancel scope proposal
+
+- Converted the six old-OrderDate examples into one general `cancel_time >= 2026-01-01` rule.
+- Removed original OrderDate-year exclusion without adding an item allow-list.
+- Kept eligibility limited to item cancellation flag/time; underwriting-only cases remain ignored.
+- Parked the true-flag/NULL-time Change item for human investigation.
+- Added post-union Test exclusion after finding cross-source name differences.
+- Final shadow GREEN: 292 expected/candidate items, 1,352 rows, and zero missing, unexpected, Test,
+  parked, bad-spine, or duplicate results.
+- No production deployment or external mutation.
+
+## 2026-09-07 22:05 ICT — inventoried universal cancel scenario gaps
+
+- Built an item-level RCB/RCL × Motor/NonMotor × Cancel/Change × partial/full coverage matrix.
+- Confirmed 302 current candidates covered and nine current items missing from all cancel views.
+- Isolated three query gaps: NULL cancel_time despite true flag, current cancellations blocked by
+  old OrderDate, and NonMotor underwriting rejection not included in universal eligibility.
+- Parked 1,010 pre-2026 candidates as a separate historical-backlog decision.
+- Added `docs/FINDINGS_UNIVERSAL_CANCEL_GAPS_20260907.md` and reproducible read-only audit SQL.
+- No production query or external state changed.
+
+## 2026-09-07 21:35 ICT — closed RCB Motor create review without change
+
+- Confirmed all 582 live rows are clean one-time RCB Motor rows across 576 items.
+- Confirmed zero cancelled items, routing leakage, missing payment/master identity, invalid 1/1
+  periods, duplicates, and eligible upstream omissions.
+- Recorded Health handoff coverage for the prior Motor newpayment fix: 556 rows in the NonMotor
+  newpayment interface and one historical Period-1 row already Paid in SAP.
+- Added three reproducible read-only audit/trace queries; no production SQL proposal or mutation.
+
+## 2026-09-07 21:01 ICT — validated RCL Motor step-02 newpayment root fix
+
+- Audited the live 5,536-row / 850-item interface and reproduced 154 incomplete/conflicting items.
+- Traced 148 failures to Health leakage and six Motor failures to canonically cancelled items whose
+  Paid history and current schedule were split by inconsistent upstream cancellation gates.
+- Confirmed zero active 2026 Motor non-CMI eligibility-gate items missing from the current output.
+- Added full source-only proposal
+  `sql/production/RCL_Motor_process_2_newpayment_rootfix_20260907.sql` and its shadow validator.
+- Shadow job `bqjob_r4a9ccf3b252d64f0_000001a07c285c41_1` returned GREEN at 4,932 rows / 693 items,
+  with zero spine, routing, pending-payment-identity, blank-paid-invoice, or exact-duplicate defects.
+- Preserved 17 legitimate duplicate-period payment keys; none repeats positive ExpectedReceived.
+- No view replacement, deploy, SAP mutation, or interface execution.
+
+## 2026-09-07 12:57 ICT — diagnosed L80511755 CreditShell exclusion
+
+- Reproduced eight rows in live `_all` for Periods 1–8; the originally reported `_all` zero result
+  is not currently reproducible.
+- Confirmed zero rows in the primary source, Motor step-04 interface, and SAP mirror.
+- Traced the exclusion to the primary source's `oi.is_cancelled IS NOT TRUE` join predicate;
+  `L80511755-V1` is cancelled.
+- Recorded verified raw order/change/transaction/snapshot/charge/follow-up facts and separated the
+  unverified historical timing/object explanation.
+- Added `docs/FINDINGS_RCL04_L80511755_20260907.md` and
+  `sql/adhoc/20260907_trace_RCL04_all_L80511755.sql`; no production change.
+
+## 2026-09-07 12:38 ICT — expanded Health/BAY SAP_LIVE history count
+
+- Scanned all SAP mirror history for Health rows labeled `RCL-Omise QR Prompt Pay-BAY`.
+- Found 585 total pairs; 145 overlap the true BAY subset of Mo's list and 440 are additional.
+- Additional pairs by PaymentDate month: January 4, July 349, August 87.
+- August complete population: 232 pairs; last PaymentDate/BatchRunDate 2026-08-31 and last mirror
+  UpdateDate 2026-09-01.
+- Historical remediation remains closed/no-action; documentation and read-only query only.
+
+## 2026-09-07 11:12 ICT — documented legacy NonMotor Health/BAY root cause
+
+- Replayed all 149 reported Order/Period pairs: 149 found in SAP, 145 confirmed BAY defects,
+  144 now correct in current `RCL_HEALTH`, and four non-BAY exceptions classified explicitly.
+- Traced the active V2 chain through `RCL_HEALTH` and
+  `sap_view.RCL_NonMotor_process_2_newpayment` to the legacy NonMotor exporter.
+- Confirmed a broader 232-row historical population against exact raw charges; every row was a
+  successful Health QR/RABBIT_LENDING payment requiring product-aware Health mapping.
+- Confirmed the 06-Aug record was repo-only rather than a live fix on the relevant path; current
+  `RCL_HEALTH` is now correct for future matching rows.
+- Added `docs/FINDINGS_HEALTH_BAY_AUGUST_20260907.md` plus four read-only repro/trace queries.
+- No SQL source proposal, view replacement, deploy, SAP update, correction, or re-interface.
+
+## 2026-09-07 10:56 ICT — corrected RCL CreditShell payload spine source-only
+
+- Reproduced live 60,437-row output and traced all 4,152 empty-master/zero-premium rows to the
+  item-less Period-1 escape condition.
+- Confirmed 912 further NULL InsuranceType rows came from Health items with NULL
+  `motor_item_type`; standardized Health/TA labels.
+- Replaced current-month/SAP-batch PaymentDate override with the exact successful charge's
+  `payment_date`, falling back to `update_time`, at `(transaction_id, Period)` grain.
+- Added established `<charge_rank>_<OrderItem>` fallback for 758 paid rows / 402 items whose raw
+  successful charge had no `third_party_id`.
+- Added exact-row dedup before repeated-period ExpectedReceived ranking; legitimate distinct
+  payments for the same period remain.
+- Final job `bqjob_r4b4081c856081a43_000001a07a020140_1` GREEN: 43,041 rows, 12,248 items,
+  37,620/37,620 paid rows matched raw charges; all master/payment/spine/exact-duplicate assertions
+  zero; 6,943 distinct duplicate-period keys retained with zero repeated positive ExpectedReceived.
+- Updated full SELECT `sql/production/RCL_04_new_order_credit_shell_rootfix_20260901.sql`; SHA-256
+  `51636A118D47ED6B68D430AD0678D7A43580B2AADE775D71F89AA9CFE2B422DD`.
+- No deploy, view replacement, GCS, Scheduler, SAP import, or production mutation.
+
+## 2026-09-07 10:29 ICT — closed RCB Motor step 03 naming audit without change
+
+- Confirmed enabled `sap-order-payment` Scheduler targets Pub/Sub topic
+  `motor-order-payment-sap-interface`; Scheduler has no individual-view parameter.
+- Confirmed active consumer `rcb-motor-order-payment-sap-bucket-1` version 470 uses bundled static
+  configuration: `config.ini` maps step 03 to `03_RCB_Motor_process_3_change.sql`, whose SQL directly
+  selects `sap_view.RCB_Motor_process_3_change`.
+- A BigQuery view rename therefore requires editing/redeploying the Function package or retaining
+  an old-name compatibility view; it cannot be achieved through the Scheduler alone.
+- Live step-03 view now contains a historical RCB credit-card-installment catch-up body, not the
+  former change-order wrapper. Per scope, treated this as legacy naming and made no SQL proposal.
+- Read-only deployed source ZIP SHA-256:
+  `C9DCD04178921F2D8B43F524D4312041D6BC200E2DA1FCE5F6F8363256EFC3DF`.
+- No view, Function, Scheduler, Pub/Sub, GCS, SAP import, deployment, or production mutation.
+
+## 2026-09-02 14:41 ICT — validated RCB CreditShell upstream routing fix
+
+- Audited current downstream: one clean row/item, Period/TotalPeriods 1/1, zero duplicate and
+  pending-payment-field violations.
+- Snapshot seam was clean across 9,228 eligible transactions; no latest-snapshot change proposed.
+- Confirmed eight invalid upstream 2+/1 rows were RCL transactions leaking into RCB.
+- Added full live-derived proposal
+  `sql/production/RCB_04_new_order_credit_shell_routing_fix_20260902.sql` with one surgical
+  `RABBIT_CARE_INSTALLMENT` exclusion; normalized body otherwise matches live.
+- Dry-run ~10.756 GiB. Shadow job `bqjob_r42a4d694bb4b9de3_000001a0610e1993_1`: upstream
+  14,813→14,673 rows, items 12,443→12,311, invalid 8→0; downstream 1→1 row/item.
+- Coverage audit: all 132 removed RCL items already in SAP, 86 also in RCL CreditShell upstream,
+  zero uncovered current items.
+- No downstream wrapper change, deploy, view replacement, GCS, Scheduler, SAP import, or mutation.
+
+## 2026-09-02 10:52 ICT — validated source-only RCB Motor cancel spine root fix
+
+- Added full proposal `sql/production/RCB_Motor_process_2_cancel_new_rootfix_20260902.sql`.
+- Root cause: four SAP histories lacked periods 2..N although the complete legacy installment
+  schedules existed; two histories mixed TotalPeriods 1/3 across otherwise complete periods.
+- Kept SAP rows authoritative, supplemented only missing periods from exact complete schedules,
+  canonicalized TotalPeriods, preserved duplicate-period business rows, and removed only exact
+  full-row duplicates.
+- Rejected an over-broad 445→525 shadow; narrowed fallback to SAP-proven installment items so seven
+  one-time controls remain unchanged.
+- Final dry-run 9,617,175,351 bytes (~8.957 GiB). Job
+  `bqjob_r1be272cffb0d05ea_000001a06036fa8f_1`: rows 445→470, items 123→123, failures 6→0,
+  new/missing items 0/0, duplicate-period keys 5→5, exact duplicates 0.
+- No deploy, view replacement, GCS, Scheduler, SAP import, or production mutation.
+
+## 2026-09-02 09:36 ICT — validated source-only RCL CreditShell root fix
+
+- Added full live-derived proposal
+  `sql/production/RCL_04_new_order_credit_shell_rootfix_20260901.sql`; latest-snapshot selection,
+  complete-installment gate, and duplicate-Expected protection without removing real payments.
+- Dry-run 9,183,487,742 bytes (~8.553 GiB), below the 20 GiB ceiling.
+- Shadow job `bqjob_r5cf88def06688941_000001a05ff163dd_1`: upstream 59,970→59,970 rows and
+  12,191→12,191 items; downstream 70→70 rows and 8→8 items.
+- Four duplicate-period business keys preserved; invalid periods, repeated expected amounts,
+  pending payment-field violations, and incomplete distinct spines all zero.
+- Updated `docs/FINDINGS_SAP_VIEW_UPSTREAM_ROOTCAUSE_20260901.md`. No deploy, view replacement,
+  GCS, Scheduler, SAP import, or production mutation.
+
+## 2026-09-01 21:55 ICT — prepared source-only RCL_HEALTH status-precedence root fix
+
+- Replayed captured NonMotor cases against raw charge/follow-up truth: successful RCL charges were
+  mislabeled pending because `follow_ups.status` overrode charge truth.
+- Added full live-derived proposal `sql/production/RCL_HEALTH_status_precedence_fix_20260901.sql`;
+  one surgical expression change, dry-run ~1.701 GiB, no DDL.
+- Shadow job `bqjob_r7c99745ea9ded918_000001a05d76b1b8_1`: upstream rows 38,568→38,568,
+  pending-with-payment-fields 3→0; Process 1 rows 245→245 with zero violations; Process 2 health
+  branch zero violations. Three historical SAP-branch rows remain.
+- Added `docs/FINDINGS_SAP_VIEW_UPSTREAM_ROOTCAUSE_20260901.md`. No deploy, GCS, Scheduler, SAP
+  import, or production mutation. Legacy replacement remains policy- and Class-A-gated.
+
 ## 2026-08-29 22:17 ICT — completed Scenario 2 replacement snapshot; no releasable rows
 
 - Exact authorized CALL job `codex_v3_scenario2_snapshot_call_db20ded_20260829_2211_ict` DONE,
