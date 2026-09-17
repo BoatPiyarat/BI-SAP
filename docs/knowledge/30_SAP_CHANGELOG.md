@@ -1,5 +1,14 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-09-17 — workspace cleanup: separate Motor Commission artifacts
+
+- Moved 10 Motor Commission scripts/config/progress files plus four dashboard/M08 weekly folders from
+  the mixed `02 SAP/Phase1.1/agentic_bootstrap` parent into the Motor Commission Engine archive.
+- No files were deleted or overwritten; target existence was checked before each move.
+- Left SAP AR/reconciliation scratch files in place because they are SAP work products.
+- Canonical archive path: `06 Sales/Motor Commission/Motor Commission Engine/archive/`
+  `migrated_from_agentic_bootstrap_20260916`.
+
 ## 2026-09-16 — M06–M08 commission dispute activity inventory
 
 - Swept accessible Drive comments across M06, M07, and M08 Master/team workbooks; Roojai files were

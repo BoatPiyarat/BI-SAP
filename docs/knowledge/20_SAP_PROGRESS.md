@@ -1,5 +1,17 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-09-17 — separated Motor Commission artifacts from SAP workspace
+
+Moved the clearly identified Motor Commission scripts, configs, M07/M08 progress artifacts, dashboard
+backups, and M08 weekly trial folders out of the mixed parent workspace
+`02 SAP/Phase1.1/agentic_bootstrap`. They are preserved (not deleted) under:
+
+`06 Sales/Motor Commission/Motor Commission Engine/archive/migrated_from_agentic_bootstrap_20260916`
+
+SAP-related temporary AR/reconciliation files remain in the SAP workspace. Future Motor Commission
+work should start from `06 Sales/Motor Commission/Motor Commission Engine`; SAP integration work should
+start from the `codex_bootstrap` Git repository.
+
 ## 2026-09-16 — M06–M08 commission dispute activity inventory
 
 Completed a Drive-comment sweep across the accessible monthly Master/team workbooks, explicitly
