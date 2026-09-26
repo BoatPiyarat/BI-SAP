@@ -1,51 +1,27 @@
 == bq_safe_query: dry-run =========================================
 Dry-run estimate: 9504031486 bytes (~8.851 GiB)
 == bq_safe_query: real run (--maximum_bytes_billed=21474836480) ===========
-
 Waiting on scenario_RCL_Motor_process_1_create_20260926 ... (0s) Current status: RUNNING
-                                                                                        
 Waiting on scenario_RCL_Motor_process_1_create_20260926 ... (1s) Current status: RUNNING
-                                                                                        
 Waiting on scenario_RCL_Motor_process_1_create_20260926 ... (2s) Current status: RUNNING
-                                                                                        
 Waiting on scenario_RCL_Motor_process_1_create_20260926 ... (3s) Current status: RUNNING
-                                                                                        
 Waiting on scenario_RCL_Motor_process_1_create_20260926 ... (4s) Current status: RUNNING
-                                                                                        
 Waiting on scenario_RCL_Motor_process_1_create_20260926 ... (5s) Current status: RUNNING
-                                                                                        
 Waiting on scenario_RCL_Motor_process_1_create_20260926 ... (6s) Current status: RUNNING
-                                                                                        
 Waiting on scenario_RCL_Motor_process_1_create_20260926 ... (7s) Current status: RUNNING
-                                                                                        
 Waiting on scenario_RCL_Motor_process_1_create_20260926 ... (8s) Current status: RUNNING
-                                                                                        
 Waiting on scenario_RCL_Motor_process_1_create_20260926 ... (9s) Current status: RUNNING
-                                                                                        
 Waiting on scenario_RCL_Motor_process_1_create_20260926 ... (10s) Current status: RUNNING
-                                                                                         
 Waiting on scenario_RCL_Motor_process_1_create_20260926 ... (11s) Current status: RUNNING
-                                                                                         
 Waiting on scenario_RCL_Motor_process_1_create_20260926 ... (12s) Current status: RUNNING
-                                                                                         
 Waiting on scenario_RCL_Motor_process_1_create_20260926 ... (13s) Current status: RUNNING
-                                                                                         
 Waiting on scenario_RCL_Motor_process_1_create_20260926 ... (14s) Current status: RUNNING
-                                                                                         
 Waiting on scenario_RCL_Motor_process_1_create_20260926 ... (15s) Current status: RUNNING
-                                                                                         
 Waiting on scenario_RCL_Motor_process_1_create_20260926 ... (16s) Current status: RUNNING
-                                                                                         
 Waiting on scenario_RCL_Motor_process_1_create_20260926 ... (17s) Current status: RUNNING
-                                                                                         
 Waiting on scenario_RCL_Motor_process_1_create_20260926 ... (18s) Current status: RUNNING
-                                                                                         
 Waiting on scenario_RCL_Motor_process_1_create_20260926 ... (19s) Current status: RUNNING
-                                                                                         
 Waiting on scenario_RCL_Motor_process_1_create_20260926 ... (20s) Current status: RUNNING
-                                                                                         
 Waiting on scenario_RCL_Motor_process_1_create_20260926 ... (21s) Current status: RUNNING
-                                                                                         
 Waiting on scenario_RCL_Motor_process_1_create_20260926 ... (22s) Current status: RUNNING
-                                                                                         
-Waiting on scenario_RCL_Motor_process_1_create_20260926 ... (22s) Current status: DONE   
+Waiting on scenario_RCL_Motor_process_1_create_20260926 ... (22s) Current status: DONE

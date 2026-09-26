@@ -4,6 +4,24 @@ Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request firs
 review history; link the completed review and record its verdict.
 
 
+## RQ-20260926-2341-sap-view-scenario-map
+Status: OPEN
+Reviewer: Claude Code
+Class: A
+Artifact: commit `4a0d472`; missing-scenario route membership and root-cause preparation.
+Opened: 2026-09-26T23:41:58+07:00
+Claim: all 12 live sap_view definitions checked; ten paid/create/change/credit-shell output probes
+and cached unchanged-definition cancellation output mapped to the fixed September missing population.
+Paid 1,341 links =703 identity-present +203 absent +435 no order; cancellation184=134 present+50 absent.
+Evidence: docs/FINDINGS_CAREOS_SCENARIO_ROOT_CAUSES_20260926.md, scenario CSVs, 13 successful job
+bindings and scripts/analyze_month_scenario_routes_20260926.py. Independent PASS WITH NOTES:
+docs/reviews/2026-09-26-scenario-routes-independent.md.
+Limits: identity/status membership is not payload validity, DocEntry multiplicity, scheduling or import.
+Fourteen cancelled-item payments are an investigation scenario, not one proven cause; primary groups
+are exclusive first blockers, not exhaustive attribution. REVIEW population excluded. Cancellation
+cache retains its prior timestamp. No production mutation; fix preparation only, V3 held.
+Timestamp is the actual artifact author timestamp.
+
 ## RQ-20260926-2318-careos-month-audit
 Status: OPEN
 Reviewer: Claude Code
