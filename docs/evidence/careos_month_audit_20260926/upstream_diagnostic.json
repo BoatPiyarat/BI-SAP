@@ -1,0 +1,4 @@
+Error in query string: Error processing job 'pacific-
+plating-282708:codex_month_audit_upstream_20260926': Query error: Column 5 in
+UNION ALL has incompatible types: DOUBLE, STRING, DOUBLE, DOUBLE, DOUBLE at
+[4:1]

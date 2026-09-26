@@ -1,0 +1,40 @@
+{
+  "kind": "bigquery#table",
+  "etag": "XyLBf74B30H2NT0oKv3MeA==",
+  "id": "pacific-plating-282708:careos.cancelled_change_orders",
+  "selfLink": "https://bigquery.googleapis.com/bigquery/v2/projects/pacific-plating-282708/datasets/careos/tables/cancelled_change_orders",
+  "tableReference": {
+    "projectId": "pacific-plating-282708",
+    "datasetId": "careos",
+    "tableId": "cancelled_change_orders"
+  },
+  "schema": {
+    "fields": [
+      {
+        "name": "current_human_id",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "old_human_id",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      }
+    ]
+  },
+  "numBytes": "643434",
+  "numLongTermBytes": "0",
+  "numRows": "29247",
+  "creationTime": "1718166524704",
+  "lastModifiedTime": "1790350559186",
+  "type": "TABLE",
+  "location": "asia-southeast1",
+  "numTimeTravelPhysicalBytes": "1722997",
+  "numTotalLogicalBytes": "643434",
+  "numActiveLogicalBytes": "643434",
+  "numLongTermLogicalBytes": "0",
+  "numTotalPhysicalBytes": "1969944",
+  "numActivePhysicalBytes": "1969944",
+  "numLongTermPhysicalBytes": "0",
+  "numCurrentPhysicalBytes": "246947"
+}

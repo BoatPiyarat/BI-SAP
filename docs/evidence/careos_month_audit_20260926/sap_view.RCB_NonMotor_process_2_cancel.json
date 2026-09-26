@@ -1,0 +1,310 @@
+{
+  "kind": "bigquery#table",
+  "etag": "9/c4rwgD+UwJ4ZzjXPfFBQ==",
+  "id": "pacific-plating-282708:sap_view.RCB_NonMotor_process_2_cancel",
+  "selfLink": "https://bigquery.googleapis.com/bigquery/v2/projects/pacific-plating-282708/datasets/sap_view/tables/RCB_NonMotor_process_2_cancel",
+  "tableReference": {
+    "projectId": "pacific-plating-282708",
+    "datasetId": "sap_view",
+    "tableId": "RCB_NonMotor_process_2_cancel"
+  },
+  "schema": {
+    "fields": [
+      {
+        "name": "CompanyDB",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "OrderID",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "OrderItem",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "InvoiceNo",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "OrderDate",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "InsuredID",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "Title",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "FirstName",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "LastName",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "InsurerCode",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "InsuranceGroup",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "InsuranceType",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "InsuranceProduct",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "ProductType",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "PolicyType",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "Endorse",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "PolicyDate",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "PolicyNo",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "EndorsementNo",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "ChassisNo",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "LicensePlate",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "GrossPremium",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "StampDuty",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "VAT",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "TotalPremium",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "WHT",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "TotalEIR",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "TotalSBT",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "ProcessingFee",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "ProcessingFeeVat",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "ShippingFee",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "ShippingFeeVat",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "TotalAmount",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "Discount",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "TransactionStatus",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "SubmissionStatus",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "ApprovalStatus",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "PaymentStatus",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "ExpectedReceived",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "ActualReceived",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "InterestThisPeriod",
+        "type": "INTEGER",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "PrincipleThisPeriod",
+        "type": "INTEGER",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "InterestEIRThisPeriod",
+        "type": "INTEGER",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "PrincipleEIRThisPeriod",
+        "type": "INTEGER",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "PaymentDate",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "Period",
+        "type": "INTEGER",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "TotalPeriods",
+        "type": "INTEGER",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "PendingPayment",
+        "type": "INTEGER",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "PaymentMethod",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "PaymentChannel",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "ExpectedDate",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "RefOrder",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "RefundAmountBeforeFee",
+        "type": "INTEGER",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "RefundAmountAfterFee",
+        "type": "INTEGER",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "BillingAddress",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "BatchRunDate",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      }
+    ]
+  },
+  "numBytes": "0",
+  "numLongTermBytes": "0",
+  "numRows": "0",
+  "creationTime": "1784912970219",
+  "lastModifiedTime": "1788879456434",
+  "type": "VIEW",
+  "view": {
+    "query": "-- Full source-only legacy reuse proposal for:\n--   pacific-plating-282708.sap_view.RCB_NonMotor_process_2_cancel\n--\n-- New responsibility (MS-01):\n--   RCB Health new-order payloads whose current order is linked to an old order by\n--   careos.cancelled_change_orders and whose current OrderItem is not yet in SAP.\n--\n-- Legacy rules preserved:\n--   * RCB_HEALTH field calculations and insurer/payment mappings.\n--   * Successful CareOS charges are the payment source.\n--   * RABBIT_CARE_INSTALLMENT/RABBIT_LENDING are excluded to prevent RCB/RCL mixing.\n--   * A legitimate later charge remains another Period 1 row, but its\n--     ExpectedReceived is 0 so expected revenue is not repeated.\n--   * SELECT DISTINCT removes only exact final-payload duplicates.\n--\n-- SELECT only: this file does not replace or deploy the live legacy view.\n\nWITH\n  change_orders AS (\n    SELECT DISTINCT\n      current_human_id,\n      old_human_id\n    FROM `pacific-plating-282708.careos.cancelled_change_orders`\n    WHERE current_human_id IS NOT NULL\n      AND old_human_id IS NOT NULL\n  ),\n\n  latest_snapshot AS (\n    SELECT *\n    FROM `pacific-plating-282708.careos.carepay_transaction_snapshots`\n    QUALIFY ROW_NUMBER() OVER (\n      PARTITION BY transaction_id\n      ORDER BY update_time DESC, create_time DESC, id DESC\n    ) = 1\n  ),\n\n  successful_charges AS (\n    SELECT *\n    FROM `pacific-plating-282708.careos.carepay_charges`\n    WHERE status = 'SUCCESSFUL'\n      AND service_provider NOT IN ('ICOLLECTION', 'RABBIT_LENDING')\n    QUALIFY ROW_NUMBER() OVER (\n      PARTITION BY id\n      ORDER BY update_time DESC, create_time DESC\n    ) = 1\n  ),\n\n  source_rows AS (\n    SELECT\n      'RCB' AS CompanyDB,\n      orders.human_id AS OrderID,\n      order_items.human_id AS OrderItem,\n      orders.create_time AS OrderDate,\n      CASE\n        WHEN JSON_VALUE(orders.data, '$.policyHolder.isCompany') = 'true'\n          AND JSON_VALUE(orders.data, '$.policyHolder.companyTaxId') IS NULL THEN '-'\n        WHEN JSON_VALUE(orders.data, '$.policyHolder.isCompany') = 'true'\n          THEN JSON_VALUE(orders.data, '$.policyHolder.companyTaxId')\n        WHEN JSON_VALUE(orders.data, '$.idNumber') IS NULL\n          OR TRIM(JSON_VALUE(orders.data, '$.idNumber')) = '' THEN '-'\n        ELSE JSON_VALUE(orders.data, '$.idNumber')\n      END AS InsuredID,\n      JSON_VALUE(orders.data, '$.policyHolder.title') AS source_title,\n      COALESCE(\n        JSON_VALUE(orders.data, '$.policyHolder.firstName'),\n        JSON_VALUE(orders.data, '$.policyHolder.policyAddress.companyName')\n      ) AS FirstName,\n      JSON_VALUE(orders.data, '$.policyHolder.lastName') AS LastName,\n      order_items.insurer AS source_insurer,\n      order_items.product AS source_product,\n      order_items.motor_item_type AS source_insurance_type,\n      leads.type AS source_policy_type,\n      order_items.policy_start_date AS PolicyDate,\n      order_items.policy_number AS PolicyNo,\n      JSON_VALUE(orders.data, '$.chassisNumber') AS ChassisNo,\n      JSON_VALUE(orders.data, '$.carLicensePlate') AS LicensePlate,\n      COALESCE(order_items.net_premium, 0) AS GrossPremium,\n      COALESCE(order_items.stamp_duty, 0) AS StampDuty,\n      COALESCE(order_items.vat_amount, 0) AS VAT,\n      COALESCE(order_items.gross_premium, 0) AS TotalPremium,\n      COALESCE(ROUND(price_summary.wht_amount / 100, 2), 0) AS WHT,\n      CASE\n        WHEN price_summary.interest_amount IS NULL THEN 0\n        ELSE ROUND(\n          ROUND(price_summary.interest_amount / 100, 2)\n          - (ROUND(price_summary.interest_amount / 100, 2) * 3.3 / 103.3),\n          2\n        )\n      END AS TotalEIR,\n      CASE\n        WHEN price_summary.interest_amount IS NULL THEN 0\n        ELSE ROUND(\n          ROUND(price_summary.interest_amount / 100, 2) * 3.3 / 103.3,\n          2\n        )\n      END AS TotalSBT,\n      CASE\n        WHEN price_summary.processing_fee_amount IS NULL THEN 0\n        ELSE ROUND(\n          ROUND(price_summary.processing_fee_amount / 100, 2) * 100 / 107,\n          2\n        )\n      END AS ProcessingFee,\n      CASE\n        WHEN price_summary.processing_fee_amount IS NULL THEN 0\n        ELSE ROUND(\n          ROUND(price_summary.processing_fee_amount / 100, 2)\n          - ROUND(price_summary.processing_fee_amount / 100, 2) * 100 / 107,\n          2\n        )\n      END AS ProcessingFeeVat,\n      CASE\n        WHEN price_summary.shipment_fee IS NULL THEN 0\n        ELSE ROUND(\n          ROUND(price_summary.shipment_fee / 100, 2) * 100 / 107,\n          2\n        )\n      END AS ShippingFee,\n      CASE\n        WHEN price_summary.shipment_fee IS NULL THEN 0\n        ELSE ROUND(\n          ROUND(price_summary.shipment_fee / 100, 2)\n          - ROUND(price_summary.shipment_fee / 100, 2) * 100 / 107,\n          2\n        )\n      END AS ShippingFeeVat,\n      COALESCE(ROUND(price_summary.discount_amount / 100, 2), 0) AS Discount,\n      COALESCE(SAFE_CAST(price_summary.interest_amount AS INT64), 0)\n        AS InterestEIRThisPeriod,\n      order_items.submission_status AS source_submission_status,\n      order_items.approval_status AS source_approval_status,\n      transactions.status AS source_payment_status,\n      COALESCE(SAFE_CAST(charges.installment_number AS INT64), 1) AS Period,\n      charges.payment_method AS source_payment_method,\n      charges.service_provider AS source_payment_channel,\n      charges.third_party_id,\n      charges.id AS charge_id,\n      charges.create_time AS charge_create_time,\n      COALESCE(charges.payment_date, charges.update_time, charges.create_time)\n        AS source_payment_date,\n      ROUND(charges.amount / 100, 2) AS ActualReceived,\n      change_orders.old_human_id AS RefOrder,\n      CASE\n        WHEN JSON_VALUE(orders.data, '$.policyHolder.policyAddress.isBillingAddress') = 'true'\n          THEN CONCAT(\n            COALESCE(\n              JSON_VALUE(orders.data, '$.policyHolder.policyAddress.fullName'),\n              JSON_VALUE(orders.data, '$.policyHolder.policyAddress.companyName')\n            ), ', ',\n            JSON_VALUE(orders.data, '$.policyHolder.policyAddress.address'), ', ',\n            JSON_VALUE(orders.data, '$.policyHolder.policyAddress.subDistrict'), ', ',\n            JSON_VALUE(orders.data, '$.policyHolder.policyAddress.district'), ', ',\n            JSON_VALUE(orders.data, '$.policyHolder.policyAddress.province'), ', ',\n            JSON_VALUE(orders.data, '$.policyHolder.policyAddress.postCode')\n          )\n        ELSE CONCAT(\n          JSON_VALUE(orders.data, '$.policyHolder.billingAddress.fullName'), ', ',\n          JSON_VALUE(orders.data, '$.policyHolder.billingAddress.address'), ', ',\n          JSON_VALUE(orders.data, '$.policyHolder.billingAddress.subDistrict'), ', ',\n          JSON_VALUE(orders.data, '$.policyHolder.billingAddress.district'), ', ',\n          JSON_VALUE(orders.data, '$.policyHolder.billingAddress.province'), ', ',\n          JSON_VALUE(orders.data, '$.policyHolder.billingAddress.postCode')\n        )\n      END AS BillingAddress,\n      ROW_NUMBER() OVER (\n        PARTITION BY order_items.human_id\n        ORDER BY\n          COALESCE(charges.payment_date, charges.update_time, charges.create_time),\n          charges.create_time,\n          charges.id\n      ) AS item_charge_rank\n    FROM `pacific-plating-282708.careos.careos_orders` AS orders\n    JOIN change_orders\n      ON change_orders.current_human_id = orders.human_id\n    JOIN `pacific-plating-282708.careos.careos_order_items` AS order_items\n      ON order_items.order_id = orders.id\n    JOIN `pacific-plating-282708.careos.carepay_transactions` AS transactions\n      ON CONCAT('transactions/', transactions.id) = orders.payment\n    JOIN successful_charges AS charges\n      ON charges.transaction_id = transactions.id\n    LEFT JOIN `pacific-plating-282708.careos.careos_leads` AS leads\n      ON CONCAT('leads/', leads.id) = orders.lead\n    LEFT JOIN latest_snapshot AS snapshot\n      ON snapshot.transaction_id = transactions.id\n    LEFT JOIN `pacific-plating-282708.careos.carepay_transaction_snapshot_price_summaries`\n      AS price_summary\n      ON price_summary.snapshot_id = snapshot.id\n    LEFT JOIN `pacific-plating-282708.sap_integration_v3.stg_sap_state` AS sap\n      ON sap.U_OrderItem = order_items.human_id\n    WHERE order_items.product = 'products/health-insurance'\n      AND order_items.is_cancelled IS NOT TRUE\n      AND order_items.cancel_time IS NULL\n      AND orders.is_fully_paid IS TRUE\n      AND transactions.status = 'SUCCESSFUL'\n      AND transactions.payment_option != 'RABBIT_CARE_INSTALLMENT'\n      AND (\n        snapshot.number_of_installment = 1\n        OR transactions.payment_option = 'CREDIT_CARD_INSTALLMENT'\n      )\n      AND GREATEST(\n        DATE(orders.create_time, 'Asia/Bangkok'),\n        COALESCE(\n          DATE(order_items.policy_start_date, 'Asia/Bangkok'),\n          DATE(orders.create_time, 'Asia/Bangkok')\n        )\n      ) >= DATE '2026-01-01'\n      AND sap.U_OrderItem IS NULL\n      AND LOWER(TRIM(COALESCE(\n        JSON_VALUE(orders.data, '$.policyHolder.firstName'),\n        JSON_VALUE(orders.data, '$.policyHolder.policyAddress.companyName'),\n        ''\n      ))) != 'test'\n      AND LOWER(TRIM(COALESCE(\n        JSON_VALUE(orders.data, '$.policyHolder.lastName'),\n        ''\n      ))) != 'test'\n  ),\n\n  calculated AS (\n    SELECT\n      source_rows.*,\n      ROUND(\n        TotalPremium + TotalEIR + TotalSBT\n        + ProcessingFee + ProcessingFeeVat + ShippingFee + ShippingFeeVat,\n        2\n      ) AS TotalAmount,\n      CASE\n        WHEN item_charge_rank = 1 THEN ROUND(\n          TotalPremium + TotalEIR + TotalSBT\n          + ProcessingFee + ProcessingFeeVat + ShippingFee + ShippingFeeVat\n          - Discount,\n          2\n        )\n        ELSE 0\n      END AS ExpectedReceived,\n      CASE\n        WHEN DATE(source_payment_date, 'Asia/Bangkok')\n          < DATE_TRUNC(CURRENT_DATE('Asia/Bangkok'), MONTH)\n        THEN DATE_TRUNC(CURRENT_DATE('Asia/Bangkok'), MONTH)\n        ELSE DATE(source_payment_date, 'Asia/Bangkok')\n      END AS PaymentDate,\n      COALESCE(\n        NULLIF(third_party_id, ''),\n        CONCAT(\n          CASE source_payment_method\n            WHEN 'DIRECT_PAYMENT' THEN 'dpm'\n            WHEN 'BANK_TRANSFER' THEN 'trf'\n            WHEN 'CASH' THEN 'cash'\n            WHEN 'EDC' THEN 'edc'\n            ELSE LOWER(COALESCE(source_payment_method, 'payment'))\n          END,\n          '_', CAST(item_charge_rank AS STRING), '_', OrderItem\n        )\n      ) AS InvoiceNo\n    FROM source_rows\n  )\n\nSELECT DISTINCT\n  CompanyDB,\n  OrderID,\n  OrderItem,\n  InvoiceNo,\n  FORMAT_DATE('%d%m%Y', DATE(OrderDate, 'Asia/Bangkok')) AS OrderDate,\n  InsuredID,\n  CASE source_title\n    WHEN 'KHUN' THEN '\u0e04\u0e38\u0e13'\n    WHEN 'MISS' THEN '\u0e19\u0e32\u0e07\u0e2a\u0e32\u0e27'\n    WHEN 'MR' THEN '\u0e19\u0e32\u0e22'\n    WHEN 'MRS' THEN '\u0e19\u0e32\u0e07'\n    ELSE ''\n  END AS Title,\n  FirstName,\n  LastName,\n  CASE source_insurer\n    WHEN 'insurers/1' THEN 'N024'\n    WHEN 'insurers/3' THEN 'N082'\n    WHEN 'insurers/6' THEN 'N067'\n    WHEN 'insurers/7' THEN 'N021'\n    WHEN 'insurers/8' THEN 'N092'\n    WHEN 'insurers/9' THEN 'N072'\n    WHEN 'insurers/10' THEN 'N040'\n    WHEN 'insurers/11' THEN 'N003'\n    WHEN 'insurers/12' THEN 'N091'\n    WHEN 'insurers/13' THEN 'N066'\n    WHEN 'insurers/14' THEN 'N090'\n    WHEN 'insurers/15' THEN 'N058'\n    WHEN 'insurers/16' THEN 'N089'\n    WHEN 'insurers/17' THEN 'N015'\n    WHEN 'insurers/18' THEN 'N088'\n    WHEN 'insurers/20' THEN 'N054'\n    WHEN 'insurers/23' THEN 'N087'\n    WHEN 'insurers/24' THEN 'N086'\n    WHEN 'insurers/26' THEN 'N062'\n    WHEN 'insurers/27' THEN 'N017'\n    WHEN 'insurers/28' THEN 'N069'\n    WHEN 'insurers/29' THEN 'N085'\n    WHEN 'insurers/30' THEN 'N30'\n    WHEN 'insurers/31' THEN 'N061'\n    WHEN 'insurers/33' THEN 'N011'\n    WHEN 'insurers/34' THEN 'N079'\n    WHEN 'insurers/36' THEN 'N084'\n    WHEN 'insurers/37' THEN 'N083'\n    WHEN 'insurers/40' THEN 'N033'\n    WHEN 'insurers/42' THEN 'N064'\n    WHEN 'insurers/43' THEN 'N080'\n    WHEN 'insurers/44' THEN 'N081'\n    WHEN 'insurers/46' THEN 'N105'\n    WHEN 'insurers/48' THEN 'N103'\n    WHEN 'insurers/49' THEN 'N107'\n    ELSE source_insurer\n  END AS InsurerCode,\n  'Health' AS InsuranceGroup,\n  CASE\n    WHEN source_insurance_type IS NULL OR TRIM(source_insurance_type) = '' THEN 'Health'\n    ELSE source_insurance_type\n  END AS InsuranceType,\n  'Health' AS InsuranceProduct,\n  'Insurance' AS ProductType,\n  CASE WHEN source_policy_type = 'LEAD_TYPE_RENEWAL' THEN 'R' ELSE 'N' END AS PolicyType,\n  'N' AS Endorse,\n  FORMAT_DATE('%d%m%Y', DATE(PolicyDate, 'Asia/Bangkok')) AS PolicyDate,\n  PolicyNo,\n  CAST(NULL AS STRING) AS EndorsementNo,\n  ChassisNo,\n  LicensePlate,\n  FORMAT('%.2f', GrossPremium) AS GrossPremium,\n  FORMAT('%.2f', StampDuty) AS StampDuty,\n  FORMAT('%.2f', VAT) AS VAT,\n  FORMAT('%.2f', TotalPremium) AS TotalPremium,\n  FORMAT('%.2f', WHT) AS WHT,\n  FORMAT('%.2f', TotalEIR) AS TotalEIR,\n  FORMAT('%.2f', TotalSBT) AS TotalSBT,\n  FORMAT('%.2f', ProcessingFee) AS ProcessingFee,\n  FORMAT('%.2f', ProcessingFeeVat) AS ProcessingFeeVat,\n  FORMAT('%.2f', ShippingFee) AS ShippingFee,\n  FORMAT('%.2f', ShippingFeeVat) AS ShippingFeeVat,\n  FORMAT('%.2f', TotalAmount) AS TotalAmount,\n  FORMAT('%.2f', Discount) AS Discount,\n  'paid' AS TransactionStatus,\n  CASE source_submission_status\n    WHEN 'ITEM_SUBMISSION_STATUS_READY_TO_SUBMIT' THEN 'PENDING'\n    WHEN 'ITEM_SUBMISSION_STATUS_PRESUBMITTED' THEN 'PRE-SUBMITTED'\n    WHEN 'ITEM_SUBMISSION_STATUS_SUBMITTED' THEN 'SUBMITTED'\n    WHEN 'ITEM_SUBMISSION_STATUS_PENDING' THEN 'PENDING'\n    ELSE source_submission_status\n  END AS SubmissionStatus,\n  CASE source_approval_status\n    WHEN 'ITEM_APPROVAL_STATUS_APPROVED' THEN 'APPROVED'\n    WHEN 'ITEM_APPROVAL_STATUS_REJECTED' THEN 'REJECTED'\n    WHEN 'ITEM_APPROVAL_STATUS_PENDING' THEN 'PENDING'\n    WHEN 'ITEM_APPROVAL_STATUS_POLICY_UPLOADED' THEN 'POLICY UPLOADED'\n    ELSE source_approval_status\n  END AS ApprovalStatus,\n  CASE source_payment_status\n    WHEN 'SUCCESSFUL' THEN 'Fully paid'\n    WHEN 'PENDING' THEN 'Not fully paid'\n    ELSE source_payment_status\n  END AS PaymentStatus,\n  FORMAT('%.2f', ExpectedReceived) AS ExpectedReceived,\n  FORMAT('%.2f', ActualReceived) AS ActualReceived,\n  CAST(0 AS INT64) AS InterestThisPeriod,\n  CAST(0 AS INT64) AS PrincipleThisPeriod,\n  InterestEIRThisPeriod,\n  CAST(0 AS INT64) AS PrincipleEIRThisPeriod,\n  FORMAT_DATE('%d%m%Y', PaymentDate) AS PaymentDate,\n  Period,\n  CAST(1 AS INT64) AS TotalPeriods,\n  CAST(0 AS INT64) AS PendingPayment,\n  CASE\n    WHEN source_payment_method = 'CASH'\n      AND source_payment_channel = 'SERVICE_PROVIDER_UNSPECIFIED' THEN 'TRF Transfer'\n    WHEN source_payment_method = 'BANK_TRANSFER' THEN 'TRF Transfer'\n    WHEN source_payment_method = 'DIRECT_PAYMENT'\n      AND source_payment_channel = 'SERVICE_PROVIDER_UNSPECIFIED'\n      THEN 'DPM \u0e08\u0e48\u0e32\u0e22\u0e15\u0e23\u0e07\u0e01\u0e31\u0e1a\u0e1a\u0e23\u0e34\u0e29\u0e31\u0e17\u0e1b\u0e23\u0e30\u0e01\u0e31\u0e19'\n    WHEN source_payment_method = 'EDC' THEN 'EDC EDC'\n    WHEN source_payment_method = 'ONLINECARD'\n      AND source_payment_channel IN ('OMISE', 'RCB') THEN 'OMC Omise Credit Card'\n    WHEN source_payment_method = 'QR_CODE'\n      AND source_payment_channel IN ('OMISE', 'RCB') THEN 'OME Omise QR Prompt Pay'\n    ELSE 'TRF Transfer'\n  END AS PaymentMethod,\n  CASE\n    WHEN source_payment_method = 'CASH'\n      AND source_payment_channel = 'SERVICE_PROVIDER_UNSPECIFIED' THEN 'RCB-Transfer-\u0e2d\u0e37\u0e48\u0e19\u0e46'\n    WHEN source_payment_method = 'BANK_TRANSFER'\n      AND source_payment_channel = 'KASIKORN' THEN 'RCB-Transfer-KBANK'\n    WHEN source_payment_method = 'BANK_TRANSFER'\n      AND source_payment_channel = 'KRUNGSRI' THEN 'RCB-Transfer-BAY'\n    WHEN source_payment_method = 'BANK_TRANSFER'\n      AND source_payment_channel = 'KRUNGTHAI' THEN 'RCB-Transfer-KTB'\n    WHEN source_payment_method = 'BANK_TRANSFER'\n      AND source_payment_channel = 'SCB' THEN 'RCB-Transfer-SCB'\n    WHEN source_payment_method = 'DIRECT_PAYMENT'\n      AND source_payment_channel = 'SERVICE_PROVIDER_UNSPECIFIED' THEN 'RCB-DIRECT PAYMENT'\n    WHEN source_payment_method = 'EDC'\n      AND source_payment_channel = 'BANGKOK_BANK' THEN 'RCB-EDC-BBL'\n    WHEN source_payment_method = 'EDC'\n      AND source_payment_channel = 'KASIKORN' THEN 'RCB-EDC-KBANK'\n    WHEN source_payment_method = 'EDC'\n      AND source_payment_channel = 'KRUNGSRI' THEN 'RCB-EDC-BAY'\n    WHEN source_payment_method = 'EDC'\n      AND source_payment_channel = 'KRUNGTHAI' THEN 'RCB-EDC-KTB'\n    WHEN source_payment_method = 'EDC'\n      AND source_payment_channel = 'SCB' THEN 'RCB-EDC-SCB'\n    WHEN source_payment_method = 'EDC'\n      AND source_payment_channel = 'UOB' THEN 'RCB-EDC-UOB'\n    WHEN source_payment_method = 'ONLINECARD'\n      AND source_payment_channel IN ('OMISE', 'RCB') THEN 'RCB-Omise Credit Card-BAY'\n    WHEN source_payment_method = 'QR_CODE'\n      AND source_payment_channel IN ('OMISE', 'RCB') THEN 'RCB-Omise QR Prompt Pay-BAY'\n    ELSE 'RCB-Transfer-\u0e2d\u0e37\u0e48\u0e19\u0e46'\n  END AS PaymentChannel,\n  FORMAT_DATE('%d%m%Y', DATE(charge_create_time, 'Asia/Bangkok')) AS ExpectedDate,\n  RefOrder,\n  CAST(0 AS INT64) AS RefundAmountBeforeFee,\n  CAST(0 AS INT64) AS RefundAmountAfterFee,\n  BillingAddress,\n  FORMAT_DATE('%d%m%Y', CURRENT_DATE('Asia/Bangkok')) AS BatchRunDate\nFROM calculated\nORDER BY OrderID, OrderItem, Period, InvoiceNo;\n",
+    "useLegacySql": false,
+    "privacyPolicy": {}
+  },
+  "location": "asia-southeast1",
+  "numTotalLogicalBytes": "0",
+  "numActiveLogicalBytes": "0",
+  "numLongTermLogicalBytes": "0"
+}

@@ -1,5 +1,9 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-09-26T23:18:00+07:00 — September monthly completeness audit
+
+Read-only current-month query built and executed. 26,290 charges; 1,310 distinct charges lacking matching terminal SAP evidence; cancellation 184 rows / 46 items unresolved. REVIEW conflicts separate. Evidence, limitations and route causes: docs/FINDINGS_CAREOS_MONTH_COMPLETENESS_20260926.md. No production change; V3 still held.
+
 ## 2026-09-26T21:53:57+07:00 — User-scoped dashboard-only deployment
 
 Only sap_dashboard_carepay_installment was replaced under the user's immediate instruction; additional Expected=0 / Actual=raw charge. RCL newpayment/gate unchanged; V3 held. See docs/FINDINGS_RCL_DASHBOARD_DEPLOY_20260926.md and its live evidence. This supersedes earlier source-only status for this dashboard only.

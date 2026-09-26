@@ -1,0 +1,310 @@
+{
+  "kind": "bigquery#table",
+  "etag": "s05ZGriBSzpbQIS53JLRew==",
+  "id": "pacific-plating-282708:sap_integration_v2.RCL 05_newpayment",
+  "selfLink": "https://bigquery.googleapis.com/bigquery/v2/projects/pacific-plating-282708/datasets/sap_integration_v2/tables/RCL 05_newpayment",
+  "tableReference": {
+    "projectId": "pacific-plating-282708",
+    "datasetId": "sap_integration_v2",
+    "tableId": "RCL 05_newpayment"
+  },
+  "schema": {
+    "fields": [
+      {
+        "name": "CompanyDB",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "OrderID",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "OrderItem",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "InvoiceNo",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "OrderDate",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "InsuredID",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "Title",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "FirstName",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "LastName",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "InsurerCode",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "InsuranceGroup",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "InsuranceType",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "InsuranceProduct",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "ProductType",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "PolicyType",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "Endorse",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "PolicyDate",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "PolicyNo",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "EndorsementNo",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "ChassisNo",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "LicensePlate",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "GrossPremium",
+        "type": "FLOAT",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "StampDuty",
+        "type": "FLOAT",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "VAT",
+        "type": "FLOAT",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "TotalPremium",
+        "type": "FLOAT",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "WHT",
+        "type": "FLOAT",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "TotalEIR",
+        "type": "FLOAT",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "TotalSBT",
+        "type": "FLOAT",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "ProcessingFee",
+        "type": "FLOAT",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "ProcessingFeeVat",
+        "type": "FLOAT",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "ShippingFee",
+        "type": "FLOAT",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "ShippingFeeVat",
+        "type": "FLOAT",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "TotalAmount",
+        "type": "FLOAT",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "Discount",
+        "type": "FLOAT",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "TransactionStatus",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "SubmissionStatus",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "ApprovalStatus",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "PaymentStatus",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "ExpectedReceived",
+        "type": "FLOAT",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "ActualReceived",
+        "type": "FLOAT",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "InterestThisPeriod",
+        "type": "FLOAT",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "PrincipleThisPeriod",
+        "type": "FLOAT",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "InterestEIRThisPeriod",
+        "type": "FLOAT",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "PrincipleEIRThisPeriod",
+        "type": "FLOAT",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "PaymentDate",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "Period",
+        "type": "INTEGER",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "TotalPeriods",
+        "type": "INTEGER",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "PendingPayment",
+        "type": "FLOAT",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "PaymentMethod",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "PaymentChannel",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "ExpectedDate",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "RefOrder",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "RefundAmountBeforeFee",
+        "type": "FLOAT",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "RefundAmountAfterFee",
+        "type": "FLOAT",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "BillingAddress",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "BatchRunDate",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      }
+    ]
+  },
+  "numBytes": "0",
+  "numLongTermBytes": "0",
+  "numRows": "0",
+  "creationTime": "1748958828154",
+  "lastModifiedTime": "1788164874051",
+  "type": "VIEW",
+  "view": {
+    "query": "-- RCL 05_newpayment -- FIXED & TUNED VERSION\r\n-- Fixed & tuned: 2026-08-28 (Boat review)\r\n-- Changes:\r\n--  1. FIX (dead code / perf): removed the `sap` CTE (a full transform of\r\n--     all of SAP_LIVE_FULL) and the `cancelled` CTE -- neither was\r\n--     referenced anywhere in the final SELECT (only `newpayment` and\r\n--     `interface` were used). That was a full-table scan+transform paid\r\n--     for nothing.\r\n--  2. FIX (correctness, confirmed with Boat -- same root cause suspected\r\n--     for Chain 3 / DDL 043): replaced the MAX(Period)-per-OrderItem\r\n--     \"watermark\" with a genuine PER-PERIOD existence check. The old logic\r\n--     (`careos_installment > MAX(paid period)`) assumed periods are paid\r\n--     strictly in sequence with no gaps -- if period 2 was skipped but\r\n--     period 3 got marked Paid, period 2 would be wrongly treated as\r\n--     \"already covered\" forever and never surface as missing/new. The new\r\n--     logic checks, for each exact (OrderItem, Period) pair CareOS says\r\n--     should exist, whether THAT SPECIFIC period is already Paid in SAP --\r\n--     no assumption of contiguous sequence.\r\n-- ============================================================\r\n-- RCL 05_newpayment -- FIXED & TUNED VERSION\r\n-- Fixed & tuned: 2026-08-28 (Boat review)\r\n-- Redeployed 2026-08-29: previous live definition under this name was\r\n-- actually the 13-col `RCL 05_paid by period` logic (careos_orders join) --\r\n-- wrong definition, root cause of UNION ALL column-count mismatch in\r\n-- 06_02. This corrects it to the intended 56-col, schema-matched-to-\r\n-- RCL-05_paid definition.\r\n\r\n-- RCL 05_newpayment -- FIXED & TUNED VERSION\r\n-- Redeployed 2026-08-29 (Boat review): previous live definition under\r\n-- this name was actually the 13-col `RCL 05_paid by period` logic --\r\n-- wrong definition, root cause of UNION ALL column-count mismatch\r\n-- (56 vs 13) in 06_02. Corrected to the intended 56-col definition,\r\n-- schema-matched to RCL 05_paid via sap_dashboard_carepay_installment.\r\n-- Also explicitly casts RefundAmountBeforeFee/AfterFee to FLOAT64\r\n-- (source has them as INT64; RCL 05_paid has them as FLOAT64 --\r\n-- BigQuery would implicit-coerce in UNION ALL, but made explicit here\r\n-- to avoid relying on that behavior silently).\r\nWITH\r\n  sap_paid_periods AS (\r\n    -- exact per-(OrderItem, Period) existence check -- NOT a MAX watermark, NOT an all-period fan-out\r\n    SELECT DISTINCT\r\n      U_OrderItem AS order_item,\r\n      SAFE_CAST(U_Period AS INT64) AS period\r\n    FROM `pacific-plating-282708.sap_integration_v2.SAP_LIVE_FULL`\r\n    WHERE TransactionStatus IN ('Paid', 'paid')\r\n  ),\r\n\r\n  interface AS (\r\n    SELECT\r\n      * REPLACE (\r\n        CAST(RefundAmountBeforeFee AS FLOAT64) AS RefundAmountBeforeFee,\r\n        CAST(RefundAmountAfterFee AS FLOAT64) AS RefundAmountAfterFee\r\n      ),\r\n      SAFE_CAST(Period AS INT64) AS careos_installment\r\n    FROM `pacific-plating-282708.sap_data_engineer.sap_dashboard_carepay_installment`\r\n  )\r\n\r\nSELECT DISTINCT\r\n  interface.* EXCEPT(careos_installment)\r\nFROM interface\r\nWHERE\r\n  interface.careos_installment IS NOT NULL\r\n  AND NOT EXISTS (\r\n    SELECT 1\r\n    FROM sap_paid_periods p\r\n    WHERE p.order_item = interface.OrderItem\r\n      AND p.period = interface.careos_installment\r\n  )\r\n\r\nORDER BY interface.OrderItem, careos_installment;",
+    "useLegacySql": false,
+    "privacyPolicy": {}
+  },
+  "location": "asia-southeast1",
+  "numTotalLogicalBytes": "0",
+  "numActiveLogicalBytes": "0",
+  "numLongTermLogicalBytes": "0"
+}

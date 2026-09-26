@@ -1,0 +1,253 @@
+{
+  "kind": "bigquery#table",
+  "etag": "Z7yfV8EeMqmdZnJWuBjU7A==",
+  "id": "pacific-plating-282708:sap_view.RCB_NonMotor_process_1_create",
+  "selfLink": "https://bigquery.googleapis.com/bigquery/v2/projects/pacific-plating-282708/datasets/sap_view/tables/RCB_NonMotor_process_1_create",
+  "tableReference": {
+    "projectId": "pacific-plating-282708",
+    "datasetId": "sap_view",
+    "tableId": "RCB_NonMotor_process_1_create"
+  },
+  "schema": {
+    "fields": [
+      {
+        "name": "CompanyDB",
+        "type": "STRING"
+      },
+      {
+        "name": "OrderID",
+        "type": "STRING"
+      },
+      {
+        "name": "OrderItem",
+        "type": "STRING"
+      },
+      {
+        "name": "InvoiceNo",
+        "type": "STRING"
+      },
+      {
+        "name": "OrderDate",
+        "type": "STRING"
+      },
+      {
+        "name": "InsuredID",
+        "type": "STRING"
+      },
+      {
+        "name": "Title",
+        "type": "STRING"
+      },
+      {
+        "name": "FirstName",
+        "type": "STRING"
+      },
+      {
+        "name": "LastName",
+        "type": "STRING"
+      },
+      {
+        "name": "InsurerCode",
+        "type": "STRING"
+      },
+      {
+        "name": "InsuranceGroup",
+        "type": "STRING"
+      },
+      {
+        "name": "InsuranceType",
+        "type": "STRING"
+      },
+      {
+        "name": "InsuranceProduct",
+        "type": "STRING"
+      },
+      {
+        "name": "ProductType",
+        "type": "STRING"
+      },
+      {
+        "name": "PolicyType",
+        "type": "STRING"
+      },
+      {
+        "name": "Endorse",
+        "type": "STRING"
+      },
+      {
+        "name": "PolicyDate",
+        "type": "STRING"
+      },
+      {
+        "name": "PolicyNo",
+        "type": "STRING"
+      },
+      {
+        "name": "EndorsementNo",
+        "type": "STRING"
+      },
+      {
+        "name": "ChassisNo",
+        "type": "STRING"
+      },
+      {
+        "name": "LicensePlate",
+        "type": "STRING"
+      },
+      {
+        "name": "GrossPremium",
+        "type": "FLOAT"
+      },
+      {
+        "name": "StampDuty",
+        "type": "FLOAT"
+      },
+      {
+        "name": "VAT",
+        "type": "FLOAT"
+      },
+      {
+        "name": "TotalPremium",
+        "type": "FLOAT"
+      },
+      {
+        "name": "WHT",
+        "type": "FLOAT"
+      },
+      {
+        "name": "TotalEIR",
+        "type": "FLOAT"
+      },
+      {
+        "name": "TotalSBT",
+        "type": "FLOAT"
+      },
+      {
+        "name": "ProcessingFee",
+        "type": "FLOAT"
+      },
+      {
+        "name": "ProcessingFeeVat",
+        "type": "FLOAT"
+      },
+      {
+        "name": "ShippingFee",
+        "type": "FLOAT"
+      },
+      {
+        "name": "ShippingFeeVat",
+        "type": "FLOAT"
+      },
+      {
+        "name": "TotalAmount",
+        "type": "FLOAT"
+      },
+      {
+        "name": "Discount",
+        "type": "FLOAT"
+      },
+      {
+        "name": "TransactionStatus",
+        "type": "STRING"
+      },
+      {
+        "name": "SubmissionStatus",
+        "type": "STRING"
+      },
+      {
+        "name": "ApprovalStatus",
+        "type": "STRING"
+      },
+      {
+        "name": "PaymentStatus",
+        "type": "STRING"
+      },
+      {
+        "name": "ExpectedReceived",
+        "type": "FLOAT"
+      },
+      {
+        "name": "ActualReceived",
+        "type": "FLOAT"
+      },
+      {
+        "name": "InterestThisPeriod",
+        "type": "INTEGER"
+      },
+      {
+        "name": "PrincipleThisPeriod",
+        "type": "INTEGER"
+      },
+      {
+        "name": "InterestEIRThisPeriod",
+        "type": "INTEGER"
+      },
+      {
+        "name": "PrincipleEIRThisPeriod",
+        "type": "INTEGER"
+      },
+      {
+        "name": "PaymentDate",
+        "type": "STRING"
+      },
+      {
+        "name": "Period",
+        "type": "INTEGER"
+      },
+      {
+        "name": "TotalPeriods",
+        "type": "INTEGER"
+      },
+      {
+        "name": "PendingPayment",
+        "type": "INTEGER"
+      },
+      {
+        "name": "PaymentMethod",
+        "type": "STRING"
+      },
+      {
+        "name": "PaymentChannel",
+        "type": "STRING"
+      },
+      {
+        "name": "ExpectedDate",
+        "type": "STRING"
+      },
+      {
+        "name": "RefOrder",
+        "type": "STRING"
+      },
+      {
+        "name": "RefundAmountBeforeFee",
+        "type": "INTEGER"
+      },
+      {
+        "name": "RefundAmountAfterFee",
+        "type": "INTEGER"
+      },
+      {
+        "name": "BillingAddress",
+        "type": "STRING"
+      },
+      {
+        "name": "BatchRunDate",
+        "type": "STRING"
+      }
+    ]
+  },
+  "numBytes": "0",
+  "numLongTermBytes": "0",
+  "numRows": "0",
+  "creationTime": "1784912900231",
+  "lastModifiedTime": "1784912900231",
+  "type": "VIEW",
+  "view": {
+    "query": "WITH\n  sap AS (\n  SELECT\n    *\n  FROM\n    `pacific-plating-282708.sap_integration_v3.stg_sap_state` ),\n  interface AS (\n  SELECT\n    *\n  FROM\n    `pacific-plating-282708.sap_data_engineer.RCB_HEALTH`\n  UNION ALL\n  SELECT\n    *\n  FROM\n    `pacific-plating-282708.sap_data_engineer.RCB_TRAVEL`  )\nSELECT\n  interface.*\nFROM\n  interface\nLEFT JOIN\n  sap\nON\n  sap.U_OrderItem = interface.OrderItem\nWHERE\n  sap.U_OrderItem IS NULL\n  -- year-hardcode fix 2026-07-24: was \"AND interface.OrderDate LIKE '%2025%'\",\n  -- silently excluded every 2026+ order forever. The LEFT JOIN anti-join above\n  -- already limits this to \"not yet in SAP\" rows, so no date filter is needed.\n  AND interface.TransactionStatus IS NOT NULL\nORDER BY\n  OrderID",
+    "useLegacySql": false
+  },
+  "location": "asia-southeast1",
+  "numTotalLogicalBytes": "0",
+  "numActiveLogicalBytes": "0",
+  "numLongTermLogicalBytes": "0"
+}

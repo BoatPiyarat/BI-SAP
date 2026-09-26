@@ -1,0 +1,207 @@
+{
+  "kind": "bigquery#table",
+  "etag": "SNJBmMprwLVcUkL4+9SKSQ==",
+  "id": "pacific-plating-282708:careos.careos_order_items",
+  "selfLink": "https://bigquery.googleapis.com/bigquery/v2/projects/pacific-plating-282708/datasets/careos/tables/careos_order_items",
+  "tableReference": {
+    "projectId": "pacific-plating-282708",
+    "datasetId": "careos",
+    "tableId": "careos_order_items"
+  },
+  "schema": {
+    "fields": [
+      {
+        "name": "create_time",
+        "type": "TIMESTAMP"
+      },
+      {
+        "name": "update_time",
+        "type": "TIMESTAMP"
+      },
+      {
+        "name": "delete_time",
+        "type": "TIMESTAMP"
+      },
+      {
+        "name": "cancel_time",
+        "type": "TIMESTAMP"
+      },
+      {
+        "name": "submit_date",
+        "type": "TIMESTAMP"
+      },
+      {
+        "name": "policy_start_date",
+        "type": "TIMESTAMP"
+      },
+      {
+        "name": "approval_time",
+        "type": "TIMESTAMP"
+      },
+      {
+        "name": "price",
+        "type": "FLOAT"
+      },
+      {
+        "name": "gross_premium",
+        "type": "FLOAT"
+      },
+      {
+        "name": "net_premium",
+        "type": "FLOAT"
+      },
+      {
+        "name": "vat_percent",
+        "type": "FLOAT"
+      },
+      {
+        "name": "vat_amount",
+        "type": "FLOAT"
+      },
+      {
+        "name": "stamp_duty_percentage",
+        "type": "FLOAT"
+      },
+      {
+        "name": "stamp_duty",
+        "type": "FLOAT"
+      },
+      {
+        "name": "sum_insured",
+        "type": "FLOAT"
+      },
+      {
+        "name": "adjusted_premium",
+        "type": "FLOAT"
+      },
+      {
+        "name": "package_id",
+        "type": "STRING"
+      },
+      {
+        "name": "packagetype",
+        "type": "STRING"
+      },
+      {
+        "name": "id",
+        "type": "STRING"
+      },
+      {
+        "name": "version",
+        "type": "INTEGER"
+      },
+      {
+        "name": "human_id",
+        "type": "STRING"
+      },
+      {
+        "name": "product",
+        "type": "STRING"
+      },
+      {
+        "name": "package",
+        "type": "STRING"
+      },
+      {
+        "name": "document_status",
+        "type": "STRING"
+      },
+      {
+        "name": "qc_status",
+        "type": "STRING"
+      },
+      {
+        "name": "submission_by",
+        "type": "STRING"
+      },
+      {
+        "name": "submission_status",
+        "type": "STRING"
+      },
+      {
+        "name": "approval_by",
+        "type": "STRING"
+      },
+      {
+        "name": "approval_status",
+        "type": "STRING"
+      },
+      {
+        "name": "is_cancelled",
+        "type": "BOOLEAN"
+      },
+      {
+        "name": "insurer",
+        "type": "STRING"
+      },
+      {
+        "name": "addons",
+        "type": "STRING",
+        "mode": "REPEATED"
+      },
+      {
+        "name": "motor_item_type",
+        "type": "STRING"
+      },
+      {
+        "name": "order_id",
+        "type": "STRING"
+      },
+      {
+        "name": "policy_number",
+        "type": "STRING"
+      },
+      {
+        "name": "tracking_number",
+        "type": "STRING"
+      },
+      {
+        "name": "underwriting_status",
+        "type": "STRING"
+      },
+      {
+        "name": "application_number",
+        "type": "STRING"
+      },
+      {
+        "name": "_sdc_extracted_at",
+        "type": "TIMESTAMP"
+      }
+    ]
+  },
+  "timePartitioning": {
+    "type": "MONTH",
+    "field": "create_time"
+  },
+  "numBytes": "418870958",
+  "numLongTermBytes": "0",
+  "numRows": "792064",
+  "creationTime": "1790426441948",
+  "lastModifiedTime": "1790433027826",
+  "type": "TABLE",
+  "location": "asia-southeast1",
+  "clustering": {
+    "fields": [
+      "is_cancelled",
+      "insurer",
+      "packagetype",
+      "motor_item_type"
+    ]
+  },
+  "numTimeTravelPhysicalBytes": "16405561993",
+  "numTotalLogicalBytes": "418870958",
+  "numActiveLogicalBytes": "418870958",
+  "numLongTermLogicalBytes": "0",
+  "numTotalPhysicalBytes": "16487347594",
+  "numActivePhysicalBytes": "16487347594",
+  "numLongTermPhysicalBytes": "0",
+  "numPartitions": "46",
+  "partitionDefinition": {
+    "partitionedColumn": [
+      {
+        "field": "create_time"
+      }
+    ]
+  },
+  "numCurrentPhysicalBytes": "81785601"
+}

@@ -1,0 +1,600 @@
+{
+  "kind": "bigquery#table",
+  "etag": "sF4qEBZ7pOdqBY48NAVFXg==",
+  "id": "pacific-plating-282708:sap_integration_v2.SAP_LIVE_2026",
+  "selfLink": "https://bigquery.googleapis.com/bigquery/v2/projects/pacific-plating-282708/datasets/sap_integration_v2/tables/SAP_LIVE_2026",
+  "tableReference": {
+    "projectId": "pacific-plating-282708",
+    "datasetId": "sap_integration_v2",
+    "tableId": "SAP_LIVE_2026"
+  },
+  "schema": {
+    "fields": [
+      {
+        "name": "DocEntry",
+        "type": "INTEGER",
+        "mode": "NULLABLE",
+        "description": ""
+      },
+      {
+        "name": "DocNum",
+        "type": "INTEGER",
+        "mode": "NULLABLE",
+        "description": ""
+      },
+      {
+        "name": "Period",
+        "type": "INTEGER",
+        "mode": "NULLABLE",
+        "description": ""
+      },
+      {
+        "name": "Instance",
+        "type": "INTEGER",
+        "mode": "NULLABLE",
+        "description": ""
+      },
+      {
+        "name": "Series",
+        "type": "INTEGER",
+        "mode": "NULLABLE",
+        "description": ""
+      },
+      {
+        "name": "Handwrtten",
+        "type": "BOOLEAN",
+        "mode": "NULLABLE",
+        "description": ""
+      },
+      {
+        "name": "Canceled",
+        "type": "BOOLEAN",
+        "mode": "NULLABLE",
+        "description": ""
+      },
+      {
+        "name": "Object",
+        "type": "STRING",
+        "mode": "NULLABLE",
+        "description": ""
+      },
+      {
+        "name": "LogInst",
+        "type": "STRING",
+        "mode": "NULLABLE",
+        "description": ""
+      },
+      {
+        "name": "UserSign",
+        "type": "INTEGER",
+        "mode": "NULLABLE",
+        "description": ""
+      },
+      {
+        "name": "Transfered",
+        "type": "BOOLEAN",
+        "mode": "NULLABLE",
+        "description": ""
+      },
+      {
+        "name": "Status",
+        "type": "STRING",
+        "mode": "NULLABLE",
+        "description": ""
+      },
+      {
+        "name": "CreateDate",
+        "type": "TIMESTAMP",
+        "mode": "NULLABLE",
+        "description": ""
+      },
+      {
+        "name": "CreateTime",
+        "type": "INTEGER",
+        "mode": "NULLABLE",
+        "description": ""
+      },
+      {
+        "name": "UpdateDate",
+        "type": "TIMESTAMP",
+        "mode": "NULLABLE",
+        "description": ""
+      },
+      {
+        "name": "UpdateTime",
+        "type": "INTEGER",
+        "mode": "NULLABLE",
+        "description": ""
+      },
+      {
+        "name": "DataSource",
+        "type": "STRING",
+        "mode": "NULLABLE",
+        "description": ""
+      },
+      {
+        "name": "RequestStatus",
+        "type": "STRING",
+        "mode": "NULLABLE",
+        "description": ""
+      },
+      {
+        "name": "Creator",
+        "type": "STRING",
+        "mode": "NULLABLE",
+        "description": ""
+      },
+      {
+        "name": "Remark",
+        "type": "STRING",
+        "mode": "NULLABLE",
+        "description": ""
+      },
+      {
+        "name": "U_CompanyCode",
+        "type": "STRING",
+        "mode": "NULLABLE",
+        "description": ""
+      },
+      {
+        "name": "U_OrderId",
+        "type": "STRING",
+        "mode": "NULLABLE",
+        "description": ""
+      },
+      {
+        "name": "U_OrderItem",
+        "type": "STRING",
+        "mode": "NULLABLE",
+        "description": ""
+      },
+      {
+        "name": "U_InvoiceNo",
+        "type": "STRING",
+        "mode": "NULLABLE",
+        "description": ""
+      },
+      {
+        "name": "U_OrderDate",
+        "type": "TIMESTAMP",
+        "mode": "NULLABLE",
+        "description": ""
+      },
+      {
+        "name": "U_InsuredId",
+        "type": "STRING",
+        "mode": "NULLABLE",
+        "description": ""
+      },
+      {
+        "name": "U_Title",
+        "type": "STRING",
+        "mode": "NULLABLE",
+        "description": ""
+      },
+      {
+        "name": "U_FirstName",
+        "type": "STRING",
+        "mode": "NULLABLE",
+        "description": ""
+      },
+      {
+        "name": "U_LastName",
+        "type": "STRING",
+        "mode": "NULLABLE",
+        "description": ""
+      },
+      {
+        "name": "U_InsurerCode",
+        "type": "STRING",
+        "mode": "NULLABLE",
+        "description": ""
+      },
+      {
+        "name": "U_InsuranceGroup",
+        "type": "STRING",
+        "mode": "NULLABLE",
+        "description": ""
+      },
+      {
+        "name": "U_InsuranceType",
+        "type": "STRING",
+        "mode": "NULLABLE",
+        "description": ""
+      },
+      {
+        "name": "U_InsuranceProduct",
+        "type": "STRING",
+        "mode": "NULLABLE",
+        "description": ""
+      },
+      {
+        "name": "U_PolicyType",
+        "type": "STRING",
+        "mode": "NULLABLE",
+        "description": ""
+      },
+      {
+        "name": "U_Endorse",
+        "type": "BOOLEAN",
+        "mode": "NULLABLE",
+        "description": ""
+      },
+      {
+        "name": "U_PolicyNo",
+        "type": "STRING",
+        "mode": "NULLABLE",
+        "description": ""
+      },
+      {
+        "name": "U_EndorsementNo",
+        "type": "STRING",
+        "mode": "NULLABLE",
+        "description": ""
+      },
+      {
+        "name": "U_ChassisNo",
+        "type": "STRING",
+        "mode": "NULLABLE",
+        "description": ""
+      },
+      {
+        "name": "U_LicensePlate",
+        "type": "STRING",
+        "mode": "NULLABLE",
+        "description": ""
+      },
+      {
+        "name": "U_GrossPremiumAmt",
+        "type": "FLOAT",
+        "mode": "NULLABLE",
+        "description": ""
+      },
+      {
+        "name": "U_StampDutyAmt",
+        "type": "FLOAT",
+        "mode": "NULLABLE",
+        "description": ""
+      },
+      {
+        "name": "U_VATAmt",
+        "type": "FLOAT",
+        "mode": "NULLABLE",
+        "description": ""
+      },
+      {
+        "name": "U_TotalPremiumAmt",
+        "type": "FLOAT",
+        "mode": "NULLABLE",
+        "description": ""
+      },
+      {
+        "name": "U_WHTAmt",
+        "type": "FLOAT",
+        "mode": "NULLABLE",
+        "description": ""
+      },
+      {
+        "name": "U_TotalEIRAmt",
+        "type": "FLOAT",
+        "mode": "NULLABLE",
+        "description": ""
+      },
+      {
+        "name": "U_TotalSBTAmt",
+        "type": "FLOAT",
+        "mode": "NULLABLE",
+        "description": ""
+      },
+      {
+        "name": "U_ProcessingFee",
+        "type": "FLOAT",
+        "mode": "NULLABLE",
+        "description": ""
+      },
+      {
+        "name": "U_ProcessingFeeVat",
+        "type": "FLOAT",
+        "mode": "NULLABLE",
+        "description": ""
+      },
+      {
+        "name": "U_ShippingFee",
+        "type": "FLOAT",
+        "mode": "NULLABLE",
+        "description": ""
+      },
+      {
+        "name": "U_ShippingFeeVat",
+        "type": "FLOAT",
+        "mode": "NULLABLE",
+        "description": ""
+      },
+      {
+        "name": "U_TotalAmount",
+        "type": "FLOAT",
+        "mode": "NULLABLE",
+        "description": ""
+      },
+      {
+        "name": "U_Discount",
+        "type": "FLOAT",
+        "mode": "NULLABLE",
+        "description": ""
+      },
+      {
+        "name": "U_PolicyStatus",
+        "type": "STRING",
+        "mode": "NULLABLE",
+        "description": ""
+      },
+      {
+        "name": "U_SubmissionStatus",
+        "type": "STRING",
+        "mode": "NULLABLE",
+        "description": ""
+      },
+      {
+        "name": "U_ApprovalStatus",
+        "type": "STRING",
+        "mode": "NULLABLE",
+        "description": ""
+      },
+      {
+        "name": "U_PaymentStatus",
+        "type": "STRING",
+        "mode": "NULLABLE",
+        "description": ""
+      },
+      {
+        "name": "U_ActualReceived",
+        "type": "FLOAT",
+        "mode": "NULLABLE",
+        "description": ""
+      },
+      {
+        "name": "U_InterestThisPeriod",
+        "type": "FLOAT",
+        "mode": "NULLABLE",
+        "description": ""
+      },
+      {
+        "name": "U_PrincipleThisPeriod",
+        "type": "FLOAT",
+        "mode": "NULLABLE",
+        "description": ""
+      },
+      {
+        "name": "U_InterestEIRThisPeriod",
+        "type": "FLOAT",
+        "mode": "NULLABLE",
+        "description": ""
+      },
+      {
+        "name": "U_PrincipleEIRThisPeriod",
+        "type": "FLOAT",
+        "mode": "NULLABLE",
+        "description": ""
+      },
+      {
+        "name": "U_Period",
+        "type": "INTEGER",
+        "mode": "NULLABLE",
+        "description": ""
+      },
+      {
+        "name": "U_TotalPeriods",
+        "type": "INTEGER",
+        "mode": "NULLABLE",
+        "description": ""
+      },
+      {
+        "name": "U_PendingPayment",
+        "type": "FLOAT",
+        "mode": "NULLABLE",
+        "description": ""
+      },
+      {
+        "name": "U_PaymentMethod",
+        "type": "STRING",
+        "mode": "NULLABLE",
+        "description": ""
+      },
+      {
+        "name": "U_PaymentChannel",
+        "type": "STRING",
+        "mode": "NULLABLE",
+        "description": ""
+      },
+      {
+        "name": "U_CommAmt",
+        "type": "FLOAT",
+        "mode": "NULLABLE",
+        "description": ""
+      },
+      {
+        "name": "U_OVAmt",
+        "type": "FLOAT",
+        "mode": "NULLABLE",
+        "description": ""
+      },
+      {
+        "name": "U_SurveyAmt",
+        "type": "FLOAT",
+        "mode": "NULLABLE",
+        "description": ""
+      },
+      {
+        "name": "U_JETransId",
+        "type": "STRING",
+        "mode": "NULLABLE",
+        "description": ""
+      },
+      {
+        "name": "U_PolicyDate",
+        "type": "TIMESTAMP",
+        "mode": "NULLABLE",
+        "description": ""
+      },
+      {
+        "name": "U_PaymentDate",
+        "type": "STRING",
+        "mode": "NULLABLE",
+        "description": ""
+      },
+      {
+        "name": "U_CommRate",
+        "type": "FLOAT",
+        "mode": "NULLABLE",
+        "description": ""
+      },
+      {
+        "name": "U_OVRate",
+        "type": "FLOAT",
+        "mode": "NULLABLE",
+        "description": ""
+      },
+      {
+        "name": "U_SurveyRate",
+        "type": "FLOAT",
+        "mode": "NULLABLE",
+        "description": ""
+      },
+      {
+        "name": "U_InvoiceId",
+        "type": "STRING",
+        "mode": "NULLABLE",
+        "description": ""
+      },
+      {
+        "name": "U_SaleOrderId",
+        "type": "STRING",
+        "mode": "NULLABLE",
+        "description": ""
+      },
+      {
+        "name": "U_IsNotSettled",
+        "type": "STRING",
+        "mode": "NULLABLE",
+        "description": ""
+      },
+      {
+        "name": "U_RefundAmt",
+        "type": "FLOAT",
+        "mode": "NULLABLE",
+        "description": ""
+      },
+      {
+        "name": "U_ExpectedDate",
+        "type": "TIMESTAMP",
+        "mode": "NULLABLE",
+        "description": ""
+      },
+      {
+        "name": "U_RefOrder",
+        "type": "STRING",
+        "mode": "NULLABLE",
+        "description": ""
+      },
+      {
+        "name": "U_IsSettled",
+        "type": "BOOLEAN",
+        "mode": "NULLABLE",
+        "description": ""
+      },
+      {
+        "name": "U_RefundAmountAfterFee",
+        "type": "FLOAT",
+        "mode": "NULLABLE",
+        "description": ""
+      },
+      {
+        "name": "U_BillingAddress",
+        "type": "STRING",
+        "mode": "NULLABLE",
+        "description": ""
+      },
+      {
+        "name": "U_BatchRunDate",
+        "type": "TIMESTAMP",
+        "mode": "NULLABLE",
+        "description": ""
+      },
+      {
+        "name": "U_IsSettledComm",
+        "type": "STRING",
+        "mode": "NULLABLE",
+        "description": ""
+      },
+      {
+        "name": "U_IsSettledOV",
+        "type": "STRING",
+        "mode": "NULLABLE",
+        "description": ""
+      },
+      {
+        "name": "U_IsSettledSurvey",
+        "type": "STRING",
+        "mode": "NULLABLE",
+        "description": ""
+      },
+      {
+        "name": "U_ProcessingTaxInvNo",
+        "type": "STRING",
+        "mode": "NULLABLE",
+        "description": ""
+      },
+      {
+        "name": "U_ShippingTaxInvNo",
+        "type": "STRING",
+        "mode": "NULLABLE",
+        "description": ""
+      },
+      {
+        "name": "U_IsCancelAfterSettle",
+        "type": "BOOLEAN",
+        "mode": "NULLABLE",
+        "description": ""
+      },
+      {
+        "name": "U_IsRefundAfterSettle",
+        "type": "BOOLEAN",
+        "mode": "NULLABLE",
+        "description": ""
+      },
+      {
+        "name": "U_ProductType",
+        "type": "STRING",
+        "mode": "NULLABLE",
+        "description": ""
+      },
+      {
+        "name": "U_ExpectedReceived",
+        "type": "FLOAT",
+        "mode": "NULLABLE",
+        "description": ""
+      },
+      {
+        "name": "U_IsExport",
+        "type": "STRING",
+        "mode": "NULLABLE",
+        "description": ""
+      }
+    ]
+  },
+  "numBytes": "484671038",
+  "numLongTermBytes": "0",
+  "numRows": "574201",
+  "creationTime": "1769920332638",
+  "lastModifiedTime": "1785084589656",
+  "type": "TABLE",
+  "location": "asia-southeast1",
+  "numTimeTravelPhysicalBytes": "0",
+  "numTotalLogicalBytes": "484671038",
+  "numActiveLogicalBytes": "484671038",
+  "numLongTermLogicalBytes": "0",
+  "numTotalPhysicalBytes": "34991563",
+  "numActivePhysicalBytes": "34991563",
+  "numLongTermPhysicalBytes": "0",
+  "numCurrentPhysicalBytes": "34991563"
+}

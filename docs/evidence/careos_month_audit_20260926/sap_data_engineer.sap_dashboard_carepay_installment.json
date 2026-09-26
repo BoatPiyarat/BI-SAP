@@ -1,0 +1,253 @@
+{
+  "kind": "bigquery#table",
+  "etag": "Lp2eJFv1mhNV55jFEievEA==",
+  "id": "pacific-plating-282708:sap_data_engineer.sap_dashboard_carepay_installment",
+  "selfLink": "https://bigquery.googleapis.com/bigquery/v2/projects/pacific-plating-282708/datasets/sap_data_engineer/tables/sap_dashboard_carepay_installment",
+  "tableReference": {
+    "projectId": "pacific-plating-282708",
+    "datasetId": "sap_data_engineer",
+    "tableId": "sap_dashboard_carepay_installment"
+  },
+  "schema": {
+    "fields": [
+      {
+        "name": "CompanyDB",
+        "type": "STRING"
+      },
+      {
+        "name": "OrderID",
+        "type": "STRING"
+      },
+      {
+        "name": "OrderItem",
+        "type": "STRING"
+      },
+      {
+        "name": "InvoiceNo",
+        "type": "STRING"
+      },
+      {
+        "name": "OrderDate",
+        "type": "STRING"
+      },
+      {
+        "name": "InsuredID",
+        "type": "STRING"
+      },
+      {
+        "name": "Title",
+        "type": "STRING"
+      },
+      {
+        "name": "FirstName",
+        "type": "STRING"
+      },
+      {
+        "name": "LastName",
+        "type": "STRING"
+      },
+      {
+        "name": "InsurerCode",
+        "type": "STRING"
+      },
+      {
+        "name": "InsuranceGroup",
+        "type": "STRING"
+      },
+      {
+        "name": "InsuranceType",
+        "type": "STRING"
+      },
+      {
+        "name": "InsuranceProduct",
+        "type": "STRING"
+      },
+      {
+        "name": "ProductType",
+        "type": "STRING"
+      },
+      {
+        "name": "PolicyType",
+        "type": "STRING"
+      },
+      {
+        "name": "Endorse",
+        "type": "STRING"
+      },
+      {
+        "name": "PolicyDate",
+        "type": "STRING"
+      },
+      {
+        "name": "PolicyNo",
+        "type": "STRING"
+      },
+      {
+        "name": "EndorsementNo",
+        "type": "STRING"
+      },
+      {
+        "name": "ChassisNo",
+        "type": "STRING"
+      },
+      {
+        "name": "LicensePlate",
+        "type": "STRING"
+      },
+      {
+        "name": "GrossPremium",
+        "type": "FLOAT"
+      },
+      {
+        "name": "StampDuty",
+        "type": "FLOAT"
+      },
+      {
+        "name": "VAT",
+        "type": "FLOAT"
+      },
+      {
+        "name": "TotalPremium",
+        "type": "FLOAT"
+      },
+      {
+        "name": "WHT",
+        "type": "FLOAT"
+      },
+      {
+        "name": "TotalEIR",
+        "type": "FLOAT"
+      },
+      {
+        "name": "TotalSBT",
+        "type": "FLOAT"
+      },
+      {
+        "name": "ProcessingFee",
+        "type": "FLOAT"
+      },
+      {
+        "name": "ProcessingFeeVat",
+        "type": "FLOAT"
+      },
+      {
+        "name": "ShippingFee",
+        "type": "FLOAT"
+      },
+      {
+        "name": "ShippingFeeVat",
+        "type": "FLOAT"
+      },
+      {
+        "name": "TotalAmount",
+        "type": "FLOAT"
+      },
+      {
+        "name": "Discount",
+        "type": "FLOAT"
+      },
+      {
+        "name": "TransactionStatus",
+        "type": "STRING"
+      },
+      {
+        "name": "SubmissionStatus",
+        "type": "STRING"
+      },
+      {
+        "name": "ApprovalStatus",
+        "type": "STRING"
+      },
+      {
+        "name": "PaymentStatus",
+        "type": "STRING"
+      },
+      {
+        "name": "ExpectedReceived",
+        "type": "FLOAT"
+      },
+      {
+        "name": "ActualReceived",
+        "type": "FLOAT"
+      },
+      {
+        "name": "InterestThisPeriod",
+        "type": "FLOAT"
+      },
+      {
+        "name": "PrincipleThisPeriod",
+        "type": "FLOAT"
+      },
+      {
+        "name": "InterestEIRThisPeriod",
+        "type": "FLOAT"
+      },
+      {
+        "name": "PrincipleEIRThisPeriod",
+        "type": "FLOAT"
+      },
+      {
+        "name": "PaymentDate",
+        "type": "STRING"
+      },
+      {
+        "name": "Period",
+        "type": "INTEGER"
+      },
+      {
+        "name": "TotalPeriods",
+        "type": "INTEGER"
+      },
+      {
+        "name": "PendingPayment",
+        "type": "FLOAT"
+      },
+      {
+        "name": "PaymentMethod",
+        "type": "STRING"
+      },
+      {
+        "name": "PaymentChannel",
+        "type": "STRING"
+      },
+      {
+        "name": "ExpectedDate",
+        "type": "STRING"
+      },
+      {
+        "name": "RefOrder",
+        "type": "STRING"
+      },
+      {
+        "name": "RefundAmountBeforeFee",
+        "type": "INTEGER"
+      },
+      {
+        "name": "RefundAmountAfterFee",
+        "type": "INTEGER"
+      },
+      {
+        "name": "BillingAddress",
+        "type": "STRING"
+      },
+      {
+        "name": "BatchRunDate",
+        "type": "STRING"
+      }
+    ]
+  },
+  "numBytes": "0",
+  "numLongTermBytes": "0",
+  "numRows": "0",
+  "creationTime": "1790434263885",
+  "lastModifiedTime": "1790434263885",
+  "type": "VIEW",
+  "view": {
+    "query": "WITH\ncharges AS (\n  SELECT * ,\n  ROW_NUMBER() OVER (PARTITION BY transaction_id, installment_number ORDER BY create_time, id) AS charge_rank\n  FROM `pacific-plating-282708.careos.carepay_charges`\n  WHERE status = 'SUCCESSFUL'\n  AND service_provider = 'RABBIT_LENDING'\n),\n\nfollow_ups AS (\n  SELECT * FROM `pacific-plating-282708.careos.carepay_follow_ups`\n),\n\nfollow_up_first_due_dates AS (\n  SELECT\n    transaction_id,\n    MIN(DATE(due_date)) AS first_due_date\n  FROM follow_ups\n  WHERE due_date IS NOT NULL\n  GROUP BY transaction_id\n),\n\npayment_options AS (\n  SELECT * FROM `pacific-plating-282708.careos.carepay_payment_options`\n),\n\nprices AS (\n  SELECT * FROM `pacific-plating-282708.careos.carepay_prices`\n),\n\nrefunds AS (\n  SELECT * FROM `pacific-plating-282708.careos.carepay_refunds`\n),\n\ntransaction_snapshot_installment_details AS (\n  SELECT * FROM `pacific-plating-282708.careos.carepay_transaction_snapshot_installment_details`\n),\n\ntransaction_snapshot_price_summaries AS (\n  SELECT * FROM `pacific-plating-282708.careos.carepay_transaction_snapshot_price_summaries`\n),\n\ntransaction_snapshots AS (\n  SELECT * EXCEPT(snapshot_rank)\n  FROM (\n    SELECT\n      *,\n      ROW_NUMBER() OVER (\n        PARTITION BY transaction_id\n        ORDER BY update_time DESC, id DESC\n      ) AS snapshot_rank\n    FROM `pacific-plating-282708.careos.carepay_transaction_snapshots`\n  )\n  WHERE snapshot_rank = 1\n    AND number_of_installment > 1\n),\n\ninstallment_periods AS (\n  SELECT\n    transaction_snapshots.id AS snapshot_id,\n    transaction_snapshots.transaction_id,\n    transaction_snapshots.number_of_installment,\n    period\n  FROM transaction_snapshots\n  CROSS JOIN UNNEST(\n    GENERATE_ARRAY(1, transaction_snapshots.number_of_installment)\n  ) AS period\n),\n\ntransactions AS (\n  SELECT * FROM `pacific-plating-282708.careos.carepay_transactions`\n),\n\norders AS (\n  SELECT * FROM `pacific-plating-282708.careos.careos_orders`\n),\n\norder_items AS (\n  SELECT * FROM `pacific-plating-282708.careos.careos_order_items`\n),\n\nleads AS (\n  SELECT * FROM `pacific-plating-282708.careos.careos_leads`\n),\n\nchange AS (SELECT current_human_id human_id, old_human_id\nFROM pacific-plating-282708.careos.cancelled_change_orders ),\n\ncheck_order_items AS (\nSELECT\n  orders.human_id AS OrderID,\n  COUNT(order_items) AS no_items\nFROM `pacific-plating-282708.careos.careos_order_items` order_items\nLEFT JOIN `pacific-plating-282708.careos.careos_orders` orders\n    ON order_items.order_id = orders.id\nGROUP BY orders.human_id\n),\n--------------------------------------------------------------------------------------------------------\n\ntakeaway_compulsary AS (\n  SELECT\n    transaction_snapshot_installment_details.id AS transaction_snapshot_installment_detail_id,\n    transaction_snapshot_installment_details.period,\n    ROUND((1/100) * transaction_snapshot_installment_details.add_ons,2) AS add_ons,\n    transaction_snapshots.id AS transaction_snapshot_id,\n    transactions.id AS transaction_id\n  FROM transaction_snapshot_installment_details\n  LEFT JOIN transaction_snapshots\n    ON transaction_snapshots.id = transaction_snapshot_installment_details.snapshot_id\n  LEFT JOIN transactions\n    ON transactions.id = transaction_snapshots.transaction_id\n  WHERE transaction_snapshot_installment_details.period = 1\n  AND transaction_snapshot_installment_details.add_ons IS NOT NULL\n\n),\n--------------------------------------------------------------------------------------------------------\n--------------------------------------------------------------------------------------------------------\n\nrcl_voluntary_installment_details AS (\n  SELECT\n    'rcl_voluntary_installment_details' AS CTE_source,\n    COALESCE(charges.charge_rank > 1, FALSE) AS is_additional_receipt,\n    'RCB' AS CompanyDB,\n    orders.human_id AS OrderID,\n    order_items.human_id AS OrderItem,\nCASE WHEN charges.installment_number = 1 THEN CONCAT('2_',COALESCE(charges.third_party_id,order_items.human_id))\n  WHEN charges.third_party_id is null AND charges.status = 'SUCCESSFUL' THEN order_items.human_id\n  WHEN charges.third_party_id is null AND charges.status <> 'SUCCESSFUL' THEN ''\n  ELSE  charges.third_party_id\nEND AS InvoiceNo,\n    orders.create_time AS OrderDate,\n    CASE\n      WHEN JSON_VALUE(orders.data, '$.policyHolder.isCompany') ='true' THEN\n    JSON_VALUE(orders.data, '$.policyHolder.companyTaxId')\n      ELSE JSON_VALUE(orders.data, '$.idNumber')\n    END AS InsuredID,\n    JSON_VALUE(orders.data, '$.policyHolder.title') AS Title,\n    COALESCE(JSON_VALUE(orders.data, '$.policyHolder.firstName'),JSON_VALUE(orders.data, '$.policyHolder.policyAddress.companyName')) AS FirstName,\n    JSON_VALUE(orders.data, '$.policyHolder.lastName') AS LastName,\n    order_items.insurer AS InsurerCode,\n    order_items.product AS InsuranceGroup,\n    order_items.motor_item_type AS InsuranceType,\n    CASE WHEN JSON_VALUE(orders.data, '$.oicCode') in ('TYPE_610','TYPE_620', 'TYPE_630')\n    THEN 'MotorBike'\n    ELSE 'Motor'\n    END AS InsuranceProduct,\n    'Insurance' ProductType,\n    leads.type AS PolicyType,\n    'N' AS Endorse,\n    order_items.policy_start_date AS PolicyDate,\n    order_items.policy_number AS PolicyNo,\n    NULL AS EndorsementNo,\n    JSON_VALUE(orders.data, '$.chassisNumber') AS ChassisNo,\n    JSON_VALUE(orders.data, '$.carLicensePlate') AS LicensePlate,\n    order_items.net_premium AS GrossPremium,\n    order_items.stamp_duty AS StampDuty,\n    order_items.vat_amount AS VAT,\n    order_items.gross_premium AS TotalPremium,\n    ROUND((1 / 100) * transaction_snapshot_price_summaries.wht_amount,2) AS WHT,\n    CASE\n      WHEN transaction_snapshot_price_summaries.interest_amount IS NULL THEN 0\n      ELSE ROUND(ROUND((1 / 100) * transaction_snapshot_price_summaries.interest_amount,2) - ((ROUND((1 / 100) * transaction_snapshot_price_summaries.interest_amount,2) * 3.3) / 103.3),2)\n    END AS TotalEIR,\n    CASE\n      WHEN transaction_snapshot_price_summaries.interest_amount IS NULL THEN 0\n      ELSE ROUND(((ROUND((1 / 100) * transaction_snapshot_price_summaries.interest_amount,2) * 3.3) / 103.3),2)\n    END AS TotalSBT,\n    CASE\n      WHEN transaction_snapshot_price_summaries.processing_fee_amount IS NULL THEN 0\n      ELSE ROUND (ROUND((1 / 100) * transaction_snapshot_price_summaries.processing_fee_amount,2) * (100/103.3),2)\n    END AS ProcessingFee,\n    CASE\n      WHEN transaction_snapshot_price_summaries.processing_fee_amount IS NULL THEN 0\n      ELSE ROUND(ROUND((1 / 100) * transaction_snapshot_price_summaries.processing_fee_amount,2)-(ROUND((1 / 100) * transaction_snapshot_price_summaries.processing_fee_amount,2) * (100/103.3)),2)\n    END AS ProcessingFeeVat,\n    CASE\n      WHEN transaction_snapshot_price_summaries.shipment_fee IS NULL THEN 0\n      ELSE ROUND(ROUND((1 / 100) * transaction_snapshot_price_summaries.shipment_fee,2) * (100/107),2)\n    END AS ShippingFee,\n    CASE\n      WHEN transaction_snapshot_price_summaries.shipment_fee IS NULL THEN 0\n      ELSE ROUND(ROUND((1 / 100) * transaction_snapshot_price_summaries.shipment_fee,2) - ROUND((1 / 100) * transaction_snapshot_price_summaries.shipment_fee,2) * (100/107),2)\n    END AS ShippingFeeVat,\n    --ROUND((1 / 100) * transaction_snapshot_price_summaries.net_premium_amount,2) AS TotalAmount,\n    CASE\n      WHEN takeaway_compulsary IS NOT NULL THEN ROUND(((1 / 100) * transaction_snapshot_price_summaries.net_premium_amount - takeaway_compulsary.add_ons),2)\n      ELSE ROUND((1 / 100) * transaction_snapshot_price_summaries.net_premium_amount,2)\n    END AS TotalAmount,\n    COALESCE(ROUND((1 / 100) * transaction_snapshot_price_summaries.discount_amount,2),0) AS Discount,\n    charges.status AS TransactionStatus,\n    order_items.submission_status AS SubmissionStatus,\n    order_items.approval_status AS ApprovalStatus,\n    transactions.status AS PaymentStatus,\n    CASE WHEN charge_rank <> 1 THEN 0\n      WHEN installment_periods.period = 1 THEN ROUND(ROUND((1 / 100) * transaction_snapshot_installment_details.payment_amount,2) - ROUND((1 / 100) * transaction_snapshot_installment_details.add_ons,2),2)\n      ELSE ROUND((1 / 100) * transaction_snapshot_installment_details.payment_amount,2)\n    END AS ExpectedReceived,\n    CASE\n      WHEN charge_rank IS NULL THEN 0  -- FIX #1: no charge yet for this period -> nothing actually received\n      WHEN charge_rank = 1 THEN ROUND(ROUND((1 / 100) * charges.amount,2)- ROUND((1 / 100) * transaction_snapshot_installment_details.add_ons,2),2)\n      ELSE ROUND((1 / 100) * charges.amount,2)\n    END AS ActualReceived,\n    CASE WHEN charge_rank <> 1 THEN 0\n      WHEN transaction_snapshot_price_summaries.interest_amount = 0 OR transaction_snapshots.number_of_installment - 1 = 0 THEN 0\n      WHEN installment_periods.period = 1 THEN 0\n      ELSE ROUND((ROUND((1 / 100) * transaction_snapshot_price_summaries.interest_amount,2) - ((ROUND((1 / 100) * transaction_snapshot_price_summaries.interest_amount,2) * 3.3) / 103.3)) / (transaction_snapshots.number_of_installment - 1),2)\n    END AS InterestThisPeriod,\n    CASE\n      WHEN (transaction_snapshots.number_of_installment - 1) = 0 THEN 0\n      WHEN installment_periods.period = 1 AND charge_rank = 1 THEN ROUND((1 / 100) * charges.amount- ROUND((1 / 100) * transaction_snapshot_installment_details.add_ons,2),2)\n      WHEN installment_periods.period = 1 AND charge_rank <> 1 THEN ROUND((1 / 100) * charges.amount,2)\n      ELSE ROUND((ROUND((1/100)*transaction_snapshot_installment_details.payment_amount,2)) - ((ROUND((1/100)*transaction_snapshot_price_summaries.interest_amount,2) - ((ROUND((1/100)*transaction_snapshot_price_summaries.interest_amount,2)*3.3)/103.3))/(transaction_snapshots.number_of_installment-1)),2)\n    END AS PrincipleThisPeriod,\n    CASE WHEN charge_rank <> 1 THEN 0 ELSE ROUND((1 / 100) * transaction_snapshot_installment_details.interest,2) END AS InterestEIRThisPeriod,\n    CASE WHEN (transaction_snapshots.number_of_installment - 1) = 0 THEN 0\n      WHEN installment_periods.period = 1 AND charge_rank = 1 THEN ROUND((1 / 100) * charges.amount- ROUND((1 / 100) * transaction_snapshot_installment_details.add_ons,2),2)\n      WHEN installment_periods.period = 1 AND charge_rank <> 1 THEN ROUND((1 / 100) * charges.amount,2)\n      ELSE ROUND((1 / 100) * transaction_snapshot_installment_details.principal,2) END AS PrincipleEIRThisPeriod,\n    charges.update_time AS PaymentDate,\n    installment_periods.period AS Period,\n    transaction_snapshots.number_of_installment AS TotalPeriods,\n    CASE WHEN charge_rank <> 1 THEN 0 ELSE ROUND((1 / 100) * transaction_snapshot_installment_details.principal_balance,2) END AS PendingPayment, -- Need to check\n    CASE WHEN installment_periods.period = 1 AND change.human_id IS NOT NULL AND charges.payment_method <> 'DIRECT_PAYMENT' THEN \"RCL-Credit Shell\"\n      WHEN change.human_id IS NOT NULL AND charges.payment_method = 'DIRECT_PAYMENT' THEN 'DIRECT_PAYMENT'\n      ELSE charges.payment_method END AS PaymentMethod,\n    CASE WHEN installment_periods.period = 1 AND change.human_id IS NOT NULL AND charges.payment_method <> 'DIRECT_PAYMENT' THEN \"RCL-Credit Shell\"\n      WHEN change.human_id IS NOT NULL AND charges.payment_method = 'DIRECT_PAYMENT' THEN 'RCL-DIRECT PAYMENT'\n      ELSE charges.service_provider END AS PaymentChannel,\n    COALESCE(\n      DATE(follow_ups.due_date),\n      DATE_ADD(\n        follow_up_first_due_dates.first_due_date,\n        INTERVAL installment_periods.period - 1 MONTH\n      )\n    ) AS ExpectedDate,\n    change.old_human_id AS RefOrder,\n    0 AS RefundAmountBeforeFee,\n    0 AS RefundAmountAfterFee,\n    --ROUND(refunds.amount * (100/107),2) AS RefundAmountBeforeFee,\n    --refunds.amount AS RefundAmountAfterFee,\n    CASE\n      WHEN JSON_VALUE(orders.data, '$.policyHolder.policyAddress.isBillingAddress') = 'true'\n        THEN CONCAT(\n          COALESCE(JSON_VALUE(orders.data, '$.policyHolder.policyAddress.fullName'),JSON_VALUE(orders.data, '$.policyHolder.policyAddress.companyName')), ', ',\n          JSON_VALUE(orders.data, '$.policyHolder.policyAddress.address'), ', ',\n          JSON_VALUE(orders.data, '$.policyHolder.policyAddress.subDistrict'), ', ',\n          JSON_VALUE(orders.data, '$.policyHolder.policyAddress.district'), ', ',\n          JSON_VALUE(orders.data, '$.policyHolder.policyAddress.province'), ', ',\n          JSON_VALUE(orders.data, '$.policyHolder.policyAddress.postCode')\n        )\n        ELSE CONCAT(\n          JSON_VALUE(orders.data, '$.policyHolder.billingAddress.fullName'), ', ',\n          JSON_VALUE(orders.data, '$.policyHolder.billingAddress.address'), ', ',\n          JSON_VALUE(orders.data, '$.policyHolder.billingAddress.subDistrict'), ', ',\n          JSON_VALUE(orders.data, '$.policyHolder.billingAddress.district'), ', ',\n          JSON_VALUE(orders.data, '$.policyHolder.billingAddress.province'), ', ',\n          JSON_VALUE(orders.data, '$.policyHolder.billingAddress.postCode')\n      )\n    END AS BillingAddress,\n    CURRENT_DATE() AS BatchRunDate\n\n  FROM orders\n  LEFT JOIN leads\n    ON CONCAT('leads/',leads.id) = orders.lead\n  LEFT JOIN transactions\n    ON CONCAT('transactions/',transactions.id) = orders.payment\n  LEFT JOIN transaction_snapshots\n    ON transaction_snapshots.transaction_id = transactions.id\n  LEFT JOIN installment_periods\n    ON installment_periods.snapshot_id = transaction_snapshots.id\n  LEFT JOIN transaction_snapshot_price_summaries\n    ON transaction_snapshot_price_summaries.snapshot_id = transaction_snapshots.id\n  LEFT JOIN transaction_snapshot_installment_details\n    ON transaction_snapshot_installment_details.snapshot_id = transaction_snapshots.id\n    AND transaction_snapshot_installment_details.period = installment_periods.period\n  LEFT JOIN charges\n    ON charges.transaction_id = transactions.id\n    AND charges.installment_number = installment_periods.period\n    AND charges.status NOT IN ('FAILED','PENDING')\n    AND charges.service_provider = 'RABBIT_LENDING'  -- FIX #1: moved from WHERE so unmatched periods still survive the LEFT JOIN\n  LEFT JOIN order_items\n    ON order_items.order_id = orders.id\n  LEFT JOIN refunds\n    ON refunds.transaction_id = transactions.id\n  LEFT JOIN follow_ups\n    ON follow_ups.transaction_id = transactions.id\n    AND follow_ups.installment = installment_periods.period\n  LEFT JOIN follow_up_first_due_dates\n    ON follow_up_first_due_dates.transaction_id = transactions.id\n  LEFT JOIN takeaway_compulsary\n    ON takeaway_compulsary.transaction_snapshot_id = transaction_snapshots.id\n  LEFT JOIN change on change.human_id = orders.human_id\n WHERE\n  installment_periods.period IS NOT NULL\n   AND order_items.product = 'products/car-insurance'\n   AND order_items.motor_item_type <> 'MOTOR_TYPE_COMPULSORY'\n   -- Keep every successful charge; rank > 1 has ExpectedReceived = 0.\n    -- Preserve unpaid periods and expose every successful voluntary charge.\n   --AND (follow_ups.transaction_id IS NOT NULL)\n   -- FIX #1: removed \"AND charges.service_provider = 'RABBIT_LENDING'\" here \u2014 it was on the joined (nullable)\n   -- table, which silently turned the LEFT JOIN charges above into an INNER JOIN and dropped every period\n   -- that didn't yet have a SUCCESSFUL charge (e.g. unpaid periods 2-6 of a 6-installment plan).\n),\n--------------------------------------------------------------------------------------------------------\n--------------------------------------------------------------------------------------------------------\n\ncompulsary_installment_details AS (\n  SELECT\n    'compulsary_installment_details' AS CTE_source,\n    FALSE AS is_additional_receipt,\n    'RCB' AS CompanyDB,\n    orders.human_id AS OrderID,\n    order_items.human_id AS OrderItem,\nCASE WHEN charges.installment_number = 1 THEN CONCAT('2_',charges.third_party_id)\n  WHEN charges.third_party_id is null AND charges.status = 'SUCCESSFUL' THEN order_items.human_id\n  WHEN charges.third_party_id is null AND charges.status <> 'SUCCESSFUL' THEN ''\n  ELSE  charges.third_party_id\nEND AS InvoiceNo,\n    orders.create_time AS OrderDate,\n    CASE\n      WHEN JSON_VALUE(orders.data, '$.policyHolder.isCompany') ='true' THEN\n      JSON_VALUE(orders.data, '$.policyHolder.companyTaxId')\n      ELSE JSON_VALUE(orders.data, '$.idNumber')\n    END AS InsuredID,\n    JSON_VALUE(orders.data, '$.policyHolder.title') AS Title,\n    COALESCE(JSON_VALUE(orders.data, '$.policyHolder.firstName'),JSON_VALUE(orders.data, '$.policyHolder.policyAddress.companyName')) AS FirstName,\n    JSON_VALUE(orders.data, '$.policyHolder.lastName') AS LastName,\n    order_items.insurer AS InsurerCode,\n    order_items.product AS InsuranceGroup,\n    order_items.motor_item_type AS InsuranceType,\n    CASE WHEN JSON_VALUE(orders.data, '$.oicCode') in ('TYPE_610','TYPE_620', 'TYPE_630')\n    THEN 'MotorBike'\n    ELSE 'Motor'\n    END AS InsuranceProduct,\n    'Insurance' ProductType,\n    leads.type AS PolicyType,\n    'N' AS Endorse,\n    order_items.policy_start_date AS PolicyDate,\n    order_items.policy_number AS PolicyNo,\n    NULL AS EndorsementNo,\n    JSON_VALUE(orders.data, '$.chassisNumber') AS ChassisNo,\n    JSON_VALUE(orders.data, '$.carLicensePlate') AS LicensePlate,\n    order_items.net_premium AS GrossPremium,\n    order_items.stamp_duty AS StampDuty,\n    order_items.vat_amount AS VAT,\n    order_items.gross_premium AS TotalPremium,\n    0 AS WHT,\n    0 AS TotalEIR,\n    0 AS TotalSBT,\n    0 AS ProcessingFee,\n    0 AS ProcessingFeeVat,\n    0 AS ShippingFee,\n    0 AS ShippingFeeVat,\n    -- ROUND(ROUND((1 / 100) * transaction_snapshot_installment_details.payment_amount,2) - ROUND((1 / 100) * transaction_snapshot_installment_details.principal,2) - ROUND((1 / 100) * transaction_snapshot_installment_details.processing_fee,2),2) AS TotalAmount,\n    order_items.gross_premium  as TotalAmount,\n    0 AS Discount,\n    charges.status AS TransactionStatus,\n    order_items.submission_status AS SubmissionStatus,\n    order_items.approval_status AS ApprovalStatus,\n    transactions.status AS PaymentStatus,\n    -- ROUND((1 / 100) * transaction_snapshot_installment_details.add_ons,2) AS ActualReceived,\n    order_items.gross_premium  as ExpectedReceived,\n    order_items.gross_premium  as ActualReceived,\n    0 AS InterestThisPeriod,\n    0 AS PrincipleThisPeriod,\n    0 AS InterestEIRThisPeriod,\n    0 AS PrincipleEIRThisPeriod,\n    charges.update_time AS PaymentDate,\n    transaction_snapshot_installment_details.period AS Period,\n    transaction_snapshot_installment_details.period AS TotalPeriods,\n    -- CASE\n    --   WHEN ROUND((1 / 100) * transaction_snapshot_installment_details.add_ons,2) IS NOT NULL THEN 0\n    --   ELSE ROUND((1 / 100) * transaction_snapshot_installment_details.payment_amount,2) - ROUND((1 / 100) * transaction_snapshot_installment_details.principal,2) - ROUND((1 / 100) * transaction_snapshot_installment_details.processing_fee,2)\n    -- END AS PendingPayment,\n    0 as PendingPayment,\n    CASE WHEN change.human_id IS NOT NULL AND charges.payment_method <> 'DIRECT_PAYMENT' THEN \"RCL-Credit Shell\"\n      WHEN change.human_id IS NOT NULL AND charges.payment_method = 'DIRECT_PAYMENT' THEN 'DIRECT_PAYMENT'\n      ELSE charges.payment_method END AS PaymentMethod,\n    CASE WHEN change.human_id IS NOT NULL AND charges.payment_method <> 'DIRECT_PAYMENT' THEN \"RCL-Credit Shell\"\n      WHEN change.human_id IS NOT NULL AND charges.payment_method = 'DIRECT_PAYMENT' THEN 'RCL-DIRECT PAYMENT'\n      ELSE charges.service_provider END AS PaymentChannel,\n    COALESCE(\n      DATE(follow_ups.due_date),\n      DATE_ADD(\n        follow_up_first_due_dates.first_due_date,\n        INTERVAL transaction_snapshot_installment_details.period - 1 MONTH\n      )\n    ) AS ExpectedDate,\n    change.old_human_id AS RefOrder,\n    NULL AS RefundAmountBeforeFee,\n    NULL AS RefundAmountAfterFee,\n    CASE\n      WHEN JSON_VALUE(orders.data, '$.policyHolder.policyAddress.isBillingAddress') = 'true'\n        THEN CONCAT(\n          COALESCE(JSON_VALUE(orders.data, '$.policyHolder.policyAddress.fullName'),JSON_VALUE(orders.data, '$.policyHolder.policyAddress.companyName')), ', ',\n          JSON_VALUE(orders.data, '$.policyHolder.policyAddress.address'), ', ',\n          JSON_VALUE(orders.data, '$.policyHolder.policyAddress.subDistrict'), ', ',\n          JSON_VALUE(orders.data, '$.policyHolder.policyAddress.district'), ', ',\n          JSON_VALUE(orders.data, '$.policyHolder.policyAddress.province'), ', ',\n          JSON_VALUE(orders.data, '$.policyHolder.policyAddress.postCode')\n        )\n        ELSE CONCAT(\n          JSON_VALUE(orders.data, '$.policyHolder.billingAddress.fullName'), ', ',\n          JSON_VALUE(orders.data, '$.policyHolder.billingAddress.address'), ', ',\n          JSON_VALUE(orders.data, '$.policyHolder.billingAddress.subDistrict'), ', ',\n          JSON_VALUE(orders.data, '$.policyHolder.billingAddress.district'), ', ',\n          JSON_VALUE(orders.data, '$.policyHolder.billingAddress.province'), ', ',\n          JSON_VALUE(orders.data, '$.policyHolder.billingAddress.postCode')\n      )\n    END AS BillingAddress,\n    CURRENT_DATE() AS BatchRunDate\n\n  FROM orders\n  LEFT JOIN order_items\n    ON order_items.order_id = orders.id\n  LEFT JOIN transactions\n    ON CONCAT('transactions/',transactions.id) = orders.payment\n  LEFT JOIN transaction_snapshots\n    ON transaction_snapshots.transaction_id = transactions.id\n  LEFT JOIN transaction_snapshot_price_summaries\n    ON transaction_snapshot_price_summaries.snapshot_id = transaction_snapshots.id\n  LEFT JOIN transaction_snapshot_installment_details\n    ON transaction_snapshot_installment_details.snapshot_id = transaction_snapshots.id\n  LEFT JOIN charges\n    ON charges.transaction_id = transactions.id\n    AND charges.installment_number = transaction_snapshot_installment_details.period\n    AND charges.service_provider = 'RABBIT_LENDING'\n  LEFT JOIN leads\n    ON CONCAT('leads/',leads.id) = orders.lead\n  LEFT JOIN follow_ups\n    ON follow_ups.transaction_id = transactions.id\n    AND follow_ups.installment = transaction_snapshot_installment_details.period\n  LEFT JOIN follow_up_first_due_dates\n    ON follow_up_first_due_dates.transaction_id = transactions.id\n  LEFT JOIN change on change.human_id = orders.human_id\n  WHERE\n    order_items.motor_item_type = 'MOTOR_TYPE_COMPULSORY'\n    AND transaction_snapshot_installment_details.id IS NOT NULL\n    AND transaction_snapshot_installment_details.period = 1\n    AND charges.charge_rank = 1\n),\n--------------------------------------------------------------------------------------------------------\n--------------------------------------------------------------------------------------------------------\n\ncombine AS (\n  SELECT * FROM rcl_voluntary_installment_details\n  UNION ALL\n  SELECT * FROM compulsary_installment_details\n),\n--------------------------------------------------------------------------------------------------------\n\ntransformation AS (\n  SELECT\n    CTE_source,\n    is_additional_receipt,\n    CompanyDB,\n    OrderID,\n    OrderItem,\n    CASE WHEN InvoiceNo IS NULL AND TransactionStatus <> 'SUCCESSFUL' THEN '' ELSE InvoiceNo END AS InvoiceNo,\n    CAST(FORMAT_DATE('%d%m%Y', OrderDate) AS STRING) AS OrderDate,\n    case\n      WHEN InsuredID='' OR InsuredID is NULL THEN '-'\n      ELSE InsuredID\n    END AS InsuredID,\n    CASE\n      WHEN Title = 'KHUN' THEN '\u0e04\u0e38\u0e13'\n      WHEN Title = 'MISS' THEN '\u0e19\u0e32\u0e07\u0e2a\u0e32\u0e27'\n      WHEN Title = 'MR' THEN '\u0e19\u0e32\u0e22'\n      WHEN Title = 'MRS' THEN '\u0e19\u0e32\u0e07'\n      ELSE ''\n    END AS Title,\n    FirstName,\n    LastName,\n    TRIM(InsurerCode,'insurer/') AS InsurerCode,\n    CASE\n      WHEN InsuranceGroup = 'products/car-insurance' THEN 'Motor'\n      ELSE InsuranceGroup\n    END AS InsuranceGroup,\n  InsuranceType AS InsuranceType,\n    CASE\n      WHEN InsuranceGroup = 'products/car-insurance' THEN 'Motor'\n      ELSE InsuranceGroup\n    END AS InsuranceProduct,\n    'Insurance' AS ProductType,\n    CASE\n      WHEN PolicyType = 'LEAD_TYPE_RENEWAL' THEN 'R'\n      ELSE 'N'\n    END AS PolicyType,\n    Endorse,\n    CAST(FORMAT_DATE('%d%m%Y', PolicyDate) AS STRING) AS PolicyDate,\n    PolicyNo,\n    CAST(EndorsementNo AS STRING) EndorsementNo,\n    ChassisNo,\n    LicensePlate,\n    GrossPremium,\n    StampDuty,\n    VAT,\n    TotalPremium,\n    WHT,\n    TotalEIR,\n    TotalSBT,\n    ProcessingFee,\n    ProcessingFeeVat,\n    ShippingFee,\n    ShippingFeeVat,\n    ROUND(\n        COALESCE(TotalPremium, 0)\n      + COALESCE(TotalEIR, 0)\n      + COALESCE(TotalSBT, 0)\n      + COALESCE(ProcessingFee, 0)\n      + COALESCE(ProcessingFeeVat, 0)\n      + COALESCE(ShippingFee, 0)\n      + COALESCE(ShippingFeeVat, 0),\n      2\n    ) AS TotalAmount,\n    Discount,\n    CASE\n      WHEN TransactionStatus = 'SUCCESSFUL' THEN 'paid'\n      WHEN TransactionStatus = 'PENDING' THEN 'pending'\n      WHEN TransactionStatus = 'FOLLOWUP_STATUS_CANCELLED' THEN 'pending'\n      WHEN TransactionStatus = 'FOLLOWUP_STATUS_OVERDUE' THEN 'pending'\n      WHEN TransactionStatus = 'FOLLOWUP_STATUS_PAID' THEN 'paid'\n      WHEN TransactionStatus = 'FOLLOWUP_STATUS_PENDING' THEN 'pending'\n      ELSE 'Pending'\n    END AS TransactionStatus,\n    CASE\n      WHEN SubmissionStatus = 'ITEM_SUBMISSION_STATUS_READY_TO_SUBMIT' THEN 'PENDING'\n      WHEN SubmissionStatus = 'ITEM_SUBMISSION_STATUS_PRESUBMITTED' THEN 'PRE-SUBMITTED'\n      WHEN SubmissionStatus = 'ITEM_SUBMISSION_STATUS_SUBMITTED' THEN 'SUBMITTED'\n      WHEN SubmissionStatus = 'ITEM_SUBMISSION_STATUS_PENDING' THEN 'PENDING'\n      ELSE SubmissionStatus\n    END AS SubmissionStatus,\n    CASE\n      WHEN ApprovalStatus = 'ITEM_APPROVAL_STATUS_APPROVED' THEN 'APPROVED'\n      WHEN ApprovalStatus = 'ITEM_APPROVAL_STATUS_REJECTED' THEN 'REJECTED'\n      WHEN ApprovalStatus = 'ITEM_APPROVAL_STATUS_PENDING' THEN 'PENDING'\n      WHEN ApprovalStatus = 'ITEM_APPROVAL_STATUS_POLICY_UPLOADED' THEN 'POLICY UPLOADED'\n    END AS ApprovalStatus,\n    CASE\n      WHEN PaymentStatus = 'SUCCESSFUL' THEN 'fully paid'\n      WHEN PaymentStatus = 'PENDING' THEN 'Not fully paid'\n      ELSE PaymentStatus\n    END AS PaymentStatus,\n    ExpectedReceived,\n    ActualReceived,\n    -- ROUND((((TotalPremium+WHT+TotalEIR+TotalSBT+ProcessingFee+ProcessingFeeVat+ShippingFee+ShippingFeeVat)-Discount)/TotalPeriods),2) as ActualReceived, --\n  InterestThisPeriod,\n  PrincipleThisPeriod,\n  InterestEIRThisPeriod,\n  PrincipleEIRThisPeriod,\nCASE\n  WHEN PaymentDate IS NULL THEN NULL\n  WHEN DATE(PaymentDate) < DATE_TRUNC(CURRENT_DATE(), MONTH)\n       AND CURRENT_DATE() > DATE_ADD(\n             LAST_DAY(DATE_SUB(CURRENT_DATE(), INTERVAL 1 MONTH)),\n             INTERVAL 3 DAY\n           )\n  THEN FORMAT_DATE('%d%m%Y', DATE_TRUNC(CURRENT_DATE(), MONTH))\n\n  ELSE FORMAT_DATE('%d%m%Y', DATE(PaymentDate))\nEND AS PaymentDate,\n  Period,\n  TotalPeriods,\n-- PendingPayment,-- \u0e1c\u0e34\u0e14\n  ROUND(\n    SAFE_DIVIDE(\n        COALESCE(TotalPremium, 0)\n      + COALESCE(TotalEIR, 0)\n      + COALESCE(TotalSBT, 0)\n      + COALESCE(ProcessingFee, 0)\n      + COALESCE(ProcessingFeeVat, 0)\n      + COALESCE(ShippingFee, 0)\n      + COALESCE(ShippingFeeVat, 0)\n      - COALESCE(Discount, 0),\n      NULLIF(TotalPeriods, 0)\n    ) * (TotalPeriods - Period),\n    2\n  ) AS PendingPayment,\n  CASE WHEN COALESCE(TransactionStatus, '') <> 'SUCCESSFUL' THEN ''\n    WHEN PaymentMethod ='DIRECT_PAYMENT'and PaymentChannel ='SERVICE_PROVIDER_UNSPECIFIED' THEN 'DPM \u0e08\u0e48\u0e32\u0e22\u0e15\u0e23\u0e07\u0e01\u0e31\u0e1a\u0e1a\u0e23\u0e34\u0e29\u0e31\u0e17\u0e1b\u0e23\u0e30\u0e01\u0e31\u0e19'\n    WHEN InsuranceType = 'MOTOR_TYPE_COMPULSORY' THEN 'RCL-CMI-channel'\n    WHEN PaymentMethod = 'CASH' THEN 'TRF Transfer'\n    WHEN PaymentMethod = 'QR_CODE' THEN 'OME Omise QR Prompt Pay'\n    WHEN PaymentMethod = 'BANK_TRANSFER' THEN 'TRF Transfer'\n    ELSE PaymentMethod\n  END AS PaymentMethod,\n  CASE WHEN COALESCE(TransactionStatus, '') <> 'SUCCESSFUL' THEN ''\n    WHEN PaymentMethod ='DIRECT_PAYMENT'and PaymentChannel ='SERVICE_PROVIDER_UNSPECIFIED' THEN 'RCL-DIRECT PAYMENT'\n    WHEN InsuranceType = 'MOTOR_TYPE_COMPULSORY' THEN 'RCL-CMI-channel'\n    WHEN InsuranceGroup != 'products/car-insurance' AND PaymentMethod = 'QR_CODE' THEN 'RCL-Omise QR Prompt Pay-Health'  -- FIX #2 (Root Cause 8)\n    WHEN PaymentMethod = 'CASH' THEN 'RCL-Transfer-\u0e2d\u0e37\u0e48\u0e19\u0e46'\n    WHEN PaymentMethod = 'QR_CODE' AND PaymentChannel = 'RABBIT_LENDING' THEN 'RCL-Omise QR Prompt Pay-BAY'\n    WHEN PaymentMethod = 'DIRECT_DEBIT' AND PaymentChannel = 'RABBIT_LENDING' THEN 'RCL-Direct Debit'\n    WHEN PaymentMethod = 'QR_CODE' AND PaymentChannel = 'RCB' THEN 'RCL-Omise QR Prompt Pay-BAY'\n     WHEN PaymentMethod = 'BANK_TRANSFER' THEN 'RCL-Transfer-\u0e2d\u0e37\u0e48\u0e19\u0e46'\n    ELSE PaymentChannel\n  END AS PaymentChannel,\n\nCAST(FORMAT_DATE('%d%m%Y', ExpectedDate) AS STRING) AS ExpectedDate,\n    RefOrder,\n    RefundAmountBeforeFee,\n    RefundAmountAfterFee,\n    BillingAddress,\n    CAST(FORMAT_DATE('%d%m%Y', BatchRunDate) AS STRING) AS BatchRunDate,\n  FROM combine\n\n),\n--------------------------------------------------------------------------------------------------------\n\narrange AS (\n  SELECT\n  OrderItem ,\n  ROUND(SUM(InterestEIRThisPeriod),2) AS interest_amount\n  FROM transformation\n  GROUP BY OrderItem\n),\nold_final AS (\nSELECT\n  transformation.* EXCEPT(CTE_source)\nFROM transformation\nLEFT JOIN check_order_items\n  ON transformation.OrderID = check_order_items.OrderID\n\nORDER BY OrderID,\tTotalPeriods ,Period\n),\nfinish AS (\n  SELECT\n  transformation.is_additional_receipt,\n  transformation.CompanyDB,\n  transformation.OrderID ,\n  transformation.OrderItem ,\n  transformation.InvoiceNo ,\n  transformation.OrderDate,\n  transformation.InsuredID,\n  transformation.Title,\n  transformation.FirstName,\n  transformation.LastName,\n  transformation.InsurerCode,\n  transformation.InsuranceGroup,\n  transformation.InsuranceType,\n  transformation.InsuranceProduct,\n  transformation.ProductType,\n  transformation.PolicyType,\n  transformation.Endorse,\n  transformation.PolicyDate,\n  transformation.PolicyNo ,\n  transformation.EndorsementNo ,\n  transformation.ChassisNo,\n  transformation.LicensePlate,\n  transformation.GrossPremium,\n  transformation.StampDuty,\n  transformation.VAT,\n  transformation.TotalPremium,\n  transformation.WHT,\n  transformation.TotalEIR,\n  transformation.TotalSBT,\n  transformation.ProcessingFee,\n  transformation.ProcessingFeeVat,\n  transformation.ShippingFee,\n  transformation.ShippingFeeVat,\n  transformation.TotalAmount,\n  transformation.Discount,\n  transformation.TransactionStatus,\n  transformation.SubmissionStatus,\n  transformation.ApprovalStatus,\n  transformation.PaymentStatus,\n  transformation.ExpectedReceived,\n  transformation.ActualReceived,\n  transformation.InterestThisPeriod,\n  transformation.PrincipleThisPeriod,\n  CASE\n    WHEN transformation.is_additional_receipt THEN 0\n    WHEN (arrange.interest_amount != transformation.TotalEIR AND transformation.Period != 1) THEN ABS(ROUND((transformation.InterestEIRThisPeriod)-(transformation.TotalSBT/NULLIF((transformation.TotalPeriods-1),0)),2))\n    ELSE transformation.InterestEIRThisPeriod\n  END AS InterestEIRThisPeriod ,\n  transformation.PrincipleEIRThisPeriod,\n  transformation.PaymentDate,\n  transformation.Period,\n  transformation.TotalPeriods,\n  transformation.PendingPayment,\n  transformation.PaymentMethod,\n  transformation.PaymentChannel,\n  transformation.ExpectedDate,\n  transformation.RefOrder,\n  transformation.RefundAmountBeforeFee,\n  transformation.RefundAmountAfterFee,\n  transformation.BillingAddress,\n  transformation.BatchRunDate,\n  FROM transformation\n  LEFT JOIN arrange\n  ON transformation.OrderItem = arrange.OrderItem\n  ORDER BY OrderDate , OrderItem , Period\n),\narrange_again AS (\n  SELECT\n  OrderItem ,\n  ROUND(SUM(InterestEIRThisPeriod),2) AS interest_amount\n  FROM finish\n  GROUP BY OrderItem\n),\nfinish_2 AS (\n  SELECT\n  finish.CompanyDB,\n  finish.OrderID ,\n  finish.OrderItem ,\n  finish.InvoiceNo ,\n  finish.OrderDate,\n  finish.InsuredID,\n  finish.Title,\n  finish.FirstName,\n  finish.LastName,\n  finish.InsurerCode,\n  finish.InsuranceGroup,\n  finish.InsuranceType,\n  finish.InsuranceProduct,\n  finish.ProductType,\n  finish.PolicyType,\n  finish.Endorse,\n  finish.PolicyDate,\n  finish.PolicyNo ,\n  finish.EndorsementNo ,\n  finish.ChassisNo,\n  finish.LicensePlate,\n  finish.GrossPremium,\n  finish.StampDuty,\n  finish.VAT,\n  finish.TotalPremium,\n  finish.WHT,\n  finish.TotalEIR,\n  finish.TotalSBT,\n  finish.ProcessingFee,\n  finish.ProcessingFeeVat,\n  finish.ShippingFee,\n  finish.ShippingFeeVat,\n  finish.TotalAmount,\n  finish.Discount,\n  finish.TransactionStatus,\n  finish.SubmissionStatus,\n  finish.ApprovalStatus,\n  finish.PaymentStatus,\n  finish.ExpectedReceived,\n  finish.ActualReceived,\n  finish.InterestThisPeriod,\n  finish.PrincipleThisPeriod,\n  CASE\n    WHEN finish.is_additional_receipt THEN 0\n    WHEN arrange_again.interest_amount != finish.TotalEIR THEN\n    CASE\n      WHEN finish.Period = finish.TotalPeriods THEN ROUND((finish.InterestEIRThisPeriod)-(arrange_again.interest_amount - finish.TotalEIR),2)\n      ELSE finish.InterestEIRThisPeriod\n    END\n    ELSE finish.InterestEIRThisPeriod\n  END AS InterestEIRThisPeriod ,\n  finish.PrincipleEIRThisPeriod,\n  finish.PaymentDate,\n  finish.Period,\n  finish.TotalPeriods,\n  finish.PendingPayment,\n  finish.PaymentMethod,\n  finish.PaymentChannel,\n  finish.ExpectedDate,\n  finish.RefOrder,\n  finish.RefundAmountBeforeFee,\n  finish.RefundAmountAfterFee,\n  finish.BillingAddress,\n  finish.BatchRunDate,\n  FROM finish\n  LEFT JOIN arrange_again\n  ON finish.OrderItem = arrange_again.OrderItem\n  ORDER BY OrderDate , OrderItem , Period\n)\n\n\nSELECT * FROM finish_2\nORDER BY OrderItem, Period",
+    "useLegacySql": false
+  },
+  "location": "asia-southeast1",
+  "numTotalLogicalBytes": "0",
+  "numActiveLogicalBytes": "0",
+  "numLongTermLogicalBytes": "0"
+}

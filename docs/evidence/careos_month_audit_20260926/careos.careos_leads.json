@@ -1,0 +1,115 @@
+{
+  "kind": "bigquery#table",
+  "etag": "vwLfBIkjH8QZEzr47L6bSw==",
+  "id": "pacific-plating-282708:careos.careos_leads",
+  "selfLink": "https://bigquery.googleapis.com/bigquery/v2/projects/pacific-plating-282708/datasets/careos/tables/careos_leads",
+  "tableReference": {
+    "projectId": "pacific-plating-282708",
+    "datasetId": "careos",
+    "tableId": "careos_leads"
+  },
+  "schema": {
+    "fields": [
+      {
+        "name": "id",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "product",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "data",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "source_id",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "type",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "human_id",
+        "type": "INTEGER",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "reference",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "create_time",
+        "type": "TIMESTAMP",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "status",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "is_rejected",
+        "type": "BOOLEAN",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "create_by",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "annotations",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "_sdc_extracted_at",
+        "type": "TIMESTAMP",
+        "mode": "NULLABLE"
+      }
+    ]
+  },
+  "timePartitioning": {
+    "type": "MONTH",
+    "field": "create_time"
+  },
+  "numBytes": "9726018924",
+  "numLongTermBytes": "0",
+  "numRows": "6228297",
+  "creationTime": "1762843251513",
+  "lastModifiedTime": "1790432410709",
+  "type": "TABLE",
+  "location": "asia-southeast1",
+  "clustering": {
+    "fields": [
+      "type",
+      "source_id",
+      "status",
+      "is_rejected"
+    ]
+  },
+  "numTimeTravelPhysicalBytes": "223049691410",
+  "numTotalLogicalBytes": "9726018924",
+  "numActiveLogicalBytes": "9726018924",
+  "numLongTermLogicalBytes": "0",
+  "numTotalPhysicalBytes": "224382908604",
+  "numActivePhysicalBytes": "224382908604",
+  "numLongTermPhysicalBytes": "0",
+  "numPartitions": "57",
+  "partitionDefinition": {
+    "partitionedColumn": [
+      {
+        "field": "create_time"
+      }
+    ]
+  },
+  "numCurrentPhysicalBytes": "1333217194"
+}

@@ -1,0 +1,13 @@
+[
+  {
+    "charges_needing_review": "5271",
+    "checked_at": "2026-09-26 16:06:06",
+    "fallback_paid_date_charges": "2",
+    "latest_sap_business_update_at": "2026-09-26 00:00:00",
+    "month_end_exclusive": "2026-10-01",
+    "month_start": "2026-09-01",
+    "review_charge_thb_not_missing_gl_amount": "6.154625616E7",
+    "successful_month_charge_thb": "1.4350238842E8",
+    "successful_month_charges": "26290"
+  }
+]

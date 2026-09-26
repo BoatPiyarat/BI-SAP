@@ -1,0 +1,158 @@
+{
+  "kind": "bigquery#table",
+  "etag": "jUWQdtMH9wl2URLtC0JvHg==",
+  "id": "pacific-plating-282708:careos.careos_orders",
+  "selfLink": "https://bigquery.googleapis.com/bigquery/v2/projects/pacific-plating-282708/datasets/careos/tables/careos_orders",
+  "tableReference": {
+    "projectId": "pacific-plating-282708",
+    "datasetId": "careos",
+    "tableId": "careos_orders"
+  },
+  "schema": {
+    "fields": [
+      {
+        "name": "create_time",
+        "type": "TIMESTAMP"
+      },
+      {
+        "name": "update_time",
+        "type": "TIMESTAMP"
+      },
+      {
+        "name": "delete_time",
+        "type": "TIMESTAMP"
+      },
+      {
+        "name": "cancel_time",
+        "type": "TIMESTAMP"
+      },
+      {
+        "name": "invoice_price",
+        "type": "FLOAT"
+      },
+      {
+        "name": "customer_id",
+        "type": "STRING"
+      },
+      {
+        "name": "lead_id",
+        "type": "STRING"
+      },
+      {
+        "name": "user_id",
+        "type": "STRING"
+      },
+      {
+        "name": "id",
+        "type": "STRING"
+      },
+      {
+        "name": "version",
+        "type": "INTEGER"
+      },
+      {
+        "name": "human_id",
+        "type": "STRING"
+      },
+      {
+        "name": "convert_by",
+        "type": "STRING"
+      },
+      {
+        "name": "supervisor",
+        "type": "STRING"
+      },
+      {
+        "name": "lead",
+        "type": "STRING"
+      },
+      {
+        "name": "product",
+        "type": "STRING"
+      },
+      {
+        "name": "payment",
+        "type": "STRING"
+      },
+      {
+        "name": "customer",
+        "type": "STRING"
+      },
+      {
+        "name": "document_by",
+        "type": "STRING"
+      },
+      {
+        "name": "document_status",
+        "type": "STRING"
+      },
+      {
+        "name": "qc_by",
+        "type": "STRING"
+      },
+      {
+        "name": "qc_status",
+        "type": "STRING"
+      },
+      {
+        "name": "is_cancelled",
+        "type": "BOOLEAN"
+      },
+      {
+        "name": "schema_id",
+        "type": "STRING"
+      },
+      {
+        "name": "data",
+        "type": "STRING"
+      },
+      {
+        "name": "is_fully_paid",
+        "type": "BOOLEAN"
+      },
+      {
+        "name": "is_urgent_delivery",
+        "type": "BOOLEAN"
+      },
+      {
+        "name": "_sdc_extracted_at",
+        "type": "TIMESTAMP"
+      }
+    ]
+  },
+  "timePartitioning": {
+    "type": "DAY",
+    "field": "create_time"
+  },
+  "numBytes": "1038008016",
+  "numLongTermBytes": "0",
+  "numRows": "588535",
+  "creationTime": "1790422958202",
+  "lastModifiedTime": "1790433061709",
+  "type": "TABLE",
+  "location": "asia-southeast1",
+  "clustering": {
+    "fields": [
+      "is_cancelled",
+      "qc_status",
+      "human_id",
+      "id"
+    ]
+  },
+  "numTimeTravelPhysicalBytes": "46053561133",
+  "numTotalLogicalBytes": "1038008016",
+  "numActiveLogicalBytes": "1038008016",
+  "numLongTermLogicalBytes": "0",
+  "numTotalPhysicalBytes": "46259676160",
+  "numActivePhysicalBytes": "46259676160",
+  "numLongTermPhysicalBytes": "0",
+  "numPartitions": "1340",
+  "partitionDefinition": {
+    "partitionedColumn": [
+      {
+        "field": "create_time"
+      }
+    ]
+  },
+  "numCurrentPhysicalBytes": "206115027"
+}

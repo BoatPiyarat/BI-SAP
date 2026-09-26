@@ -1,0 +1,100 @@
+{
+  "kind": "bigquery#table",
+  "etag": "MpBhGg6pplCAhn0tUidLKQ==",
+  "id": "pacific-plating-282708:careos.carepay_transactions",
+  "selfLink": "https://bigquery.googleapis.com/bigquery/v2/projects/pacific-plating-282708/datasets/careos/tables/carepay_transactions",
+  "tableReference": {
+    "projectId": "pacific-plating-282708",
+    "datasetId": "careos",
+    "tableId": "carepay_transactions"
+  },
+  "schema": {
+    "fields": [
+      {
+        "name": "id",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "create_time",
+        "type": "TIMESTAMP",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "update_time",
+        "type": "TIMESTAMP",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "delete_time",
+        "type": "TIMESTAMP",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "version",
+        "type": "INTEGER",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "currency_code",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "amount",
+        "type": "INTEGER",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "lead",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "status",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "lead_human_id",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "installments",
+        "type": "INTEGER",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "gateway_reference",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "payment_option",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "quote",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      }
+    ]
+  },
+  "numBytes": "166549818",
+  "numLongTermBytes": "0",
+  "numRows": "765489",
+  "creationTime": "1708505995307",
+  "lastModifiedTime": "1790427632193",
+  "type": "TABLE",
+  "location": "asia-southeast1",
+  "numTimeTravelPhysicalBytes": "1651744135",
+  "numTotalLogicalBytes": "166549818",
+  "numActiveLogicalBytes": "166549818",
+  "numLongTermLogicalBytes": "0",
+  "numTotalPhysicalBytes": "1710891920",
+  "numActivePhysicalBytes": "1710891920",
+  "numLongTermPhysicalBytes": "0",
+  "numCurrentPhysicalBytes": "59147785"
+}
