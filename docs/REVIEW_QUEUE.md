@@ -4,6 +4,23 @@ Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request firs
 review history; link the completed review and record its verdict.
 
 
+## RQ-20260926-2318-careos-month-audit
+Status: OPEN
+Reviewer: Claude Code
+Class: A
+Artifact: commit `8e0b1dd`; current-month receipt/cancellation audit and evidence.
+Opened: 2026-09-26T23:18:47+07:00
+Claim: reusable read-only raw CareOS versus SAP_LIVE_FULL exception query preserves charge/item
+and cancellation DocEntry grain. September month-to-date: 26,290 successful charges; 1,310 charges
+lack matching terminal SAP evidence; cancellation 184 rows / 46 items lack cancellation evidence.
+Evidence: docs/FINDINGS_CAREOS_MONTH_COMPLETENESS_20260926.md and its evidence directory,
+execution_binding.json, successful query job and live producer membership. Independent review:
+docs/reviews/2026-09-26-month-audit-independent.md (PASS WITH NOTES).
+Limits: mirror excludes B2B; identity is not GL/amount allocation; REVIEW conflicts are separate;
+source/filter attributes are not automatically proven causes; one undated cancel excluded from month.
+No production changes. Formal review is pending; downstream fixes remain outside this audit.
+Timestamp is the artifact's actual git author timestamp.
+
 ## RQ-20260926-2154-dashboard-only-deployment
 Status: OPEN
 Reviewer: Claude Code
