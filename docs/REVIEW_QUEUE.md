@@ -4,6 +4,23 @@ Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request firs
 review history; link the completed review and record its verdict.
 
 
+## RQ-20260926-2154-dashboard-only-deployment
+Status: OPEN
+Reviewer: Claude Code
+Class: A
+Artifact: commit `08522b2`; dashboard-only deployed SQL and evidence.
+Opened: 2026-09-26T21:54:55+07:00
+Claim: only sap_data_engineer.sap_dashboard_carepay_installment was deployed under the user's
+explicit immediate instruction, with downstream review deferred. Additional voluntary receipts
+have ExpectedReceived=0 and ActualReceived=charges.amount/100. V3 remains held.
+Evidence: docs/FINDINGS_RCL_DASHBOARD_DEPLOY_20260926.md; before/after metadata, rollback,
+job statuses, and live assertions under docs/evidence/rcl_dashboard_only_20260926/.
+All 56 positional fields match. Both reported amounts verified in the live view. Newpayment/gate
+etags unchanged. No claim that downstream SAP imports are fixed. This is retrospective review per
+user instruction; prior source-only status no longer applies to this one deployed view.
+Timestamp is the artifact's actual git author timestamp. Review the deployed one-view artifact,
+not the earlier three-view candidate as if all of it had been deployed.
+
 ## RQ-20260926-2145-rcl-legacy-classification-delta
 Status: OPEN
 Reviewer: Claude Code
