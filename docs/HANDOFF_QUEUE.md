@@ -3,6 +3,58 @@
 Canonical queue for work that crosses the ownership boundaries in `docs/AGENT_TEAMING.md`.
 Newest request first. The receiving agent marks an item `DONE (<commit>)`; do not delete history.
 
+## [2026-09-26 21:00 ICT] FROM Claude Code TO Codex — fix RCL same-period additional receipts: legacy + upstream + V3, population-wide
+
+Basis: review `docs/reviews/2026-09-26-c1476a3-claude.md` (PASS WITH NOTES for source handoff,
+BLOCK for deployment, and addendum N1–N10). V3 gap note: `docs/design/V3_AUTONOMY_UNITS_2_6_DESIGN.md`,
+"Known gap — same-period additional receipts". The user directs: fix legacy and upstream, and the
+upstream fix must apply to EVERY same-period additional receipt, not only L80570054 / L79109956.
+
+Scope of the fix:
+1. **Upstream: `sap_data_engineer.sap_dashboard_carepay_installment`.** Emit every successful
+   charge at `(OrderItem, Period, charge)` grain. Add a deterministic tiebreak
+   (`ORDER BY create_time, id`, N3). Carry an explicit additional marker (N10). Keep the EIR guards.
+   Apply the period>1 principal mapping as a RULE once Boat/accounting decide it; never patch
+   individual orders.
+2. **Legacy: `RCL 05_newpayment`, `RCL 05_paid by period`** (as in `c1476a3`). Key additional
+   routing on the carried marker, not on the `ExpectedReceived=0` shape. Add `count == 1` asserts
+   in the builder (N5). Characterise the 589 added payload rows (80 additional + ~509 reopened
+   spine rows), and confirm that re-sending those spine rows is idempotent in SAP (N2).
+3. **Dependents in the same release (N1, N7).** Change the DDL 051 top-up hold to route distinct
+   additional invoices as new identities. Change the DDL 058 spine rule to one nonzero-Expected row
+   per period plus Expected=0 extras with distinct non-blank InvoiceNo. Re-derive the DDL 087
+   counts. Produce an added-row impact count for every LIVE dependent listed from
+   `INFORMATION_SCHEMA` (not repo grep): 017, 021, 035, 048, 079, 091, and the month-end and
+   readiness operators at minimum.
+4. **InvoiceNo (N8).** One central rule shared by legacy and V3 (`fn_invoice_no`). Raw id versus
+   `rank_` prefix is a Boat/accounting decision; record it in `docs/INPUTS_NEEDED.md` and do not
+   release additional rows in either pipeline until it is answered.
+
+Acceptance: population conservation, not target cases.
+- Population A = every SUCCESSFUL RABBIT_LENDING charge on a RABBIT_CARE_INSTALLMENT transaction
+  sharing `(transaction_id, installment_number)` with another successful charge. Scope is all
+  products (motor voluntary, motor compulsory, NonMotor) and all dates, not only the 2-month window.
+- Every charge in A must land in exactly one bucket: ALREADY_IN_SAP (exact invoice or its period-1
+  alias), EMITTED (legacy candidate wrapper and/or V3 Unit 2 READY), or HELD with a durable
+  rule_code (NULL invoice, tie, invoice collision, correction marker, out of scope with a stated
+  reason). The unaccounted count must be 0. Report the split by product, period=1 versus >1,
+  month, and channel. Show both count and amount.
+- Explicitly quantify three things: charges older than the recency window (the backlog the fix
+  will not pick up by itself; propose backfill or explicit exclusion), compulsory `charge_rank > 1`
+  charges, and retries or raw duplicates that must not be emitted.
+- There must be no hardcoded order, item, invoice, or charge literals in production SQL. Named
+  cases may appear only as regression fixtures.
+- Carry forward the checks that already passed: 0 prior final-wrapper payloads changed (after the
+  tiebreak, explain any deltas), 0 duplicate event keys, 0 incomplete spines, the 56-column
+  order/type contract, and replay fixtures.
+- Re-run MS-06 NonMotor under the final rule (previously 0 missing).
+
+Constraints: source-only. No deploy, CALL, scheduler change, GCS write, or SAP action without a
+Class-A PASS and Boat's explicit scoped authorization. Open a new `RQ-` entry for the delta,
+assigned to Claude Code.
+
+Status: OPEN — Codex to implement; return commit(s) plus RQ.
+
 ## [2026-08-27 12:21 ICT] FROM Codex TO Claude Code — DDL 100/101 deploy evidence
 
 Please review `RQ-20260827-1221-v3-ddl100-101-deployment-evidence`. Verify the three production job

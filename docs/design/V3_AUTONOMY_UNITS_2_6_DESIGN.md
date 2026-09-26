@@ -199,6 +199,48 @@ Repair `sap_validation_regression_alert` as a separate Class A unit. Its accepta
 synthetic failing validation that reaches the human recipient and a healthy run that does not
 alert.
 
+## Known gap — same-period additional receipts (Claude Code, 2026-09-26)
+
+Status: OPEN. This is a V3 cutover stop gate. Source: `docs/reviews/2026-09-26-c1476a3-claude.md`
+(addendum) and handoff `[2026-09-26 21:00 ICT] FROM Claude Code TO Codex` in `docs/HANDOFF_QUEUE.md`.
+
+The design above (Unit 5, "CREATE does not collapse a legitimate top-up") and `10_SAP_CONTEXT.md`
+("Additional payment: Period เดิม, ExpectedReceived=0, ActualReceived>0 → ไม่ใช่ duplicate")
+both require an additional successful charge in an already-scheduled period to be emitted as its
+own row. The current V3 source does not do this. Static trace, not yet measured live:
+
+1. **Unit 2 (DDL 051 `_event_out`)** classifies a top-up as `HELD_VALIDATION` ("top-up/different
+   InvoiceNo would mutate immutable LIVE state; hold") whenever that period's SAP row is already
+   Paid or Cancelled under another InvoiceNo. That is exactly the reported legacy case (period Paid,
+   later distinct charge). V3 would hold it forever instead of emitting it. An additional row is a
+   NEW document identity `(OrderItem, Period, InvoiceNo)`, not a mutation of the Paid row.
+2. **Unit 5 (DDL 058)** resolves each target event through `sap_dashboard_carepay_installment` at
+   `(OrderItem, Period, InvoiceNo)` and asserts `COUNT(_resolved) = COUNT(_target)`. The live
+   dashboard drops `charge_rank > 1`, so any top-up that reaches Unit 5 aborts the whole run.
+3. **Unit 5 spine check (`63d6943` / `0c25117`)** requires `row_n = total_n` and one row per
+   period (`DUPLICATE_PERIOD_IDENTITY`). Once the upstream dashboard emits additional rows (the
+   legacy fix on branch `fix/rcl-additional-payments-20260926`), every item with an additional
+   row would be quarantined. The spine rule must become: exactly one row per period with nonzero
+   ExpectedReceived, plus zero or more rows with ExpectedReceived=0 and a distinct, non-blank
+   InvoiceNo.
+4. **DDL 087** `period_source_rows` / `exact_source_rows` count dashboard rows per item/period and
+   must be re-derived for the multi-row period shape.
+5. **InvoiceNo standard.** `SAP_INTERFACE_REDESIGN_V3.md` §2.5 proposes `CONCAT(rank,'_',id)` for
+   additional charges (accounting ack pending). The legacy fix emits the raw `third_party_id`
+   (with a `2_` prefix on period 1). Legacy and V3 MUST emit the same InvoiceNo for the same
+   charge. Otherwise the same receipt is posted twice at cutover. There must be one central
+   function (`fn_invoice_no`) and one decision from Boat and accounting.
+6. **Correction vs. additional.** `10_SAP_CONTEXT.md` (Method 1 recon ambiguity) forbids
+   classifying a row as additional from shape alone (`ExpectedReceived=0`, `ActualReceived>0`)
+   without a durable `ADDITIONAL_PAYMENT` / `CORRECTION` marker. V3 should carry the charge-rank or
+   additional marker explicitly, not infer it.
+
+Acceptance for V3 is population-wide, not case-specific. Every SUCCESSFUL RABBIT_LENDING charge in
+the OPEN period must reconcile to exactly one Unit 2 outcome. Every additional charge must reach
+`READY_CREATE_OR_PAYMENT`, `ACKNOWLEDGED`, or a named durable hold. The count of additional charges
+that are silently held by the immutable-state rule must be zero. L80570054-V1 / L79109956-V1 are
+regression fixtures only.
+
 ## Release dependency and stop gates
 
 1. Unit 1 Class A PASS plus pinned control object/schema and alert channel evidence.

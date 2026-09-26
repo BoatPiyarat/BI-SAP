@@ -5,7 +5,7 @@ review history; link the completed review and record its verdict.
 
 
 ## RQ-20260926-0944-rcl-additional-receipts
-Status: OPEN
+Status: REVIEWED
 Reviewer: Claude Code
 Class: A
 Artifact: commit `c1476a3`; three SELECT-only RCL additional-payment replacements.
@@ -17,6 +17,17 @@ source handoff only; see docs/reviews/2026-09-26-rcl-additional-independent.md.
 Evidence: docs/FINDINGS_RCL_ADDITIONAL_FIX_20260926.md and its timestamped evidence directory.
 Final composed query job succeeded; execution_binding.json ties it to exact source SQL.
 No production object, SAP record, GCS object, or scheduler was changed.
+Verdict: **PASS WITH NOTES (source handoff) / BLOCK (deployment)** — Claude Code,
+`docs/reviews/2026-09-26-c1476a3-claude.md`. Static review only (no live BQ in this session). Adds
+two deployment blockers: N1, the shared-dashboard grain change reaches live dependents outside the
+three objects (V3 DDL 058 `row_n != total_n` would quarantine items with extras; DDL 087 counts
+change). Consider leaving the dashboard unchanged. N2, eir_regression reports 589 added payload
+rows but the findings disclose only the 80 additional rows. Also notes: no deterministic charge_rank
+tiebreak, additional flag inferred from ExpectedReceived=0, and missing builder count asserts.
+Addendum 21:00: V3 has the same defect (DDL 051 top-up hold, DDL 058 resolve and spine). There is
+an InvoiceNo standard conflict with V3 §2.5. Generality is not yet shown population-wide. Handed to
+Codex to fix legacy + upstream + V3 with population conservation acceptance: `docs/HANDOFF_QUEUE.md`
+[2026-09-26 21:00 ICT].
 
 ## RQ-20260828-0056-v3-unit5-item-validation-quarantine-delta
 Status: OPEN
