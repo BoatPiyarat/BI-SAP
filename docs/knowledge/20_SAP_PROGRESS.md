@@ -1,5 +1,9 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-09-26T23:41:18+07:00 — Scenario root-cause map prepared
+
+All 12 sap_view routes checked for the fixed September missing population. Paid: 703 identity-present /203 absent /435 no-order; cancel:134 present /50 absent. Primary blockers and payload/owner risks documented in docs/FINDINGS_CAREOS_SCENARIO_ROOT_CAUSES_20260926.md. Preparation only; no production mutation or V3 work.
+
 ## 2026-09-26T23:18:00+07:00 — September monthly completeness audit
 
 Read-only current-month query built and executed. 26,290 charges; 1,310 distinct charges lacking matching terminal SAP evidence; cancellation 184 rows / 46 items unresolved. REVIEW conflicts separate. Evidence, limitations and route causes: docs/FINDINGS_CAREOS_MONTH_COMPLETENESS_20260926.md. No production change; V3 still held.

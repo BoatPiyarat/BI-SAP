@@ -1,0 +1,62 @@
+[
+  {
+    "view": "RCB_Motor_process_3_change",
+    "returncode": 0,
+    "finished_at": "2026-09-26T16:24:09.221019+00:00",
+    "output_rows": 88
+  },
+  {
+    "view": "RCB_Motor_process_4_creditshell",
+    "returncode": 0,
+    "finished_at": "2026-09-26T16:24:26.770011+00:00",
+    "output_rows": 42
+  },
+  {
+    "view": "RCB_Motor_process_create",
+    "returncode": 0,
+    "finished_at": "2026-09-26T16:24:10.537184+00:00",
+    "output_rows": 75
+  },
+  {
+    "view": "RCB_NonMotor_process_1_create",
+    "returncode": 0,
+    "finished_at": "2026-09-26T16:24:35.636374+00:00",
+    "output_rows": 4
+  },
+  {
+    "view": "RCB_NonMotor_process_2_cancel",
+    "returncode": 0,
+    "finished_at": "2026-09-26T16:24:28.601958+00:00",
+    "output_rows": 0
+  },
+  {
+    "view": "RCL_Motor_process_1_create",
+    "returncode": 0,
+    "finished_at": "2026-09-26T16:25:07.820552+00:00",
+    "output_rows": 390
+  },
+  {
+    "view": "RCL_Motor_process_2_newpayment",
+    "returncode": 0,
+    "finished_at": "2026-09-26T16:25:21.369934+00:00",
+    "output_rows": 3895
+  },
+  {
+    "view": "RCL_Motor_process_4_creditshell",
+    "returncode": 0,
+    "finished_at": "2026-09-26T16:25:15.236631+00:00",
+    "output_rows": 42
+  },
+  {
+    "view": "RCL_NonMotor_process_1_create",
+    "returncode": 0,
+    "finished_at": "2026-09-26T16:25:28.936528+00:00",
+    "output_rows": 102
+  },
+  {
+    "view": "RCL_NonMotor_process_2_newpayment",
+    "returncode": 0,
+    "finished_at": "2026-09-26T16:25:46.670434+00:00",
+    "output_rows": 653
+  }
+]

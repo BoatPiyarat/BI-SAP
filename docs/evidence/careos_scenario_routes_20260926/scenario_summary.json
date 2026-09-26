@@ -1,0 +1,252 @@
+[
+  {
+    "event_type": "CANCELLATION",
+    "root_cause_group": "CANCEL_COLLAPSES_RECEIPTS_TO_PERIOD",
+    "flow": "RCL",
+    "business_type": "Motor",
+    "rows": 6,
+    "items": 5,
+    "charges": 0,
+    "examples": "L79959262-V1|L80035402-V1|L80236849-V1"
+  },
+  {
+    "event_type": "CANCELLATION",
+    "root_cause_group": "CANCEL_COLLAPSES_RECEIPTS_TO_PERIOD",
+    "flow": "RCL",
+    "business_type": "NonMotor",
+    "rows": 2,
+    "items": 2,
+    "charges": 0,
+    "examples": "L80421949-1|L80517642-1"
+  },
+  {
+    "event_type": "CANCELLATION",
+    "root_cause_group": "CANCEL_HOLD_UNSYNCED_SUCCESSFUL_PAYMENT",
+    "flow": "RCL",
+    "business_type": "Motor",
+    "rows": 6,
+    "items": 1,
+    "charges": 0,
+    "examples": "L78848241-V1"
+  },
+  {
+    "event_type": "CANCELLATION",
+    "root_cause_group": "CANCEL_HOLD_UNSYNCED_SUCCESSFUL_PAYMENT",
+    "flow": "RCL",
+    "business_type": "NonMotor",
+    "rows": 20,
+    "items": 2,
+    "charges": 0,
+    "examples": "L79587523-1|L79988124-1"
+  },
+  {
+    "event_type": "CANCELLATION",
+    "root_cause_group": "CANCEL_ITEM_WIDE_ALREADY_CANCELLED_EXCLUSION",
+    "flow": "RCB",
+    "business_type": "Motor",
+    "rows": 6,
+    "items": 6,
+    "charges": 0,
+    "examples": "L78708191-V1|L79160014-V1|L80555318-V1"
+  },
+  {
+    "event_type": "CANCELLATION",
+    "root_cause_group": "CANCEL_MISSING_CREATE_PREDECESSOR",
+    "flow": "RCB",
+    "business_type": "Motor",
+    "rows": 3,
+    "items": 3,
+    "charges": 0,
+    "examples": "L78891393-M1|L80941710-M1|L80941710-V1"
+  },
+  {
+    "event_type": "CANCELLATION",
+    "root_cause_group": "CANCEL_MISSING_CREATE_PREDECESSOR",
+    "flow": "RCB",
+    "business_type": "NonMotor",
+    "rows": 2,
+    "items": 2,
+    "charges": 0,
+    "examples": "L80824896-1|L80824898-1"
+  },
+  {
+    "event_type": "CANCELLATION",
+    "root_cause_group": "CANCEL_MISSING_CREATE_PREDECESSOR",
+    "flow": "RCL",
+    "business_type": "Motor",
+    "rows": 3,
+    "items": 3,
+    "charges": 0,
+    "examples": "L80860685-V1|L80896379-V1|L80902882-V1"
+  },
+  {
+    "event_type": "CANCELLATION",
+    "root_cause_group": "CANCEL_MISSING_CREATE_PREDECESSOR",
+    "flow": "RCL",
+    "business_type": "NonMotor",
+    "rows": 2,
+    "items": 2,
+    "charges": 0,
+    "examples": "L80779903-1|L80878738-1"
+  },
+  {
+    "event_type": "CANCELLATION",
+    "root_cause_group": "OUTPUT_IDENTITY_PRESENT_DELIVERY_NOT_PROVEN",
+    "flow": "RCB",
+    "business_type": "Motor",
+    "rows": 10,
+    "items": 10,
+    "charges": 0,
+    "examples": "L78474340-V1|L78762640-V1|L78790562-M1"
+  },
+  {
+    "event_type": "CANCELLATION",
+    "root_cause_group": "OUTPUT_IDENTITY_PRESENT_DELIVERY_NOT_PROVEN",
+    "flow": "RCB",
+    "business_type": "NonMotor",
+    "rows": 2,
+    "items": 2,
+    "charges": 0,
+    "examples": "L80928331-1|L79049981-1"
+  },
+  {
+    "event_type": "CANCELLATION",
+    "root_cause_group": "OUTPUT_IDENTITY_PRESENT_DELIVERY_NOT_PROVEN",
+    "flow": "RCL",
+    "business_type": "Motor",
+    "rows": 61,
+    "items": 8,
+    "charges": 0,
+    "examples": "L79047811-M1|L79047811-V1|L79959262-V1"
+  },
+  {
+    "event_type": "CANCELLATION",
+    "root_cause_group": "OUTPUT_IDENTITY_PRESENT_DELIVERY_NOT_PROVEN",
+    "flow": "RCL",
+    "business_type": "NonMotor",
+    "rows": 61,
+    "items": 7,
+    "charges": 0,
+    "examples": "L80421949-1|L80517642-1|L79157509-1"
+  },
+  {
+    "event_type": "PAID",
+    "root_cause_group": "OUTPUT_IDENTITY_PRESENT_DELIVERY_NOT_PROVEN",
+    "flow": "RCB",
+    "business_type": "Motor",
+    "rows": 88,
+    "items": 87,
+    "charges": 66,
+    "examples": "L78891393-M1|L80941710-M1|L80941710-V1"
+  },
+  {
+    "event_type": "PAID",
+    "root_cause_group": "OUTPUT_IDENTITY_PRESENT_DELIVERY_NOT_PROVEN",
+    "flow": "RCB",
+    "business_type": "NonMotor",
+    "rows": 3,
+    "items": 3,
+    "charges": 3,
+    "examples": "L80681012-1|L80717302-1|L80889630-1"
+  },
+  {
+    "event_type": "PAID",
+    "root_cause_group": "OUTPUT_IDENTITY_PRESENT_DELIVERY_NOT_PROVEN",
+    "flow": "RCL",
+    "business_type": "Motor",
+    "rows": 545,
+    "items": 541,
+    "charges": 536,
+    "examples": "L79670013-V1|L79805184-V1|L79810151-V1"
+  },
+  {
+    "event_type": "PAID",
+    "root_cause_group": "OUTPUT_IDENTITY_PRESENT_DELIVERY_NOT_PROVEN",
+    "flow": "RCL",
+    "business_type": "NonMotor",
+    "rows": 67,
+    "items": 65,
+    "charges": 67,
+    "examples": "L80779150-1|L80843199-1|L80901299-1"
+  },
+  {
+    "event_type": "PAID",
+    "root_cause_group": "PAID_ON_CANCELLED_ITEM_REQUIRES_LIFECYCLE_REVIEW",
+    "flow": "RCL",
+    "business_type": "Motor",
+    "rows": 11,
+    "items": 10,
+    "charges": 11,
+    "examples": "L78403669-V1|L78848241-V1|L80663727-V1"
+  },
+  {
+    "event_type": "PAID",
+    "root_cause_group": "PAID_ON_CANCELLED_ITEM_REQUIRES_LIFECYCLE_REVIEW",
+    "flow": "RCL",
+    "business_type": "NonMotor",
+    "rows": 3,
+    "items": 2,
+    "charges": 3,
+    "examples": "L80779903-1|L80878738-1"
+  },
+  {
+    "event_type": "PAID",
+    "root_cause_group": "RCB_NO_EXISTING_ITEM_RECEIPT_ROUTE",
+    "flow": "RCB",
+    "business_type": "Motor",
+    "rows": 1,
+    "items": 1,
+    "charges": 1,
+    "examples": "L78949140-V1"
+  },
+  {
+    "event_type": "PAID",
+    "root_cause_group": "RCL_MOTOR_ORDER_YEAR_2026_CUTOFF",
+    "flow": "RCL",
+    "business_type": "Motor",
+    "rows": 85,
+    "items": 84,
+    "charges": 85,
+    "examples": "L79312967-V1|L79329562-V1|L79331377-V1"
+  },
+  {
+    "event_type": "PAID",
+    "root_cause_group": "RCL_NONMOTOR_CREDITSHELL_FOLLOWUP_SOURCE_GAP",
+    "flow": "RCL",
+    "business_type": "NonMotor",
+    "rows": 41,
+    "items": 40,
+    "charges": 41,
+    "examples": "L79327000-1|L79333459-1|L79446625-1"
+  },
+  {
+    "event_type": "PAID",
+    "root_cause_group": "RCL_PAID_PERIOD_EXCLUDES_NEW_INVOICE",
+    "flow": "RCL",
+    "business_type": "Motor",
+    "rows": 62,
+    "items": 61,
+    "charges": 62,
+    "examples": "L78869745-V1|L78871425-V1|L78875096-V1"
+  },
+  {
+    "event_type": "PAID",
+    "root_cause_group": "UPSTREAM_NO_ORDER_LINK",
+    "flow": "RCB",
+    "business_type": "Unknown",
+    "rows": 290,
+    "items": 0,
+    "charges": 290,
+    "examples": "dfc7af87-9ca4-4e51-8a00-e49c1d1c3574|e8433efb-2018-4bda-883a-0b66f18f3020|a487c501-7752-41fa-b335-3875b731c55b"
+  },
+  {
+    "event_type": "PAID",
+    "root_cause_group": "UPSTREAM_NO_ORDER_LINK",
+    "flow": "RCL",
+    "business_type": "Unknown",
+    "rows": 145,
+    "items": 0,
+    "charges": 145,
+    "examples": "66760b3a-429e-40a0-bf5d-54c4ded1a9ad|fc78f25d-e123-4451-932c-8fcfbbe394d9|250f3caf-47ed-4ef6-b09b-899629497f87"
+  }
+]

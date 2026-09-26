@@ -1,0 +1,11 @@
+== bq_safe_query: dry-run =========================================
+Dry-run estimate: 1756831949 bytes (~1.636 GiB)
+== bq_safe_query: real run (--maximum_bytes_billed=21474836480) ===========
+
+Waiting on scenario_RCB_NonMotor_process_2_cancel_20260926 ... (0s) Current status: RUNNING
+                                                                                           
+Waiting on scenario_RCB_NonMotor_process_2_cancel_20260926 ... (1s) Current status: RUNNING
+                                                                                           
+Waiting on scenario_RCB_NonMotor_process_2_cancel_20260926 ... (2s) Current status: RUNNING
+                                                                                           
+Waiting on scenario_RCB_NonMotor_process_2_cancel_20260926 ... (2s) Current status: DONE   
