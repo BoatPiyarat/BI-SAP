@@ -3,6 +3,21 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+
+## RQ-20260926-0944-rcl-additional-receipts
+Status: OPEN
+Reviewer: Claude Code
+Class: A
+Artifact: commit `c1476a3`; three SELECT-only RCL additional-payment replacements.
+Opened: 2026-09-26T09:44:48+07:00
+Claim: restores the two reported extra receipts while preserving existing final-wrapper payloads.
+Source-only; deployment remains BLOCKED by tied-charge ranking, later-period principal mapping,
+and durable reporting of held identities. Independent Codex second reader: PASS WITH NOTES for
+source handoff only; see docs/reviews/2026-09-26-rcl-additional-independent.md.
+Evidence: docs/FINDINGS_RCL_ADDITIONAL_FIX_20260926.md and its timestamped evidence directory.
+Final composed query job succeeded; execution_binding.json ties it to exact source SQL.
+No production object, SAP record, GCS object, or scheduler was changed.
+
 ## RQ-20260828-0056-v3-unit5-item-validation-quarantine-delta
 Status: OPEN
 Reviewer: Claude Code
