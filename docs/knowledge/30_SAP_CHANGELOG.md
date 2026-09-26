@@ -1,5 +1,15 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-09-26 — RCL additional receipt source fix; NOT DEPLOYED
+
+Built dashboard + newpayment + paid-period eligibility replacements in
+`sql/production/rcl_additional_20260926/`. Corrected candidates restore L80570054 (22.04)
+and L79109956 (645.21), checked 2026-09-25 17:33:38 UTC. Full final-wrapper old payloads preserved;
+19 receipt-identity/replay fixtures pass. Dashboard EIR regression corrected, but two tied-charge
+ExpectedReceived deltas and period>1 principal mapping remain release blockers. No SAP posting,
+production view replacement, schedule change, or GCS export occurred.
+See `docs/FINDINGS_RCL_ADDITIONAL_FIX_20260926.md` for timestamped evidence and release conditions.
+
 ## 2026-08-25 (later) — built Phase 1 hold gate (082), prepared Phase 2 diff to 058, corrected RCL count
 
 - Added `sql/ddl/082_v3_rcl_empty_installment_detail_hold.sql`: `vw_v3_rcl_empty_installment_detail_hold`

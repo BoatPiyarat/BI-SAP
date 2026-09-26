@@ -122,3 +122,13 @@ rerun the gate; it may not retry only the file write.
 Deployment is prohibited until current live legacy view definitions and the 56-column physical
 contract are captured, the gate SQL is dry-run, every flow/operation adapter has positive and
 negative fixtures, Class-A review passes, and Boat approves the exact deployment.
+
+
+## 2026-09-26 clarification — same-period additional receipts
+
+Per the user instruction recorded in 10_SAP_CONTEXT, one normal row per installment does not
+prohibit distinct additional receipts. For RCL NEWPAYMENT require one complete normal schedule
+spine plus additional rows uniquely identified by item/period/source charge/invoice, with zero
+ExpectedReceived and positive ActualReceived. The source charge identity must be validated even
+though it is absent from the positional payload. Existing gate implementations need review against
+this clarification before export; this document change is not a claim that enforcement is deployed.

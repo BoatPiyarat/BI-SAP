@@ -595,3 +595,14 @@ observed by BigQuery are unrecoverable.
   A file must declare which population it contains and must not mix them silently.
 - This decision supersedes any older statement that inferred RCB from the `RCB_MOTOR` folder or
   `INSURANCE_RCB` filename, or that rejected an RCL payload solely because it uses that template.
+
+
+## ADDENDUM 2026-09-26 — repeated RCL receipts (user instruction)
+
+User confirms that extra payments in the same installment must survive dashboard and RCL
+newpayment. Preserve a full normal period spine plus distinct additional receipt rows with
+ExpectedReceived=0 and ActualReceived>0. Do not reject these solely because their period is Paid.
+This clarifies the scope of the older one-row-per-period recovery constraint: it governs the
+normal schedule spine, not distinct additional receipt events. Invoice identity remains immutable.
+Period>1 principal mapping and tied-time first-charge ranking remain unresolved release questions;
+this instruction does not approve an inferred accounting allocation or production deployment.

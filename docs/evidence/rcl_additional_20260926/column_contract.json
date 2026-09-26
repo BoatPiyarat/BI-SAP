@@ -1,0 +1,282 @@
+[
+  {
+    "name": "CompanyDB",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "OrderID",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "OrderItem",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "InvoiceNo",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "OrderDate",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "InsuredID",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "Title",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "FirstName",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "LastName",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "InsurerCode",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "InsuranceGroup",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "InsuranceType",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "InsuranceProduct",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "ProductType",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "PolicyType",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "Endorse",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "PolicyDate",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "PolicyNo",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "EndorsementNo",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "ChassisNo",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "LicensePlate",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "GrossPremium",
+    "type": "FLOAT",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "StampDuty",
+    "type": "FLOAT",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "VAT",
+    "type": "FLOAT",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "TotalPremium",
+    "type": "FLOAT",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "WHT",
+    "type": "FLOAT",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "TotalEIR",
+    "type": "FLOAT",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "TotalSBT",
+    "type": "FLOAT",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "ProcessingFee",
+    "type": "FLOAT",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "ProcessingFeeVat",
+    "type": "FLOAT",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "ShippingFee",
+    "type": "FLOAT",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "ShippingFeeVat",
+    "type": "FLOAT",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "TotalAmount",
+    "type": "FLOAT",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "Discount",
+    "type": "FLOAT",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "TransactionStatus",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "SubmissionStatus",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "ApprovalStatus",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "PaymentStatus",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "ExpectedReceived",
+    "type": "FLOAT",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "ActualReceived",
+    "type": "FLOAT",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "InterestThisPeriod",
+    "type": "FLOAT",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "PrincipleThisPeriod",
+    "type": "FLOAT",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "InterestEIRThisPeriod",
+    "type": "FLOAT",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "PrincipleEIRThisPeriod",
+    "type": "FLOAT",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "PaymentDate",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "Period",
+    "type": "INTEGER",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "TotalPeriods",
+    "type": "INTEGER",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "PendingPayment",
+    "type": "FLOAT",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "PaymentMethod",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "PaymentChannel",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "ExpectedDate",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "RefOrder",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "RefundAmountBeforeFee",
+    "type": "FLOAT",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "RefundAmountAfterFee",
+    "type": "FLOAT",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "BillingAddress",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "BatchRunDate",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  }
+]

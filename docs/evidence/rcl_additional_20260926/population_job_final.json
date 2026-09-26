@@ -1,0 +1,19 @@
+{
+  "jobReference": {
+    "projectId": "pacific-plating-282708",
+    "jobId": "bqjob_r5f34dc69a47d21ab_000001a0d9963e10_1",
+    "location": "asia-southeast1"
+  },
+  "status": {
+    "state": "DONE"
+  },
+  "statistics": {
+    "creationTime": "1790356897829",
+    "startTime": "1790356897874",
+    "endTime": "1790357018647",
+    "totalBytesProcessed": "16557561237",
+    "totalSlotMs": "28405567",
+    "numChildJobs": "11"
+  },
+  "maximumBytesBilled": "21474836480"
+}
