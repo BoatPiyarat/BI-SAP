@@ -616,3 +616,7 @@ continue; no CALL, deployment or scheduler change is authorized by this scope up
 Legacy invoice aliases are unchanged. Technical charge ties use create_time,id. Additional receipt
 classification must use source rank/charge lineage, never just zero ExpectedReceived. Principal
 allocation remains unanswered; runtime holds and import idempotency remain release requirements.
+
+## 2026-09-26T21:53:57+07:00 — Latest dashboard-only scope
+
+User explicitly requested immediate fix of only sap_dashboard_carepay_installment and deferred review of its readers. This one view is now deployed; newpayment/gate remain unchanged, V3 held. Deployment and rollback evidence: docs/FINDINGS_RCL_DASHBOARD_DEPLOY_20260926.md. Do not represent this as a complete downstream SAP import fix.

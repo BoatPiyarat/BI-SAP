@@ -1,5 +1,9 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-09-26T21:53:57+07:00 — User-scoped dashboard-only deployment
+
+Only sap_dashboard_carepay_installment was replaced under the user's immediate instruction; additional Expected=0 / Actual=raw charge. RCL newpayment/gate unchanged; V3 held. See docs/FINDINGS_RCL_DASHBOARD_DEPLOY_20260926.md and its live evidence. This supersedes earlier source-only status for this dashboard only.
+
 ## 2026-09-26 (review continuation) — V3 held; legacy/upstream delta built
 
 Latest user instruction holds V3 implementation. Addressed review N3/N4/N5/N10: deterministic

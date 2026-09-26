@@ -16,3 +16,7 @@ mutation. Automatic approval review briefly failed due to workspace spend cap be
 write; user resumed and tools became available. The rejected write had not executed.
 
 Source delta committed/pushed as e419d84; new Class-A request RQ-20260926-2145-rcl-legacy-classification-delta assigned to Claude Code. V3 held; production unchanged.
+
+## 2026-09-26T21:53:57+07:00 — Latest dashboard-only scope
+
+User explicitly requested immediate fix of only sap_dashboard_carepay_installment and deferred review of its readers. This one view is now deployed; newpayment/gate remain unchanged, V3 held. Deployment and rollback evidence: docs/FINDINGS_RCL_DASHBOARD_DEPLOY_20260926.md. Do not represent this as a complete downstream SAP import fix.

@@ -1460,3 +1460,7 @@ truncate, rebuild, or delete before the incident is closed.
 Why: `docs/RETURN_TRIAGE_20260729.md` found 151,024 → 6,858,653 rows while distinct DocEntry grew
 only 106,873 → 122,169. Phase B/C and all baseline numbers remain ON HOLD pending investigation.
 Status: OPEN — investigation first; no deploy authorized
+
+## 2026-09-26T21:53:57+07:00 — Latest dashboard-only scope
+
+User explicitly requested immediate fix of only sap_dashboard_carepay_installment and deferred review of its readers. This one view is now deployed; newpayment/gate remain unchanged, V3 held. Deployment and rollback evidence: docs/FINDINGS_RCL_DASHBOARD_DEPLOY_20260926.md. Do not represent this as a complete downstream SAP import fix.
