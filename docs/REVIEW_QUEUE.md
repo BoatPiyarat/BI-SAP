@@ -4,6 +4,26 @@ Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request firs
 review history; link the completed review and record its verdict.
 
 
+## RQ-20260926-2145-rcl-legacy-classification-delta
+Status: OPEN
+Reviewer: Claude Code
+Class: A
+Artifact: commit `e419d84`; review exact delta `472e560..e419d84`.
+Opened: 2026-09-26T21:45:14+07:00
+Claim: deterministic raw charge lineage distinguishes first/additional receipts, preserves ordinary
+compulsory NULL-invoice behavior, and prevents invalid extras from falling into the ordinary branch.
+Legacy/upstream source only. Latest user instruction holds V3 implementation; no deployment.
+Evidence: docs/FINDINGS_RCL_REVIEW_DELTA_20260926.md and review_delta_source_sha256.json in its
+linked evidence directory. 26 behavioral cases pass; exact composed native query succeeds with
+20 target rows. Existing final-wrapper and raw-newpayment payloads removed=0; 56-field schema exact.
+All 64 changed prior dashboard payloads have tied first timestamps; per-period expected/interest
+sums unchanged. Added full-spine rows and shared-consumer deltas are explicitly disclosed.
+Independent focused source review: docs/reviews/2026-09-26-rcl-classification-delta-independent.md.
+Deployment remains blocked by later-period principal mapping, full-spine import idempotency,
+operational holds/allocation routing, shared-consumer compatibility and scoped deploy authorization.
+The 5,299-row ledger is identity triage, not proof of full accounting conservation or SAP posting.
+Timestamp above is the actual artifact author timestamp from git show, not a wall-clock estimate.
+
 ## RQ-20260926-0944-rcl-additional-receipts
 Status: REVIEWED
 Reviewer: Claude Code

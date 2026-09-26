@@ -14,3 +14,5 @@ completed. See FINDINGS_RCL_REVIEW_DELTA_20260926.md. Both interrupted diagnosti
 completed child evidence; final exact native query succeeded. No V3 implementation or production
 mutation. Automatic approval review briefly failed due to workspace spend cap before the findings
 write; user resumed and tools became available. The rejected write had not executed.
+
+Source delta committed/pushed as e419d84; new Class-A request RQ-20260926-2145-rcl-legacy-classification-delta assigned to Claude Code. V3 held; production unchanged.

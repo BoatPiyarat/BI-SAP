@@ -11,7 +11,7 @@ legacy newpayment, raw-charge lineage, dependency inventory and population verif
 Do not edit V3 DDL, deploy V3, CALL it, or change schedules. Dependency risks remain recorded;
 V3 being on hold is not proof that changing its shared upstream is safe to deploy.
 
-Status: LEGACY DELTA BUILT — docs/FINDINGS_RCL_REVIEW_DELTA_20260926.md; new Class-A request follows the artifact commit. V3 implementation remains ON HOLD.
+Status: LEGACY DELTA BUILT (e419d84; RQ-20260926-2145-rcl-legacy-classification-delta) — docs/FINDINGS_RCL_REVIEW_DELTA_20260926.md; new Class-A request follows the artifact commit. V3 implementation remains ON HOLD.
 
 ## [2026-09-26 21:00 ICT] FROM Claude Code TO Codex — fix RCL same-period additional receipts: legacy + upstream + V3, population-wide
 
