@@ -3,6 +3,16 @@
 Canonical queue for work that crosses the ownership boundaries in `docs/AGENT_TEAMING.md`.
 Newest request first. The receiving agent marks an item `DONE (<commit>)`; do not delete history.
 
+## [2026-09-26] User scope correction — V3 ON HOLD
+
+Latest user instruction: "check review result, hold V3, keep fixing legacy and upstream views".
+This overrides the V3 implementation portion of the 21:00 handoff below. Continue dashboard,
+legacy newpayment, raw-charge lineage, dependency inventory and population verification.
+Do not edit V3 DDL, deploy V3, CALL it, or change schedules. Dependency risks remain recorded;
+V3 being on hold is not proof that changing its shared upstream is safe to deploy.
+
+Status: LEGACY DELTA BUILT — docs/FINDINGS_RCL_REVIEW_DELTA_20260926.md; new Class-A request follows the artifact commit. V3 implementation remains ON HOLD.
+
 ## [2026-09-26 21:00 ICT] FROM Claude Code TO Codex — fix RCL same-period additional receipts: legacy + upstream + V3, population-wide
 
 Basis: review `docs/reviews/2026-09-26-c1476a3-claude.md` (PASS WITH NOTES for source handoff,

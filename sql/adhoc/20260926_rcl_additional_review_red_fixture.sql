@@ -3,10 +3,6 @@ SELECT 'new_period' AS id, 'new_period' AS transaction_id, 2 AS installment_numb
 UNION ALL
 SELECT 'gap_period' AS id, 'gap_period' AS transaction_id, 2 AS installment_number, 'g2' AS third_party_id, 'SUCCESSFUL' AS status, 'RABBIT_LENDING' AS service_provider, TIMESTAMP '2026-09-25' AS create_time, CURRENT_TIMESTAMP() AS update_time
 UNION ALL
-SELECT 'compulsory_zero_first_missing_invoice' AS id, 'compulsory_zero_first_missing_invoice' AS transaction_id, 1 AS installment_number, NULL AS third_party_id, 'SUCCESSFUL' AS status, 'RABBIT_LENDING' AS service_provider, TIMESTAMP '2026-09-25' AS create_time, CURRENT_TIMESTAMP() AS update_time
-UNION ALL
-SELECT 'compulsory_first_missing_invoice' AS id, 'compulsory_first_missing_invoice' AS transaction_id, 1 AS installment_number, NULL AS third_party_id, 'SUCCESSFUL' AS status, 'RABBIT_LENDING' AS service_provider, TIMESTAMP '2026-09-25' AS create_time, CURRENT_TIMESTAMP() AS update_time
-UNION ALL
 SELECT 'zero_first_missing_invoice' AS id, 'zero_first_missing_invoice' AS transaction_id, 1 AS installment_number, NULL AS third_party_id, 'SUCCESSFUL' AS status, 'RABBIT_LENDING' AS service_provider, TIMESTAMP '2026-09-25' AS create_time, CURRENT_TIMESTAMP() AS update_time
 UNION ALL
 SELECT 'zero_first_tied' AS id, 'zero_first_tied' AS transaction_id, 1 AS installment_number, 'zero_first_tied' AS third_party_id, 'SUCCESSFUL' AS status, 'RABBIT_LENDING' AS service_provider, TIMESTAMP '2026-09-25' AS create_time, CURRENT_TIMESTAMP() AS update_time
@@ -95,10 +91,6 @@ SELECT 'new_period' AS id, 'transactions/new_period' AS payment
 UNION ALL
 SELECT 'gap_period' AS id, 'transactions/gap_period' AS payment
 UNION ALL
-SELECT 'compulsory_zero_first_missing_invoice' AS id, 'transactions/compulsory_zero_first_missing_invoice' AS payment
-UNION ALL
-SELECT 'compulsory_first_missing_invoice' AS id, 'transactions/compulsory_first_missing_invoice' AS payment
-UNION ALL
 SELECT 'zero_first_missing_invoice' AS id, 'transactions/zero_first_missing_invoice' AS payment
 UNION ALL
 SELECT 'zero_first_tied' AS id, 'transactions/zero_first_tied' AS payment
@@ -143,65 +135,57 @@ SELECT 'null_expected' AS id, 'transactions/null_expected' AS payment
 UNION ALL
 SELECT 'pending_not_topup' AS id, 'transactions/pending_not_topup' AS payment
 ), fixture_order_items AS (
-SELECT 'new_period' AS order_id, 'new_period-V1' AS human_id, 'MOTOR_TYPE_VOLUNTARY' AS motor_item_type
+SELECT 'new_period' AS order_id, 'new_period-V1' AS human_id
 UNION ALL
-SELECT 'gap_period' AS order_id, 'gap_period-V1' AS human_id, 'MOTOR_TYPE_VOLUNTARY' AS motor_item_type
+SELECT 'gap_period' AS order_id, 'gap_period-V1' AS human_id
 UNION ALL
-SELECT 'compulsory_zero_first_missing_invoice' AS order_id, 'compulsory_zero_first_missing_invoice-V1' AS human_id, 'MOTOR_TYPE_COMPULSORY' AS motor_item_type
+SELECT 'zero_first_missing_invoice' AS order_id, 'zero_first_missing_invoice-V1' AS human_id
 UNION ALL
-SELECT 'compulsory_first_missing_invoice' AS order_id, 'compulsory_first_missing_invoice-V1' AS human_id, 'MOTOR_TYPE_COMPULSORY' AS motor_item_type
+SELECT 'zero_first_tied' AS order_id, 'zero_first_tied-V1' AS human_id
 UNION ALL
-SELECT 'zero_first_missing_invoice' AS order_id, 'zero_first_missing_invoice-V1' AS human_id, 'MOTOR_TYPE_VOLUNTARY' AS motor_item_type
+SELECT 'invalid_extra_pending' AS order_id, 'invalid_extra_pending-V1' AS human_id
 UNION ALL
-SELECT 'zero_first_tied' AS order_id, 'zero_first_tied-V1' AS human_id, 'MOTOR_TYPE_VOLUNTARY' AS motor_item_type
+SELECT 'zero_expected_first_paid' AS order_id, 'zero_expected_first_paid-V1' AS human_id
 UNION ALL
-SELECT 'invalid_extra_pending' AS order_id, 'invalid_extra_pending-V1' AS human_id, 'MOTOR_TYPE_VOLUNTARY' AS motor_item_type
+SELECT 'zero_expected_first_new' AS order_id, 'zero_expected_first_new-V1' AS human_id
 UNION ALL
-SELECT 'zero_expected_first_paid' AS order_id, 'zero_expected_first_paid-V1' AS human_id, 'MOTOR_TYPE_VOLUNTARY' AS motor_item_type
+SELECT 'topup' AS order_id, 'topup-V1' AS human_id
 UNION ALL
-SELECT 'zero_expected_first_new' AS order_id, 'zero_expected_first_new-V1' AS human_id, 'MOTOR_TYPE_VOLUNTARY' AS motor_item_type
+SELECT 'exact_paid' AS order_id, 'exact_paid-V1' AS human_id
 UNION ALL
-SELECT 'topup' AS order_id, 'topup-V1' AS human_id, 'MOTOR_TYPE_VOLUNTARY' AS motor_item_type
+SELECT 'raw_paid' AS order_id, 'raw_paid-V1' AS human_id
 UNION ALL
-SELECT 'exact_paid' AS order_id, 'exact_paid-V1' AS human_id, 'MOTOR_TYPE_VOLUNTARY' AS motor_item_type
+SELECT 'cancelled' AS order_id, 'cancelled-V1' AS human_id
 UNION ALL
-SELECT 'raw_paid' AS order_id, 'raw_paid-V1' AS human_id, 'MOTOR_TYPE_VOLUNTARY' AS motor_item_type
+SELECT 'change_cancelled' AS order_id, 'change_cancelled-V1' AS human_id
 UNION ALL
-SELECT 'cancelled' AS order_id, 'cancelled-V1' AS human_id, 'MOTOR_TYPE_VOLUNTARY' AS motor_item_type
+SELECT 'blank' AS order_id, 'blank-V1' AS human_id
 UNION ALL
-SELECT 'change_cancelled' AS order_id, 'change_cancelled-V1' AS human_id, 'MOTOR_TYPE_VOLUNTARY' AS motor_item_type
+SELECT 'null_invoice' AS order_id, 'null_invoice-V1' AS human_id
 UNION ALL
-SELECT 'blank' AS order_id, 'blank-V1' AS human_id, 'MOTOR_TYPE_VOLUNTARY' AS motor_item_type
+SELECT 'literal_null' AS order_id, 'literal_null-V1' AS human_id
 UNION ALL
-SELECT 'null_invoice' AS order_id, 'null_invoice-V1' AS human_id, 'MOTOR_TYPE_VOLUNTARY' AS motor_item_type
+SELECT 'normal_paid' AS order_id, 'normal_paid-V1' AS human_id
 UNION ALL
-SELECT 'literal_null' AS order_id, 'literal_null-V1' AS human_id, 'MOTOR_TYPE_VOLUNTARY' AS motor_item_type
+SELECT 'other_item' AS order_id, 'other_item-V1' AS human_id
 UNION ALL
-SELECT 'normal_paid' AS order_id, 'normal_paid-V1' AS human_id, 'MOTOR_TYPE_VOLUNTARY' AS motor_item_type
+SELECT 'other_period' AS order_id, 'other_period-V1' AS human_id
 UNION ALL
-SELECT 'other_item' AS order_id, 'other_item-V1' AS human_id, 'MOTOR_TYPE_VOLUNTARY' AS motor_item_type
+SELECT 'period2_prefix' AS order_id, 'period2_prefix-V1' AS human_id
 UNION ALL
-SELECT 'other_period' AS order_id, 'other_period-V1' AS human_id, 'MOTOR_TYPE_VOLUNTARY' AS motor_item_type
+SELECT 'missing_raw' AS order_id, 'missing_raw-V1' AS human_id
 UNION ALL
-SELECT 'period2_prefix' AS order_id, 'period2_prefix-V1' AS human_id, 'MOTOR_TYPE_VOLUNTARY' AS motor_item_type
+SELECT 'collision' AS order_id, 'collision-V1' AS human_id
 UNION ALL
-SELECT 'missing_raw' AS order_id, 'missing_raw-V1' AS human_id, 'MOTOR_TYPE_VOLUNTARY' AS motor_item_type
+SELECT 'tie' AS order_id, 'tie-V1' AS human_id
 UNION ALL
-SELECT 'collision' AS order_id, 'collision-V1' AS human_id, 'MOTOR_TYPE_VOLUNTARY' AS motor_item_type
+SELECT 'null_expected' AS order_id, 'null_expected-V1' AS human_id
 UNION ALL
-SELECT 'tie' AS order_id, 'tie-V1' AS human_id, 'MOTOR_TYPE_VOLUNTARY' AS motor_item_type
-UNION ALL
-SELECT 'null_expected' AS order_id, 'null_expected-V1' AS human_id, 'MOTOR_TYPE_VOLUNTARY' AS motor_item_type
-UNION ALL
-SELECT 'pending_not_topup' AS order_id, 'pending_not_topup-V1' AS human_id, 'MOTOR_TYPE_VOLUNTARY' AS motor_item_type
+SELECT 'pending_not_topup' AS order_id, 'pending_not_topup-V1' AS human_id
 ), fixture_dashboard AS (
 SELECT CAST(NULL AS STRING) AS CompanyDB, CAST('new_period' AS STRING) AS OrderID, CAST('new_period-V1' AS STRING) AS OrderItem, CAST('n2' AS STRING) AS InvoiceNo, CAST(NULL AS STRING) AS OrderDate, CAST(NULL AS STRING) AS InsuredID, CAST(NULL AS STRING) AS Title, CAST(NULL AS STRING) AS FirstName, CAST(NULL AS STRING) AS LastName, CAST(NULL AS STRING) AS InsurerCode, CAST(NULL AS STRING) AS InsuranceGroup, CAST(NULL AS STRING) AS InsuranceType, CAST(NULL AS STRING) AS InsuranceProduct, CAST(NULL AS STRING) AS ProductType, CAST(NULL AS STRING) AS PolicyType, CAST(NULL AS STRING) AS Endorse, CAST(NULL AS STRING) AS PolicyDate, CAST(NULL AS STRING) AS PolicyNo, CAST(NULL AS STRING) AS EndorsementNo, CAST(NULL AS STRING) AS ChassisNo, CAST(NULL AS STRING) AS LicensePlate, CAST(NULL AS FLOAT64) AS GrossPremium, CAST(NULL AS FLOAT64) AS StampDuty, CAST(NULL AS FLOAT64) AS VAT, CAST(NULL AS FLOAT64) AS TotalPremium, CAST(NULL AS FLOAT64) AS WHT, CAST(NULL AS FLOAT64) AS TotalEIR, CAST(NULL AS FLOAT64) AS TotalSBT, CAST(NULL AS FLOAT64) AS ProcessingFee, CAST(NULL AS FLOAT64) AS ProcessingFeeVat, CAST(NULL AS FLOAT64) AS ShippingFee, CAST(NULL AS FLOAT64) AS ShippingFeeVat, CAST(NULL AS FLOAT64) AS TotalAmount, CAST(NULL AS FLOAT64) AS Discount, CAST('paid' AS STRING) AS TransactionStatus, CAST(NULL AS STRING) AS SubmissionStatus, CAST(NULL AS STRING) AS ApprovalStatus, CAST(NULL AS STRING) AS PaymentStatus, CAST(100 AS FLOAT64) AS ExpectedReceived, CAST(100 AS FLOAT64) AS ActualReceived, CAST(NULL AS FLOAT64) AS InterestThisPeriod, CAST(NULL AS FLOAT64) AS PrincipleThisPeriod, CAST(NULL AS FLOAT64) AS InterestEIRThisPeriod, CAST(NULL AS FLOAT64) AS PrincipleEIRThisPeriod, CAST('26092026' AS STRING) AS PaymentDate, CAST(2 AS INT64) AS Period, CAST(3 AS INT64) AS TotalPeriods, CAST(NULL AS FLOAT64) AS PendingPayment, CAST(NULL AS STRING) AS PaymentMethod, CAST(NULL AS STRING) AS PaymentChannel, CAST(NULL AS STRING) AS ExpectedDate, CAST(NULL AS STRING) AS RefOrder, CAST(NULL AS FLOAT64) AS RefundAmountBeforeFee, CAST(NULL AS FLOAT64) AS RefundAmountAfterFee, CAST(NULL AS STRING) AS BillingAddress, CAST(NULL AS STRING) AS BatchRunDate
 UNION ALL
 SELECT CAST(NULL AS STRING) AS CompanyDB, CAST('gap_period' AS STRING) AS OrderID, CAST('gap_period-V1' AS STRING) AS OrderItem, CAST('g2' AS STRING) AS InvoiceNo, CAST(NULL AS STRING) AS OrderDate, CAST(NULL AS STRING) AS InsuredID, CAST(NULL AS STRING) AS Title, CAST(NULL AS STRING) AS FirstName, CAST(NULL AS STRING) AS LastName, CAST(NULL AS STRING) AS InsurerCode, CAST(NULL AS STRING) AS InsuranceGroup, CAST(NULL AS STRING) AS InsuranceType, CAST(NULL AS STRING) AS InsuranceProduct, CAST(NULL AS STRING) AS ProductType, CAST(NULL AS STRING) AS PolicyType, CAST(NULL AS STRING) AS Endorse, CAST(NULL AS STRING) AS PolicyDate, CAST(NULL AS STRING) AS PolicyNo, CAST(NULL AS STRING) AS EndorsementNo, CAST(NULL AS STRING) AS ChassisNo, CAST(NULL AS STRING) AS LicensePlate, CAST(NULL AS FLOAT64) AS GrossPremium, CAST(NULL AS FLOAT64) AS StampDuty, CAST(NULL AS FLOAT64) AS VAT, CAST(NULL AS FLOAT64) AS TotalPremium, CAST(NULL AS FLOAT64) AS WHT, CAST(NULL AS FLOAT64) AS TotalEIR, CAST(NULL AS FLOAT64) AS TotalSBT, CAST(NULL AS FLOAT64) AS ProcessingFee, CAST(NULL AS FLOAT64) AS ProcessingFeeVat, CAST(NULL AS FLOAT64) AS ShippingFee, CAST(NULL AS FLOAT64) AS ShippingFeeVat, CAST(NULL AS FLOAT64) AS TotalAmount, CAST(NULL AS FLOAT64) AS Discount, CAST('paid' AS STRING) AS TransactionStatus, CAST(NULL AS STRING) AS SubmissionStatus, CAST(NULL AS STRING) AS ApprovalStatus, CAST(NULL AS STRING) AS PaymentStatus, CAST(100 AS FLOAT64) AS ExpectedReceived, CAST(100 AS FLOAT64) AS ActualReceived, CAST(NULL AS FLOAT64) AS InterestThisPeriod, CAST(NULL AS FLOAT64) AS PrincipleThisPeriod, CAST(NULL AS FLOAT64) AS InterestEIRThisPeriod, CAST(NULL AS FLOAT64) AS PrincipleEIRThisPeriod, CAST('26092026' AS STRING) AS PaymentDate, CAST(2 AS INT64) AS Period, CAST(3 AS INT64) AS TotalPeriods, CAST(NULL AS FLOAT64) AS PendingPayment, CAST(NULL AS STRING) AS PaymentMethod, CAST(NULL AS STRING) AS PaymentChannel, CAST(NULL AS STRING) AS ExpectedDate, CAST(NULL AS STRING) AS RefOrder, CAST(NULL AS FLOAT64) AS RefundAmountBeforeFee, CAST(NULL AS FLOAT64) AS RefundAmountAfterFee, CAST(NULL AS STRING) AS BillingAddress, CAST(NULL AS STRING) AS BatchRunDate
-UNION ALL
-SELECT CAST(NULL AS STRING) AS CompanyDB, CAST('compulsory_zero_first_missing_invoice' AS STRING) AS OrderID, CAST('compulsory_zero_first_missing_invoice-V1' AS STRING) AS OrderItem, CAST(NULL AS STRING) AS InvoiceNo, CAST(NULL AS STRING) AS OrderDate, CAST(NULL AS STRING) AS InsuredID, CAST(NULL AS STRING) AS Title, CAST(NULL AS STRING) AS FirstName, CAST(NULL AS STRING) AS LastName, CAST(NULL AS STRING) AS InsurerCode, CAST(NULL AS STRING) AS InsuranceGroup, CAST(NULL AS STRING) AS InsuranceType, CAST(NULL AS STRING) AS InsuranceProduct, CAST(NULL AS STRING) AS ProductType, CAST(NULL AS STRING) AS PolicyType, CAST(NULL AS STRING) AS Endorse, CAST(NULL AS STRING) AS PolicyDate, CAST(NULL AS STRING) AS PolicyNo, CAST(NULL AS STRING) AS EndorsementNo, CAST(NULL AS STRING) AS ChassisNo, CAST(NULL AS STRING) AS LicensePlate, CAST(NULL AS FLOAT64) AS GrossPremium, CAST(NULL AS FLOAT64) AS StampDuty, CAST(NULL AS FLOAT64) AS VAT, CAST(NULL AS FLOAT64) AS TotalPremium, CAST(NULL AS FLOAT64) AS WHT, CAST(NULL AS FLOAT64) AS TotalEIR, CAST(NULL AS FLOAT64) AS TotalSBT, CAST(NULL AS FLOAT64) AS ProcessingFee, CAST(NULL AS FLOAT64) AS ProcessingFeeVat, CAST(NULL AS FLOAT64) AS ShippingFee, CAST(NULL AS FLOAT64) AS ShippingFeeVat, CAST(NULL AS FLOAT64) AS TotalAmount, CAST(NULL AS FLOAT64) AS Discount, CAST('paid' AS STRING) AS TransactionStatus, CAST(NULL AS STRING) AS SubmissionStatus, CAST(NULL AS STRING) AS ApprovalStatus, CAST(NULL AS STRING) AS PaymentStatus, CAST(0 AS FLOAT64) AS ExpectedReceived, CAST(10 AS FLOAT64) AS ActualReceived, CAST(NULL AS FLOAT64) AS InterestThisPeriod, CAST(NULL AS FLOAT64) AS PrincipleThisPeriod, CAST(NULL AS FLOAT64) AS InterestEIRThisPeriod, CAST(NULL AS FLOAT64) AS PrincipleEIRThisPeriod, CAST('26092026' AS STRING) AS PaymentDate, CAST(1 AS INT64) AS Period, CAST(3 AS INT64) AS TotalPeriods, CAST(NULL AS FLOAT64) AS PendingPayment, CAST(NULL AS STRING) AS PaymentMethod, CAST(NULL AS STRING) AS PaymentChannel, CAST(NULL AS STRING) AS ExpectedDate, CAST(NULL AS STRING) AS RefOrder, CAST(NULL AS FLOAT64) AS RefundAmountBeforeFee, CAST(NULL AS FLOAT64) AS RefundAmountAfterFee, CAST(NULL AS STRING) AS BillingAddress, CAST(NULL AS STRING) AS BatchRunDate
-UNION ALL
-SELECT CAST(NULL AS STRING) AS CompanyDB, CAST('compulsory_first_missing_invoice' AS STRING) AS OrderID, CAST('compulsory_first_missing_invoice-V1' AS STRING) AS OrderItem, CAST(NULL AS STRING) AS InvoiceNo, CAST(NULL AS STRING) AS OrderDate, CAST(NULL AS STRING) AS InsuredID, CAST(NULL AS STRING) AS Title, CAST(NULL AS STRING) AS FirstName, CAST(NULL AS STRING) AS LastName, CAST(NULL AS STRING) AS InsurerCode, CAST(NULL AS STRING) AS InsuranceGroup, CAST(NULL AS STRING) AS InsuranceType, CAST(NULL AS STRING) AS InsuranceProduct, CAST(NULL AS STRING) AS ProductType, CAST(NULL AS STRING) AS PolicyType, CAST(NULL AS STRING) AS Endorse, CAST(NULL AS STRING) AS PolicyDate, CAST(NULL AS STRING) AS PolicyNo, CAST(NULL AS STRING) AS EndorsementNo, CAST(NULL AS STRING) AS ChassisNo, CAST(NULL AS STRING) AS LicensePlate, CAST(NULL AS FLOAT64) AS GrossPremium, CAST(NULL AS FLOAT64) AS StampDuty, CAST(NULL AS FLOAT64) AS VAT, CAST(NULL AS FLOAT64) AS TotalPremium, CAST(NULL AS FLOAT64) AS WHT, CAST(NULL AS FLOAT64) AS TotalEIR, CAST(NULL AS FLOAT64) AS TotalSBT, CAST(NULL AS FLOAT64) AS ProcessingFee, CAST(NULL AS FLOAT64) AS ProcessingFeeVat, CAST(NULL AS FLOAT64) AS ShippingFee, CAST(NULL AS FLOAT64) AS ShippingFeeVat, CAST(NULL AS FLOAT64) AS TotalAmount, CAST(NULL AS FLOAT64) AS Discount, CAST('paid' AS STRING) AS TransactionStatus, CAST(NULL AS STRING) AS SubmissionStatus, CAST(NULL AS STRING) AS ApprovalStatus, CAST(NULL AS STRING) AS PaymentStatus, CAST(100 AS FLOAT64) AS ExpectedReceived, CAST(100 AS FLOAT64) AS ActualReceived, CAST(NULL AS FLOAT64) AS InterestThisPeriod, CAST(NULL AS FLOAT64) AS PrincipleThisPeriod, CAST(NULL AS FLOAT64) AS InterestEIRThisPeriod, CAST(NULL AS FLOAT64) AS PrincipleEIRThisPeriod, CAST('26092026' AS STRING) AS PaymentDate, CAST(1 AS INT64) AS Period, CAST(3 AS INT64) AS TotalPeriods, CAST(NULL AS FLOAT64) AS PendingPayment, CAST(NULL AS STRING) AS PaymentMethod, CAST(NULL AS STRING) AS PaymentChannel, CAST(NULL AS STRING) AS ExpectedDate, CAST(NULL AS STRING) AS RefOrder, CAST(NULL AS FLOAT64) AS RefundAmountBeforeFee, CAST(NULL AS FLOAT64) AS RefundAmountAfterFee, CAST(NULL AS STRING) AS BillingAddress, CAST(NULL AS STRING) AS BatchRunDate
 UNION ALL
 SELECT CAST(NULL AS STRING) AS CompanyDB, CAST('zero_first_missing_invoice' AS STRING) AS OrderID, CAST('zero_first_missing_invoice-V1' AS STRING) AS OrderItem, CAST('2_zero_first_missing_invoice-V1' AS STRING) AS InvoiceNo, CAST(NULL AS STRING) AS OrderDate, CAST(NULL AS STRING) AS InsuredID, CAST(NULL AS STRING) AS Title, CAST(NULL AS STRING) AS FirstName, CAST(NULL AS STRING) AS LastName, CAST(NULL AS STRING) AS InsurerCode, CAST(NULL AS STRING) AS InsuranceGroup, CAST(NULL AS STRING) AS InsuranceType, CAST(NULL AS STRING) AS InsuranceProduct, CAST(NULL AS STRING) AS ProductType, CAST(NULL AS STRING) AS PolicyType, CAST(NULL AS STRING) AS Endorse, CAST(NULL AS STRING) AS PolicyDate, CAST(NULL AS STRING) AS PolicyNo, CAST(NULL AS STRING) AS EndorsementNo, CAST(NULL AS STRING) AS ChassisNo, CAST(NULL AS STRING) AS LicensePlate, CAST(NULL AS FLOAT64) AS GrossPremium, CAST(NULL AS FLOAT64) AS StampDuty, CAST(NULL AS FLOAT64) AS VAT, CAST(NULL AS FLOAT64) AS TotalPremium, CAST(NULL AS FLOAT64) AS WHT, CAST(NULL AS FLOAT64) AS TotalEIR, CAST(NULL AS FLOAT64) AS TotalSBT, CAST(NULL AS FLOAT64) AS ProcessingFee, CAST(NULL AS FLOAT64) AS ProcessingFeeVat, CAST(NULL AS FLOAT64) AS ShippingFee, CAST(NULL AS FLOAT64) AS ShippingFeeVat, CAST(NULL AS FLOAT64) AS TotalAmount, CAST(NULL AS FLOAT64) AS Discount, CAST('paid' AS STRING) AS TransactionStatus, CAST(NULL AS STRING) AS SubmissionStatus, CAST(NULL AS STRING) AS ApprovalStatus, CAST(NULL AS STRING) AS PaymentStatus, CAST(0 AS FLOAT64) AS ExpectedReceived, CAST(10 AS FLOAT64) AS ActualReceived, CAST(NULL AS FLOAT64) AS InterestThisPeriod, CAST(NULL AS FLOAT64) AS PrincipleThisPeriod, CAST(NULL AS FLOAT64) AS InterestEIRThisPeriod, CAST(NULL AS FLOAT64) AS PrincipleEIRThisPeriod, CAST('26092026' AS STRING) AS PaymentDate, CAST(1 AS INT64) AS Period, CAST(3 AS INT64) AS TotalPeriods, CAST(NULL AS FLOAT64) AS PendingPayment, CAST(NULL AS STRING) AS PaymentMethod, CAST(NULL AS STRING) AS PaymentChannel, CAST(NULL AS STRING) AS ExpectedDate, CAST(NULL AS STRING) AS RefOrder, CAST(NULL AS FLOAT64) AS RefundAmountBeforeFee, CAST(NULL AS FLOAT64) AS RefundAmountAfterFee, CAST(NULL AS STRING) AS BillingAddress, CAST(NULL AS STRING) AS BatchRunDate
 UNION ALL
@@ -313,107 +297,93 @@ WITH
   ),
   source_receipts AS (
     SELECT id, transaction_id, installment_number, third_party_id, create_time, update_time,
-      ROW_NUMBER() OVER (PARTITION BY transaction_id, installment_number ORDER BY create_time, id) AS source_charge_rank,
-      COUNT(*) OVER (PARTITION BY id) AS charge_id_rows,
       COUNT(*) OVER (PARTITION BY transaction_id, installment_number, third_party_id) AS invoice_rows,
       COUNT(*) OVER (PARTITION BY transaction_id, installment_number, create_time) AS timestamp_rows
     FROM fixture_charges
     WHERE status = 'SUCCESSFUL' AND service_provider = 'RABBIT_LENDING'
   ),
-  source_receipt_events AS (
-    -- Preserve rank lineage even when additional-receipt eligibility fails.
-    -- The fallback mirrors dashboard identity ONLY for classification; it is
-    -- never accepted as a new additional receipt's invoice identity.
+  valid_additional_events AS (
     SELECT oi.human_id AS order_item, c.installment_number AS period,
-      CASE WHEN c.installment_number = 1 AND oi.motor_item_type='MOTOR_TYPE_COMPULSORY'
-        THEN CONCAT('2_',c.third_party_id)
-        WHEN c.installment_number = 1 THEN CONCAT('2_', COALESCE(c.third_party_id, oi.human_id))
-        ELSE COALESCE(c.third_party_id, oi.human_id) END AS invoice_no,
-      MIN(c.update_time) AS raw_update_time,
-      CASE WHEN COUNT(*) = 1 THEN MIN(c.source_charge_rank) END AS source_charge_rank,
-      COUNT(*) AS source_event_rows,
-      COUNT(*) = 1 AND COUNTIF(
-        NULLIF(TRIM(c.id), '') IS NULL
-        OR NULLIF(TRIM(c.third_party_id), '') IS NULL
-        OR UPPER(TRIM(c.third_party_id)) = 'NULL'
-        OR c.charge_id_rows != 1 OR c.invoice_rows != 1 OR c.timestamp_rows != 1
-      ) = 0 AS additional_identity_valid
+      CASE WHEN c.installment_number = 1 THEN CONCAT('2_', c.third_party_id)
+        ELSE c.third_party_id END AS invoice_no,
+      MIN(c.update_time) AS raw_update_time
     FROM source_receipts c
     JOIN fixture_orders o
       ON o.payment = CONCAT('transactions/', c.transaction_id)
     JOIN fixture_order_items oi
       ON oi.order_id = o.id
-    WHERE NULLIF(TRIM(oi.human_id), '') IS NOT NULL
-      AND (COALESCE(oi.motor_item_type,'') != 'MOTOR_TYPE_COMPULSORY' OR c.source_charge_rank=1)
+    WHERE NULLIF(TRIM(c.id), '') IS NOT NULL
+      AND NULLIF(TRIM(c.third_party_id), '') IS NOT NULL
+      AND UPPER(TRIM(c.third_party_id)) != 'NULL'
+      AND NULLIF(TRIM(oi.human_id), '') IS NOT NULL
+      AND c.invoice_rows = 1 AND c.timestamp_rows = 1
     GROUP BY order_item, period, invoice_no
+    HAVING COUNT(*) = 1
   ),
   interface AS (
     SELECT
-      d.CompanyDB,
-      d.OrderID,
-      d.OrderItem,
-      d.InvoiceNo,
-      d.OrderDate,
-      d.InsuredID,
-      d.Title,
-      d.FirstName,
-      d.LastName,
-      d.InsurerCode,
-      d.InsuranceGroup,
-      d.InsuranceType,
-      d.InsuranceProduct,
-      d.ProductType,
-      d.PolicyType,
-      d.Endorse,
-      d.PolicyDate,
-      d.PolicyNo,
-      d.EndorsementNo,
-      d.ChassisNo,
-      d.LicensePlate,
-      d.GrossPremium,
-      d.StampDuty,
-      d.VAT,
-      d.TotalPremium,
-      d.WHT,
-      d.TotalEIR,
-      d.TotalSBT,
-      d.ProcessingFee,
-      d.ProcessingFeeVat,
-      d.ShippingFee,
-      d.ShippingFeeVat,
-      d.TotalAmount,
-      d.Discount,
-      d.TransactionStatus,
-      d.SubmissionStatus,
-      d.ApprovalStatus,
-      d.PaymentStatus,
-      d.ExpectedReceived,
-      d.ActualReceived,
-      d.InterestThisPeriod,
-      d.PrincipleThisPeriod,
-      d.InterestEIRThisPeriod,
-      d.PrincipleEIRThisPeriod,
-      d.PaymentDate,
-      d.Period,
-      d.TotalPeriods,
-      d.PendingPayment,
-      d.PaymentMethod,
-      d.PaymentChannel,
-      d.ExpectedDate,
-      d.RefOrder,
-      CAST(d.RefundAmountBeforeFee AS FLOAT64) AS RefundAmountBeforeFee,
-      CAST(d.RefundAmountAfterFee AS FLOAT64) AS RefundAmountAfterFee,
-      d.BillingAddress,
-      d.BatchRunDate,
-      SAFE_CAST(d.Period AS INT64) AS careos_installment,
-      v.source_charge_rank, v.source_event_rows, v.additional_identity_valid,
+      CompanyDB,
+      OrderID,
+      OrderItem,
+      InvoiceNo,
+      OrderDate,
+      InsuredID,
+      Title,
+      FirstName,
+      LastName,
+      InsurerCode,
+      InsuranceGroup,
+      InsuranceType,
+      InsuranceProduct,
+      ProductType,
+      PolicyType,
+      Endorse,
+      PolicyDate,
+      PolicyNo,
+      EndorsementNo,
+      ChassisNo,
+      LicensePlate,
+      GrossPremium,
+      StampDuty,
+      VAT,
+      TotalPremium,
+      WHT,
+      TotalEIR,
+      TotalSBT,
+      ProcessingFee,
+      ProcessingFeeVat,
+      ShippingFee,
+      ShippingFeeVat,
+      TotalAmount,
+      Discount,
+      TransactionStatus,
+      SubmissionStatus,
+      ApprovalStatus,
+      PaymentStatus,
+      ExpectedReceived,
+      ActualReceived,
+      InterestThisPeriod,
+      PrincipleThisPeriod,
+      InterestEIRThisPeriod,
+      PrincipleEIRThisPeriod,
+      PaymentDate,
+      Period,
+      TotalPeriods,
+      PendingPayment,
+      PaymentMethod,
+      PaymentChannel,
+      ExpectedDate,
+      RefOrder,
+      CAST(RefundAmountBeforeFee AS FLOAT64) AS RefundAmountBeforeFee,
+      CAST(RefundAmountAfterFee AS FLOAT64) AS RefundAmountAfterFee,
+      BillingAddress,
+      BatchRunDate,
+      SAFE_CAST(Period AS INT64) AS careos_installment,
       COALESCE(ExpectedReceived = 0, FALSE)
         AND COALESCE(ActualReceived, 0) > 0
         AND LOWER(TRIM(COALESCE(TransactionStatus, ''))) = 'paid'
-        AS has_additional_shape
-    FROM fixture_dashboard d
-    LEFT JOIN source_receipt_events v ON v.order_item=d.OrderItem
-      AND v.period=SAFE_CAST(d.Period AS INT64) AND v.invoice_no IS NOT DISTINCT FROM d.InvoiceNo
+        AS is_additional_payment
+    FROM fixture_dashboard
   )
 SELECT DISTINCT
   interface.CompanyDB,
@@ -476,10 +446,7 @@ FROM interface
 WHERE interface.careos_installment IS NOT NULL
   AND (
     (
-      (
-        interface.source_charge_rank = 1
-        OR (interface.source_event_rows IS NULL AND COALESCE(interface.ActualReceived, 0) = 0)
-      )
+      NOT interface.is_additional_payment
       AND NOT EXISTS (
         SELECT 1 FROM sap_paid_periods p
         WHERE p.order_item = interface.OrderItem
@@ -487,9 +454,13 @@ WHERE interface.careos_installment IS NOT NULL
       )
     )
     OR (
-      interface.source_charge_rank > 1
-      AND interface.has_additional_shape
-      AND interface.additional_identity_valid
+      interface.is_additional_payment
+      AND EXISTS (
+        SELECT 1 FROM valid_additional_events v
+        WHERE v.order_item = interface.OrderItem
+          AND v.period = interface.careos_installment
+          AND v.invoice_no = interface.InvoiceNo
+      )
       AND NULLIF(TRIM(interface.InvoiceNo), '') IS NOT NULL
       AND UPPER(TRIM(interface.InvoiceNo)) != 'NULL'
       AND NOT EXISTS (
@@ -534,107 +505,93 @@ WITH
   ),
   source_receipts AS (
     SELECT id, transaction_id, installment_number, third_party_id, create_time, update_time,
-      ROW_NUMBER() OVER (PARTITION BY transaction_id, installment_number ORDER BY create_time, id) AS source_charge_rank,
-      COUNT(*) OVER (PARTITION BY id) AS charge_id_rows,
       COUNT(*) OVER (PARTITION BY transaction_id, installment_number, third_party_id) AS invoice_rows,
       COUNT(*) OVER (PARTITION BY transaction_id, installment_number, create_time) AS timestamp_rows
     FROM fixture_charges
     WHERE status = 'SUCCESSFUL' AND service_provider = 'RABBIT_LENDING'
   ),
-  source_receipt_events AS (
-    -- Preserve rank lineage even when additional-receipt eligibility fails.
-    -- The fallback mirrors dashboard identity ONLY for classification; it is
-    -- never accepted as a new additional receipt's invoice identity.
+  valid_additional_events AS (
     SELECT oi.human_id AS order_item, c.installment_number AS period,
-      CASE WHEN c.installment_number = 1 AND oi.motor_item_type='MOTOR_TYPE_COMPULSORY'
-        THEN CONCAT('2_',c.third_party_id)
-        WHEN c.installment_number = 1 THEN CONCAT('2_', COALESCE(c.third_party_id, oi.human_id))
-        ELSE COALESCE(c.third_party_id, oi.human_id) END AS invoice_no,
-      MIN(c.update_time) AS raw_update_time,
-      CASE WHEN COUNT(*) = 1 THEN MIN(c.source_charge_rank) END AS source_charge_rank,
-      COUNT(*) AS source_event_rows,
-      COUNT(*) = 1 AND COUNTIF(
-        NULLIF(TRIM(c.id), '') IS NULL
-        OR NULLIF(TRIM(c.third_party_id), '') IS NULL
-        OR UPPER(TRIM(c.third_party_id)) = 'NULL'
-        OR c.charge_id_rows != 1 OR c.invoice_rows != 1 OR c.timestamp_rows != 1
-      ) = 0 AS additional_identity_valid
+      CASE WHEN c.installment_number = 1 THEN CONCAT('2_', c.third_party_id)
+        ELSE c.third_party_id END AS invoice_no,
+      MIN(c.update_time) AS raw_update_time
     FROM source_receipts c
     JOIN fixture_orders o
       ON o.payment = CONCAT('transactions/', c.transaction_id)
     JOIN fixture_order_items oi
       ON oi.order_id = o.id
-    WHERE NULLIF(TRIM(oi.human_id), '') IS NOT NULL
-      AND (COALESCE(oi.motor_item_type,'') != 'MOTOR_TYPE_COMPULSORY' OR c.source_charge_rank=1)
+    WHERE NULLIF(TRIM(c.id), '') IS NOT NULL
+      AND NULLIF(TRIM(c.third_party_id), '') IS NOT NULL
+      AND UPPER(TRIM(c.third_party_id)) != 'NULL'
+      AND NULLIF(TRIM(oi.human_id), '') IS NOT NULL
+      AND c.invoice_rows = 1 AND c.timestamp_rows = 1
     GROUP BY order_item, period, invoice_no
+    HAVING COUNT(*) = 1
   ),
   interface AS (
     SELECT
-      d.CompanyDB,
-      d.OrderID,
-      d.OrderItem,
-      d.InvoiceNo,
-      d.OrderDate,
-      d.InsuredID,
-      d.Title,
-      d.FirstName,
-      d.LastName,
-      d.InsurerCode,
-      d.InsuranceGroup,
-      d.InsuranceType,
-      d.InsuranceProduct,
-      d.ProductType,
-      d.PolicyType,
-      d.Endorse,
-      d.PolicyDate,
-      d.PolicyNo,
-      d.EndorsementNo,
-      d.ChassisNo,
-      d.LicensePlate,
-      d.GrossPremium,
-      d.StampDuty,
-      d.VAT,
-      d.TotalPremium,
-      d.WHT,
-      d.TotalEIR,
-      d.TotalSBT,
-      d.ProcessingFee,
-      d.ProcessingFeeVat,
-      d.ShippingFee,
-      d.ShippingFeeVat,
-      d.TotalAmount,
-      d.Discount,
-      d.TransactionStatus,
-      d.SubmissionStatus,
-      d.ApprovalStatus,
-      d.PaymentStatus,
-      d.ExpectedReceived,
-      d.ActualReceived,
-      d.InterestThisPeriod,
-      d.PrincipleThisPeriod,
-      d.InterestEIRThisPeriod,
-      d.PrincipleEIRThisPeriod,
-      d.PaymentDate,
-      d.Period,
-      d.TotalPeriods,
-      d.PendingPayment,
-      d.PaymentMethod,
-      d.PaymentChannel,
-      d.ExpectedDate,
-      d.RefOrder,
-      CAST(d.RefundAmountBeforeFee AS FLOAT64) AS RefundAmountBeforeFee,
-      CAST(d.RefundAmountAfterFee AS FLOAT64) AS RefundAmountAfterFee,
-      d.BillingAddress,
-      d.BatchRunDate,
-      SAFE_CAST(d.Period AS INT64) AS careos_installment,
-      v.source_charge_rank, v.source_event_rows, v.additional_identity_valid,
+      CompanyDB,
+      OrderID,
+      OrderItem,
+      InvoiceNo,
+      OrderDate,
+      InsuredID,
+      Title,
+      FirstName,
+      LastName,
+      InsurerCode,
+      InsuranceGroup,
+      InsuranceType,
+      InsuranceProduct,
+      ProductType,
+      PolicyType,
+      Endorse,
+      PolicyDate,
+      PolicyNo,
+      EndorsementNo,
+      ChassisNo,
+      LicensePlate,
+      GrossPremium,
+      StampDuty,
+      VAT,
+      TotalPremium,
+      WHT,
+      TotalEIR,
+      TotalSBT,
+      ProcessingFee,
+      ProcessingFeeVat,
+      ShippingFee,
+      ShippingFeeVat,
+      TotalAmount,
+      Discount,
+      TransactionStatus,
+      SubmissionStatus,
+      ApprovalStatus,
+      PaymentStatus,
+      ExpectedReceived,
+      ActualReceived,
+      InterestThisPeriod,
+      PrincipleThisPeriod,
+      InterestEIRThisPeriod,
+      PrincipleEIRThisPeriod,
+      PaymentDate,
+      Period,
+      TotalPeriods,
+      PendingPayment,
+      PaymentMethod,
+      PaymentChannel,
+      ExpectedDate,
+      RefOrder,
+      CAST(RefundAmountBeforeFee AS FLOAT64) AS RefundAmountBeforeFee,
+      CAST(RefundAmountAfterFee AS FLOAT64) AS RefundAmountAfterFee,
+      BillingAddress,
+      BatchRunDate,
+      SAFE_CAST(Period AS INT64) AS careos_installment,
       COALESCE(ExpectedReceived = 0, FALSE)
         AND COALESCE(ActualReceived, 0) > 0
         AND LOWER(TRIM(COALESCE(TransactionStatus, ''))) = 'paid'
-        AS has_additional_shape
-    FROM fixture_dashboard d
-    LEFT JOIN source_receipt_events v ON v.order_item=d.OrderItem
-      AND v.period=SAFE_CAST(d.Period AS INT64) AND v.invoice_no IS NOT DISTINCT FROM d.InvoiceNo
+        AS is_additional_payment
+    FROM fixture_dashboard
   )
 SELECT DISTINCT
   interface.CompanyDB,
@@ -697,10 +654,7 @@ FROM interface
 WHERE interface.careos_installment IS NOT NULL
   AND (
     (
-      (
-        interface.source_charge_rank = 1
-        OR (interface.source_event_rows IS NULL AND COALESCE(interface.ActualReceived, 0) = 0)
-      )
+      NOT interface.is_additional_payment
       AND NOT EXISTS (
         SELECT 1 FROM sap_paid_periods p
         WHERE p.order_item = interface.OrderItem
@@ -708,9 +662,13 @@ WHERE interface.careos_installment IS NOT NULL
       )
     )
     OR (
-      interface.source_charge_rank > 1
-      AND interface.has_additional_shape
-      AND interface.additional_identity_valid
+      interface.is_additional_payment
+      AND EXISTS (
+        SELECT 1 FROM valid_additional_events v
+        WHERE v.order_item = interface.OrderItem
+          AND v.period = interface.careos_installment
+          AND v.invoice_no = interface.InvoiceNo
+      )
       AND NULLIF(TRIM(interface.InvoiceNo), '') IS NOT NULL
       AND UPPER(TRIM(interface.InvoiceNo)) != 'NULL'
       AND NOT EXISTS (
@@ -731,7 +689,7 @@ WHERE interface.careos_installment IS NOT NULL
 ORDER BY interface.OrderItem, interface.Period
 
 ), expected AS (
-SELECT 'new_period-V1' AS OrderItem, TRUE AS should_emit UNION ALL SELECT 'gap_period-V1' AS OrderItem, TRUE AS should_emit UNION ALL SELECT 'compulsory_zero_first_missing_invoice-V1' AS OrderItem, TRUE AS should_emit UNION ALL SELECT 'compulsory_first_missing_invoice-V1' AS OrderItem, TRUE AS should_emit UNION ALL SELECT 'zero_first_missing_invoice-V1' AS OrderItem, TRUE AS should_emit UNION ALL SELECT 'zero_first_tied-V1' AS OrderItem, TRUE AS should_emit UNION ALL SELECT 'invalid_extra_pending-V1' AS OrderItem, FALSE AS should_emit UNION ALL SELECT 'zero_expected_first_paid-V1' AS OrderItem, FALSE AS should_emit UNION ALL SELECT 'zero_expected_first_new-V1' AS OrderItem, TRUE AS should_emit UNION ALL SELECT 'topup-V1' AS OrderItem, TRUE AS should_emit UNION ALL SELECT 'exact_paid-V1' AS OrderItem, FALSE AS should_emit UNION ALL SELECT 'raw_paid-V1' AS OrderItem, FALSE AS should_emit UNION ALL SELECT 'cancelled-V1' AS OrderItem, FALSE AS should_emit UNION ALL SELECT 'change_cancelled-V1' AS OrderItem, FALSE AS should_emit UNION ALL SELECT 'blank-V1' AS OrderItem, FALSE AS should_emit UNION ALL SELECT 'null_invoice-V1' AS OrderItem, FALSE AS should_emit UNION ALL SELECT 'literal_null-V1' AS OrderItem, FALSE AS should_emit UNION ALL SELECT 'normal_paid-V1' AS OrderItem, FALSE AS should_emit UNION ALL SELECT 'other_item-V1' AS OrderItem, TRUE AS should_emit UNION ALL SELECT 'other_period-V1' AS OrderItem, TRUE AS should_emit UNION ALL SELECT 'period2_prefix-V1' AS OrderItem, TRUE AS should_emit UNION ALL SELECT 'missing_raw-V1' AS OrderItem, FALSE AS should_emit UNION ALL SELECT 'collision-V1' AS OrderItem, FALSE AS should_emit UNION ALL SELECT 'tie-V1' AS OrderItem, FALSE AS should_emit UNION ALL SELECT 'null_expected-V1' AS OrderItem, FALSE AS should_emit UNION ALL SELECT 'pending_not_topup-V1' AS OrderItem, FALSE AS should_emit
+SELECT 'new_period-V1' AS OrderItem, TRUE AS should_emit UNION ALL SELECT 'gap_period-V1' AS OrderItem, TRUE AS should_emit UNION ALL SELECT 'zero_first_missing_invoice-V1' AS OrderItem, TRUE AS should_emit UNION ALL SELECT 'zero_first_tied-V1' AS OrderItem, TRUE AS should_emit UNION ALL SELECT 'invalid_extra_pending-V1' AS OrderItem, FALSE AS should_emit UNION ALL SELECT 'zero_expected_first_paid-V1' AS OrderItem, FALSE AS should_emit UNION ALL SELECT 'zero_expected_first_new-V1' AS OrderItem, TRUE AS should_emit UNION ALL SELECT 'topup-V1' AS OrderItem, TRUE AS should_emit UNION ALL SELECT 'exact_paid-V1' AS OrderItem, FALSE AS should_emit UNION ALL SELECT 'raw_paid-V1' AS OrderItem, FALSE AS should_emit UNION ALL SELECT 'cancelled-V1' AS OrderItem, FALSE AS should_emit UNION ALL SELECT 'change_cancelled-V1' AS OrderItem, FALSE AS should_emit UNION ALL SELECT 'blank-V1' AS OrderItem, FALSE AS should_emit UNION ALL SELECT 'null_invoice-V1' AS OrderItem, FALSE AS should_emit UNION ALL SELECT 'literal_null-V1' AS OrderItem, FALSE AS should_emit UNION ALL SELECT 'normal_paid-V1' AS OrderItem, FALSE AS should_emit UNION ALL SELECT 'other_item-V1' AS OrderItem, TRUE AS should_emit UNION ALL SELECT 'other_period-V1' AS OrderItem, TRUE AS should_emit UNION ALL SELECT 'period2_prefix-V1' AS OrderItem, TRUE AS should_emit UNION ALL SELECT 'missing_raw-V1' AS OrderItem, FALSE AS should_emit UNION ALL SELECT 'collision-V1' AS OrderItem, FALSE AS should_emit UNION ALL SELECT 'tie-V1' AS OrderItem, FALSE AS should_emit UNION ALL SELECT 'null_expected-V1' AS OrderItem, FALSE AS should_emit UNION ALL SELECT 'pending_not_topup-V1' AS OrderItem, FALSE AS should_emit
 )
 
 SELECT CURRENT_TIMESTAMP() AS checked_at_utc,

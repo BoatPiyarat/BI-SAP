@@ -1,5 +1,18 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-09-26 (review continuation) — V3 held; legacy/upstream delta built
+
+Latest user instruction holds V3 implementation. Addressed review N3/N4/N5/N10: deterministic
+charge rank, explicit source lineage, CMI NULL-invoice compatibility and rewrite assertions.
+26 behavioral cases pass; exact final native query succeeds; prior final-wrapper and raw-newpayment
+payloads are preserved. All64 dashboard changes involve tied first timestamps with unchanged
+period expected/interest/EIR sums. Live consumer impacts and the original589 added rows are
+fully disclosed. Persisted a5,299-row all-date charge audit. Accounting mapping, import idempotency,
+operational holds and remaining consumer/NonMotor/backlog routing still block release.
+See docs/FINDINGS_RCL_REVIEW_DELTA_20260926.md for timestamps and limitations. No production or V3
+implementation changes, SAP actions, schedules or GCS writes occurred.
+
+
 ## 2026-09-26 — RCL additional receipt source fix; NOT DEPLOYED
 
 Built dashboard + newpayment + paid-period eligibility replacements in

@@ -6,3 +6,11 @@ See ../FINDINGS_RCL_ADDITIONAL_FIX_20260926.md and ../evidence/rcl_additional_20
 Built three SELECT replacements and verification artifacts. Source-only independent review:
 PASS WITH NOTES; production BLOCK for shared rank ambiguity and principal mapping.
 Cancellation, September missing-period sheet, and EDC investigation deferred at user's request.
+
+## Evening review continuation
+
+Read Claude472e560 and latest user instruction. V3 held; legacy source delta and all-date audit
+completed. See FINDINGS_RCL_REVIEW_DELTA_20260926.md. Both interrupted diagnostic jobs retain
+completed child evidence; final exact native query succeeded. No V3 implementation or production
+mutation. Automatic approval review briefly failed due to workspace spend cap before the findings
+write; user resumed and tools became available. The rejected write had not executed.

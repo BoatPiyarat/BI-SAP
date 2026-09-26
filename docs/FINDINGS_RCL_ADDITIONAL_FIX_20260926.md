@@ -1,5 +1,7 @@
 # RCL same-installment additional receipts — 2026-09-26
 
+Follow-up: FINDINGS_RCL_REVIEW_DELTA_20260926.md supersedes ranking/classification and final evidence.
+
 Status: SOURCE FIX BUILT AND TESTED; NOT DEPLOYED. Draft PR, not a release approval.
 Scope: dashboard, RCL 05_newpayment, and its RCL 05_paid by period eligibility dependency.
 Cancellation L80517642-1, September spreadsheet reconciliation, and EDC mapping are separate pending work.

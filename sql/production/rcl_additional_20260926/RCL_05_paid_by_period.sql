@@ -37,12 +37,17 @@ additional_items AS (
   FROM `pacific-plating-282708.sap_integration_v2.RCL 05_newpayment` n
   JOIN `pacific-plating-282708.careos.careos_order_items` oi ON oi.human_id = n.OrderItem
   JOIN `pacific-plating-282708.careos.careos_orders` o ON o.id = oi.order_id
-  JOIN `pacific-plating-282708.careos.carepay_charges` c
+  JOIN (
+    SELECT transaction_id, installment_number, third_party_id, update_time,
+      ROW_NUMBER() OVER (PARTITION BY transaction_id, installment_number ORDER BY create_time, id) AS source_charge_rank
+    FROM `pacific-plating-282708.careos.carepay_charges`
+    WHERE status='SUCCESSFUL' AND service_provider='RABBIT_LENDING'
+  ) c
     ON o.payment = CONCAT('transactions/', c.transaction_id)
     AND c.installment_number = SAFE_CAST(n.Period AS INT64)
     AND n.InvoiceNo = CASE WHEN c.installment_number = 1
       THEN CONCAT('2_', c.third_party_id) ELSE c.third_party_id END
-    AND c.status = 'SUCCESSFUL' AND c.service_provider = 'RABBIT_LENDING'
+    AND c.source_charge_rank > 1
   WHERE ExpectedReceived = 0
     AND ActualReceived > 0
     AND LOWER(TRIM(TransactionStatus)) = 'paid'

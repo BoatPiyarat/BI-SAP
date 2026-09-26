@@ -4,20 +4,27 @@ WITH fixture_events AS (
 ), fixture_items AS (SELECT 'old-V1' AS human_id,'old' AS order_id UNION ALL SELECT 'recent-V1','recent'),
 fixture_orders AS (SELECT 'old' AS id,'transactions/old' AS payment UNION ALL SELECT 'recent','transactions/recent'),
 fixture_charges AS (
- SELECT 'old' AS transaction_id,1 AS installment_number,'old' AS third_party_id,'SUCCESSFUL' AS status,'RABBIT_LENDING' AS service_provider,TIMESTAMP(DATE_SUB(CURRENT_DATE(),INTERVAL 1 YEAR)) AS update_time
- UNION ALL SELECT 'recent',1,'recent','SUCCESSFUL','RABBIT_LENDING',CURRENT_TIMESTAMP()
+ SELECT 'old' AS id,'old' AS transaction_id,1 AS installment_number,'old' AS third_party_id,'SUCCESSFUL' AS status,'RABBIT_LENDING' AS service_provider,TIMESTAMP '2020-01-02' AS create_time,TIMESTAMP(DATE_SUB(CURRENT_DATE(),INTERVAL 1 YEAR)) AS update_time
+ UNION ALL SELECT 'recent','recent',1,'recent','SUCCESSFUL','RABBIT_LENDING',TIMESTAMP '2020-01-02',CURRENT_TIMESTAMP()
+ UNION ALL SELECT 'old-first','old',1,'first','SUCCESSFUL','RABBIT_LENDING',TIMESTAMP '2020-01-01',TIMESTAMP '2020-01-01'
+ UNION ALL SELECT 'recent-first','recent',1,'first','SUCCESSFUL','RABBIT_LENDING',TIMESTAMP '2020-01-01',TIMESTAMP '2020-01-01'
 ), additional_items AS (
-  -- Only genuinely unsent additional events can reopen an already-paid item.
+-- Only genuinely unsent additional events can reopen an already-paid item.
   SELECT DISTINCT OrderItem
   FROM fixture_events n
   JOIN fixture_items oi ON oi.human_id = n.OrderItem
   JOIN fixture_orders o ON o.id = oi.order_id
-  JOIN fixture_charges c
+  JOIN (
+    SELECT transaction_id, installment_number, third_party_id, update_time,
+      ROW_NUMBER() OVER (PARTITION BY transaction_id, installment_number ORDER BY create_time, id) AS source_charge_rank
+    FROM fixture_charges
+    WHERE status='SUCCESSFUL' AND service_provider='RABBIT_LENDING'
+  ) c
     ON o.payment = CONCAT('transactions/', c.transaction_id)
     AND c.installment_number = SAFE_CAST(n.Period AS INT64)
     AND n.InvoiceNo = CASE WHEN c.installment_number = 1
       THEN CONCAT('2_', c.third_party_id) ELSE c.third_party_id END
-    AND c.status = 'SUCCESSFUL' AND c.service_provider = 'RABBIT_LENDING'
+    AND c.source_charge_rank > 1
   WHERE ExpectedReceived = 0
     AND ActualReceived > 0
     AND LOWER(TRIM(TransactionStatus)) = 'paid'

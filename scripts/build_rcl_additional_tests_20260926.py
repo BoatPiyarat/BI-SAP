@@ -6,6 +6,13 @@ fields=json.loads(Path('docs/evidence/rcl_additional_20260926/column_contract.js
 cases=[
  ('new_period',2,'n2',100,100,'paid',True),
  ('gap_period',2,'g2',100,100,'paid',True),
+ ('compulsory_zero_first_missing_invoice',1,None,0,10,'paid',True),
+ ('compulsory_first_missing_invoice',1,None,100,100,'paid',True),
+ ('zero_first_missing_invoice',1,'2_zero_first_missing_invoice-V1',0,10,'paid',True),
+ ('zero_first_tied',1,'2_zero_first_tied',0,10,'paid',True),
+ ('invalid_extra_pending',1,'2_invalid_extra_pending-V1',0,10,'Pending',False),
+ ('zero_expected_first_paid',1,'2_zero_first_paid',0,10,'paid',False),
+ ('zero_expected_first_new',1,'2_zero_first_new',0,10,'paid',True),
  ('topup',1,'2_extra',0,22.04,'paid',True),
  ('exact_paid',1,'2_exact',0,10,'paid',False),
  ('raw_paid',1,'2_raw',0,10,'paid',False),
@@ -35,7 +42,7 @@ for name,period,inv,expected,actual,status,want in cases:
  fixture.append('SELECT '+', '.join('CAST('+lit(vals.get(f['name']))+' AS '+types.get(f['type'],f['type'])+') AS '+f['name'] for f in fields))
 sap=[]
 for name,period,inv,expected,actual,status,want in cases:
- if name=='new_period':continue
+ if name in ['new_period','zero_expected_first_new','zero_first_missing_invoice','zero_first_tied','invalid_extra_pending','compulsory_zero_first_missing_invoice','compulsory_first_missing_invoice']:continue
  terminal_inv={'exact_paid':'2_exact','raw_paid':'raw','cancelled':'2_cancelled','change_cancelled':'2_change','normal_paid':'normal'}.get(name,'old')
  terminal_status={'cancelled':'Cancelled','change_cancelled':'Cancelled (Change order / Rejected)'}.get(name,'Paid')
  sap.append('SELECT '+lit(name+'-V1')+' AS U_OrderItem, '+str(3 if name=='gap_period' else period)+' AS U_Period, '+lit(terminal_inv)+' AS U_InvoiceNo, '+lit(terminal_status)+' AS TransactionStatus')
@@ -45,12 +52,14 @@ body=Path('sql/production/rcl_additional_20260926/RCL_05_newpayment.sql').read_t
 raw=[]; orders=[]; items=[]
 for name,period,inv,ex,ac,status,want in cases:
  raw_inv=inv[2:] if inv and period==1 and inv.startswith('2_') else inv
- if name=='missing_raw':raw_inv=None
+ if name in ['missing_raw','zero_first_missing_invoice','invalid_extra_pending','compulsory_zero_first_missing_invoice','compulsory_first_missing_invoice']:raw_inv=None
  raw.append('SELECT '+lit(name)+' AS id, '+lit(name)+' AS transaction_id, '+str(period)+' AS installment_number, '+lit(raw_inv)+' AS third_party_id, \'SUCCESSFUL\' AS status, \'RABBIT_LENDING\' AS service_provider, TIMESTAMP \'2026-09-25\' AS create_time, CURRENT_TIMESTAMP() AS update_time')
  orders.append('SELECT '+lit(name)+' AS id, '+lit('transactions/'+name)+' AS payment')
- items.append('SELECT '+lit(name)+' AS order_id, '+lit(name+'-V1')+' AS human_id')
- if name in ['collision','tie']:
-  extra_inv='different' if name=='tie' else raw_inv
+ items.append('SELECT '+lit(name)+' AS order_id, '+lit(name+'-V1')+' AS human_id, '+lit('MOTOR_TYPE_COMPULSORY' if name.startswith('compulsory_') else 'MOTOR_TYPE_VOLUNTARY')+' AS motor_item_type')
+ if name not in ['new_period','gap_period','normal_paid','zero_expected_first_paid','zero_expected_first_new','zero_first_missing_invoice','zero_first_tied','compulsory_zero_first_missing_invoice','compulsory_first_missing_invoice']:
+  raw.append('SELECT '+lit(name+'-first')+', '+lit(name)+', '+str(period)+', '+lit('prior_'+name)+", 'SUCCESSFUL', 'RABBIT_LENDING', TIMESTAMP '2026-09-24', CURRENT_TIMESTAMP()")
+ if name in ['collision','tie','zero_first_tied']:
+  extra_inv='different' if name in ['tie','zero_first_tied'] else raw_inv
   raw.append('SELECT '+lit(name+'-other')+', '+lit(name)+', '+str(period)+', '+lit(extra_inv)+", 'SUCCESSFUL', 'RABBIT_LENDING', TIMESTAMP '2026-09-25', CURRENT_TIMESTAMP()")
 def query(sapname):
  q=body.replace('`pacific-plating-282708.sap_data_engineer.sap_dashboard_carepay_installment`','fixture_dashboard').replace('`pacific-plating-282708.sap_integration_v2.SAP_LIVE_FULL`',sapname)
@@ -68,4 +77,4 @@ SELECT CURRENT_TIMESTAMP() AS checked_at_utc,
  (SELECT COUNT(*) FROM (SELECT OrderItem,Period,InvoiceNo FROM actual GROUP BY 1,2,3 HAVING COUNT(*)>1)) AS duplicate_event_keys;
 """
 Path('sql/adhoc/20260926_rcl_additional_identity_fixtures.sql').write_text(q,encoding='utf-8')
-print('Generated 19 behavioral fixture cases with acknowledged-payment replay.')
+print('Generated',len(cases),'behavioral fixture cases with acknowledged-payment replay.')

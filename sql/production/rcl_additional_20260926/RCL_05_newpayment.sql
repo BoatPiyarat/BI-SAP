@@ -20,93 +20,107 @@ WITH
   ),
   source_receipts AS (
     SELECT id, transaction_id, installment_number, third_party_id, create_time, update_time,
+      ROW_NUMBER() OVER (PARTITION BY transaction_id, installment_number ORDER BY create_time, id) AS source_charge_rank,
+      COUNT(*) OVER (PARTITION BY id) AS charge_id_rows,
       COUNT(*) OVER (PARTITION BY transaction_id, installment_number, third_party_id) AS invoice_rows,
       COUNT(*) OVER (PARTITION BY transaction_id, installment_number, create_time) AS timestamp_rows
     FROM `pacific-plating-282708.careos.carepay_charges`
     WHERE status = 'SUCCESSFUL' AND service_provider = 'RABBIT_LENDING'
   ),
-  valid_additional_events AS (
+  source_receipt_events AS (
+    -- Preserve rank lineage even when additional-receipt eligibility fails.
+    -- The fallback mirrors dashboard identity ONLY for classification; it is
+    -- never accepted as a new additional receipt's invoice identity.
     SELECT oi.human_id AS order_item, c.installment_number AS period,
-      CASE WHEN c.installment_number = 1 THEN CONCAT('2_', c.third_party_id)
-        ELSE c.third_party_id END AS invoice_no,
-      MIN(c.update_time) AS raw_update_time
+      CASE WHEN c.installment_number = 1 AND oi.motor_item_type='MOTOR_TYPE_COMPULSORY'
+        THEN CONCAT('2_',c.third_party_id)
+        WHEN c.installment_number = 1 THEN CONCAT('2_', COALESCE(c.third_party_id, oi.human_id))
+        ELSE COALESCE(c.third_party_id, oi.human_id) END AS invoice_no,
+      MIN(c.update_time) AS raw_update_time,
+      CASE WHEN COUNT(*) = 1 THEN MIN(c.source_charge_rank) END AS source_charge_rank,
+      COUNT(*) AS source_event_rows,
+      COUNT(*) = 1 AND COUNTIF(
+        NULLIF(TRIM(c.id), '') IS NULL
+        OR NULLIF(TRIM(c.third_party_id), '') IS NULL
+        OR UPPER(TRIM(c.third_party_id)) = 'NULL'
+        OR c.charge_id_rows != 1 OR c.invoice_rows != 1 OR c.timestamp_rows != 1
+      ) = 0 AS additional_identity_valid
     FROM source_receipts c
     JOIN `pacific-plating-282708.careos.careos_orders` o
       ON o.payment = CONCAT('transactions/', c.transaction_id)
     JOIN `pacific-plating-282708.careos.careos_order_items` oi
       ON oi.order_id = o.id
-    WHERE NULLIF(TRIM(c.id), '') IS NOT NULL
-      AND NULLIF(TRIM(c.third_party_id), '') IS NOT NULL
-      AND UPPER(TRIM(c.third_party_id)) != 'NULL'
-      AND NULLIF(TRIM(oi.human_id), '') IS NOT NULL
-      AND c.invoice_rows = 1 AND c.timestamp_rows = 1
+    WHERE NULLIF(TRIM(oi.human_id), '') IS NOT NULL
+      AND (COALESCE(oi.motor_item_type,'') != 'MOTOR_TYPE_COMPULSORY' OR c.source_charge_rank=1)
     GROUP BY order_item, period, invoice_no
-    HAVING COUNT(*) = 1
   ),
   interface AS (
     SELECT
-      CompanyDB,
-      OrderID,
-      OrderItem,
-      InvoiceNo,
-      OrderDate,
-      InsuredID,
-      Title,
-      FirstName,
-      LastName,
-      InsurerCode,
-      InsuranceGroup,
-      InsuranceType,
-      InsuranceProduct,
-      ProductType,
-      PolicyType,
-      Endorse,
-      PolicyDate,
-      PolicyNo,
-      EndorsementNo,
-      ChassisNo,
-      LicensePlate,
-      GrossPremium,
-      StampDuty,
-      VAT,
-      TotalPremium,
-      WHT,
-      TotalEIR,
-      TotalSBT,
-      ProcessingFee,
-      ProcessingFeeVat,
-      ShippingFee,
-      ShippingFeeVat,
-      TotalAmount,
-      Discount,
-      TransactionStatus,
-      SubmissionStatus,
-      ApprovalStatus,
-      PaymentStatus,
-      ExpectedReceived,
-      ActualReceived,
-      InterestThisPeriod,
-      PrincipleThisPeriod,
-      InterestEIRThisPeriod,
-      PrincipleEIRThisPeriod,
-      PaymentDate,
-      Period,
-      TotalPeriods,
-      PendingPayment,
-      PaymentMethod,
-      PaymentChannel,
-      ExpectedDate,
-      RefOrder,
-      CAST(RefundAmountBeforeFee AS FLOAT64) AS RefundAmountBeforeFee,
-      CAST(RefundAmountAfterFee AS FLOAT64) AS RefundAmountAfterFee,
-      BillingAddress,
-      BatchRunDate,
-      SAFE_CAST(Period AS INT64) AS careos_installment,
+      d.CompanyDB,
+      d.OrderID,
+      d.OrderItem,
+      d.InvoiceNo,
+      d.OrderDate,
+      d.InsuredID,
+      d.Title,
+      d.FirstName,
+      d.LastName,
+      d.InsurerCode,
+      d.InsuranceGroup,
+      d.InsuranceType,
+      d.InsuranceProduct,
+      d.ProductType,
+      d.PolicyType,
+      d.Endorse,
+      d.PolicyDate,
+      d.PolicyNo,
+      d.EndorsementNo,
+      d.ChassisNo,
+      d.LicensePlate,
+      d.GrossPremium,
+      d.StampDuty,
+      d.VAT,
+      d.TotalPremium,
+      d.WHT,
+      d.TotalEIR,
+      d.TotalSBT,
+      d.ProcessingFee,
+      d.ProcessingFeeVat,
+      d.ShippingFee,
+      d.ShippingFeeVat,
+      d.TotalAmount,
+      d.Discount,
+      d.TransactionStatus,
+      d.SubmissionStatus,
+      d.ApprovalStatus,
+      d.PaymentStatus,
+      d.ExpectedReceived,
+      d.ActualReceived,
+      d.InterestThisPeriod,
+      d.PrincipleThisPeriod,
+      d.InterestEIRThisPeriod,
+      d.PrincipleEIRThisPeriod,
+      d.PaymentDate,
+      d.Period,
+      d.TotalPeriods,
+      d.PendingPayment,
+      d.PaymentMethod,
+      d.PaymentChannel,
+      d.ExpectedDate,
+      d.RefOrder,
+      CAST(d.RefundAmountBeforeFee AS FLOAT64) AS RefundAmountBeforeFee,
+      CAST(d.RefundAmountAfterFee AS FLOAT64) AS RefundAmountAfterFee,
+      d.BillingAddress,
+      d.BatchRunDate,
+      SAFE_CAST(d.Period AS INT64) AS careos_installment,
+      v.source_charge_rank, v.source_event_rows, v.additional_identity_valid,
       COALESCE(ExpectedReceived = 0, FALSE)
         AND COALESCE(ActualReceived, 0) > 0
         AND LOWER(TRIM(COALESCE(TransactionStatus, ''))) = 'paid'
-        AS is_additional_payment
-    FROM `pacific-plating-282708.sap_data_engineer.sap_dashboard_carepay_installment`
+        AS has_additional_shape
+    FROM `pacific-plating-282708.sap_data_engineer.sap_dashboard_carepay_installment` d
+    LEFT JOIN source_receipt_events v ON v.order_item=d.OrderItem
+      AND v.period=SAFE_CAST(d.Period AS INT64) AND v.invoice_no IS NOT DISTINCT FROM d.InvoiceNo
   )
 SELECT DISTINCT
   interface.CompanyDB,
@@ -169,7 +183,10 @@ FROM interface
 WHERE interface.careos_installment IS NOT NULL
   AND (
     (
-      NOT interface.is_additional_payment
+      (
+        interface.source_charge_rank = 1
+        OR (interface.source_event_rows IS NULL AND COALESCE(interface.ActualReceived, 0) = 0)
+      )
       AND NOT EXISTS (
         SELECT 1 FROM sap_paid_periods p
         WHERE p.order_item = interface.OrderItem
@@ -177,13 +194,9 @@ WHERE interface.careos_installment IS NOT NULL
       )
     )
     OR (
-      interface.is_additional_payment
-      AND EXISTS (
-        SELECT 1 FROM valid_additional_events v
-        WHERE v.order_item = interface.OrderItem
-          AND v.period = interface.careos_installment
-          AND v.invoice_no = interface.InvoiceNo
-      )
+      interface.source_charge_rank > 1
+      AND interface.has_additional_shape
+      AND interface.additional_identity_valid
       AND NULLIF(TRIM(interface.InvoiceNo), '') IS NOT NULL
       AND UPPER(TRIM(interface.InvoiceNo)) != 'NULL'
       AND NOT EXISTS (

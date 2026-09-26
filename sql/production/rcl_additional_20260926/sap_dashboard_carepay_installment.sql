@@ -52,7 +52,7 @@
 WITH
 charges AS (
   SELECT * ,
-  ROW_NUMBER() OVER (PARTITION BY transaction_id, installment_number ORDER BY create_time) AS charge_rank
+  ROW_NUMBER() OVER (PARTITION BY transaction_id, installment_number ORDER BY create_time, id) AS charge_rank
   FROM `pacific-plating-282708.careos.carepay_charges`
   WHERE status = 'SUCCESSFUL'
   AND service_provider = 'RABBIT_LENDING'

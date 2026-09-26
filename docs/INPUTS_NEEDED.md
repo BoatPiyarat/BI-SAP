@@ -7,7 +7,8 @@ Confirm whether additional receipts in period>1 set both PrincipleThisPeriod and
 PrincipleEIRThisPeriod to the raw charge amount, with zero interest (as for period1 extras).
 Current source mapping repeats scheduled principal in 54 candidate rows; evidence is
 `docs/evidence/rcl_additional_20260926/tie_diagnostic.json`, checked 2026-09-26 02:36:49 UTC.
-Also resolve tied-time first-charge priority for the two documented dashboard rows.
+Technical ties now use create_time,id (review N3), with measured unchanged period sums.
+See FINDINGS_RCL_REVIEW_DELTA_20260926.md. Import-log evidence for carried-spine idempotency remains required. V3 implementation is ON HOLD.
 After release blockers and Class-A review are cleared, scoped deploy OK must explicitly cover
 this dashboard and both named v2 RCL views; the old NULL-safety exception does not authorize them.
 

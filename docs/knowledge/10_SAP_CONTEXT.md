@@ -606,3 +606,13 @@ This clarifies the scope of the older one-row-per-period recovery constraint: it
 normal schedule spine, not distinct additional receipt events. Invoice identity remains immutable.
 Period>1 principal mapping and tied-time first-charge ranking remain unresolved release questions;
 this instruction does not approve an inferred accounting allocation or production deployment.
+
+
+## ADDENDUM 2026-09-26 — scope after review
+
+User: "check review result, hold V3, keep fixing legacy and upstream views". Pause the V3
+implementation portion of the earlier handoff. Legacy/dashboard correction and dependency reads
+continue; no CALL, deployment or scheduler change is authorized by this scope update.
+Legacy invoice aliases are unchanged. Technical charge ties use create_time,id. Additional receipt
+classification must use source rank/charge lineage, never just zero ExpectedReceived. Principal
+allocation remains unanswered; runtime holds and import idempotency remain release requirements.

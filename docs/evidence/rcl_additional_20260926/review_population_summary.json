@@ -1,0 +1,29 @@
+{
+  "population_rows": 5299,
+  "charge_kinds": {
+    "additional": 2694,
+    "first": 2605
+  },
+  "products": {
+    "MOTOR_VOLUNTARY;": 3478,
+    "MOTOR_VOLUNTARY;COMPULSORY;": 1530,
+    "NO_LINKED_ITEM": 179,
+    "NONMOTOR;": 112
+  },
+  "dispositions": {
+    "HOLD_MISSING_INVOICE": 178,
+    "HOLD_NOT_ROUTED_BY_LEGACY": 12,
+    "HOLD_NO_ORDER_ITEM": 179,
+    "HOLD_OUTSIDE_DASHBOARD_SCOPE": 9,
+    "HOLD_OUTSIDE_RECENCY_WINDOW": 717,
+    "HOLD_TIED_SOURCE_TIME": 5,
+    "LEGACY_CANDIDATE_PRESENT": 74,
+    "SAP_IDENTITY_PRESENT": 4125
+  },
+  "older_unmatched": 1068,
+  "nonmotor_dispositions": {
+    "HOLD_OUTSIDE_DASHBOARD_SCOPE": 9,
+    "HOLD_OUTSIDE_RECENCY_WINDOW": 2,
+    "SAP_IDENTITY_PRESENT": 101
+  }
+}
