@@ -1,0 +1,23 @@
+{
+  "jobReference": {
+    "projectId": "pacific-plating-282708",
+    "jobId": "bqjob_r5a961fbe1a8c5848_000001a0de10bf48_1",
+    "location": "asia-southeast1"
+  },
+  "status": {
+    "errorResult": {
+      "reason": "invalidQuery",
+      "location": "query",
+      "message": "Query exceeded limit for bytes billed: 136314880. 745537536 or higher required. at [12711:1]"
+    },
+    "state": "DONE"
+  },
+  "statistics": {
+    "creationTime": "1790432035958",
+    "startTime": "1790432036028",
+    "endTime": "1790432188951",
+    "totalBytesProcessed": "21287948899",
+    "numChildJobs": "22"
+  },
+  "maximumBytesBilled": "21474836480"
+}

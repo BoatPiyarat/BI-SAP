@@ -1,0 +1,578 @@
+[
+  {
+    "jobReference": {
+      "projectId": "pacific-plating-282708",
+      "jobId": "codex_rcl_dashboard_only_precheck_20260926_2150",
+      "location": "asia-southeast1"
+    },
+    "status": {
+      "state": "DONE"
+    },
+    "statistics": {
+      "creationTime": "1790434175173",
+      "startTime": "1790434175219",
+      "endTime": "1790434203134",
+      "totalBytesProcessed": "874194694",
+      "query": {
+        "totalBytesProcessed": "874194694",
+        "totalBytesBilled": "916455424",
+        "totalSlotMs": "2658241",
+        "schema": {
+          "fields": [
+            {
+              "name": "OrderItem",
+              "type": "STRING",
+              "mode": "NULLABLE"
+            },
+            {
+              "name": "Period",
+              "type": "INTEGER",
+              "mode": "NULLABLE"
+            },
+            {
+              "name": "InvoiceNo",
+              "type": "STRING",
+              "mode": "NULLABLE"
+            },
+            {
+              "name": "ExpectedReceived",
+              "type": "FLOAT",
+              "mode": "NULLABLE"
+            },
+            {
+              "name": "ActualReceived",
+              "type": "FLOAT",
+              "mode": "NULLABLE"
+            },
+            {
+              "name": "InterestThisPeriod",
+              "type": "FLOAT",
+              "mode": "NULLABLE"
+            },
+            {
+              "name": "InterestEIRThisPeriod",
+              "type": "FLOAT",
+              "mode": "NULLABLE"
+            }
+          ]
+        },
+        "statementType": "SCRIPT"
+      },
+      "totalSlotMs": "2658241",
+      "numChildJobs": "5"
+    }
+  },
+  {
+    "jobReference": {
+      "projectId": "pacific-plating-282708",
+      "jobId": "codex_rcl_dashboard_only_deploy_20260926_2152",
+      "location": "asia-southeast1"
+    },
+    "status": {
+      "state": "DONE"
+    },
+    "statistics": {
+      "creationTime": "1790434263468",
+      "startTime": "1790434263701",
+      "endTime": "1790434263943",
+      "totalBytesProcessed": "0",
+      "query": {
+        "totalPartitionsProcessed": "0",
+        "totalBytesProcessed": "0",
+        "totalBytesBilled": "0",
+        "billingTier": 0,
+        "totalSlotMs": "0",
+        "cacheHit": false,
+        "referencedTables": [
+          {
+            "projectId": "pacific-plating-282708",
+            "datasetId": "careos",
+            "tableId": "carepay_charges"
+          },
+          {
+            "projectId": "pacific-plating-282708",
+            "datasetId": "careos",
+            "tableId": "careos_orders"
+          },
+          {
+            "projectId": "pacific-plating-282708",
+            "datasetId": "careos",
+            "tableId": "careos_order_items"
+          },
+          {
+            "projectId": "pacific-plating-282708",
+            "datasetId": "careos",
+            "tableId": "careos_leads"
+          },
+          {
+            "projectId": "pacific-plating-282708",
+            "datasetId": "careos",
+            "tableId": "cancelled_change_orders"
+          },
+          {
+            "projectId": "pacific-plating-282708",
+            "datasetId": "careos",
+            "tableId": "carepay_transaction_snapshot_price_summaries"
+          },
+          {
+            "projectId": "pacific-plating-282708",
+            "datasetId": "careos",
+            "tableId": "carepay_transaction_snapshots"
+          },
+          {
+            "projectId": "pacific-plating-282708",
+            "datasetId": "careos",
+            "tableId": "carepay_payment_options"
+          },
+          {
+            "projectId": "pacific-plating-282708",
+            "datasetId": "careos",
+            "tableId": "carepay_transaction_snapshot_installment_details"
+          },
+          {
+            "projectId": "pacific-plating-282708",
+            "datasetId": "careos",
+            "tableId": "carepay_follow_ups"
+          },
+          {
+            "projectId": "pacific-plating-282708",
+            "datasetId": "careos",
+            "tableId": "carepay_prices"
+          },
+          {
+            "projectId": "pacific-plating-282708",
+            "datasetId": "careos",
+            "tableId": "carepay_transactions"
+          },
+          {
+            "projectId": "pacific-plating-282708",
+            "datasetId": "careos",
+            "tableId": "carepay_refunds"
+          }
+        ],
+        "schema": {
+          "fields": [
+            {
+              "name": "CompanyDB",
+              "type": "STRING"
+            },
+            {
+              "name": "OrderID",
+              "type": "STRING"
+            },
+            {
+              "name": "OrderItem",
+              "type": "STRING"
+            },
+            {
+              "name": "InvoiceNo",
+              "type": "STRING"
+            },
+            {
+              "name": "OrderDate",
+              "type": "STRING"
+            },
+            {
+              "name": "InsuredID",
+              "type": "STRING"
+            },
+            {
+              "name": "Title",
+              "type": "STRING"
+            },
+            {
+              "name": "FirstName",
+              "type": "STRING"
+            },
+            {
+              "name": "LastName",
+              "type": "STRING"
+            },
+            {
+              "name": "InsurerCode",
+              "type": "STRING"
+            },
+            {
+              "name": "InsuranceGroup",
+              "type": "STRING"
+            },
+            {
+              "name": "InsuranceType",
+              "type": "STRING"
+            },
+            {
+              "name": "InsuranceProduct",
+              "type": "STRING"
+            },
+            {
+              "name": "ProductType",
+              "type": "STRING"
+            },
+            {
+              "name": "PolicyType",
+              "type": "STRING"
+            },
+            {
+              "name": "Endorse",
+              "type": "STRING"
+            },
+            {
+              "name": "PolicyDate",
+              "type": "STRING"
+            },
+            {
+              "name": "PolicyNo",
+              "type": "STRING"
+            },
+            {
+              "name": "EndorsementNo",
+              "type": "STRING"
+            },
+            {
+              "name": "ChassisNo",
+              "type": "STRING"
+            },
+            {
+              "name": "LicensePlate",
+              "type": "STRING"
+            },
+            {
+              "name": "GrossPremium",
+              "type": "FLOAT"
+            },
+            {
+              "name": "StampDuty",
+              "type": "FLOAT"
+            },
+            {
+              "name": "VAT",
+              "type": "FLOAT"
+            },
+            {
+              "name": "TotalPremium",
+              "type": "FLOAT"
+            },
+            {
+              "name": "WHT",
+              "type": "FLOAT"
+            },
+            {
+              "name": "TotalEIR",
+              "type": "FLOAT"
+            },
+            {
+              "name": "TotalSBT",
+              "type": "FLOAT"
+            },
+            {
+              "name": "ProcessingFee",
+              "type": "FLOAT"
+            },
+            {
+              "name": "ProcessingFeeVat",
+              "type": "FLOAT"
+            },
+            {
+              "name": "ShippingFee",
+              "type": "FLOAT"
+            },
+            {
+              "name": "ShippingFeeVat",
+              "type": "FLOAT"
+            },
+            {
+              "name": "TotalAmount",
+              "type": "FLOAT"
+            },
+            {
+              "name": "Discount",
+              "type": "FLOAT"
+            },
+            {
+              "name": "TransactionStatus",
+              "type": "STRING"
+            },
+            {
+              "name": "SubmissionStatus",
+              "type": "STRING"
+            },
+            {
+              "name": "ApprovalStatus",
+              "type": "STRING"
+            },
+            {
+              "name": "PaymentStatus",
+              "type": "STRING"
+            },
+            {
+              "name": "ExpectedReceived",
+              "type": "FLOAT"
+            },
+            {
+              "name": "ActualReceived",
+              "type": "FLOAT"
+            },
+            {
+              "name": "InterestThisPeriod",
+              "type": "FLOAT"
+            },
+            {
+              "name": "PrincipleThisPeriod",
+              "type": "FLOAT"
+            },
+            {
+              "name": "InterestEIRThisPeriod",
+              "type": "FLOAT"
+            },
+            {
+              "name": "PrincipleEIRThisPeriod",
+              "type": "FLOAT"
+            },
+            {
+              "name": "PaymentDate",
+              "type": "STRING"
+            },
+            {
+              "name": "Period",
+              "type": "INTEGER"
+            },
+            {
+              "name": "TotalPeriods",
+              "type": "INTEGER"
+            },
+            {
+              "name": "PendingPayment",
+              "type": "FLOAT"
+            },
+            {
+              "name": "PaymentMethod",
+              "type": "STRING"
+            },
+            {
+              "name": "PaymentChannel",
+              "type": "STRING"
+            },
+            {
+              "name": "ExpectedDate",
+              "type": "STRING"
+            },
+            {
+              "name": "RefOrder",
+              "type": "STRING"
+            },
+            {
+              "name": "RefundAmountBeforeFee",
+              "type": "INTEGER"
+            },
+            {
+              "name": "RefundAmountAfterFee",
+              "type": "INTEGER"
+            },
+            {
+              "name": "BillingAddress",
+              "type": "STRING"
+            },
+            {
+              "name": "BatchRunDate",
+              "type": "STRING"
+            }
+          ]
+        },
+        "statementType": "CREATE_VIEW",
+        "ddlOperationPerformed": "REPLACE",
+        "ddlTargetTable": {
+          "projectId": "pacific-plating-282708",
+          "datasetId": "sap_data_engineer",
+          "tableId": "sap_dashboard_carepay_installment"
+        },
+        "searchStatistics": {
+          "indexUsageMode": "UNUSED",
+          "indexUnusedReasons": [
+            {
+              "code": "INDEX_CONFIG_NOT_AVAILABLE",
+              "message": "There is no index configuration for the base table `pacific-plating-282708:careos.cancelled_change_orders`.",
+              "baseTable": {
+                "projectId": "pacific-plating-282708",
+                "datasetId": "careos",
+                "tableId": "cancelled_change_orders"
+              }
+            },
+            {
+              "code": "INDEX_CONFIG_NOT_AVAILABLE",
+              "message": "There is no index configuration for the base table `pacific-plating-282708:careos.careos_leads`.",
+              "baseTable": {
+                "projectId": "pacific-plating-282708",
+                "datasetId": "careos",
+                "tableId": "careos_leads"
+              }
+            },
+            {
+              "code": "INDEX_CONFIG_NOT_AVAILABLE",
+              "message": "There is no index configuration for the base table `pacific-plating-282708:careos.careos_order_items`.",
+              "baseTable": {
+                "projectId": "pacific-plating-282708",
+                "datasetId": "careos",
+                "tableId": "careos_order_items"
+              }
+            },
+            {
+              "code": "INDEX_CONFIG_NOT_AVAILABLE",
+              "message": "There is no index configuration for the base table `pacific-plating-282708:careos.careos_orders`.",
+              "baseTable": {
+                "projectId": "pacific-plating-282708",
+                "datasetId": "careos",
+                "tableId": "careos_orders"
+              }
+            },
+            {
+              "code": "INDEX_CONFIG_NOT_AVAILABLE",
+              "message": "There is no index configuration for the base table `pacific-plating-282708:careos.carepay_charges`.",
+              "baseTable": {
+                "projectId": "pacific-plating-282708",
+                "datasetId": "careos",
+                "tableId": "carepay_charges"
+              }
+            },
+            {
+              "code": "INDEX_CONFIG_NOT_AVAILABLE",
+              "message": "There is no index configuration for the base table `pacific-plating-282708:careos.carepay_follow_ups`.",
+              "baseTable": {
+                "projectId": "pacific-plating-282708",
+                "datasetId": "careos",
+                "tableId": "carepay_follow_ups"
+              }
+            },
+            {
+              "code": "INDEX_CONFIG_NOT_AVAILABLE",
+              "message": "There is no index configuration for the base table `pacific-plating-282708:careos.carepay_payment_options`.",
+              "baseTable": {
+                "projectId": "pacific-plating-282708",
+                "datasetId": "careos",
+                "tableId": "carepay_payment_options"
+              }
+            },
+            {
+              "code": "INDEX_CONFIG_NOT_AVAILABLE",
+              "message": "There is no index configuration for the base table `pacific-plating-282708:careos.carepay_prices`.",
+              "baseTable": {
+                "projectId": "pacific-plating-282708",
+                "datasetId": "careos",
+                "tableId": "carepay_prices"
+              }
+            },
+            {
+              "code": "INDEX_CONFIG_NOT_AVAILABLE",
+              "message": "There is no index configuration for the base table `pacific-plating-282708:careos.carepay_refunds`.",
+              "baseTable": {
+                "projectId": "pacific-plating-282708",
+                "datasetId": "careos",
+                "tableId": "carepay_refunds"
+              }
+            },
+            {
+              "code": "INDEX_CONFIG_NOT_AVAILABLE",
+              "message": "There is no index configuration for the base table `pacific-plating-282708:careos.carepay_transaction_snapshot_installment_details`.",
+              "baseTable": {
+                "projectId": "pacific-plating-282708",
+                "datasetId": "careos",
+                "tableId": "carepay_transaction_snapshot_installment_details"
+              }
+            },
+            {
+              "code": "INDEX_CONFIG_NOT_AVAILABLE",
+              "message": "There is no index configuration for the base table `pacific-plating-282708:careos.carepay_transaction_snapshot_price_summaries`.",
+              "baseTable": {
+                "projectId": "pacific-plating-282708",
+                "datasetId": "careos",
+                "tableId": "carepay_transaction_snapshot_price_summaries"
+              }
+            },
+            {
+              "code": "INDEX_CONFIG_NOT_AVAILABLE",
+              "message": "There is no index configuration for the base table `pacific-plating-282708:careos.carepay_transaction_snapshots`.",
+              "baseTable": {
+                "projectId": "pacific-plating-282708",
+                "datasetId": "careos",
+                "tableId": "carepay_transaction_snapshots"
+              }
+            },
+            {
+              "code": "INDEX_CONFIG_NOT_AVAILABLE",
+              "message": "There is no index configuration for the base table `pacific-plating-282708:careos.carepay_transactions`.",
+              "baseTable": {
+                "projectId": "pacific-plating-282708",
+                "datasetId": "careos",
+                "tableId": "carepay_transactions"
+              }
+            }
+          ]
+        },
+        "transferredBytes": "0"
+      },
+      "totalSlotMs": "0"
+    }
+  },
+  {
+    "jobReference": {
+      "projectId": "pacific-plating-282708",
+      "jobId": "codex_rcl_dashboard_only_postcheck_20260926_2153",
+      "location": "asia-southeast1"
+    },
+    "status": {
+      "state": "DONE"
+    },
+    "statistics": {
+      "creationTime": "1790434401055",
+      "startTime": "1790434401111",
+      "endTime": "1790434430009",
+      "totalBytesProcessed": "874224286",
+      "query": {
+        "totalBytesProcessed": "874224286",
+        "totalBytesBilled": "916455424",
+        "totalSlotMs": "2300921",
+        "schema": {
+          "fields": [
+            {
+              "name": "OrderItem",
+              "type": "STRING",
+              "mode": "NULLABLE"
+            },
+            {
+              "name": "Period",
+              "type": "INTEGER",
+              "mode": "NULLABLE"
+            },
+            {
+              "name": "InvoiceNo",
+              "type": "STRING",
+              "mode": "NULLABLE"
+            },
+            {
+              "name": "ExpectedReceived",
+              "type": "FLOAT",
+              "mode": "NULLABLE"
+            },
+            {
+              "name": "ActualReceived",
+              "type": "FLOAT",
+              "mode": "NULLABLE"
+            },
+            {
+              "name": "InterestThisPeriod",
+              "type": "FLOAT",
+              "mode": "NULLABLE"
+            },
+            {
+              "name": "InterestEIRThisPeriod",
+              "type": "FLOAT",
+              "mode": "NULLABLE"
+            }
+          ]
+        },
+        "statementType": "SCRIPT"
+      },
+      "totalSlotMs": "2300921",
+      "numChildJobs": "5"
+    }
+  }
+]

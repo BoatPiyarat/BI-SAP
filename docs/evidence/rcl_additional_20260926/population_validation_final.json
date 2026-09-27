@@ -1,0 +1,12 @@
+["Created pacific-plating-282708._script4f06476e8de4bc85e3fcd9aa533fc6d797e4adf1.evidence_sap\n"
+,"Created pacific-plating-282708._script4f06476e8de4bc85e3fcd9aa533fc6d797e4adf1.candidate_dashboard\n"
+,"Created pacific-plating-282708._script4f06476e8de4bc85e3fcd9aa533fc6d797e4adf1.candidate_newpayment\n"
+,"Created pacific-plating-282708._script4f06476e8de4bc85e3fcd9aa533fc6d797e4adf1.candidate_gate\n"
+,"Created pacific-plating-282708._script4f06476e8de4bc85e3fcd9aa533fc6d797e4adf1.evidence_paid\n"
+,"Created pacific-plating-282708._script4f06476e8de4bc85e3fcd9aa533fc6d797e4adf1.candidate_wrapper\n"
+,"Created pacific-plating-282708._script4f06476e8de4bc85e3fcd9aa533fc6d797e4adf1.baseline_dashboard\n"
+,"Created pacific-plating-282708._script4f06476e8de4bc85e3fcd9aa533fc6d797e4adf1.baseline_newpayment\n"
+,"Created pacific-plating-282708._script4f06476e8de4bc85e3fcd9aa533fc6d797e4adf1.baseline_gate\n"
+,"Created pacific-plating-282708._script4f06476e8de4bc85e3fcd9aa533fc6d797e4adf1.baseline_wrapper\n"
+,[{"additional_rows":"103","blank_additional_invoices":"0","candidate_items":"1625","candidate_rows":"11665","checked_at_utc":"2026-09-25 17:23:38","duplicate_event_keys":"0","existing_rows_removed_or_changed":"0","incomplete_spines":"0","repeated_expected_periods":"0","status_distribution":[{"TransactionStatus":"Paid","row_count":"4443"},{"TransactionStatus":"paid","row_count":"1647"},{"TransactionStatus":"Pending","row_count":"5575"}]}]
+]

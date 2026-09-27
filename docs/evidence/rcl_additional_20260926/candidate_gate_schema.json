@@ -1,0 +1,54 @@
+[
+  {
+    "name": "human_id",
+    "type": "STRING"
+  },
+  {
+    "name": "order_item",
+    "type": "STRING"
+  },
+  {
+    "name": "order_create_time",
+    "type": "TIMESTAMP"
+  },
+  {
+    "name": "order_update_time",
+    "type": "TIMESTAMP"
+  },
+  {
+    "name": "is_fully_paid",
+    "type": "BOOLEAN"
+  },
+  {
+    "name": "is_cancelled",
+    "type": "BOOLEAN"
+  },
+  {
+    "name": "payment_option",
+    "type": "STRING"
+  },
+  {
+    "name": "installment_number",
+    "type": "INTEGER"
+  },
+  {
+    "name": "cancel_time",
+    "type": "TIMESTAMP"
+  },
+  {
+    "name": "charges_update_time",
+    "type": "TIMESTAMP"
+  },
+  {
+    "name": "sql_view_using",
+    "type": "STRING"
+  },
+  {
+    "name": "product",
+    "type": "STRING"
+  },
+  {
+    "name": "InsuranceType",
+    "type": "STRING"
+  }
+]

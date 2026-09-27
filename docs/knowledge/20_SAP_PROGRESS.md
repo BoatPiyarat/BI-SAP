@@ -1,5 +1,32 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-09-26T21:53:57+07:00 — User-scoped dashboard-only deployment
+
+Only sap_dashboard_carepay_installment was replaced under the user's immediate instruction; additional Expected=0 / Actual=raw charge. RCL newpayment/gate unchanged; V3 held. See docs/FINDINGS_RCL_DASHBOARD_DEPLOY_20260926.md and its live evidence. This supersedes earlier source-only status for this dashboard only.
+
+## 2026-09-26 (review continuation) — V3 held; legacy/upstream delta built
+
+Latest user instruction holds V3 implementation. Addressed review N3/N4/N5/N10: deterministic
+charge rank, explicit source lineage, CMI NULL-invoice compatibility and rewrite assertions.
+26 behavioral cases pass; exact final native query succeeds; prior final-wrapper and raw-newpayment
+payloads are preserved. All64 dashboard changes involve tied first timestamps with unchanged
+period expected/interest/EIR sums. Live consumer impacts and the original589 added rows are
+fully disclosed. Persisted a5,299-row all-date charge audit. Accounting mapping, import idempotency,
+operational holds and remaining consumer/NonMotor/backlog routing still block release.
+See docs/FINDINGS_RCL_REVIEW_DELTA_20260926.md for timestamps and limitations. No production or V3
+implementation changes, SAP actions, schedules or GCS writes occurred.
+
+
+## 2026-09-26 — RCL additional receipt source fix; NOT DEPLOYED
+
+Built dashboard + newpayment + paid-period eligibility replacements in
+`sql/production/rcl_additional_20260926/`. Corrected candidates restore L80570054 (22.04)
+and L79109956 (645.21), checked 2026-09-25 17:33:38 UTC. Full final-wrapper old payloads preserved;
+19 receipt-identity/replay fixtures pass. Dashboard EIR regression corrected, but two tied-charge
+ExpectedReceived deltas and period>1 principal mapping remain release blockers. No SAP posting,
+production view replacement, schedule change, or GCS export occurred.
+See `docs/FINDINGS_RCL_ADDITIONAL_FIX_20260926.md` for timestamped evidence and release conditions.
+
 ## 2026-08-25 (later) — built and verified Phase 1 HOLD_EMPTY_INSTALLMENT_DETAILS gate; corrected RCL count to 2
 
 Built `sql/ddl/082_v3_rcl_empty_installment_detail_hold.sql` (source only, not deployed): a

@@ -1,0 +1,29 @@
+{
+  "dashboard": {
+    "count": 56,
+    "name_order_matches": true,
+    "type_differences": [
+      {
+        "name": "RefundAmountBeforeFee",
+        "expected": "FLOAT",
+        "actual": "INTEGER"
+      },
+      {
+        "name": "RefundAmountAfterFee",
+        "expected": "FLOAT",
+        "actual": "INTEGER"
+      }
+    ],
+    "matches_captured_dashboard_schema": true
+  },
+  "newpayment": {
+    "count": 56,
+    "name_order_matches": true,
+    "type_differences": []
+  },
+  "wrapper": {
+    "count": 56,
+    "name_order_matches": true,
+    "type_differences": []
+  }
+}

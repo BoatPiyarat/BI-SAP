@@ -1,0 +1,7 @@
+{
+  "fields": 56,
+  "names_order_types_modes_equal": true,
+  "note": "BigQuery omits default NULLABLE mode and leading SQL comments after DDL. Initial strict checks failed on representation only; normalized metadata and full executable SQL body match.",
+  "deployed_query_body_matches": true,
+  "downstream_etags_unchanged": true
+}

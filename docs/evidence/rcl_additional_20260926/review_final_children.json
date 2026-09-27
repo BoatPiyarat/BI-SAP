@@ -1,0 +1,425 @@
+[
+  {
+    "jobReference": {
+      "projectId": "pacific-plating-282708",
+      "jobId": "script_job_e58948bdbf575b2013f3bbad4f2e6b33_10",
+      "location": "asia-southeast1"
+    },
+    "status": {
+      "errorResult": {
+        "reason": "invalid",
+        "location": "population_a",
+        "message": "Table \"population_a\" must be qualified with a dataset (e.g. dataset.table)."
+      },
+      "errors": [
+        {
+          "reason": "invalid",
+          "location": "population_a",
+          "message": "Table \"population_a\" must be qualified with a dataset (e.g. dataset.table)."
+        }
+      ],
+      "state": "DONE"
+    },
+    "destination": null
+  },
+  {
+    "jobReference": {
+      "projectId": "pacific-plating-282708",
+      "jobId": "script_job_d5d63d75fe747b3ad2cd04a7c32e23e4_9",
+      "location": "asia-southeast1"
+    },
+    "status": {
+      "state": "DONE"
+    },
+    "destination": {
+      "projectId": "pacific-plating-282708",
+      "datasetId": "_script22234d72759a494d0e2640bb0d5570acdd1ebc77",
+      "tableId": "population_ledger"
+    }
+  },
+  {
+    "jobReference": {
+      "projectId": "pacific-plating-282708",
+      "jobId": "script_job_f3dbffb6518a3c83abb1b3e5f6485aa1_8",
+      "location": "asia-southeast1"
+    },
+    "status": {
+      "state": "DONE"
+    },
+    "destination": {
+      "projectId": "pacific-plating-282708",
+      "datasetId": "_script22234d72759a494d0e2640bb0d5570acdd1ebc77",
+      "tableId": "population_links"
+    }
+  },
+  {
+    "jobReference": {
+      "projectId": "pacific-plating-282708",
+      "jobId": "script_job_9e03862e8501bc6ac0e967398dca9838_7",
+      "location": "asia-southeast1"
+    },
+    "status": {
+      "state": "DONE"
+    },
+    "destination": {
+      "projectId": "pacific-plating-282708",
+      "datasetId": "_b40227f1087cbcbcec8537ef3426bca9d3d3fe18",
+      "tableId": "anond91aeb69_480d_428d_b08f_ed5a4a8bc7f2"
+    },
+    "result": [
+      {
+        "ActualReceived": "1143.54",
+        "ExpectedReceived": "1788.75",
+        "InvoiceNo": "2_chrg_68w7ty3jywde4nj3l1f",
+        "OrderID": "L79109956",
+        "OrderItem": "L79109956-V1",
+        "Period": "1",
+        "checked_at_utc": "2026-09-26 14:27:57"
+      },
+      {
+        "ActualReceived": "645.21",
+        "ExpectedReceived": "0.0",
+        "InvoiceNo": "2_chrg_68w87npgw0hbvid58ho",
+        "OrderID": "L79109956",
+        "OrderItem": "L79109956-V1",
+        "Period": "1",
+        "checked_at_utc": "2026-09-26 14:27:57"
+      },
+      {
+        "ActualReceived": "0.0",
+        "ExpectedReceived": "1788.75",
+        "InvoiceNo": null,
+        "OrderID": "L79109956",
+        "OrderItem": "L79109956-V1",
+        "Period": "2",
+        "checked_at_utc": "2026-09-26 14:27:57"
+      },
+      {
+        "ActualReceived": "0.0",
+        "ExpectedReceived": "1788.75",
+        "InvoiceNo": null,
+        "OrderID": "L79109956",
+        "OrderItem": "L79109956-V1",
+        "Period": "3",
+        "checked_at_utc": "2026-09-26 14:27:57"
+      },
+      {
+        "ActualReceived": "0.0",
+        "ExpectedReceived": "1788.75",
+        "InvoiceNo": null,
+        "OrderID": "L79109956",
+        "OrderItem": "L79109956-V1",
+        "Period": "4",
+        "checked_at_utc": "2026-09-26 14:27:57"
+      },
+      {
+        "ActualReceived": "0.0",
+        "ExpectedReceived": "1788.75",
+        "InvoiceNo": null,
+        "OrderID": "L79109956",
+        "OrderItem": "L79109956-V1",
+        "Period": "5",
+        "checked_at_utc": "2026-09-26 14:27:57"
+      },
+      {
+        "ActualReceived": "0.0",
+        "ExpectedReceived": "1788.75",
+        "InvoiceNo": null,
+        "OrderID": "L79109956",
+        "OrderItem": "L79109956-V1",
+        "Period": "6",
+        "checked_at_utc": "2026-09-26 14:27:57"
+      },
+      {
+        "ActualReceived": "0.0",
+        "ExpectedReceived": "1788.75",
+        "InvoiceNo": null,
+        "OrderID": "L79109956",
+        "OrderItem": "L79109956-V1",
+        "Period": "7",
+        "checked_at_utc": "2026-09-26 14:27:57"
+      },
+      {
+        "ActualReceived": "0.0",
+        "ExpectedReceived": "1788.75",
+        "InvoiceNo": null,
+        "OrderID": "L79109956",
+        "OrderItem": "L79109956-V1",
+        "Period": "8",
+        "checked_at_utc": "2026-09-26 14:27:57"
+      },
+      {
+        "ActualReceived": "1278.01",
+        "ExpectedReceived": "1300.05",
+        "InvoiceNo": "2_chrg_68vby06tn12c2j8q6tt",
+        "OrderID": "L80570054",
+        "OrderItem": "L80570054-V1",
+        "Period": "1",
+        "checked_at_utc": "2026-09-26 14:27:57"
+      },
+      {
+        "ActualReceived": "22.04",
+        "ExpectedReceived": "0.0",
+        "InvoiceNo": "2_chrg_68ve8ufva4h1iil7wrn",
+        "OrderID": "L80570054",
+        "OrderItem": "L80570054-V1",
+        "Period": "1",
+        "checked_at_utc": "2026-09-26 14:27:57"
+      },
+      {
+        "ActualReceived": "0.0",
+        "ExpectedReceived": "1300.05",
+        "InvoiceNo": null,
+        "OrderID": "L80570054",
+        "OrderItem": "L80570054-V1",
+        "Period": "2",
+        "checked_at_utc": "2026-09-26 14:27:57"
+      },
+      {
+        "ActualReceived": "0.0",
+        "ExpectedReceived": "1300.05",
+        "InvoiceNo": null,
+        "OrderID": "L80570054",
+        "OrderItem": "L80570054-V1",
+        "Period": "3",
+        "checked_at_utc": "2026-09-26 14:27:57"
+      },
+      {
+        "ActualReceived": "0.0",
+        "ExpectedReceived": "1300.05",
+        "InvoiceNo": null,
+        "OrderID": "L80570054",
+        "OrderItem": "L80570054-V1",
+        "Period": "4",
+        "checked_at_utc": "2026-09-26 14:27:57"
+      },
+      {
+        "ActualReceived": "0.0",
+        "ExpectedReceived": "1300.05",
+        "InvoiceNo": null,
+        "OrderID": "L80570054",
+        "OrderItem": "L80570054-V1",
+        "Period": "5",
+        "checked_at_utc": "2026-09-26 14:27:57"
+      },
+      {
+        "ActualReceived": "0.0",
+        "ExpectedReceived": "1300.05",
+        "InvoiceNo": null,
+        "OrderID": "L80570054",
+        "OrderItem": "L80570054-V1",
+        "Period": "6",
+        "checked_at_utc": "2026-09-26 14:27:57"
+      },
+      {
+        "ActualReceived": "0.0",
+        "ExpectedReceived": "1300.05",
+        "InvoiceNo": null,
+        "OrderID": "L80570054",
+        "OrderItem": "L80570054-V1",
+        "Period": "7",
+        "checked_at_utc": "2026-09-26 14:27:57"
+      },
+      {
+        "ActualReceived": "0.0",
+        "ExpectedReceived": "1300.05",
+        "InvoiceNo": null,
+        "OrderID": "L80570054",
+        "OrderItem": "L80570054-V1",
+        "Period": "8",
+        "checked_at_utc": "2026-09-26 14:27:57"
+      },
+      {
+        "ActualReceived": "0.0",
+        "ExpectedReceived": "1300.05",
+        "InvoiceNo": null,
+        "OrderID": "L80570054",
+        "OrderItem": "L80570054-V1",
+        "Period": "9",
+        "checked_at_utc": "2026-09-26 14:27:57"
+      },
+      {
+        "ActualReceived": "0.0",
+        "ExpectedReceived": "1300.05",
+        "InvoiceNo": null,
+        "OrderID": "L80570054",
+        "OrderItem": "L80570054-V1",
+        "Period": "10",
+        "checked_at_utc": "2026-09-26 14:27:57"
+      }
+    ]
+  },
+  {
+    "jobReference": {
+      "projectId": "pacific-plating-282708",
+      "jobId": "script_job_13f14732be644aa8f2eaa89041d2a76d_6",
+      "location": "asia-southeast1"
+    },
+    "status": {
+      "state": "DONE"
+    },
+    "destination": {
+      "projectId": "pacific-plating-282708",
+      "datasetId": "_b40227f1087cbcbcec8537ef3426bca9d3d3fe18",
+      "tableId": "anon39eae2ec_5ee5_4051_b028_95f3d1c1a5d4"
+    },
+    "result": [
+      {
+        "TransactionStatus": "Paid",
+        "actual_thb": "166687.05",
+        "checked_at_utc": "2026-09-26 14:27:56",
+        "items": "69",
+        "row_count": "87",
+        "row_kind": "normal_spine"
+      },
+      {
+        "TransactionStatus": "paid",
+        "actual_thb": "29586.38",
+        "checked_at_utc": "2026-09-26 14:27:56",
+        "items": "75",
+        "row_count": "79",
+        "row_kind": "additional_shape"
+      },
+      {
+        "TransactionStatus": "Paid",
+        "actual_thb": "1180.52",
+        "checked_at_utc": "2026-09-26 14:27:56",
+        "items": "1",
+        "row_count": "1",
+        "row_kind": "additional_shape"
+      },
+      {
+        "TransactionStatus": "Pending",
+        "actual_thb": "0.0",
+        "checked_at_utc": "2026-09-26 14:27:56",
+        "items": "67",
+        "row_count": "456",
+        "row_kind": "normal_spine"
+      }
+    ]
+  },
+  {
+    "jobReference": {
+      "projectId": "pacific-plating-282708",
+      "jobId": "script_job_c9f874a724e984e24199c5762ed1b38d_5",
+      "location": "asia-southeast1"
+    },
+    "status": {
+      "state": "DONE"
+    },
+    "destination": {
+      "projectId": "pacific-plating-282708",
+      "datasetId": "_script22234d72759a494d0e2640bb0d5570acdd1ebc77",
+      "tableId": "added_wrapper_rows"
+    }
+  },
+  {
+    "jobReference": {
+      "projectId": "pacific-plating-282708",
+      "jobId": "script_job_aad6818d70f97a890cb8cdf6bba5d6ef_4",
+      "location": "asia-southeast1"
+    },
+    "status": {
+      "state": "DONE"
+    },
+    "destination": {
+      "projectId": "pacific-plating-282708",
+      "datasetId": "_b40227f1087cbcbcec8537ef3426bca9d3d3fe18",
+      "tableId": "anon4d41b209_a39e_4e06_aa39_25523f69a85f"
+    },
+    "result": [
+      {
+        "checked_at_utc": "2026-09-26 14:27:42",
+        "dashboard_old_rows_removed": "64",
+        "full_payload_old_rows_removed": "0"
+      }
+    ]
+  },
+  {
+    "jobReference": {
+      "projectId": "pacific-plating-282708",
+      "jobId": "script_job_3302b5a3e0070841b633b74b8eae9c3d_3",
+      "location": "asia-southeast1"
+    },
+    "status": {
+      "state": "DONE"
+    },
+    "destination": {
+      "projectId": "pacific-plating-282708",
+      "datasetId": "_b40227f1087cbcbcec8537ef3426bca9d3d3fe18",
+      "tableId": "anon3e6696bb_9813_4fd4_87f0_2130e1fbf555"
+    },
+    "result": [
+      {
+        "additional_rows": "107",
+        "blank_additional_invoices": "0",
+        "candidate_items": "1758",
+        "candidate_rows": "12714",
+        "checked_at_utc": "2026-09-26 14:27:41",
+        "duplicate_event_keys": "0",
+        "existing_rows_removed_or_changed": "0",
+        "incomplete_spines": "0",
+        "repeated_expected_periods": "0",
+        "status_distribution": [
+          {
+            "TransactionStatus": "Paid",
+            "row_count": "4958"
+          },
+          {
+            "TransactionStatus": "paid",
+            "row_count": "1778"
+          },
+          {
+            "TransactionStatus": "Pending",
+            "row_count": "5978"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "jobReference": {
+      "projectId": "pacific-plating-282708",
+      "jobId": "script_job_7e2eab78e1b750928a69c7abdc6524cd_2",
+      "location": "asia-southeast1"
+    },
+    "status": {
+      "state": "DONE"
+    },
+    "destination": {
+      "projectId": "pacific-plating-282708",
+      "datasetId": "_script22234d72759a494d0e2640bb0d5570acdd1ebc77",
+      "tableId": "candidate_wrapper"
+    }
+  },
+  {
+    "jobReference": {
+      "projectId": "pacific-plating-282708",
+      "jobId": "script_job_166494f9c5c44026168a40b09f416933_1",
+      "location": "asia-southeast1"
+    },
+    "status": {
+      "state": "DONE"
+    },
+    "destination": {
+      "projectId": "pacific-plating-282708",
+      "datasetId": "_script22234d72759a494d0e2640bb0d5570acdd1ebc77",
+      "tableId": "candidate_gate"
+    }
+  },
+  {
+    "jobReference": {
+      "projectId": "pacific-plating-282708",
+      "jobId": "script_job_a795dd8dc91a8573ce2f89b4cc929aa1_0",
+      "location": "asia-southeast1"
+    },
+    "status": {
+      "state": "DONE"
+    },
+    "destination": {
+      "projectId": "pacific-plating-282708",
+      "datasetId": "_script22234d72759a494d0e2640bb0d5570acdd1ebc77",
+      "tableId": "candidate_newpayment"
+    }
+  }
+]

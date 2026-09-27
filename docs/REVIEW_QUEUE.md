@@ -3,6 +3,80 @@
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+
+## RQ-20260926-2154-dashboard-only-deployment
+Status: REVIEWED
+Reviewer: Claude Code
+Class: A
+Artifact: commit `08522b2`; dashboard-only deployed SQL and evidence.
+Opened: 2026-09-26T21:54:55+07:00
+Claim: only sap_data_engineer.sap_dashboard_carepay_installment was deployed under the user's
+explicit immediate instruction, with downstream review deferred. Additional voluntary receipts
+have ExpectedReceived=0 and ActualReceived=charges.amount/100. V3 remains held.
+Evidence: docs/FINDINGS_RCL_DASHBOARD_DEPLOY_20260926.md; before/after metadata, rollback,
+job statuses, and live assertions under docs/evidence/rcl_dashboard_only_20260926/.
+All 56 positional fields match. Both reported amounts verified in the live view. Newpayment/gate
+etags unchanged. No claim that downstream SAP imports are fixed. This is retrospective review per
+user instruction; prior source-only status no longer applies to this one deployed view.
+Timestamp is the artifact's actual git author timestamp. Review the deployed one-view artifact,
+not the earlier three-view candidate as if all of it had been deployed.
+Verdict: **PASS WITH NOTES (deployment mechanics) + URGENT RISK D1** — Claude Code,
+`docs/reviews/2026-09-26-08522b2-claude.md`. Diff, verbatim rollback, schema and etags verified.
+D1: the 01:30 ICT legacy Motor export reads the new dashboard through the OLD unguarded RCL 05
+views, a combination never measured, and the two target receipts still are not delivered (gate
+unchanged). Measure the live wrapper delta, or roll back, before the run (user decision).
+D2: the deployed SQL differs from the evidence candidate (COALESCE removed).
+
+## RQ-20260926-2145-rcl-legacy-classification-delta
+Status: REVIEWED
+Reviewer: Claude Code
+Class: A
+Artifact: commit `e419d84`; review exact delta `472e560..e419d84`.
+Opened: 2026-09-26T21:45:14+07:00
+Claim: deterministic raw charge lineage distinguishes first/additional receipts, preserves ordinary
+compulsory NULL-invoice behavior, and prevents invalid extras from falling into the ordinary branch.
+Legacy/upstream source only. Latest user instruction holds V3 implementation; no deployment.
+Evidence: docs/FINDINGS_RCL_REVIEW_DELTA_20260926.md and review_delta_source_sha256.json in its
+linked evidence directory. 26 behavioral cases pass; exact composed native query succeeds with
+20 target rows. Existing final-wrapper and raw-newpayment payloads removed=0; 56-field schema exact.
+All 64 changed prior dashboard payloads have tied first timestamps; per-period expected/interest
+sums unchanged. Added full-spine rows and shared-consumer deltas are explicitly disclosed.
+Independent focused source review: docs/reviews/2026-09-26-rcl-classification-delta-independent.md.
+Deployment remains blocked by later-period principal mapping, full-spine import idempotency,
+operational holds/allocation routing, shared-consumer compatibility and scoped deploy authorization.
+The 5,299-row ledger is identity triage, not proof of full accounting conservation or SAP posting.
+Timestamp above is the actual artifact author timestamp from git show, not a wall-clock estimate.
+Verdict: **PASS WITH NOTES (source); deploy BLOCKED** — Claude Code,
+`docs/reviews/2026-09-26-e419d84-claude.md`. N2–N5, N9 and N10 addressed. Notes: L1 silent-drop
+predicate in the ordinary branch (paid row failing lineage matches neither branch); L2 re-base on
+the deployed dashboard; L3 1,068-row older backlog needs an owner decision; V3 co-changes are now
+mandatory before un-pausing.
+
+## RQ-20260926-0944-rcl-additional-receipts
+Status: REVIEWED
+Reviewer: Claude Code
+Class: A
+Artifact: commit `c1476a3`; three SELECT-only RCL additional-payment replacements.
+Opened: 2026-09-26T09:44:48+07:00
+Claim: restores the two reported extra receipts while preserving existing final-wrapper payloads.
+Source-only; deployment remains BLOCKED by tied-charge ranking, later-period principal mapping,
+and durable reporting of held identities. Independent Codex second reader: PASS WITH NOTES for
+source handoff only; see docs/reviews/2026-09-26-rcl-additional-independent.md.
+Evidence: docs/FINDINGS_RCL_ADDITIONAL_FIX_20260926.md and its timestamped evidence directory.
+Final composed query job succeeded; execution_binding.json ties it to exact source SQL.
+No production object, SAP record, GCS object, or scheduler was changed.
+Verdict: **PASS WITH NOTES (source handoff) / BLOCK (deployment)** — Claude Code,
+`docs/reviews/2026-09-26-c1476a3-claude.md`. Static review only (no live BQ in this session). Adds
+two deployment blockers: N1, the shared-dashboard grain change reaches live dependents outside the
+three objects (V3 DDL 058 `row_n != total_n` would quarantine items with extras; DDL 087 counts
+change). Consider leaving the dashboard unchanged. N2, eir_regression reports 589 added payload
+rows but the findings disclose only the 80 additional rows. Also notes: no deterministic charge_rank
+tiebreak, additional flag inferred from ExpectedReceived=0, and missing builder count asserts.
+Addendum 21:00: V3 has the same defect (DDL 051 top-up hold, DDL 058 resolve and spine). There is
+an InvoiceNo standard conflict with V3 §2.5. Generality is not yet shown population-wide. Handed to
+Codex to fix legacy + upstream + V3 with population conservation acceptance: `docs/HANDOFF_QUEUE.md`
+[2026-09-26 21:00 ICT].
+
 ## RQ-20260828-0056-v3-unit5-item-validation-quarantine-delta
 Status: OPEN
 Reviewer: Claude Code

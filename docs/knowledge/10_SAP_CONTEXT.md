@@ -595,3 +595,28 @@ observed by BigQuery are unrecoverable.
   A file must declare which population it contains and must not mix them silently.
 - This decision supersedes any older statement that inferred RCB from the `RCB_MOTOR` folder or
   `INSURANCE_RCB` filename, or that rejected an RCL payload solely because it uses that template.
+
+
+## ADDENDUM 2026-09-26 — repeated RCL receipts (user instruction)
+
+User confirms that extra payments in the same installment must survive dashboard and RCL
+newpayment. Preserve a full normal period spine plus distinct additional receipt rows with
+ExpectedReceived=0 and ActualReceived>0. Do not reject these solely because their period is Paid.
+This clarifies the scope of the older one-row-per-period recovery constraint: it governs the
+normal schedule spine, not distinct additional receipt events. Invoice identity remains immutable.
+Period>1 principal mapping and tied-time first-charge ranking remain unresolved release questions;
+this instruction does not approve an inferred accounting allocation or production deployment.
+
+
+## ADDENDUM 2026-09-26 — scope after review
+
+User: "check review result, hold V3, keep fixing legacy and upstream views". Pause the V3
+implementation portion of the earlier handoff. Legacy/dashboard correction and dependency reads
+continue; no CALL, deployment or scheduler change is authorized by this scope update.
+Legacy invoice aliases are unchanged. Technical charge ties use create_time,id. Additional receipt
+classification must use source rank/charge lineage, never just zero ExpectedReceived. Principal
+allocation remains unanswered; runtime holds and import idempotency remain release requirements.
+
+## 2026-09-26T21:53:57+07:00 — Latest dashboard-only scope
+
+User explicitly requested immediate fix of only sap_dashboard_carepay_installment and deferred review of its readers. This one view is now deployed; newpayment/gate remain unchanged, V3 held. Deployment and rollback evidence: docs/FINDINGS_RCL_DASHBOARD_DEPLOY_20260926.md. Do not represent this as a complete downstream SAP import fix.

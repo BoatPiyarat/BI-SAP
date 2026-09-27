@@ -1,0 +1,11 @@
+{
+  "jobReference": {
+    "projectId": "pacific-plating-282708",
+    "jobId": "bqjob_r781afe9ec663c490_000001a0db93dc21_1",
+    "location": "asia-southeast1"
+  },
+  "source_file": "sql/adhoc/20260926_rcl_additional_target_validation.sql",
+  "executed_query_sha256_utf8": "08e394c4097ffb17adaac8ebf4b0c38388700b69679e7e41f077b23f959a6825",
+  "source_sha256": "228cc0b1729fac1d9e64bfe7cde86c2e56215c611a3bc3d962274bd400eb95df",
+  "query_matches_source_except_outer_whitespace": true
+}

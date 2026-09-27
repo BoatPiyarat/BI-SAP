@@ -1,0 +1,12 @@
+{
+  "RCL 05_newpayment": {
+    "etag": "s05ZGriBSzpbQIS53JLRew==",
+    "lastModifiedTime": "1788164874051",
+    "query_sha256": "0fc1d02cd74a4f1af2228efa6d40b669dd1607ef50819bd2d2b3a551bb07dc1b"
+  },
+  "RCL 05_paid by period": {
+    "etag": "zdY1dKIIlJt3foZNr1TFkg==",
+    "lastModifiedTime": "1788013805076",
+    "query_sha256": "6d80ee4e1871148ff2f0a9ee2d99fd25975b44fcda0db6c96cc4657de47b4113"
+  }
+}

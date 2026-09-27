@@ -1,5 +1,17 @@
 # INPUTS NEEDED — things only Boat / Aware / Attila / Finance can answer
 
+## OPEN 2026-09-26 — additional receipt accounting and legacy release scope
+
+Source fixes are prepared; see `docs/FINDINGS_RCL_ADDITIONAL_FIX_20260926.md`.
+Confirm whether additional receipts in period>1 set both PrincipleThisPeriod and
+PrincipleEIRThisPeriod to the raw charge amount, with zero interest (as for period1 extras).
+Current source mapping repeats scheduled principal in 54 candidate rows; evidence is
+`docs/evidence/rcl_additional_20260926/tie_diagnostic.json`, checked 2026-09-26 02:36:49 UTC.
+Technical ties now use create_time,id (review N3), with measured unchanged period sums.
+See FINDINGS_RCL_REVIEW_DELTA_20260926.md. Import-log evidence for carried-spine idempotency remains required. V3 implementation is ON HOLD.
+After release blockers and Class-A review are cleared, scoped deploy OK must explicitly cover
+this dashboard and both named v2 RCL views; the old NULL-safety exception does not authorize them.
+
 ## OPEN 2026-08-27 — Boat: approve the six Unit 2 magnitude thresholds and provenance
 
 The reviewed bootstrap procedure `sp_bootstrap_v3_unit2_magnitude` is deployed, and baseline run
