@@ -40,7 +40,7 @@ No production changes. Formal review is pending; downstream fixes remain outside
 Timestamp is the artifact's actual git author timestamp.
 
 ## RQ-20260926-2154-dashboard-only-deployment
-Status: OPEN
+Status: REVIEWED
 Reviewer: Claude Code
 Class: A
 Artifact: commit `08522b2`; dashboard-only deployed SQL and evidence.
@@ -55,9 +55,15 @@ etags unchanged. No claim that downstream SAP imports are fixed. This is retrosp
 user instruction; prior source-only status no longer applies to this one deployed view.
 Timestamp is the artifact's actual git author timestamp. Review the deployed one-view artifact,
 not the earlier three-view candidate as if all of it had been deployed.
+Verdict: **PASS WITH NOTES (deployment mechanics) + URGENT RISK D1** — Claude Code,
+`docs/reviews/2026-09-26-08522b2-claude.md`. Diff, verbatim rollback, schema and etags verified.
+D1: the 01:30 ICT legacy Motor export reads the new dashboard through the OLD unguarded RCL 05
+views, a combination never measured, and the two target receipts still are not delivered (gate
+unchanged). Measure the live wrapper delta, or roll back, before the run (user decision).
+D2: the deployed SQL differs from the evidence candidate (COALESCE removed).
 
 ## RQ-20260926-2145-rcl-legacy-classification-delta
-Status: OPEN
+Status: REVIEWED
 Reviewer: Claude Code
 Class: A
 Artifact: commit `e419d84`; review exact delta `472e560..e419d84`.
@@ -75,6 +81,11 @@ Deployment remains blocked by later-period principal mapping, full-spine import 
 operational holds/allocation routing, shared-consumer compatibility and scoped deploy authorization.
 The 5,299-row ledger is identity triage, not proof of full accounting conservation or SAP posting.
 Timestamp above is the actual artifact author timestamp from git show, not a wall-clock estimate.
+Verdict: **PASS WITH NOTES (source); deploy BLOCKED** — Claude Code,
+`docs/reviews/2026-09-26-e419d84-claude.md`. N2–N5, N9 and N10 addressed. Notes: L1 silent-drop
+predicate in the ordinary branch (paid row failing lineage matches neither branch); L2 re-base on
+the deployed dashboard; L3 1,068-row older backlog needs an owner decision; V3 co-changes are now
+mandatory before un-pausing.
 
 ## RQ-20260926-0944-rcl-additional-receipts
 Status: REVIEWED
