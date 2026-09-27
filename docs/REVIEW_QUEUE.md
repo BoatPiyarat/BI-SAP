@@ -1,8 +1,22 @@
-﻿# REVIEW_QUEUE.md — asynchronous mutual review
+# REVIEW_QUEUE.md — asynchronous mutual review
 
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+
+## RQ-20260927-0731-rcl-downstream
+Status: OPEN
+Reviewer: Claude Code
+Class: A
+Artifact: commit `5eb351f`; downstream RCL source repair and exact-source regression evidence.
+Opened: 2026-09-27T07:31:14+07:00
+Claim: receipt-aware newpayment and all-period gate, rank1 fallback, chronological deterministic wrapper,
+old-order eligibility, and missing unsent lineage runtime assertion. Current live dashboard unchanged.
+Evidence: docs/FINDINGS_RCL_DOWNSTREAM_20260927.md; final job/source binding and offline verifier;
+26 receipt cases +5 gate cases; schemas56/13/56; zero baseline payload removals/duplicate keys/spine gaps.
+596 older added Paid rows all verbatim SAP context. Independent source PASS WITH NOTES.
+Limits: NOT DEPLOYED; 8 later-period principal decisions, import idempotency and operational holds remain
+release gates. User business-rule question pending. V3 held. Broad diagnostic counts are not runtime failures.
 
 ## RQ-20260926-2341-sap-view-scenario-map
 Status: OPEN
