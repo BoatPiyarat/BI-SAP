@@ -5,7 +5,7 @@ review history; link the completed review and record its verdict.
 
 
 ## RQ-20260926-2341-sap-view-scenario-map
-Status: OPEN
+Status: REVIEWED
 Reviewer: Claude Code
 Class: A
 Artifact: commit `4a0d472`; missing-scenario route membership and root-cause preparation.
@@ -21,9 +21,14 @@ Fourteen cancelled-item payments are an investigation scenario, not one proven c
 are exclusive first blockers, not exhaustive attribution. REVIEW population excluded. Cancellation
 cache retains its prior timestamp. No production mutation; fix preparation only, V3 held.
 Timestamp is the actual artifact author timestamp.
+Verdict: **PASS WITH NOTES** — Claude Code, `docs/reviews/2026-09-27-4a0d472-claude.md`.
+S1: 678/703 "delivery not proven" links were paid 25–26 Sep (pipeline lag); only 25 are older.
+S2: EDC-KBANK hardcode confirmed live (lines 419–420). Prioritise it, and size existing SAP
+mis-postings over all history. S3: add the order-year cutoff to the additional-receipt acceptance
+population. S4: check DocEntry multiplicity for the overlapping owners.
 
 ## RQ-20260926-2318-careos-month-audit
-Status: OPEN
+Status: REVIEWED
 Reviewer: Claude Code
 Class: A
 Artifact: commit `8e0b1dd`; current-month receipt/cancellation audit and evidence.
@@ -38,6 +43,11 @@ Limits: mirror excludes B2B; identity is not GL/amount allocation; REVIEW confli
 source/filter attributes are not automatically proven causes; one undated cancel excluded from month.
 No production changes. Formal review is pending; downstream fixes remain outside this audit.
 Timestamp is the artifact's actual git author timestamp.
+Verdict: **PASS WITH NOTES** — Claude Code, `docs/reviews/2026-09-27-8e0b1dd-claude.md`.
+A1: 845/1,341 missing links were paid 25–26 Sep and are within the pipeline lag; add a
+WITHIN_PIPELINE_LAG bucket. The real candidate backlog is about 496 links (paid ≤ 24 Sep).
+A2: profile the 435 no-order charges (age, provider) before calling them linkage defects.
+A4: ~11k transaction rows committed to git (no personal fields).
 
 ## RQ-20260926-2154-dashboard-only-deployment
 Status: OPEN
