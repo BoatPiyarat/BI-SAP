@@ -4,6 +4,51 @@ Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request firs
 review history; link the completed review and record its verdict.
 
 
+## RQ-20260926-2341-sap-view-scenario-map
+Status: REVIEWED
+Reviewer: Claude Code
+Class: A
+Artifact: commit `4a0d472`; missing-scenario route membership and root-cause preparation.
+Opened: 2026-09-26T23:41:58+07:00
+Claim: all 12 live sap_view definitions checked; ten paid/create/change/credit-shell output probes
+and cached unchanged-definition cancellation output mapped to the fixed September missing population.
+Paid 1,341 links =703 identity-present +203 absent +435 no order; cancellation184=134 present+50 absent.
+Evidence: docs/FINDINGS_CAREOS_SCENARIO_ROOT_CAUSES_20260926.md, scenario CSVs, 13 successful job
+bindings and scripts/analyze_month_scenario_routes_20260926.py. Independent PASS WITH NOTES:
+docs/reviews/2026-09-26-scenario-routes-independent.md.
+Limits: identity/status membership is not payload validity, DocEntry multiplicity, scheduling or import.
+Fourteen cancelled-item payments are an investigation scenario, not one proven cause; primary groups
+are exclusive first blockers, not exhaustive attribution. REVIEW population excluded. Cancellation
+cache retains its prior timestamp. No production mutation; fix preparation only, V3 held.
+Timestamp is the actual artifact author timestamp.
+Verdict: **PASS WITH NOTES** — Claude Code, `docs/reviews/2026-09-27-4a0d472-claude.md`.
+S1: 678/703 "delivery not proven" links were paid 25–26 Sep (pipeline lag); only 25 are older.
+S2: EDC-KBANK hardcode confirmed live (lines 419–420). Prioritise it, and size existing SAP
+mis-postings over all history. S3: add the order-year cutoff to the additional-receipt acceptance
+population. S4: check DocEntry multiplicity for the overlapping owners.
+
+## RQ-20260926-2318-careos-month-audit
+Status: REVIEWED
+Reviewer: Claude Code
+Class: A
+Artifact: commit `8e0b1dd`; current-month receipt/cancellation audit and evidence.
+Opened: 2026-09-26T23:18:47+07:00
+Claim: reusable read-only raw CareOS versus SAP_LIVE_FULL exception query preserves charge/item
+and cancellation DocEntry grain. September month-to-date: 26,290 successful charges; 1,310 charges
+lack matching terminal SAP evidence; cancellation 184 rows / 46 items lack cancellation evidence.
+Evidence: docs/FINDINGS_CAREOS_MONTH_COMPLETENESS_20260926.md and its evidence directory,
+execution_binding.json, successful query job and live producer membership. Independent review:
+docs/reviews/2026-09-26-month-audit-independent.md (PASS WITH NOTES).
+Limits: mirror excludes B2B; identity is not GL/amount allocation; REVIEW conflicts are separate;
+source/filter attributes are not automatically proven causes; one undated cancel excluded from month.
+No production changes. Formal review is pending; downstream fixes remain outside this audit.
+Timestamp is the artifact's actual git author timestamp.
+Verdict: **PASS WITH NOTES** — Claude Code, `docs/reviews/2026-09-27-8e0b1dd-claude.md`.
+A1: 845/1,341 missing links were paid 25–26 Sep and are within the pipeline lag; add a
+WITHIN_PIPELINE_LAG bucket. The real candidate backlog is about 496 links (paid ≤ 24 Sep).
+A2: profile the 435 no-order charges (age, provider) before calling them linkage defects.
+A4: ~11k transaction rows committed to git (no personal fields).
+
 ## RQ-20260926-2154-dashboard-only-deployment
 Status: REVIEWED
 Reviewer: Claude Code

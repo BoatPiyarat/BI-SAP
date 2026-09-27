@@ -1,0 +1,318 @@
+{
+  "jobReference": {
+    "projectId": "pacific-plating-282708",
+    "jobId": "codex_careos_month_audit_20260926_2211",
+    "location": "asia-southeast1"
+  },
+  "status": {
+    "state": "DONE"
+  },
+  "statistics": {
+    "creationTime": "1790436324581",
+    "startTime": "1790436324624",
+    "endTime": "1790436404790",
+    "totalBytesProcessed": "10660329576",
+    "query": {
+      "totalBytesProcessed": "10660329576",
+      "totalBytesBilled": "10723786752",
+      "totalSlotMs": "794861",
+      "schema": {
+        "fields": [
+          {
+            "name": "event_type",
+            "type": "STRING",
+            "mode": "NULLABLE"
+          },
+          {
+            "name": "date_scope",
+            "type": "STRING",
+            "mode": "NULLABLE"
+          },
+          {
+            "name": "order_id",
+            "type": "STRING",
+            "mode": "NULLABLE"
+          },
+          {
+            "name": "order_item",
+            "type": "STRING",
+            "mode": "NULLABLE"
+          },
+          {
+            "name": "item_pk",
+            "type": "STRING",
+            "mode": "NULLABLE"
+          },
+          {
+            "name": "transaction_id",
+            "type": "STRING",
+            "mode": "NULLABLE"
+          },
+          {
+            "name": "charge_id",
+            "type": "STRING",
+            "mode": "NULLABLE"
+          },
+          {
+            "name": "installment_period",
+            "type": "INTEGER",
+            "mode": "NULLABLE"
+          },
+          {
+            "name": "business_type",
+            "type": "STRING",
+            "mode": "NULLABLE"
+          },
+          {
+            "name": "product",
+            "type": "STRING",
+            "mode": "NULLABLE"
+          },
+          {
+            "name": "motor_item_type",
+            "type": "STRING",
+            "mode": "NULLABLE"
+          },
+          {
+            "name": "flow",
+            "type": "STRING",
+            "mode": "NULLABLE"
+          },
+          {
+            "name": "payment_mode",
+            "type": "STRING",
+            "mode": "NULLABLE"
+          },
+          {
+            "name": "payment_option",
+            "type": "STRING",
+            "mode": "NULLABLE"
+          },
+          {
+            "name": "careos_total_installments",
+            "type": "INTEGER",
+            "mode": "NULLABLE"
+          },
+          {
+            "name": "paid_date",
+            "type": "DATE",
+            "mode": "NULLABLE"
+          },
+          {
+            "name": "paid_at",
+            "type": "TIMESTAMP",
+            "mode": "NULLABLE"
+          },
+          {
+            "name": "paid_date_source",
+            "type": "STRING",
+            "mode": "NULLABLE"
+          },
+          {
+            "name": "raw_payment_at",
+            "type": "TIMESTAMP",
+            "mode": "NULLABLE"
+          },
+          {
+            "name": "charge_updated_at",
+            "type": "TIMESTAMP",
+            "mode": "NULLABLE"
+          },
+          {
+            "name": "cancellation_date",
+            "type": "DATE",
+            "mode": "NULLABLE"
+          },
+          {
+            "name": "cancelled_at",
+            "type": "TIMESTAMP",
+            "mode": "NULLABLE"
+          },
+          {
+            "name": "charge_amount_thb",
+            "type": "FLOAT",
+            "mode": "NULLABLE"
+          },
+          {
+            "name": "comparable_item_amount_thb",
+            "type": "FLOAT",
+            "mode": "NULLABLE"
+          },
+          {
+            "name": "raw_invoice_no",
+            "type": "STRING",
+            "mode": "NULLABLE"
+          },
+          {
+            "name": "payment_method",
+            "type": "STRING",
+            "mode": "NULLABLE"
+          },
+          {
+            "name": "service_provider",
+            "type": "STRING",
+            "mode": "NULLABLE"
+          },
+          {
+            "name": "period_charge_rank",
+            "type": "INTEGER",
+            "mode": "NULLABLE"
+          },
+          {
+            "name": "transaction_charge_rank",
+            "type": "INTEGER",
+            "mode": "NULLABLE"
+          },
+          {
+            "name": "order_item_count",
+            "type": "INTEGER",
+            "mode": "NULLABLE"
+          },
+          {
+            "name": "compulsory_item_count",
+            "type": "INTEGER",
+            "mode": "NULLABLE"
+          },
+          {
+            "name": "allocation_scope",
+            "type": "STRING",
+            "mode": "NULLABLE"
+          },
+          {
+            "name": "is_cancelled",
+            "type": "BOOLEAN",
+            "mode": "NULLABLE"
+          },
+          {
+            "name": "is_change_order_new",
+            "type": "BOOLEAN",
+            "mode": "NULLABLE"
+          },
+          {
+            "name": "is_change_order_old",
+            "type": "BOOLEAN",
+            "mode": "NULLABLE"
+          },
+          {
+            "name": "lead_status",
+            "type": "STRING",
+            "mode": "NULLABLE"
+          },
+          {
+            "name": "submission_status",
+            "type": "STRING",
+            "mode": "NULLABLE"
+          },
+          {
+            "name": "approval_status",
+            "type": "STRING",
+            "mode": "NULLABLE"
+          },
+          {
+            "name": "snapshot_periods",
+            "type": "INTEGER",
+            "mode": "NULLABLE"
+          },
+          {
+            "name": "sap_item_rows",
+            "type": "INTEGER",
+            "mode": "NULLABLE"
+          },
+          {
+            "name": "sap_period_rows",
+            "type": "INTEGER",
+            "mode": "NULLABLE"
+          },
+          {
+            "name": "sap_period_paid_rows",
+            "type": "INTEGER",
+            "mode": "NULLABLE"
+          },
+          {
+            "name": "sap_period_statuses",
+            "type": "STRING",
+            "mode": "NULLABLE"
+          },
+          {
+            "name": "matched_sap_rows",
+            "type": "INTEGER",
+            "mode": "NULLABLE"
+          },
+          {
+            "name": "terminal_matches",
+            "type": "INTEGER",
+            "mode": "NULLABLE"
+          },
+          {
+            "name": "matched_statuses",
+            "type": "STRING",
+            "mode": "NULLABLE"
+          },
+          {
+            "name": "matched_invoices",
+            "type": "STRING",
+            "mode": "NULLABLE"
+          },
+          {
+            "name": "matched_docentries",
+            "type": "STRING",
+            "mode": "NULLABLE"
+          },
+          {
+            "name": "sap_matched_actual",
+            "type": "FLOAT",
+            "mode": "NULLABLE"
+          },
+          {
+            "name": "sap_update_at",
+            "type": "TIMESTAMP",
+            "mode": "NULLABLE"
+          },
+          {
+            "name": "sap_paid_date",
+            "type": "DATE",
+            "mode": "NULLABLE"
+          },
+          {
+            "name": "reason_code",
+            "type": "STRING",
+            "mode": "NULLABLE"
+          },
+          {
+            "name": "cancellation_docentry",
+            "type": "INTEGER",
+            "mode": "NULLABLE"
+          },
+          {
+            "name": "needs_review",
+            "type": "BOOLEAN",
+            "mode": "NULLABLE"
+          },
+          {
+            "name": "reconciliation_status",
+            "type": "STRING",
+            "mode": "NULLABLE"
+          },
+          {
+            "name": "audit_month_start",
+            "type": "DATE",
+            "mode": "NULLABLE"
+          },
+          {
+            "name": "audit_month_end_exclusive",
+            "type": "DATE",
+            "mode": "NULLABLE"
+          },
+          {
+            "name": "audit_as_of",
+            "type": "TIMESTAMP",
+            "mode": "NULLABLE"
+          }
+        ]
+      },
+      "statementType": "SCRIPT"
+    },
+    "totalSlotMs": "794861",
+    "numChildJobs": "19"
+  }
+}

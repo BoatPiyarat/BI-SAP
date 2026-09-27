@@ -1,0 +1,80 @@
+{
+  "kind": "bigquery#table",
+  "etag": "c8wr+eCJSXbiTPi3FdRT8w==",
+  "id": "pacific-plating-282708:careos.carepay_transaction_snapshots",
+  "selfLink": "https://bigquery.googleapis.com/bigquery/v2/projects/pacific-plating-282708/datasets/careos/tables/carepay_transaction_snapshots",
+  "tableReference": {
+    "projectId": "pacific-plating-282708",
+    "datasetId": "careos",
+    "tableId": "carepay_transaction_snapshots"
+  },
+  "schema": {
+    "fields": [
+      {
+        "name": "id",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "create_time",
+        "type": "TIMESTAMP",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "update_time",
+        "type": "TIMESTAMP",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "delete_time",
+        "type": "TIMESTAMP",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "version",
+        "type": "INTEGER",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "transaction_id",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "payment_option",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "payment_method",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "is_current",
+        "type": "BOOLEAN",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "number_of_installment",
+        "type": "INTEGER",
+        "mode": "NULLABLE"
+      }
+    ]
+  },
+  "numBytes": "101116664",
+  "numLongTermBytes": "0",
+  "numRows": "741104",
+  "creationTime": "1708504901374",
+  "lastModifiedTime": "1790429422753",
+  "type": "TABLE",
+  "location": "asia-southeast1",
+  "numTimeTravelPhysicalBytes": "264771367",
+  "numTotalLogicalBytes": "101116664",
+  "numActiveLogicalBytes": "101116664",
+  "numLongTermLogicalBytes": "0",
+  "numTotalPhysicalBytes": "302714626",
+  "numActivePhysicalBytes": "302714626",
+  "numLongTermPhysicalBytes": "0",
+  "numCurrentPhysicalBytes": "37943259"
+}

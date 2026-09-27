@@ -1,0 +1,7 @@
+{
+  "job_id": "codex_careos_month_audit_final_20260926",
+  "source_file": "sql/operator/careos_current_month_sap_completeness.sql",
+  "sha256": "d2465bc5cd90bda7287b196d2a130a42b834e0c0981b51054eb63a9c6fc3bde6",
+  "executed_query_matches_except_outer_whitespace": true,
+  "verified_at": "2026-09-26T16:17:02.369533+00:00"
+}

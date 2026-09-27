@@ -1,0 +1,310 @@
+{
+  "kind": "bigquery#table",
+  "etag": "nFBQo7Ti4FC5LqA/NS3oQA==",
+  "id": "pacific-plating-282708:sap_data_engineer.sap_dashboard_carepay_fully_paid",
+  "selfLink": "https://bigquery.googleapis.com/bigquery/v2/projects/pacific-plating-282708/datasets/sap_data_engineer/tables/sap_dashboard_carepay_fully_paid",
+  "tableReference": {
+    "projectId": "pacific-plating-282708",
+    "datasetId": "sap_data_engineer",
+    "tableId": "sap_dashboard_carepay_fully_paid"
+  },
+  "schema": {
+    "fields": [
+      {
+        "name": "CompanyDB",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "OrderID",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "OrderItem",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "InvoiceNo",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "OrderDate",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "InsuredID",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "Title",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "FirstName",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "LastName",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "InsurerCode",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "InsuranceGroup",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "InsuranceType",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "InsuranceProduct",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "ProductType",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "PolicyType",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "Endorse",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "PolicyDate",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "PolicyNo",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "EndorsementNo",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "ChassisNo",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "LicensePlate",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "GrossPremium",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "StampDuty",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "VAT",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "TotalPremium",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "WHT",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "TotalEIR",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "TotalSBT",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "ProcessingFee",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "ProcessingFeeVat",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "ShippingFee",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "ShippingFeeVat",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "TotalAmount",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "Discount",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "TransactionStatus",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "SubmissionStatus",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "ApprovalStatus",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "PaymentStatus",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "ExpectedReceived",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "ActualReceived",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "InterestThisPeriod",
+        "type": "INTEGER",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "PrincipleThisPeriod",
+        "type": "INTEGER",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "InterestEIRThisPeriod",
+        "type": "INTEGER",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "PrincipleEIRThisPeriod",
+        "type": "INTEGER",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "PaymentDate",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "Period",
+        "type": "INTEGER",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "TotalPeriods",
+        "type": "INTEGER",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "PendingPayment",
+        "type": "INTEGER",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "PaymentMethod",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "PaymentChannel",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "ExpectedDate",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "RefOrder",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "RefundAmountBeforeFee",
+        "type": "INTEGER",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "RefundAmountAfterFee",
+        "type": "INTEGER",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "BillingAddress",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "BatchRunDate",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      }
+    ]
+  },
+  "numBytes": "0",
+  "numLongTermBytes": "0",
+  "numRows": "0",
+  "creationTime": "1717649569487",
+  "lastModifiedTime": "1787929126818",
+  "type": "VIEW",
+  "view": {
+    "query": "--sap_dashboard_carepay_fully_paid--\n\n -- 11/04/2024\n -- 09/12/2024 Haruethai Update Column 'InsuranceGroup', 'InsuranceType', 'InsuranceProduct' for order NONMOTOR on CareOs\n -- 16/03/2025 Piyarat excludes credit shell(new order from cancel change order) and correct ref.orders from CareOS\n -- 4/July/2025 Piyarat fixed the price after discount in snapshot price summary\n -- 19/July/2025 Piyarat changed ExpectedReceived for Multipu payment per period\n -- 29/Jun/2026 Piyarat changes CMI identifier to motor_item_type = 'MOTOR_TYPE_COMPULSORY'\n-- sap_dashboard_carepay_fully_paid -- TUNED VERSION\n-- Tuned: 2026-07-11\n-- Changes:\n--  1. Removed redundant 2nd join to `charges` in onetime_master_go\n--     (charge_rank now carried forward from onetime_master's first join)\n--  2. Replaced full SAP_LIVE_FULL join with pre-aggregated lookup\n--     (only U_OrderID + MAX(BatchRunDate), non-compulsory rows only)\n--  3. Pushed policy_start_date filter into order_items CTE (filter early,\n--     before the 9-way join, instead of after)\n-- ============================================================\n-- Fixed & re-tuned: 2026-08-28 (Boat review)\n-- Changes:\n--  4. FIX (logic gap): transactions.payment_option <> 'RABBIT_CARE_INSTALLMENT'\n--     was a single-enum blacklist -- any OTHER installment payment_option value\n--     would silently pass through. Removed this filter entirely; installment\n--     exclusion is now defined ONLY by the structural signal\n--     transaction_snapshots.number_of_installment = 1, which is already\n--     enforced in two places below (see notes at each spot). This is more\n--     complete than any enum list we could hardcode without a live check.\n--  5. Removed unused CTE `transaction_snapshot_installment_details`\n--     (declared, never joined/referenced -- dead code)\n--  6. Pushed `orders.product = 'products/car-insurance'` filter into the\n--     `orders` CTE (was applied post-join in WHERE) -- same result, less\n--     data flowing through the 9-way join\n--  7. Pushed `installment = 1` filter into the `follow_ups` CTE (was applied\n--     post-join in WHERE as `follow_ups.installment = 1 OR ... IS NULL`) --\n--     reduces fan-out from transactions with multiple follow_up rows before\n--     the join, instead of after\n--  8. Removed WHERE conditions in onetime_master that were already fully\n--     enforced by upstream CTE filters (charges.status, charges.service_provider,\n--     the follow_ups OR-IS-NULL condition) -- these became dead/always-true\n--     predicates after changes #4/#6/#7 and cost cycles for no effect on result\n-- NOT changed: final SELECT block is byte-identical to the original --\n--     no change to result logic, calculation, or output format.\n-- ============================================================\n\n\nWITH\n\ncharges AS (\n  SELECT * ,\n    ROW_NUMBER() OVER (PARTITION BY transaction_id ORDER BY create_time) AS charge_rank\n  FROM `pacific-plating-282708.careos.carepay_charges`\n  WHERE status = 'SUCCESSFUL'\n  AND service_provider <> 'RABBIT_LENDING'\n),\n\n-- FIX 7: installment filter pushed here. A transaction with no row left after\n-- this filter will simply produce NULL on the LEFT JOIN below, which is exactly\n-- what \"follow_ups.installment IS NULL\" used to check for post-join -- same\n-- result, computed on fewer rows before the join instead of after.\nfollow_ups AS (\n  SELECT * FROM `pacific-plating-282708.careos.carepay_follow_ups`\n  WHERE installment = 1\n),\n\ntransaction_snapshot_price_summaries AS (\n  SELECT * FROM `pacific-plating-282708.careos.carepay_transaction_snapshot_price_summaries`\n),\n\n-- Authoritative \"is this a one-time / plain payment\" signal (FIX 4).\n-- Enforced here AND again in onetime_master's WHERE below -- the second\n-- one is what actually matters for correctness (turns the LEFT JOIN into\n-- an effective INNER JOIN); this CTE-level filter just shrinks the table\n-- before the big join for performance.\ntransaction_snapshots AS (\n  SELECT * FROM `pacific-plating-282708.careos.carepay_transaction_snapshots`\n  WHERE number_of_installment = 1\n),\n\ntransactions AS (\n  SELECT * FROM `pacific-plating-282708.careos.carepay_transactions`\n),\n\n-- FIX 6: product filter pushed here (was in WHERE, post-join). Identical\n-- result, less data through the 9-way join.\norders AS (\n  SELECT * FROM `pacific-plating-282708.careos.careos_orders`\n  WHERE product = 'products/car-insurance'\n),\n\n-- date filter pushed here (early), instead of only in the final WHERE\norder_items AS (\n  SELECT * FROM `pacific-plating-282708.careos.careos_order_items`\n  WHERE policy_start_date >= '2025-01-01'\n),\n\nleads AS (\n  SELECT * FROM `pacific-plating-282708.careos.careos_leads`\n),\n\nchange AS (\n  SELECT * FROM `pacific-plating-282708.careos.cancelled_change_orders`\n),\n\ncompu_detail AS (\n  SELECT\n    orders.human_id AS order_id,\n    CASE\n      WHEN order_items.gross_premium IS NULL THEN 0\n      ELSE order_items.gross_premium\n    END AS gross_premium\n  FROM\n    `pacific-plating-282708.careos.careos_order_items` order_items\n  LEFT JOIN\n    `pacific-plating-282708.careos.careos_orders` orders\n  ON\n    order_items.order_id = orders.id\n  WHERE\n    order_items.motor_item_type = 'MOTOR_TYPE_COMPULSORY'\n    AND orders.product = 'products/car-insurance'\n    AND order_items.policy_start_date >= '2025-01-01'\n),\n\n-- pre-aggregate SAP_LIVE_FULL down to just what's needed\n-- (U_OrderID + latest BatchRunDate, non-compulsory only) BEFORE joining\n-- instead of joining the entire wide view per row\nsap_batchrun AS (\n  SELECT\n    U_OrderID,\n    MAX(BatchRunDate) AS BatchRunDate\n  FROM `pacific-plating-282708.sap_integration_v2.SAP_LIVE_FULL`\n  WHERE U_InsuranceType <> 'MOTOR_TYPE_COMPULSORY'\n  GROUP BY U_OrderID\n),\n\nonetime_master AS (\n  SELECT\n    DISTINCT CAST(charges.amount AS FLOAT64) AS charges_amount,\n    order_items.motor_item_type,\n    order_items.packagetype,\n    charges.service_provider,\n    charges.charge_rank,\n    orders.create_time AS OrderDate,\n    charges.status,\n    orders.human_id OrderID,\n    order_items.human_id AS OrderItem,\n    order_items.price price,\n    order_items.net_premium AS GrossPremium,\n    order_items.stamp_duty AS StampDuty,\n    order_items.vat_amount AS VAT,\n    order_items.gross_premium TotalPremium,\n    COALESCE(ROUND((1 / 100) * transaction_snapshot_price_summaries.wht_amount,2),0) AS WHT_master,\n    ROUND((1 / 100) * transaction_snapshot_price_summaries.interest_amount,2) AS TotalEIR_check,\n    CASE\n      WHEN transaction_snapshot_price_summaries.interest_amount IS NULL THEN 0\n      ELSE ROUND(ROUND((1 / 100) * transaction_snapshot_price_summaries.interest_amount,2) - ((ROUND((1 / 100) * transaction_snapshot_price_summaries.interest_amount,2) * 3.3) / 103.3),2)\n    END AS TotalEIR,\n    CASE\n      WHEN transaction_snapshot_price_summaries.interest_amount IS NULL THEN 0\n      ELSE ROUND(((ROUND((1 / 100) * transaction_snapshot_price_summaries.interest_amount,2) * 3.3) / 103.3),2)\n    END AS TotalSBT,\n    CASE\n      WHEN transaction_snapshot_price_summaries.processing_fee_amount IS NULL THEN 0\n      ELSE ROUND (ROUND((1 / 100) * transaction_snapshot_price_summaries.processing_fee_amount,2) * (100/107),2)\n    END AS ProcessingFee_master,\n    CASE\n      WHEN transaction_snapshot_price_summaries.processing_fee_amount IS NULL THEN 0\n      ELSE ROUND(ROUND((1 / 100) * transaction_snapshot_price_summaries.processing_fee_amount,2) - (ROUND((1 / 100) * transaction_snapshot_price_summaries.processing_fee_amount,2) * (100/107)),2)\n    END AS ProcessingFeeVat_master,\n    CASE\n      WHEN transaction_snapshot_price_summaries.shipment_fee IS NULL THEN 0\n      ELSE ROUND(ROUND((1 / 100) * transaction_snapshot_price_summaries.shipment_fee,2) * (100/107),2)\n    END AS ShippingFee_master,\n    CASE\n      WHEN transaction_snapshot_price_summaries.shipment_fee IS NULL THEN 0\n      ELSE ROUND(ROUND((1 / 100) * transaction_snapshot_price_summaries.shipment_fee,2) - ROUND((1 / 100) * transaction_snapshot_price_summaries.shipment_fee,2) * (100/107),2)\n    END AS ShippingFeeVat_master,\n    COALESCE(ROUND((1 / 100) * transaction_snapshot_price_summaries.discount_amount,2),0) AS Discount_master,\n    charges.status AS TransactionStatus,\n    order_items.submission_status AS SubmissionStatus,\n    order_items.approval_status AS ApprovalStatus,\n    transactions.status AS PaymentStatus,\n    ROUND(((1 / 100) * charges.amount),2) AS ActualReceived_master,  -- \u0e08\u0e33\u0e19\u0e27\u0e19\u0e40\u0e07\u0e34\u0e19\u0e17\u0e35\u0e48\u0e25\u0e39\u0e01\u0e04\u0e49\u0e32\u0e08\u0e48\u0e32\u0e22\u0e21\u0e32\u0e08\u0e23\u0e34\u0e07\u0e46 \u0e2b\u0e49\u0e32\u0e21\u0e40\u0e1b\u0e25\u0e35\u0e48\u0e22\u0e19\n    0 AS PrincipleThisPeriod,\n    transaction_snapshot_price_summaries.interest_amount AS InterestEIRThisPeriod,\n    0 AS PrincipleEIRThisPeriod,\n    CASE\n      -- \u0e01\u0e23\u0e13\u0e35\u0e21\u0e35 BatchRunDate\n      WHEN sap_batchrun.BatchRunDate IS NOT NULL THEN\n        CASE\n          WHEN DATE(PARSE_TIMESTAMP('%d%m%Y', sap_batchrun.BatchRunDate))\n               < DATE_TRUNC(CURRENT_DATE(), MONTH)\n               AND CURRENT_DATE() > DATE_ADD(\n                     LAST_DAY(DATE_SUB(CURRENT_DATE(), INTERVAL 1 MONTH)),\n                     INTERVAL 3 DAY\n                   )\n          THEN TIMESTAMP(DATE_TRUNC(CURRENT_DATE(), MONTH))\n          ELSE PARSE_TIMESTAMP('%d%m%Y', sap_batchrun.BatchRunDate)\n        END\n      -- \u0e01\u0e23\u0e13\u0e35\u0e44\u0e21\u0e48\u0e21\u0e35 BatchRunDate\n      WHEN DATE(COALESCE(charges.payment_date, charges.update_time))\n           < DATE_TRUNC(CURRENT_DATE(), MONTH)\n           AND CURRENT_DATE() > DATE_ADD(\n                 LAST_DAY(DATE_SUB(CURRENT_DATE(), INTERVAL 1 MONTH)),\n                 INTERVAL 3 DAY\n               )\n      THEN TIMESTAMP(DATE_TRUNC(CURRENT_DATE(), MONTH))\n      ELSE COALESCE(charges.payment_date, charges.update_time)\n    END AS PaymentDate,\n    charges.installment_number AS Period,\n    1 AS TotalPeriods,\n    0 AS PendingPayment,\n    charges.create_time AS ExpectedDate,\n    charges.id AS charges_id,\n    CASE\n      WHEN charges.third_party_id IS NULL AND charges.status = 'SUCCESSFUL' THEN CONCAT(charges.charge_rank,\"_\",order_items.human_id)\n      WHEN charges.third_party_id IS NULL AND charges.status <> 'SUCCESSFUL' THEN ''\n      ELSE charges.third_party_id\n    END AS InvoiceNo,\n    order_items.insurer AS InsurerCode,\n    order_items.product AS InsuranceGroup,\n    order_items.motor_item_type AS InsuranceType,\n    CASE\n      WHEN JSON_VALUE(orders.data, '$.oicCode') IN ('TYPE_610', 'TYPE_620', 'TYPE_630') THEN 'MotorBike'\n      WHEN JSON_VALUE(orders.data, '$.oicCode') IS NOT NULL THEN 'Motor'\n      ELSE order_items.product\n    END AS InsuranceProduct,\n    'Insurance' AS ProductType,\n    leads.type AS PolicyType,\n    'N' AS Endorse,\n    order_items.policy_start_date AS PolicyDate,\n    order_items.policy_number AS PolicyNo,\n    NULL AS EndorsementNo,\n    JSON_VALUE(orders.data, '$.chassisNumber') AS ChassisNo,\n    JSON_VALUE(orders.data, '$.carLicensePlate') AS LicensePlate,\n    charges.payment_method AS PaymentMethod,\n    charges.service_provider AS PaymentChannel,\n    CASE\n      WHEN JSON_VALUE(orders.data, '$.policyHolder.isCompany') ='true' AND JSON_VALUE(orders.data, '$.policyHolder.companyTaxId') IS NULL THEN '-'\n      WHEN JSON_VALUE(orders.data, '$.policyHolder.isCompany') ='true' AND JSON_VALUE(orders.data, '$.policyHolder.companyTaxId') IS NOT NULL THEN JSON_VALUE(orders.data, '$.policyHolder.companyTaxId')\n      WHEN JSON_VALUE(orders.data, '$.idNumber') IS NULL OR JSON_VALUE(orders.data, '$.idNumber') IN ('', ' ') THEN '-'\n      ELSE JSON_VALUE(orders.data, '$.idNumber')\n    END AS InsuredID,\n    JSON_VALUE(orders.data, '$.policyHolder.title') AS Title,\n    COALESCE(JSON_VALUE(orders.data, '$.policyHolder.firstName'),JSON_VALUE(orders.data, '$.policyHolder.policyAddress.companyName')) AS FirstName,\n    JSON_VALUE(orders.data, '$.policyHolder.lastName') AS LastName,\n    0 AS RefundAmountBeforeFee,\n    0 AS RefundAmountAfterFee,\n    CASE\n      WHEN JSON_VALUE(orders.data, '$.policyHolder.policyAddress.isBillingAddress') = 'true' THEN CONCAT( COALESCE(JSON_VALUE(orders.data, '$.policyHolder.policyAddress.fullName'),JSON_VALUE(orders.data, '$.policyHolder.policyAddress.companyName')), ', ', JSON_VALUE(orders.data, '$.policyHolder.policyAddress.address'), ', ', JSON_VALUE(orders.data, '$.policyHolder.policyAddress.subDistrict'), ', ', JSON_VALUE(orders.data, '$.policyHolder.policyAddress.district'), ', ', JSON_VALUE(orders.data, '$.policyHolder.policyAddress.province'), ', ', JSON_VALUE(orders.data, '$.policyHolder.policyAddress.postCode') )\n      ELSE CONCAT( JSON_VALUE(orders.data, '$.policyHolder.billingAddress.fullName'), ', ', JSON_VALUE(orders.data, '$.policyHolder.billingAddress.address'), ', ', JSON_VALUE(orders.data, '$.policyHolder.billingAddress.subDistrict'), ', ', JSON_VALUE(orders.data, '$.policyHolder.billingAddress.district'), ', ', JSON_VALUE(orders.data, '$.policyHolder.billingAddress.province'), ', ', JSON_VALUE(orders.data, '$.policyHolder.billingAddress.postCode') )\n    END AS BillingAddress,\n    CURRENT_DATE() AS BatchRunDate,\n    'RCB' AS CompanyDB,\n    ch.old_human_id AS RefOrder,\n    ROW_NUMBER() OVER (PARTITION BY order_items.human_id ORDER BY order_items.create_time,charges.create_time) AS cmi_rank\n  FROM\n    orders\n  LEFT JOIN leads ON CONCAT('leads/',leads.id) = orders.lead\n  LEFT JOIN transactions ON CONCAT('transactions/',transactions.id) = orders.payment\n  LEFT JOIN follow_ups ON follow_ups.transaction_id = transactions.id\n  LEFT JOIN charges ON charges.transaction_id = transactions.id\n  LEFT JOIN order_items ON order_items.order_id = orders.id\n  LEFT JOIN transaction_snapshots ON transaction_snapshots.transaction_id = transactions.id\n  LEFT JOIN transaction_snapshot_price_summaries ON transaction_snapshot_price_summaries.snapshot_id = transaction_snapshots.id\n  LEFT JOIN change ch ON ch.current_human_id = orders.human_id\n  LEFT JOIN sap_batchrun ON sap_batchrun.U_OrderID = ch.old_human_id\n  WHERE\n    -- FIX 4: this is now the ONLY installment/one-time gate. It is what makes\n    -- the LEFT JOIN to transaction_snapshots behave as an INNER JOIN --\n    -- rows with no matching number_of_installment=1 snapshot get excluded here.\n    transaction_snapshots.number_of_installment = 1\n    -- NOTE: the cmi_rank guard is NOT here -- cmi_rank is a window-function\n    -- alias defined in this same SELECT, and BigQuery evaluates WHERE before\n    -- window functions, so it can't be referenced here. It's applied one\n    -- level up in onetime_master_go's WHERE instead (original location),\n    -- where cmi_rank is a plain output column.\n),\n\nonetime_master_go AS (\n  SELECT\n    * EXCEPT(charge_rank),\n    charge_rank,\n    CASE WHEN motor_item_type = 'MOTOR_TYPE_COMPULSORY' THEN 0 ELSE WHT_master END AS WHT,\n    CASE WHEN motor_item_type = 'MOTOR_TYPE_COMPULSORY' THEN 0 ELSE ProcessingFee_master END AS ProcessingFee,\n    CASE WHEN motor_item_type = 'MOTOR_TYPE_COMPULSORY' THEN 0 ELSE ProcessingFeeVat_master END AS ProcessingFeeVat,\n    CASE WHEN motor_item_type = 'MOTOR_TYPE_COMPULSORY' THEN 0 ELSE ShippingFee_master END AS ShippingFee,\n    CASE WHEN motor_item_type = 'MOTOR_TYPE_COMPULSORY' THEN 0 ELSE ShippingFeeVat_master END AS ShippingFeeVat,\n    CASE\n      WHEN motor_item_type = 'MOTOR_TYPE_COMPULSORY' THEN TotalPremium\n      ELSE ROUND((TotalPremium)+TotalEIR+TotalSBT+ProcessingFee_master+ProcessingFeeVat_master+ShippingFee_master+ShippingFeeVat_master,2)\n    END AS TotalAmount,\n    CASE WHEN motor_item_type = 'MOTOR_TYPE_COMPULSORY' THEN 0 ELSE Discount_master END AS Discount,\n    CASE\n      WHEN motor_item_type = 'MOTOR_TYPE_COMPULSORY' THEN compu_detail.gross_premium\n      WHEN charge_rank = 1 THEN ROUND((TotalPremium)+TotalEIR+TotalSBT+ProcessingFee_master+ProcessingFeeVat_master+ShippingFee_master+ShippingFeeVat_master-Discount_master,2)\n      WHEN charge_rank <> 1 THEN 0\n    END AS ExpectedReceived,\n    CASE\n      WHEN motor_item_type = 'MOTOR_TYPE_COMPULSORY' THEN compu_detail.gross_premium\n      WHEN motor_item_type <> 'MOTOR_TYPE_COMPULSORY' AND charge_rank <> 1 THEN COALESCE(ActualReceived_master, ROUND(0.01*TotalPremium,2))\n      WHEN compu_detail.gross_premium IS NOT NULL AND motor_item_type <> 'MOTOR_TYPE_COMPULSORY' AND charge_rank = 1 THEN ROUND(ActualReceived_master-compu_detail.gross_premium,2)\n      ELSE COALESCE(ActualReceived_master, ROUND(0.01*TotalPremium,2))\n    END AS ActualReceived,\n    0 AS InterestThisPeriod\n  FROM onetime_master\n  LEFT JOIN compu_detail ON compu_detail.order_id = onetime_master.OrderID\n  WHERE\n    service_provider != 'ICOLLECTION'\n    AND service_provider <> 'RABBIT_LENDING'\n    AND NOT (cmi_rank <> 1 AND motor_item_type = 'MOTOR_TYPE_COMPULSORY')\n    AND OrderID NOT IN (SELECT current_human_id FROM change)\n)\n\nSELECT DISTINCT\n  CompanyDB,\n  OrderID,\n  OrderItem,\n  InvoiceNo,\n  CAST(FORMAT_DATE('%d%m%Y', OrderDate) AS STRING) AS OrderDate,\n  InsuredID,\n  CASE\n    WHEN Title = 'KHUN' THEN '\u0e04\u0e38\u0e13'\n    WHEN Title = 'MISS' THEN '\u0e19\u0e32\u0e07\u0e2a\u0e32\u0e27'\n    WHEN Title = 'MR' THEN '\u0e19\u0e32\u0e22'\n    WHEN Title = 'MRS' THEN '\u0e19\u0e32\u0e07'\n    ELSE ''\n  END AS Title,\n  FirstName,\n  LastName,\n  TRIM(InsurerCode,'insurer/') AS InsurerCode,\n  CASE\n    WHEN InsuranceGroup = 'products/car-insurance' THEN 'Motor'\n    WHEN InsuranceGroup = 'products/health-insurance' THEN 'Health'\n    WHEN InsuranceGroup = 'products/travel-insurance' THEN 'TA'\n    ELSE InsuranceGroup\n  END AS InsuranceGroup,\n  CASE\n    WHEN (InsuranceType IS NULL OR InsuranceType = ' ') AND InsuranceGroup = 'products/health-insurance' THEN 'Health'\n    WHEN (InsuranceType IS NULL OR InsuranceType = ' ') AND InsuranceGroup = 'products/travel-insurance' THEN 'TA'\n    ELSE InsuranceType\n  END AS InsuranceType,\n  CASE\n    WHEN InsuranceGroup = 'products/car-insurance' THEN 'Motor'\n    WHEN InsuranceGroup = 'products/health-insurance' THEN 'Health'\n    WHEN InsuranceGroup = 'products/travel-insurance' THEN 'TA'\n    ELSE InsuranceGroup\n  END AS InsuranceProduct,\n  'Insurance' ProductType,\n  CASE WHEN PolicyType = 'LEAD_TYPE_RENEWAL' THEN 'R' ELSE 'N' END AS PolicyType,\n  Endorse,\n  CAST(FORMAT_DATE('%d%m%Y', PolicyDate) AS STRING) AS PolicyDate,\n  PolicyNo,\n  CAST(EndorsementNo AS STRING) EndorsementNo,\n  ChassisNo,\n  LicensePlate,\n  FORMAT('%.2f',GrossPremium) GrossPremium,\n  FORMAT('%.2f',StampDuty) StampDuty,\n  FORMAT('%.2f',VAT) VAT,\n  FORMAT('%.2f',TotalPremium) TotalPremium,\n  FORMAT('%.2f',WHT) WHT,\n  FORMAT('%.2f',TotalEIR) TotalEIR,\n  FORMAT('%.2f',TotalSBT) TotalSBT,\n  FORMAT('%.2f',ProcessingFee) ProcessingFee,\n  FORMAT('%.2f',ProcessingFeeVat) ProcessingFeeVat,\n  FORMAT('%.2f',ShippingFee) ShippingFee,\n  FORMAT('%.2f',ShippingFeeVat) ShippingFeeVat,\n  FORMAT('%.2f',TotalAmount) TotalAmount,\n  FORMAT('%.2f',Discount) Discount,\n  CASE\n    WHEN TransactionStatus = 'FOLLOWUP_STATUS_PAID' THEN 'paid'\n    WHEN TransactionStatus = 'FOLLOWUP_STATUS_PENDING' THEN 'pending'\n    WHEN TransactionStatus = 'SUCCESSFUL' THEN 'paid'\n    WHEN TransactionStatus = 'PENDING' THEN 'pending'\n    ELSE TransactionStatus\n  END AS TransactionStatus,\n  CASE\n    WHEN SubmissionStatus = 'ITEM_SUBMISSION_STATUS_READY_TO_SUBMIT' THEN 'PENDING'\n    WHEN SubmissionStatus = 'ITEM_SUBMISSION_STATUS_PRESUBMITTED' THEN 'PRE-SUBMITTED'\n    WHEN SubmissionStatus = 'ITEM_SUBMISSION_STATUS_SUBMITTED' THEN 'SUBMITTED'\n    WHEN SubmissionStatus = 'ITEM_SUBMISSION_STATUS_PENDING' THEN 'PENDING'\n    ELSE SubmissionStatus\n  END AS SubmissionStatus,\n  CASE\n    WHEN ApprovalStatus = 'ITEM_APPROVAL_STATUS_APPROVED' THEN 'APPROVED'\n    WHEN ApprovalStatus = 'ITEM_APPROVAL_STATUS_REJECTED' THEN 'REJECTED'\n    WHEN ApprovalStatus = 'ITEM_APPROVAL_STATUS_PENDING' THEN 'PENDING'\n    WHEN ApprovalStatus = 'ITEM_APPROVAL_STATUS_POLICY_UPLOADED' THEN 'POLICY UPLOADED'\n  END AS ApprovalStatus,\n  CASE\n    WHEN PaymentStatus = 'SUCCESSFUL' THEN 'Fully paid'\n    WHEN PaymentStatus = 'PENDING' THEN 'Not fully paid'\n    ELSE PaymentStatus\n  END AS PaymentStatus,\n  FORMAT('%.2f',ExpectedReceived) ExpectedReceived,\n  FORMAT('%.2f',ActualReceived) ActualReceived,\n  InterestThisPeriod,\n  PrincipleThisPeriod,\n  InterestEIRThisPeriod,\n  PrincipleEIRThisPeriod,\n  CAST(FORMAT_DATE('%d%m%Y', PaymentDate) AS STRING) AS PaymentDate,\n  Period,\n  TotalPeriods,\n  PendingPayment,\n  CASE\n    WHEN current_human_id IS NOT NULL THEN 'RCB-CreditShell'\n    WHEN PaymentMethod ='CASH' AND PaymentChannel='SERVICE_PROVIDER_UNSPECIFIED' THEN 'TRF Transfer'\n    WHEN PaymentMethod ='BANK_TRANSFER' AND PaymentChannel='KASIKORN' THEN 'TRF Transfer'\n    WHEN PaymentMethod ='BANK_TRANSFER' AND PaymentChannel='KRUNGSRI' THEN 'TRF Transfer'\n    WHEN PaymentMethod ='BANK_TRANSFER' AND PaymentChannel='KRUNGTHAI' THEN 'TRF Transfer'\n    WHEN PaymentMethod ='BANK_TRANSFER' AND PaymentChannel='SCB' THEN 'TRF Transfer'\n    WHEN PaymentMethod ='DIRECT_PAYMENT' AND PaymentChannel='SERVICE_PROVIDER_UNSPECIFIED' THEN 'DPM \u0e08\u0e48\u0e32\u0e22\u0e15\u0e23\u0e07\u0e01\u0e31\u0e1a\u0e1a\u0e23\u0e34\u0e29\u0e31\u0e17\u0e1b\u0e23\u0e30\u0e01\u0e31\u0e19'\n    WHEN PaymentMethod ='EDC' AND PaymentChannel='BANGKOK_BANK' THEN 'EDC EDC'\n    WHEN PaymentMethod ='EDC' AND PaymentChannel='KASIKORN' THEN 'EDC EDC'\n    WHEN PaymentMethod ='EDC' AND PaymentChannel='KRUNGSRI' THEN 'EDC EDC'\n    WHEN PaymentMethod ='EDC' AND PaymentChannel='KRUNGTHAI' THEN 'EDC EDC'\n    WHEN PaymentMethod ='EDC' AND PaymentChannel='SCB' THEN 'EDC EDC'\n    WHEN PaymentMethod ='EDC' AND PaymentChannel='UOB' THEN 'EDC EDC'\n    WHEN PaymentMethod ='ONLINECARD' AND PaymentChannel='OMISE' THEN 'OMC Omise Credit Card'\n    WHEN PaymentMethod ='ONLINECARD' AND PaymentChannel='RCB' THEN 'OMC Omise Credit Card'\n    WHEN PaymentMethod ='QR_CODE' AND PaymentChannel='OMISE' THEN 'OME Omise QR Prompt Pay'\n    WHEN PaymentMethod ='QR_CODE' AND PaymentChannel='RABBIT_LENDING' THEN 'OME Omise QR Prompt Pay'\n    WHEN PaymentMethod ='QR_CODE' AND PaymentChannel='RCB' THEN 'OME Omise QR Prompt Pay'\n    WHEN PaymentMethod ='all' AND PaymentChannel='all' THEN 'RCL-CMI-channel'\n    ELSE 'TRF Transfer'\n  END AS PaymentMethod,\n  CASE\n    WHEN current_human_id IS NOT NULL THEN 'RCB-CreditShell'\n    WHEN PaymentMethod ='CASH' AND PaymentChannel='SERVICE_PROVIDER_UNSPECIFIED' THEN 'RCB-Transfer-\u0e2d\u0e37\u0e48\u0e19\u0e46'\n    WHEN PaymentMethod ='BANK_TRANSFER' AND PaymentChannel='KASIKORN' THEN 'RCB-Transfer-KBANK'\n    WHEN PaymentMethod ='BANK_TRANSFER' AND PaymentChannel='KRUNGSRI' THEN 'RCB-Transfer-BAY'\n    WHEN PaymentMethod ='BANK_TRANSFER' AND PaymentChannel='KRUNGTHAI' THEN 'RCB-Transfer-KTB'\n    WHEN PaymentMethod ='BANK_TRANSFER' AND PaymentChannel='SCB' THEN 'RCB-Transfer-SCB'\n    WHEN PaymentMethod ='DIRECT_PAYMENT' AND PaymentChannel='SERVICE_PROVIDER_UNSPECIFIED' THEN 'RCB-DIRECT PAYMENT'\n    WHEN PaymentMethod ='EDC' AND PaymentChannel='BANGKOK_BANK' THEN 'RCB-EDC-BBL'\n    WHEN PaymentMethod ='EDC' AND PaymentChannel='KASIKORN' THEN 'RCB-EDC-KBANK'\n    WHEN PaymentMethod ='EDC' AND PaymentChannel='KRUNGSRI' THEN 'RCB-EDC-BAY'\n    WHEN PaymentMethod ='EDC' AND PaymentChannel='KRUNGTHAI' THEN 'RCB-EDC-KTB'\n    WHEN PaymentMethod ='EDC' AND PaymentChannel='SCB' THEN 'RCB-EDC-SCB'\n    WHEN PaymentMethod ='EDC' AND PaymentChannel='UOB' THEN 'RCB-EDC-UOB'\n    WHEN PaymentMethod ='ONLINECARD' AND PaymentChannel='OMISE' THEN 'RCB-Omise Credit Card-BAY'\n    WHEN PaymentMethod ='ONLINECARD' AND PaymentChannel='RCB' THEN 'RCB-Omise Credit Card-BAY'\n    WHEN PaymentMethod ='QR_CODE' AND PaymentChannel='OMISE' THEN 'RCB-Omise QR Prompt Pay-BAY'\n    WHEN PaymentMethod ='QR_CODE' AND PaymentChannel='RABBIT_LENDING' THEN 'RCB-Omise QR Prompt Pay-BAY'\n    WHEN PaymentMethod ='QR_CODE' AND PaymentChannel='RCB' THEN 'RCB-Omise QR Prompt Pay-BAY'\n    WHEN PaymentMethod ='all' AND PaymentChannel='all' THEN 'RCL-CMI-channel'\n    ELSE 'RCB-Transfer-\u0e2d\u0e37\u0e48\u0e19\u0e46'\n  END AS PaymentChannel,\n  CAST(FORMAT_DATE('%d%m%Y', ExpectedDate) AS STRING) AS ExpectedDate,\n  ch.old_human_id AS RefOrder,\n  RefundAmountBeforeFee,\n  RefundAmountAfterFee,\n  BillingAddress,\n  CAST(FORMAT_DATE('%d%m%Y', BatchRunDate) AS STRING) AS BatchRunDate\nFROM onetime_master_go\nLEFT JOIN change ch ON ch.current_human_id = onetime_master_go.OrderID\nORDER BY OrderItem",
+    "useLegacySql": false,
+    "privacyPolicy": {}
+  },
+  "location": "asia-southeast1",
+  "numTotalLogicalBytes": "0",
+  "numActiveLogicalBytes": "0",
+  "numLongTermLogicalBytes": "0"
+}

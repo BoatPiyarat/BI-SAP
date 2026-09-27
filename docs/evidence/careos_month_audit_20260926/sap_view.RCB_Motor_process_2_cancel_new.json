@@ -1,0 +1,310 @@
+{
+  "kind": "bigquery#table",
+  "etag": "Voy7FQSVBwXfR+pdxltkwA==",
+  "id": "pacific-plating-282708:sap_view.RCB_Motor_process_2_cancel_new",
+  "selfLink": "https://bigquery.googleapis.com/bigquery/v2/projects/pacific-plating-282708/datasets/sap_view/tables/RCB_Motor_process_2_cancel_new",
+  "tableReference": {
+    "projectId": "pacific-plating-282708",
+    "datasetId": "sap_view",
+    "tableId": "RCB_Motor_process_2_cancel_new"
+  },
+  "schema": {
+    "fields": [
+      {
+        "name": "CompanyDB",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "OrderID",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "OrderItem",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "InvoiceNo",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "OrderDate",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "InsuredID",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "Title",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "FirstName",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "LastName",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "InsurerCode",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "InsuranceGroup",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "InsuranceType",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "InsuranceProduct",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "ProductType",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "PolicyType",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "Endorse",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "PolicyDate",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "PolicyNo",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "EndorsementNo",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "ChassisNo",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "LicensePlate",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "GrossPremium",
+        "type": "FLOAT",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "StampDuty",
+        "type": "FLOAT",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "VAT",
+        "type": "FLOAT",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "TotalPremium",
+        "type": "FLOAT",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "WHT",
+        "type": "FLOAT",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "TotalEIR",
+        "type": "FLOAT",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "TotalSBT",
+        "type": "FLOAT",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "ProcessingFee",
+        "type": "FLOAT",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "ProcessingFeeVat",
+        "type": "FLOAT",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "ShippingFee",
+        "type": "FLOAT",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "ShippingFeeVat",
+        "type": "FLOAT",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "TotalAmount",
+        "type": "FLOAT",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "Discount",
+        "type": "FLOAT",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "TransactionStatus",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "SubmissionStatus",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "ApprovalStatus",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "PaymentStatus",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "ExpectedReceived",
+        "type": "FLOAT",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "ActualReceived",
+        "type": "FLOAT",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "InterestThisPeriod",
+        "type": "FLOAT",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "PrincipleThisPeriod",
+        "type": "FLOAT",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "InterestEIRThisPeriod",
+        "type": "FLOAT",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "PrincipleEIRThisPeriod",
+        "type": "FLOAT",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "PaymentDate",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "Period",
+        "type": "INTEGER",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "TotalPeriods",
+        "type": "INTEGER",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "PendingPayment",
+        "type": "FLOAT",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "PaymentMethod",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "PaymentChannel",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "ExpectedDate",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "RefOrder",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "RefundAmountBeforeFee",
+        "type": "FLOAT",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "RefundAmountAfterFee",
+        "type": "FLOAT",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "BillingAddress",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "BatchRunDate",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      }
+    ]
+  },
+  "numBytes": "0",
+  "numLongTermBytes": "0",
+  "numRows": "0",
+  "creationTime": "1784919213734",
+  "lastModifiedTime": "1789459023755",
+  "type": "VIEW",
+  "view": {
+    "query": "-- Full source-only legacy root-fix proposal for:\n--   pacific-plating-282708.sap_view.RCB_Motor_process_2_cancel_new\n--\n-- Root fixes from SAP Upload LogID 22049:\n--   1. Emit only one current SAP document per (OrderItem, Period), using the\n--      established status/invoice/date/DocEntry precedence.\n--   2. Require the complete 1..TotalPeriods spine to exist in SAP already.\n--      Do not synthesize missing periods from the CareOS dashboard and attempt\n--      to cancel them in the same file. Such items wait for a separate\n--      create/pending -> SAP refresh -> cancel sequence.\n--   3. Hold the whole item when SAP is Pending but CareOS already has a\n--      SUCCESSFUL charge for that period. Paid must reach SAP first.\n--   4. Require Period 1 to be Paid and all later predecessor rows to be\n--      Paid/Pending, matching the SAP cancel contract.\n--   5. Normalize SQL NULL, blank, and literal NULL ProductType to Insurance.\n--   6. Hold material TotalEIR-versus-period-interest inconsistencies; do not\n--      rewrite historical accounting values. For valid items, canonicalize the\n--      harmless <= 0.01 rounding difference to the period-interest sum.\n--   7. Preserve SAP InvoiceNo/PaymentDate and Pending amounts verbatim; Pending\n--      PaymentMethod and PaymentChannel remain blank.\n--   8. Scope by the 2026 CareOS cancellation event, not original OrderDate, and\n--      exclude Test items. is_cancelled=true with NULL cancel_time remains held\n--      for human investigation.\n--\n-- SELECT only: this file does not replace or deploy the live legacy view.\n\nWITH\n  sap_distinct AS (\n    SELECT DISTINCT *\n    FROM `pacific-plating-282708.sap_integration_v2.SAP_LIVE_FULL`\n  ),\n\n  sap_ranked AS (\n    SELECT\n      sap_distinct.*,\n      ROW_NUMBER() OVER (\n        PARTITION BY U_OrderItem, SAFE_CAST(U_Period AS INT64)\n        ORDER BY\n          CASE\n            WHEN TransactionStatus IN ('Cancelled', 'Cancelled (Change order / Rejected)') THEN 0\n            WHEN LOWER(TransactionStatus) = 'paid' THEN 1\n            WHEN LOWER(TransactionStatus) = 'pending' THEN 2\n            ELSE 3\n          END,\n          CASE\n            WHEN NULLIF(TRIM(COALESCE(U_InvoiceNo, '')), '') IS NOT NULL\n              AND UPPER(TRIM(U_InvoiceNo)) != 'NULL'\n            THEN 0 ELSE 1\n          END,\n          SAFE.PARSE_DATE('%d%m%Y', NULLIF(BatchRunDate, '')) DESC,\n          DocEntry DESC\n      ) AS current_doc_rank,\n      MAX(\n        CASE\n          WHEN U_OrderID LIKE 'C#%'\n            OR TransactionStatus IN ('Cancelled', 'Cancelled (Change order / Rejected)')\n          THEN 1 ELSE 0\n        END\n      ) OVER (PARTITION BY U_OrderItem) AS is_already_cancelled_flag\n    FROM sap_distinct\n    WHERE U_OrderItem IS NOT NULL\n      AND U_Period IS NOT NULL\n  ),\n\n  sap_current AS (\n    SELECT * EXCEPT (current_doc_rank)\n    FROM sap_ranked\n    WHERE current_doc_rank = 1\n  ),\n\n  cancelled_items_2026 AS (\n    SELECT\n      order_item.human_id AS OrderItem,\n      orders.human_id AS CareOSOrderID,\n      transactions.id AS transaction_id,\n      order_item.cancel_time\n    FROM `pacific-plating-282708.careos.careos_order_items` AS order_item\n    JOIN `pacific-plating-282708.careos.careos_orders` AS orders\n      ON orders.id = order_item.order_id\n    LEFT JOIN `pacific-plating-282708.careos.carepay_transactions` AS transactions\n      ON CONCAT('transactions/', transactions.id) = orders.payment\n    WHERE order_item.cancel_time IS NOT NULL\n      AND DATE(order_item.cancel_time) >= DATE '2026-01-01'\n  ),\n\n  base_eligible_items AS (\n    SELECT DISTINCT sap_current.U_OrderItem AS OrderItem\n    FROM sap_current\n    JOIN cancelled_items_2026\n      ON cancelled_items_2026.OrderItem = sap_current.U_OrderItem\n    WHERE sap_current.is_already_cancelled_flag = 0\n      AND sap_current.U_OrderID NOT LIKE 'C#%'\n      AND sap_current.U_OrderID NOT LIKE '%_X%'\n      AND NOT EXISTS (\n        SELECT 1\n        FROM sap_current AS test_row\n        WHERE test_row.U_OrderItem = sap_current.U_OrderItem\n          AND (\n            LOWER(TRIM(COALESCE(test_row.U_FirstName, ''))) = 'test'\n            OR LOWER(TRIM(COALESCE(test_row.U_LastName, ''))) = 'test'\n          )\n      )\n  ),\n\n  spine_metrics AS (\n    SELECT\n      sap_current.U_OrderItem AS OrderItem,\n      COUNT(*) AS row_count,\n      COUNT(DISTINCT SAFE_CAST(sap_current.U_Period AS INT64)) AS distinct_period_count,\n      MIN(SAFE_CAST(sap_current.U_Period AS INT64)) AS min_period,\n      MAX(SAFE_CAST(sap_current.U_Period AS INT64)) AS max_period,\n      MAX(SAFE_CAST(sap_current.TotalPeriods AS INT64)) AS canonical_total_periods,\n      COUNTIF(\n        SAFE_CAST(sap_current.U_Period AS INT64) = 1\n          AND LOWER(sap_current.TransactionStatus) = 'paid'\n      ) AS paid_first_period_rows,\n      COUNTIF(\n        LOWER(sap_current.TransactionStatus) NOT IN ('paid', 'pending')\n      ) AS invalid_predecessor_rows,\n      MAX(COALESCE(SAFE_CAST(sap_current.TotalEIR AS FLOAT64), 0)) AS max_total_eir,\n      MIN(COALESCE(SAFE_CAST(sap_current.TotalEIR AS FLOAT64), 0)) AS min_total_eir,\n      ROUND(SUM(COALESCE(SAFE_CAST(sap_current.U_InterestEIRThisPeriod AS FLOAT64), 0)), 2)\n        AS period_interest_eir_sum\n    FROM sap_current\n    JOIN base_eligible_items\n      ON base_eligible_items.OrderItem = sap_current.U_OrderItem\n    GROUP BY sap_current.U_OrderItem\n  ),\n\n  stale_pending_paid_items AS (\n    SELECT DISTINCT sap_current.U_OrderItem AS OrderItem\n    FROM sap_current\n    JOIN base_eligible_items\n      ON base_eligible_items.OrderItem = sap_current.U_OrderItem\n    JOIN cancelled_items_2026\n      ON cancelled_items_2026.OrderItem = sap_current.U_OrderItem\n    JOIN `pacific-plating-282708.careos.carepay_charges` AS charge\n      ON charge.transaction_id = cancelled_items_2026.transaction_id\n     AND charge.installment_number = SAFE_CAST(sap_current.U_Period AS INT64)\n     AND charge.status = 'SUCCESSFUL'\n    WHERE LOWER(sap_current.TransactionStatus) = 'pending'\n  ),\n\n  ready_items AS (\n    SELECT\n      spine_metrics.OrderItem,\n      spine_metrics.canonical_total_periods,\n      spine_metrics.period_interest_eir_sum AS canonical_total_eir\n    FROM spine_metrics\n    WHERE spine_metrics.canonical_total_periods >= 1\n      AND spine_metrics.row_count = spine_metrics.canonical_total_periods\n      AND spine_metrics.distinct_period_count = spine_metrics.canonical_total_periods\n      AND spine_metrics.min_period = 1\n      AND spine_metrics.max_period = spine_metrics.canonical_total_periods\n      AND spine_metrics.paid_first_period_rows = 1\n      AND spine_metrics.invalid_predecessor_rows = 0\n      AND ABS(spine_metrics.max_total_eir - spine_metrics.min_total_eir) <= 0.01\n      AND ABS(spine_metrics.max_total_eir - spine_metrics.period_interest_eir_sum) <= 0.01\n      AND NOT EXISTS (\n        SELECT 1\n        FROM stale_pending_paid_items AS stale\n        WHERE stale.OrderItem = spine_metrics.OrderItem\n      )\n  )\n\nSELECT\n  sap.CompanyDB,\n  sap.U_OrderID AS OrderID,\n  sap.U_OrderItem AS OrderItem,\n  CASE\n    WHEN UPPER(TRIM(COALESCE(sap.U_InvoiceNo, ''))) = 'NULL' THEN ''\n    ELSE COALESCE(sap.U_InvoiceNo, '')\n  END AS InvoiceNo,\n  sap.OrderDate,\n  sap.U_InsuredID AS InsuredID,\n  sap.U_Title AS Title,\n  sap.U_FirstName AS FirstName,\n  sap.U_LastName AS LastName,\n  COALESCE(SPLIT(sap.U_InsurerCode, '-')[SAFE_OFFSET(1)], sap.U_InsurerCode) AS InsurerCode,\n  sap.U_InsuranceGroup AS InsuranceGroup,\n  sap.U_InsuranceType AS InsuranceType,\n  sap.U_InsuranceProduct AS InsuranceProduct,\n  CASE\n    WHEN NULLIF(TRIM(COALESCE(sap.U_ProductType, '')), '') IS NULL\n      OR UPPER(TRIM(sap.U_ProductType)) = 'NULL'\n    THEN 'Insurance'\n    ELSE sap.U_ProductType\n  END AS ProductType,\n  sap.U_PolicyType AS PolicyType,\n  'N' AS Endorse,\n  sap.PolicyDate,\n  sap.U_PolicyNo AS PolicyNo,\n  sap.EndorsementNo,\n  sap.U_ChassisNo AS ChassisNo,\n  sap.U_LicensePlate AS LicensePlate,\n  sap.GrossPremium,\n  sap.StampDuty,\n  sap.VAT,\n  sap.TotalPremium,\n  sap.WHT,\n  ready_items.canonical_total_eir AS TotalEIR,\n  sap.TotalSBT,\n  sap.U_ProcessingFee AS ProcessingFee,\n  sap.U_ProcessingFeeVat AS ProcessingFeeVat,\n  sap.U_ShippingFee AS ShippingFee,\n  sap.U_ShippingFeeVat AS ShippingFeeVat,\n  sap.U_TotalAmount AS TotalAmount,\n  sap.U_Discount AS Discount,\n  CASE\n    WHEN EXISTS (\n      SELECT 1\n      FROM `pacific-plating-282708.careos.cancelled_change_orders` AS change_order\n      WHERE change_order.old_human_id = sap.U_OrderID\n    )\n    THEN 'Cancelled (Change order / Rejected)'\n    ELSE 'Cancelled'\n  END AS TransactionStatus,\n  sap.U_SubmissionStatus AS SubmissionStatus,\n  sap.U_ApprovalStatus AS ApprovalStatus,\n  sap.U_PaymentStatus AS PaymentStatus,\n  COALESCE(sap.ExpectedReceived, 0) AS ExpectedReceived,\n  COALESCE(sap.U_ActualReceived, 0) AS ActualReceived,\n  COALESCE(sap.U_InterestThisPeriod, 0) AS InterestThisPeriod,\n  COALESCE(sap.U_PrincipleThisPeriod, 0) AS PrincipleThisPeriod,\n  COALESCE(sap.U_InterestEIRThisPeriod, 0) AS InterestEIRThisPeriod,\n  COALESCE(sap.U_PrincipleEIRThisPeriod, 0) AS PrincipleEIRThisPeriod,\n  CASE\n    WHEN UPPER(TRIM(COALESCE(sap.PaymentDate, ''))) = 'NULL' THEN ''\n    ELSE COALESCE(sap.PaymentDate, '')\n  END AS PaymentDate,\n  SAFE_CAST(sap.U_Period AS INT64) AS Period,\n  ready_items.canonical_total_periods AS TotalPeriods,\n  sap.PendingPayment,\n  CASE\n    WHEN LOWER(sap.TransactionStatus) = 'pending' THEN ''\n    WHEN UPPER(TRIM(COALESCE(sap.PaymentMethod, ''))) = 'NULL' THEN ''\n    ELSE COALESCE(sap.PaymentMethod, '')\n  END AS PaymentMethod,\n  CASE\n    WHEN LOWER(sap.TransactionStatus) = 'pending' THEN ''\n    WHEN UPPER(TRIM(COALESCE(sap.PaymentChannel, ''))) = 'NULL' THEN ''\n    WHEN sap.PaymentChannel = 'Credit Shell' THEN 'RCB-Credit Shell'\n    ELSE COALESCE(sap.PaymentChannel, '')\n  END AS PaymentChannel,\n  COALESCE(\n    NULLIF(NULLIF(TRIM(sap.ExpectedDate), ''), 'NULL'),\n    NULLIF(NULLIF(TRIM(sap.PaymentDate), ''), 'NULL'),\n    FORMAT_DATE('%d%m%Y', CURRENT_DATE())\n  ) AS ExpectedDate,\n  sap.RefOrder,\n  sap.RefundAmountBeforeFee,\n  sap.RefundAmountAfterFee,\n  sap.BillingAddress,\n  FORMAT_DATE('%d%m%Y', CURRENT_DATE()) AS BatchRunDate\nFROM sap_current AS sap\nJOIN ready_items\n  ON ready_items.OrderItem = sap.U_OrderItem\nWHERE sap.U_OrderID NOT IN ('L80625878', 'L78637687')\nORDER BY OrderItem, Period, InvoiceNo;\n",
+    "useLegacySql": false,
+    "privacyPolicy": {}
+  },
+  "location": "asia-southeast1",
+  "numTotalLogicalBytes": "0",
+  "numActiveLogicalBytes": "0",
+  "numLongTermLogicalBytes": "0"
+}

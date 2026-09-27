@@ -1,0 +1,145 @@
+{
+  "kind": "bigquery#table",
+  "etag": "gXlgM498i+uevo5rN+akkg==",
+  "id": "pacific-plating-282708:careos.carepay_charges",
+  "selfLink": "https://bigquery.googleapis.com/bigquery/v2/projects/pacific-plating-282708/datasets/careos/tables/carepay_charges",
+  "tableReference": {
+    "projectId": "pacific-plating-282708",
+    "datasetId": "careos",
+    "tableId": "carepay_charges"
+  },
+  "schema": {
+    "fields": [
+      {
+        "name": "id",
+        "type": "STRING"
+      },
+      {
+        "name": "create_time",
+        "type": "TIMESTAMP"
+      },
+      {
+        "name": "update_time",
+        "type": "TIMESTAMP"
+      },
+      {
+        "name": "delete_time",
+        "type": "TIMESTAMP"
+      },
+      {
+        "name": "version",
+        "type": "INTEGER"
+      },
+      {
+        "name": "transaction_id",
+        "type": "STRING"
+      },
+      {
+        "name": "currency_code",
+        "type": "STRING"
+      },
+      {
+        "name": "amount",
+        "type": "INTEGER"
+      },
+      {
+        "name": "service_provider",
+        "type": "STRING"
+      },
+      {
+        "name": "payment_method",
+        "type": "STRING"
+      },
+      {
+        "name": "status",
+        "type": "STRING"
+      },
+      {
+        "name": "third_party_id",
+        "type": "STRING"
+      },
+      {
+        "name": "authorize_uri",
+        "type": "STRING"
+      },
+      {
+        "name": "source_uri",
+        "type": "STRING"
+      },
+      {
+        "name": "error_code",
+        "type": "STRING"
+      },
+      {
+        "name": "error_message",
+        "type": "STRING"
+      },
+      {
+        "name": "meta_data",
+        "type": "STRING"
+      },
+      {
+        "name": "status_code",
+        "type": "INTEGER"
+      },
+      {
+        "name": "installment_number",
+        "type": "INTEGER"
+      },
+      {
+        "name": "card_token_id",
+        "type": "STRING"
+      },
+      {
+        "name": "due_date",
+        "type": "TIMESTAMP"
+      },
+      {
+        "name": "slip_id_resource",
+        "type": "STRING"
+      },
+      {
+        "name": "send_sms",
+        "type": "BOOLEAN"
+      },
+      {
+        "name": "payment_date",
+        "type": "TIMESTAMP"
+      }
+    ]
+  },
+  "timePartitioning": {
+    "type": "DAY",
+    "field": "create_time"
+  },
+  "numBytes": "2248372190",
+  "numLongTermBytes": "0",
+  "numRows": "1456079",
+  "creationTime": "1790427756292",
+  "lastModifiedTime": "1790427756293",
+  "type": "TABLE",
+  "location": "asia-southeast1",
+  "clustering": {
+    "fields": [
+      "status",
+      "service_provider",
+      "payment_method"
+    ]
+  },
+  "numTimeTravelPhysicalBytes": "4307354534",
+  "numTotalLogicalBytes": "2248372190",
+  "numActiveLogicalBytes": "2248372190",
+  "numLongTermLogicalBytes": "0",
+  "numTotalPhysicalBytes": "4668098539",
+  "numActivePhysicalBytes": "4668098539",
+  "numLongTermPhysicalBytes": "0",
+  "numPartitions": "1612",
+  "partitionDefinition": {
+    "partitionedColumn": [
+      {
+        "field": "create_time"
+      }
+    ]
+  },
+  "numCurrentPhysicalBytes": "360744005"
+}

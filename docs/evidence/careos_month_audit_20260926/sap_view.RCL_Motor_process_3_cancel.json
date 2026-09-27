@@ -1,0 +1,253 @@
+{
+  "kind": "bigquery#table",
+  "etag": "wCcYNTkUNt5B5qbkI8gSHA==",
+  "id": "pacific-plating-282708:sap_view.RCL_Motor_process_3_cancel",
+  "selfLink": "https://bigquery.googleapis.com/bigquery/v2/projects/pacific-plating-282708/datasets/sap_view/tables/RCL_Motor_process_3_cancel",
+  "tableReference": {
+    "projectId": "pacific-plating-282708",
+    "datasetId": "sap_view",
+    "tableId": "RCL_Motor_process_3_cancel"
+  },
+  "schema": {
+    "fields": [
+      {
+        "name": "CompanyDB",
+        "type": "STRING"
+      },
+      {
+        "name": "OrderID",
+        "type": "STRING"
+      },
+      {
+        "name": "OrderItem",
+        "type": "STRING"
+      },
+      {
+        "name": "InvoiceNo",
+        "type": "STRING"
+      },
+      {
+        "name": "OrderDate",
+        "type": "STRING"
+      },
+      {
+        "name": "InsuredID",
+        "type": "STRING"
+      },
+      {
+        "name": "Title",
+        "type": "STRING"
+      },
+      {
+        "name": "FirstName",
+        "type": "STRING"
+      },
+      {
+        "name": "LastName",
+        "type": "STRING"
+      },
+      {
+        "name": "InsurerCode",
+        "type": "STRING"
+      },
+      {
+        "name": "InsuranceGroup",
+        "type": "STRING"
+      },
+      {
+        "name": "InsuranceType",
+        "type": "STRING"
+      },
+      {
+        "name": "InsuranceProduct",
+        "type": "STRING"
+      },
+      {
+        "name": "ProductType",
+        "type": "STRING"
+      },
+      {
+        "name": "PolicyType",
+        "type": "STRING"
+      },
+      {
+        "name": "Endorse",
+        "type": "STRING"
+      },
+      {
+        "name": "PolicyDate",
+        "type": "STRING"
+      },
+      {
+        "name": "PolicyNo",
+        "type": "STRING"
+      },
+      {
+        "name": "EndorsementNo",
+        "type": "STRING"
+      },
+      {
+        "name": "ChassisNo",
+        "type": "STRING"
+      },
+      {
+        "name": "LicensePlate",
+        "type": "STRING"
+      },
+      {
+        "name": "GrossPremium",
+        "type": "FLOAT"
+      },
+      {
+        "name": "StampDuty",
+        "type": "FLOAT"
+      },
+      {
+        "name": "VAT",
+        "type": "FLOAT"
+      },
+      {
+        "name": "TotalPremium",
+        "type": "FLOAT"
+      },
+      {
+        "name": "WHT",
+        "type": "FLOAT"
+      },
+      {
+        "name": "TotalEIR",
+        "type": "FLOAT"
+      },
+      {
+        "name": "TotalSBT",
+        "type": "FLOAT"
+      },
+      {
+        "name": "ProcessingFee",
+        "type": "FLOAT"
+      },
+      {
+        "name": "ProcessingFeeVat",
+        "type": "FLOAT"
+      },
+      {
+        "name": "ShippingFee",
+        "type": "FLOAT"
+      },
+      {
+        "name": "ShippingFeeVat",
+        "type": "FLOAT"
+      },
+      {
+        "name": "TotalAmount",
+        "type": "FLOAT"
+      },
+      {
+        "name": "Discount",
+        "type": "FLOAT"
+      },
+      {
+        "name": "TransactionStatus",
+        "type": "STRING"
+      },
+      {
+        "name": "SubmissionStatus",
+        "type": "STRING"
+      },
+      {
+        "name": "ApprovalStatus",
+        "type": "STRING"
+      },
+      {
+        "name": "PaymentStatus",
+        "type": "STRING"
+      },
+      {
+        "name": "ExpectedReceived",
+        "type": "FLOAT"
+      },
+      {
+        "name": "ActualReceived",
+        "type": "FLOAT"
+      },
+      {
+        "name": "InterestThisPeriod",
+        "type": "FLOAT"
+      },
+      {
+        "name": "PrincipleThisPeriod",
+        "type": "FLOAT"
+      },
+      {
+        "name": "InterestEIRThisPeriod",
+        "type": "FLOAT"
+      },
+      {
+        "name": "PrincipleEIRThisPeriod",
+        "type": "FLOAT"
+      },
+      {
+        "name": "PaymentDate",
+        "type": "STRING"
+      },
+      {
+        "name": "Period",
+        "type": "INTEGER"
+      },
+      {
+        "name": "TotalPeriods",
+        "type": "INTEGER"
+      },
+      {
+        "name": "PendingPayment",
+        "type": "FLOAT"
+      },
+      {
+        "name": "PaymentMethod",
+        "type": "STRING"
+      },
+      {
+        "name": "PaymentChannel",
+        "type": "STRING"
+      },
+      {
+        "name": "ExpectedDate",
+        "type": "STRING"
+      },
+      {
+        "name": "RefOrder",
+        "type": "STRING"
+      },
+      {
+        "name": "RefundAmountBeforeFee",
+        "type": "FLOAT"
+      },
+      {
+        "name": "RefundAmountAfterFee",
+        "type": "FLOAT"
+      },
+      {
+        "name": "BillingAddress",
+        "type": "STRING"
+      },
+      {
+        "name": "BatchRunDate",
+        "type": "STRING"
+      }
+    ]
+  },
+  "numBytes": "0",
+  "numLongTermBytes": "0",
+  "numRows": "0",
+  "creationTime": "1784919131155",
+  "lastModifiedTime": "1784919131155",
+  "type": "VIEW",
+  "view": {
+    "query": "WITH\n  cancelled AS (\n  SELECT\n    DISTINCT U_OrderItem\n  FROM\n    `pacific-plating-282708.sap_integration_v2.SAP_LIVE_FULL`\n  WHERE\n    (U_OrderID LIKE 'C#%'\n      AND PaymentChannel LIKE 'RCL%')\n    OR (TransactionStatus IN ('Cancelled',\n        'Cancelled (Change order / Rejected)')\n      AND PaymentChannel LIKE '%RCL%') ),\n\n  multi AS(\n  SELECT\n    charges.*,\n    ROW_NUMBER() OVER (PARTITION BY charges.transaction_id ORDER BY charges.update_time DESC) AS rnk,\n    ROW_NUMBER() OVER (PARTITION BY charges.transaction_id, installment_number ORDER BY charges.update_time DESC) AS multi,\n    human_id,\n    orders.cancel_time order_cancelltime,\n    is_cancelled\n  FROM\n    `pacific-plating-282708.careos.carepay_charges` charges\n  LEFT JOIN\n    `pacific-plating-282708.careos.careos_orders` orders\n  ON\n    orders.payment = CONCAT('transactions/',charges.transaction_id)\n  WHERE\n    status = 'SUCCESSFUL'\n    AND orders.human_id IS NOT NULL),\n\n  sap1 AS (\n  SELECT\n    U_OrderItem\n  FROM\n    `pacific-plating-282708.sap_integration_v2.SAP_LIVE_FULL`\n  WHERE\n    (PaymentDate = 'NULL' OR PaymentDate = ''\n      AND U_InvoiceNo LIKE 'L%') ),\n\n  sap AS(\n  SELECT\n    ROW_NUMBER() OVER (PARTITION BY U_OrderItem, U_Period ORDER BY U_OrderItem, U_Period, TransactionStatus, U_InvoiceNo) AS dup\n    ,* \n  FROM\n    `pacific-plating-282708.sap_integration_v2.SAP_LIVE_FULL`\n\n  ORDER BY U_Period\n    ),\n\n  item_cancelled AS (\n  SELECT\n    human_id,\n    cancel_time\n  FROM\n    `pacific-plating-282708.careos.careos_order_items`\n  WHERE\n cancel_time >= '2025-01-01' ),\n\n  change AS (\n  SELECT\n    *\n  FROM\n    pacific-plating-282708.careos.cancelled_change_orders )\n\nSELECT\n  DISTINCT CompanyDB,\n  U_OrderID OrderID,\n  U_OrderItem OrderItem,\n  CASE\n    WHEN U_InvoiceNo = 'NULL' THEN ''\n    ELSE U_InvoiceNo\nEND\n  AS InvoiceNo,\n  OrderDate AS OrderDate,\n  U_InsuredID InsuredID,\n  U_Title Title,\n  U_FirstName FirstName,\n  U_LastName LastName,\n  SPLIT(U_InsurerCode, '-')[\nOFFSET\n  (1)] AS InsurerCode,\n  U_InsuranceGroup InsuranceGroup,\n  U_InsuranceType InsuranceType,\n  U_InsuranceProduct InsuranceProduct,\n  CASE\n    WHEN U_ProductType = 'NULL' THEN 'Insurance'\n    ELSE U_ProductType\nEND\n  AS ProductType,\n  U_PolicyType PolicyType,\n  'N' Endorse,\n  PolicyDate AS PolicyDate,\n  U_PolicyNo PolicyNo,\n  EndorsementNo,  -- fix 2026-07-25: was U_EndorsementNo, which doesn't exist (query wouldn't even parse before this)\n  U_ChassisNo ChassisNo,\n  U_LicensePlate LicensePlate,\n  GrossPremium GrossPremium,\n  StampDuty StampDuty,\n  VAT VAT,\n  TotalPremium TotalPremium,\n  WHT WHT,\n  TotalEIR TotalEIR,\n  TotalSBT TotalSBT,\n  U_ProcessingFee ProcessingFee,\n  U_ProcessingFeeVat ProcessingFeeVat,\n  U_ShippingFee ShippingFee,\n  U_ShippingFeeVat ShippingFeeVat,\n  U_TotalAmount TotalAmount,\n  U_Discount Discount,\n  CASE\n    WHEN change.old_human_id IS NOT NULL THEN 'Cancelled (Change order / Rejected)'\n    ELSE 'Cancelled'\nEND\n  AS TransactionStatus,\n  U_SubmissionStatus SubmissionStatus,\n  U_ApprovalStatus ApprovalStatus,\n  U_PaymentStatus PaymentStatus,\n  CASE WHEN\n    (ExpectedReceived = 0 OR ExpectedReceived IS NULL )\n   AND  sap.dup=1\n  THEN U_ActualReceived\n  WHEN ExpectedReceived >0 THEN ExpectedReceived\n  END AS ExpectedReceived,\n  U_ActualReceived ActualReceived,\n  U_InterestThisPeriod InterestThisPeriod,\n  U_PrincipleThisPeriod PrincipleThisPeriod,\n  U_InterestEIRThisPeriod InterestEIRThisPeriod,\n  U_PrincipleEIRThisPeriod PrincipleEIRThisPeriod,\n  CASE\n    WHEN PaymentDate = 'NULL' OR PaymentDate = '' THEN ''\n    ELSE PaymentDate\nEND\n  AS PaymentDate,\n  U_Period Period,\n  TotalPeriods TotalPeriods,\n  PendingPayment,\n  CASE\n    WHEN PaymentMethod = 'NULL' THEN ''\n    ELSE PaymentMethod\nEND\n  AS PaymentMethod,\n  CASE\n    WHEN PaymentChannel = 'NULL' THEN ''\n    ELSE PaymentChannel\nEND\n  AS PaymentChannel,\n  CASE\n    WHEN PaymentDate = 'NULL' OR PaymentDate = '' OR PaymentChannel = 'NULL' OR PaymentMethod = 'NULL' OR PaymentChannel = '' OR PaymentMethod = '' THEN ''\n    ELSE PaymentDate\nEND\n  AS ExpectedDate,\n  RefOrder RefOrder,\n  RefundAmountBeforeFee RefundAmountBeforeFee,\n  RefundAmountAfterFee RefundAmountAfterFee,\n  BillingAddress BillingAddress,\n  CAST(FORMAT_DATE('%d%m%Y', CURRENT_DATE()) AS STRING) AS BatchRunDate,\n  --sap.dup \nFROM\n  sap\nLEFT JOIN\n  item_cancelled\nON\n  human_id = U_OrderItem\nLEFT JOIN\n  change\nON\n  change.old_human_id = sap.U_OrderID\nWHERE \n  item_cancelled.human_id IS NOT NULL\n AND NOT EXISTS (\n  SELECT\n    U_OrderItem\n  FROM\n    cancelled\n  WHERE\n     cancelled.U_OrderItem = sap.U_OrderItem )\n AND sap.TotalPeriods > 1\n  AND item_cancelled.cancel_time IS NOT NULL \n  AND item_cancelled.cancel_time >= '2025-01-01' \n  AND OrderDate NOT LIKE '%2023%'\n  AND OrderDate NOT LIKE '%2024%' \n  AND sap.U_OrderID NOT LIKE '%_2%' \n AND (sap.PaymentChannel NOT LIKE '%RCB%'\n    OR sap.PaymentChannel IS NULL\n    OR sap.PaymentChannel = 'NULL')  \n  AND sap.U_OrderID NOT LIKE 'C#%' \n/*     AND (U_InvoiceNo NOT LIKE 'L%'\n  OR U_InvoiceNo = 'NULL'\n  OR U_InvoiceNo IS NULL)  */\nAND sap.U_OrderID NOT LIKE '%_X%' \nAND (sap.U_Period = 1 OR (sap.U_Period > 1 AND sap.dup = 1))   \n\n\nORDER BY\n  U_OrderItem,\n  U_Period",
+    "useLegacySql": false
+  },
+  "location": "asia-southeast1",
+  "numTotalLogicalBytes": "0",
+  "numActiveLogicalBytes": "0",
+  "numLongTermLogicalBytes": "0"
+}

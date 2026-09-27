@@ -1,0 +1,310 @@
+{
+  "kind": "bigquery#table",
+  "etag": "sESMGp8fRLBzE5bRraOjMw==",
+  "id": "pacific-plating-282708:sap_data_engineer.RCB_HEALTH",
+  "selfLink": "https://bigquery.googleapis.com/bigquery/v2/projects/pacific-plating-282708/datasets/sap_data_engineer/tables/RCB_HEALTH",
+  "tableReference": {
+    "projectId": "pacific-plating-282708",
+    "datasetId": "sap_data_engineer",
+    "tableId": "RCB_HEALTH"
+  },
+  "schema": {
+    "fields": [
+      {
+        "name": "CompanyDB",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "OrderID",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "OrderItem",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "InvoiceNo",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "OrderDate",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "InsuredID",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "Title",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "FirstName",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "LastName",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "InsurerCode",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "InsuranceGroup",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "InsuranceType",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "InsuranceProduct",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "ProductType",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "PolicyType",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "Endorse",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "PolicyDate",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "PolicyNo",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "EndorsementNo",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "ChassisNo",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "LicensePlate",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "GrossPremium",
+        "type": "FLOAT",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "StampDuty",
+        "type": "FLOAT",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "VAT",
+        "type": "FLOAT",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "TotalPremium",
+        "type": "FLOAT",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "WHT",
+        "type": "FLOAT",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "TotalEIR",
+        "type": "FLOAT",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "TotalSBT",
+        "type": "FLOAT",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "ProcessingFee",
+        "type": "FLOAT",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "ProcessingFeeVat",
+        "type": "FLOAT",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "ShippingFee",
+        "type": "FLOAT",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "ShippingFeeVat",
+        "type": "FLOAT",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "TotalAmount",
+        "type": "FLOAT",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "Discount",
+        "type": "FLOAT",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "TransactionStatus",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "SubmissionStatus",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "ApprovalStatus",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "PaymentStatus",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "ExpectedReceived",
+        "type": "FLOAT",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "ActualReceived",
+        "type": "FLOAT",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "InterestThisPeriod",
+        "type": "INTEGER",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "PrincipleThisPeriod",
+        "type": "INTEGER",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "InterestEIRThisPeriod",
+        "type": "INTEGER",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "PrincipleEIRThisPeriod",
+        "type": "INTEGER",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "PaymentDate",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "Period",
+        "type": "INTEGER",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "TotalPeriods",
+        "type": "INTEGER",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "PendingPayment",
+        "type": "INTEGER",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "PaymentMethod",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "PaymentChannel",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "ExpectedDate",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "RefOrder",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "RefundAmountBeforeFee",
+        "type": "INTEGER",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "RefundAmountAfterFee",
+        "type": "INTEGER",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "BillingAddress",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "BatchRunDate",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      }
+    ]
+  },
+  "numBytes": "0",
+  "numLongTermBytes": "0",
+  "numRows": "0",
+  "creationTime": "1743434243179",
+  "lastModifiedTime": "1788834132495",
+  "type": "VIEW",
+  "view": {
+    "query": "-- FULL SOURCE-ONLY LEGACY ROOT-FIX PROPOSAL\r\n-- Object: pacific-plating-282708.sap_data_engineer.RCB_HEALTH\r\n-- Live definition captured: 2026-09-07 ICT\r\n-- Root fix: classify CREDIT_CARD_INSTALLMENT as SAP ONETIME even when the CarePay\r\n-- snapshot records the customer's bank term (3/6/10). The bank pays Rabbit Care\r\n-- in full, so these rows must not be routed as RCL installments.\r\n-- Every other live expression and mapping is preserved.\r\n\r\n-- RCB NonMotor (onetime) -- FIXED & TUNED VERSION\r\n-- Fixed & tuned: 2026-08-28 (Boat review)\r\n-- Changes (confirmed with Boat):\r\n--  1. FIX (correctness, major): added credit-shell exclusion, same pattern\r\n--     as Motor onetime -- `change` CTE (cancelled_change_orders) + pushed\r\n--     into the `orders` CTE: `human_id NOT IN (SELECT human_id FROM\r\n--     change)`. Previously NonMotor had NO exclusion at all -- credit-shell\r\n--     (rebooked/changed) orders would have been double-counted. RefOrder\r\n--     (via get_charges_ref, informational only) is untouched and still\r\n--     works off the raw, unfiltered tables -- it's just a label, not a gate.\r\n--  2. FIX (correctness, major): added a second, structural layer for\r\n--     \"is this a one-time payment\" alongside the existing follow_ups.id IS\r\n--     NULL check -- `transaction_snapshots.number_of_installment = 1`\r\n--     (pre-filtered in that CTE, enforced via `transaction_snapshots.id IS\r\n--     NOT NULL` in onetime_master's WHERE, same mechanism as Motor) plus\r\n--     `transactions.payment_option IS DISTINCT FROM 'CREDIT_CARD_INSTALLMENT'`\r\n--     (NULL-safe, same as the Motor/EDC-installment fix). follow_ups.id IS\r\n--     NULL is KEPT, not replaced -- this is belt-and-suspenders until it's\r\n--     been checked against real data.\r\n--  3. FIX (safety net): added SELECT DISTINCT to the final query, matching\r\n--     Motor's defensive pattern -- this query joins transaction_snapshots\r\n--     and get_charges_ref, neither of which is guaranteed 1:1, and there\r\n--     was no dedup safety net at all before.\r\n--  4. FIX (dead code): removed 12 CTEs that were declared but never\r\n--     referenced anywhere in the query: card_tokens, contract_prices,\r\n--     contract_records, contracts, customer_tokens, hydra_migrations,\r\n--     payment_options, payment_records, prices, refunds,\r\n--     transaction_snapshot_installment_details, check_order_items (and\r\n--     check_order_items' now-pointless LEFT JOIN in onetime_master_go).\r\n--  5. FIX (perf, major): `charge_one`'s inner `minn` subquery joined\r\n--     orders + transactions + charges just to compute MIN(create_time) per\r\n--     transaction_id from columns that only exist on `charges`\r\n--     (status, service_provider) -- orders/transactions added nothing to\r\n--     that filter. Rewritten to run over `charges` alone. Same tie-handling\r\n--     semantics preserved (MIN + exact-timestamp self-join, not\r\n--     ROW_NUMBER, so an exact tie still keeps both candidate charge ids,\r\n--     matching the original behavior).\r\n--  6. FIX (perf, major): the ENTIRE 8-way join + compu_detail + charge_one\r\n--     computation used to run for EVERY product (including Motor) and only\r\n--     filtered down to Health at the very last line (`WHERE InsuranceGroup\r\n--     = 'products/health-insurance'`). Pushed the identical filter into\r\n--     the `order_items` CTE instead (`WHERE product =\r\n--     'products/health-insurance'`) -- InsuranceGroup is derived 1:1 from\r\n--     order_items.product, so this is the exact same filter, just applied\r\n--     before the expensive joins instead of after. The original final\r\n--     WHERE is KEPT as a safety net (in case order_items doesn't match at\r\n--     all for some order and InsuranceGroup comes through NULL) -- now\r\n--     filtering a much smaller row set, effectively free.\r\n--  7. Also pushed the same product filter into `compu_detail`'s raw\r\n--     subquery for the same reason (was scanning order_items for every\r\n--     product; matched only by exact order_id so was never a correctness\r\n--     issue, purely wasted scan).\r\n-- NOT changed: all financial calculations (WHT/EIR/SBT/fees), the\r\n--     InsurerCode health-mapping table, InsuranceType/Group/Product logic,\r\n--     PaymentMethod/PaymentChannel mapping, and every other CASE\r\n--     expression are byte-identical to the original.\r\n-- ============================================================\r\n\r\nWITH\r\nchange AS (\r\n  SELECT current_human_id human_id, old_human_id\r\n  FROM `pacific-plating-282708.careos.cancelled_change_orders`\r\n),\r\n\r\nget_charges_ref AS (\r\n  select charges.third_party_id , orders.human_id as order_id , orders.payment --, charges.*\r\n  from `pacific-plating-282708.careos.carepay_charges` charges\r\n  left join `pacific-plating-282708.careos.careos_orders` orders\r\n  on orders.payment =  CONCAT('transactions/',charges.transaction_id)\r\n  where 1=1\r\n  and service_provider != 'ICOLLECTION'\r\n  and status = 'SUCCESSFUL'\r\n  and third_party_id is not null and orders.human_id is not null\r\n),\r\n\r\ncharges AS (\r\n  SELECT * FROM `pacific-plating-282708.careos.carepay_charges`\r\n),\r\n\r\nfollow_ups AS (\r\n  SELECT * FROM `pacific-plating-282708.careos.carepay_follow_ups`\r\n),\r\n\r\ntransaction_snapshot_price_summaries AS (\r\n  SELECT * FROM `pacific-plating-282708.careos.carepay_transaction_snapshot_price_summaries`\r\n),\r\n\r\n-- Root fix: retain the snapshot term here. The final gate treats normal payments\r\n-- as one-time only at number_of_installment = 1, while CREDIT_CARD_INSTALLMENT\r\n-- is SAP ONETIME regardless of the customer's 3/6/10-month bank term.\r\ntransaction_snapshots AS (\r\n  SELECT * FROM `pacific-plating-282708.careos.carepay_transaction_snapshots`\r\n),\r\n\r\n-- Root fix: do not discard CREDIT_CARD_INSTALLMENT before the final ONETIME gate.\r\ntransactions AS (\r\n  SELECT * FROM `pacific-plating-282708.careos.carepay_transactions`\r\n),\r\n\r\n-- FIX 1: credit-shell exclusion, same pattern as Motor.\r\norders AS (\r\n  SELECT * FROM `pacific-plating-282708.careos.careos_orders`\r\n  WHERE human_id NOT IN (SELECT human_id FROM change)\r\n),\r\n\r\n-- FIX 6: product filter pushed here (was only in the final WHERE).\r\norder_items AS (\r\n  SELECT * FROM `pacific-plating-282708.careos.careos_order_items`\r\n  WHERE product = 'products/health-insurance'\r\n),\r\n\r\nleads AS (\r\n  SELECT * FROM `pacific-plating-282708.careos.careos_leads`\r\n),\r\n\r\n-- FIX 5: removed the orders+transactions join -- MIN(create_time) only\r\n-- ever depended on columns that live on `charges` itself.\r\ncharge_one AS (\r\n  SELECT charges.id AS charges_id, charges.transaction_id\r\n  FROM `pacific-plating-282708.careos.carepay_charges` charges\r\n  JOIN (\r\n    SELECT transaction_id, MIN(create_time) AS timee\r\n    FROM `pacific-plating-282708.careos.carepay_charges`\r\n    WHERE status = 'SUCCESSFUL' AND service_provider != 'ICOLLECTION'\r\n    GROUP BY transaction_id\r\n  ) AS minn\r\n  ON minn.transaction_id = charges.transaction_id AND charges.create_time = minn.timee\r\n  WHERE charges.status = 'SUCCESSFUL' AND charges.service_provider != 'ICOLLECTION'\r\n),\r\n\r\ncompu_detail as (\r\nSELECT\r\norders.human_id as order_id,\r\ncase when order_items.gross_premium is null then 0 else order_items.gross_premium end as gross_premium\r\nFROM `pacific-plating-282708.careos.careos_order_items` order_items\r\nLEFT JOIN `pacific-plating-282708.careos.careos_orders` orders\r\n    ON order_items.order_id = orders.id\r\nwhere order_items.packagetype ='mandatoryPackages'\r\nand order_items.product = 'products/health-insurance'  -- FIX 7: same product pushdown, correctness-neutral (matched by exact order_id anyway)\r\n),\r\n\r\nonetime_master as (\r\nselect\r\ncharges.amount as charges_amount,\r\norder_items.motor_item_type,\r\norder_items.packagetype,\r\ncharges.service_provider,\r\norders.create_time AS OrderDate,\r\ncharges.status ,\r\norders.human_id as OrderID,\r\norder_items.human_id as OrderItem ,\r\norder_items.price,\r\norder_items.net_premium AS GrossPremium,\r\norder_items.stamp_duty AS StampDuty,\r\norder_items.vat_amount AS VAT,\r\norder_items.gross_premium AS TotalPremium,\r\nROUND((1 / 100) * transaction_snapshot_price_summaries.wht_amount,2) AS WHT_master,\r\nROUND((1 / 100) * transaction_snapshot_price_summaries.interest_amount,2) as TotalEIR_check ,\r\nCASE\r\n  WHEN transaction_snapshot_price_summaries.interest_amount IS NULL THEN 0\r\n  ELSE ROUND(ROUND((1 / 100) * transaction_snapshot_price_summaries.interest_amount,2) - ((ROUND((1 / 100) * transaction_snapshot_price_summaries.interest_amount,2) * 3.3) / 103.3),2)\r\nEND AS TotalEIR,\r\nCASE\r\n  WHEN transaction_snapshot_price_summaries.interest_amount IS NULL THEN 0\r\n  ELSE ROUND(((ROUND((1 / 100) * transaction_snapshot_price_summaries.interest_amount,2) * 3.3) / 103.3),2)\r\nEND AS TotalSBT,\r\nCASE\r\n  WHEN transaction_snapshot_price_summaries.processing_fee_amount IS NULL THEN 0\r\n  ELSE ROUND (ROUND((1 / 100) * transaction_snapshot_price_summaries.processing_fee_amount,2) * (100/107),2)\r\nEND AS ProcessingFee_master,\r\nCASE\r\n  WHEN transaction_snapshot_price_summaries.processing_fee_amount IS NULL THEN 0\r\n  ELSE ROUND(ROUND((1 / 100) * transaction_snapshot_price_summaries.processing_fee_amount,2) - (ROUND((1 / 100) * transaction_snapshot_price_summaries.processing_fee_amount,2) * (100/107)),2)\r\nEND AS ProcessingFeeVat_master,\r\nCASE\r\n  WHEN transaction_snapshot_price_summaries.shipment_fee IS NULL THEN 0\r\n  ELSE ROUND(ROUND((1 / 100) * transaction_snapshot_price_summaries.shipment_fee,2) * (100/107),2)\r\nEND AS ShippingFee_master,\r\nCASE\r\n  WHEN transaction_snapshot_price_summaries.shipment_fee IS NULL THEN 0\r\n  ELSE ROUND(ROUND((1 / 100) * transaction_snapshot_price_summaries.shipment_fee,2) - ROUND((1 / 100) * transaction_snapshot_price_summaries.shipment_fee,2) * (100/107),2)\r\nEND AS ShippingFeeVat_master,\r\nROUND((1 / 100) * transaction_snapshot_price_summaries.discount_amount,2) AS Discount_master,\r\ncharges.status AS TransactionStatus,\r\norder_items.submission_status AS SubmissionStatus,\r\norder_items.approval_status AS ApprovalStatus,\r\ntransactions.status AS PaymentStatus,\r\nROUND(((1 / 100) * charges.amount),2) AS ActualReceived_master, -- \u0e08\u0e33\u0e19\u0e27\u0e19\u0e40\u0e07\u0e34\u0e19\u0e17\u0e35\u0e48\u0e25\u0e39\u0e01\u0e04\u0e49\u0e32\u0e08\u0e48\u0e32\u0e22\u0e21\u0e32\u0e08\u0e23\u0e34\u0e07\u0e46 \u0e2b\u0e49\u0e32\u0e21\u0e40\u0e1b\u0e25\u0e35\u0e48\u0e22\u0e19\r\n0 AS PrincipleThisPeriod,\r\ntransaction_snapshot_price_summaries.interest_amount AS InterestEIRThisPeriod,\r\n0 AS PrincipleEIRThisPeriod,\r\nCASE\r\n  WHEN COALESCE(charges.payment_date, charges.update_time) < TIMESTAMP(DATE_TRUNC(CURRENT_DATE(), MONTH))\r\n    THEN TIMESTAMP(DATE_TRUNC(CURRENT_DATE(), MONTH))\r\n  ELSE COALESCE(charges.payment_date, charges.update_time)\r\nEND AS PaymentDate,\r\ncharges.installment_number AS Period,\r\n1 as TotalPeriods,\r\n0 as PendingPayment,\r\ncharges.create_time as ExpectedDate ,\r\ncharges.id as charges_id,\r\ncase\r\n  when charges.third_party_id is null AND charges.payment_method ='DIRECT_PAYMENT' then CONCAT(\"dpm_\",order_items.human_id)\r\n  WHEN charges.third_party_id is null AND charges.payment_method ='BANK_TRANSFER' then CONCAT(\"trf_\",order_items.human_id)\r\n  WHEN charges.third_party_id is null AND charges.payment_method ='CASH' then CONCAT(\"cash_\",order_items.human_id)\r\n  WHEN charges.third_party_id is null AND charges.payment_method ='EDC' then CONCAT(\"edc_\",order_items.human_id)\r\n  WHEN charges.third_party_id is NULL THEN order_items.human_id\r\n  else  charges.third_party_id\r\nend as InvoiceNo,\r\norder_items.insurer AS InsurerCode,\r\norder_items.product AS InsuranceGroup,\r\norder_items.motor_item_type AS InsuranceType,\r\norder_items.package AS InsuranceProduct,\r\n'Insurance' ProductType,\r\nleads.type AS PolicyType,\r\n'N' AS Endorse,\r\norder_items.policy_start_date AS PolicyDate,\r\norder_items.policy_number AS PolicyNo,\r\nNULL AS EndorsementNo,\r\nJSON_VALUE(orders.data, '$.chassisNumber') AS ChassisNo,\r\nJSON_VALUE(orders.data, '$.carLicensePlate') AS LicensePlate,\r\ncharges.payment_method AS PaymentMethod,\r\ncharges.service_provider AS PaymentChannel,\r\ncase when JSON_VALUE(orders.data, '$.policyHolder.isCompany') ='true' then\r\nJSON_VALUE(orders.data, '$.policyHolder.companyTaxId') else JSON_VALUE(orders.data, '$.idNumber') end as InsuredID ,\r\nJSON_VALUE(orders.data, '$.policyHolder.title') AS Title,\r\nCOALESCE(JSON_VALUE(orders.data, '$.policyHolder.firstName'),JSON_VALUE(orders.data, '$.policyHolder.policyAddress.companyName')) AS FirstName,\r\nJSON_VALUE(orders.data, '$.policyHolder.lastName') AS LastName,\r\n0 as RefundAmountBeforeFee,0 as RefundAmountAfterFee,\r\nCASE\r\nWHEN JSON_VALUE(orders.data, '$.policyHolder.policyAddress.isBillingAddress') = 'true'\r\n  THEN CONCAT(\r\n    COALESCE(JSON_VALUE(orders.data, '$.policyHolder.policyAddress.fullName'),JSON_VALUE(orders.data, '$.policyHolder.policyAddress.companyName')), ', ',\r\n    JSON_VALUE(orders.data, '$.policyHolder.policyAddress.address'), ', ',\r\n    JSON_VALUE(orders.data, '$.policyHolder.policyAddress.subDistrict'), ', ',\r\n    JSON_VALUE(orders.data, '$.policyHolder.policyAddress.district'), ', ',\r\n    JSON_VALUE(orders.data, '$.policyHolder.policyAddress.province'), ', ',\r\n    JSON_VALUE(orders.data, '$.policyHolder.policyAddress.postCode')\r\n  )\r\n  ELSE CONCAT(\r\n    JSON_VALUE(orders.data, '$.policyHolder.billingAddress.fullName'), ', ',\r\n    JSON_VALUE(orders.data, '$.policyHolder.billingAddress.address'), ', ',\r\n    JSON_VALUE(orders.data, '$.policyHolder.billingAddress.subDistrict'), ', ',\r\n    JSON_VALUE(orders.data, '$.policyHolder.billingAddress.district'), ', ',\r\n    JSON_VALUE(orders.data, '$.policyHolder.billingAddress.province'), ', ',\r\n    JSON_VALUE(orders.data, '$.policyHolder.billingAddress.postCode')\r\n)\r\nEND AS BillingAddress,\r\nCURRENT_DATE() AS BatchRunDate,\r\n'RCB' as CompanyDB,\r\nleads.reference AS RefOrder\r\nFROM orders\r\nLEFT JOIN leads ON CONCAT('leads/',leads.id) = orders.lead\r\nLEFT JOIN transactions ON CONCAT('transactions/',transactions.id) = orders.payment\r\nLEFT JOIN follow_ups ON follow_ups.transaction_id = transactions.id\r\nLEFT JOIN charges ON charges.transaction_id = transactions.id\r\nLEFT JOIN order_items ON order_items.order_id = orders.id\r\nLEFT JOIN transaction_snapshots ON transaction_snapshots.transaction_id = transactions.id\r\nLEFT JOIN transaction_snapshot_price_summaries ON transaction_snapshot_price_summaries.snapshot_id = transaction_snapshots.id\r\nwhere 1=1\r\nand orders.is_fully_paid is true\r\nAND charges.status = 'SUCCESSFUL'\r\nand follow_ups.id is null -- \u0e44\u0e21\u0e48\u0e21\u0e35\u0e07\u0e27\u0e14\u0e15\u0e49\u0e2d\u0e07\u0e15\u0e32\u0e21 = \u0e44\u0e21\u0e48\u0e1c\u0e48\u0e2d\u0e19 (kept, per Boat: belt-and-suspenders)\r\nAND (\r\n  transaction_snapshots.number_of_installment = 1\r\n  OR transactions.payment_option = 'CREDIT_CARD_INSTALLMENT'\r\n) -- Root fix: bank card installments are SAP ONETIME because the bank settles in full.\r\nand charges.service_provider != 'ICOLLECTION'\r\n)\r\n, onetime_master_go as (\r\nselect * ,\r\ncase when packagetype='mandatoryPackages' then 0 else WHT_master end as WHT ,\r\ncase when packagetype='mandatoryPackages' then 0 else ProcessingFee_master end  as  ProcessingFee ,\r\ncase when packagetype='mandatoryPackages' then 0 else ProcessingFeeVat_master end as  ProcessingFeeVat  ,\r\ncase when packagetype='mandatoryPackages' then 0 else ShippingFee_master end  as  ShippingFee ,\r\ncase when packagetype='mandatoryPackages' then 0 else ShippingFeeVat_master end as  ShippingFeeVat ,\r\ncase when packagetype='mandatoryPackages' then TotalPremium else\r\nROUND((TotalPremium)+TotalEIR+TotalSBT+ProcessingFee_master+ProcessingFeeVat_master+ShippingFee_master+ShippingFeeVat_master,2) end as TotalAmount  ,\r\ncase when packagetype='mandatoryPackages' then 0 else Discount_master end as  Discount  ,\r\ncase when packagetype='mandatoryPackages' then TotalPremium\r\n  else case when compu_detail.gross_premium is null then ActualReceived_master else ROUND(ActualReceived_master-compu_detail.gross_premium,2) end\r\nend as ExpectedReceived ,\r\ncase when packagetype='mandatoryPackages' then TotalPremium\r\n  else case when compu_detail.gross_premium is null then ActualReceived_master else ROUND(ActualReceived_master-compu_detail.gross_premium,2) end\r\nend as ActualReceived ,\r\n0 as InterestThisPeriod\r\nfrom onetime_master\r\nleft join compu_detail on compu_detail.order_id=onetime_master.OrderID\r\nwhere 1=1\r\nand onetime_master.charges_id in (select distinct charges_id from charge_one) -- \u0e0a\u0e33\u0e23\u0e30\u0e40\u0e15\u0e47\u0e21\u0e07\u0e27\u0e14\u0e41\u0e23\u0e01  -- \u0e07\u0e27\u0e14 2 \u0e17\u0e33 sub query \u0e40\u0e1e\u0e34\u0e48\u0e21\r\n)\r\n\r\n\r\n\r\nselect distinct\r\nCompanyDB ,\r\nOrderID ,\r\nOrderItem ,\r\nInvoiceNo ,\r\nCAST(FORMAT_DATE('%d%m%Y', OrderDate) AS STRING) AS OrderDate,\r\nInsuredID ,\r\nCASE\r\nWHEN Title = 'KHUN' THEN '\u0e04\u0e38\u0e13'\r\nWHEN Title = 'MISS' THEN '\u0e19\u0e32\u0e07\u0e2a\u0e32\u0e27'\r\nWHEN Title = 'MR' THEN '\u0e19\u0e32\u0e22'\r\nWHEN Title = 'MRS' THEN '\u0e19\u0e32\u0e07'\r\nELSE ''\r\nEND AS Title,\r\nFirstName ,\r\nLastName  ,\r\nCASE\r\n  WHEN InsuranceGroup = 'products/health-insurance'\r\n  THEN\r\n    CASE\r\n      WHEN InsurerCode = 'insurers/1' THEN 'N024'\r\n      WHEN InsurerCode = 'insurers/3' THEN 'N082'\r\n      WHEN InsurerCode = 'insurers/6' THEN 'N067' --AXA--\r\n      WHEN InsurerCode = 'insurers/7' THEN 'N021'\r\n      WHEN InsurerCode = 'insurers/8' THEN 'N092'\r\n      WHEN InsurerCode = 'insurers/9' THEN 'N072'\r\n      WHEN InsurerCode = 'insurers/10' THEN 'N040'\r\n      WHEN InsurerCode = 'insurers/11' THEN 'N003'\r\n      WHEN InsurerCode = 'insurers/12' THEN 'N091'\r\n      WHEN InsurerCode = 'insurers/13' THEN 'N066'\r\n      WHEN InsurerCode = 'insurers/14' THEN 'N090'\r\n      WHEN InsurerCode = 'insurers/15' THEN 'N058'\r\n      WHEN InsurerCode = 'insurers/16' THEN 'N089'\r\n      WHEN InsurerCode = 'insurers/17' THEN 'N015'\r\n      WHEN InsurerCode = 'insurers/18' THEN 'N088'\r\n      WHEN InsurerCode = 'insurers/20' THEN 'N054'\r\n      WHEN InsurerCode = 'insurers/23' THEN 'N087'\r\n      WHEN InsurerCode = 'insurers/24' THEN 'N086'\r\n      WHEN InsurerCode = 'insurers/26' THEN 'N062'\r\n      WHEN InsurerCode = 'insurers/27' THEN 'N017'\r\n      WHEN InsurerCode = 'insurers/28' THEN 'N069'\r\n      WHEN InsurerCode = 'insurers/29' THEN 'N085'\r\n      WHEN InsurerCode = 'insurers/30' THEN 'N30' --Generali--\r\n      WHEN InsurerCode = 'insurers/31' THEN 'N061'\r\n      WHEN InsurerCode = 'insurers/33' THEN 'N011' --LMG--\r\n      WHEN InsurerCode = 'insurers/34' THEN 'N079' --MSIG--\r\n      WHEN InsurerCode = 'insurers/36' THEN 'N084'\r\n      WHEN InsurerCode = 'insurers/37' THEN 'N083'\r\n      WHEN InsurerCode = 'insurers/40' THEN 'N033'\r\n      WHEN InsurerCode = 'insurers/42' THEN 'N064'\r\n      WHEN InsurerCode = 'insurers/43' THEN 'N080'\r\n      WHEN InsurerCode = 'insurers/44' THEN 'N081'\r\n      WHEN InsurerCode = 'insurers/46' THEN 'N105' --Pacific Cross--\r\n      WHEN InsurerCode = 'insurers/48' THEN 'N103' --RabbitLife-\r\n      WHEN InsurerCode = 'insurers/49' THEN 'N107' --MuangThaiLife-\r\n      ELSE InsurerCode\r\n    END\r\n  ELSE 'Not Health'\r\nEND AS InsurerCode,\r\nCASE\r\n  WHEN InsuranceGroup = 'products/car-insurance' THEN 'Motor'\r\n  WHEN InsuranceGroup = 'products/health-insurance' THEN 'Health'\r\n  ELSE InsuranceGroup\r\nEND AS InsuranceGroup,\r\nCASE\r\n  WHEN InsuranceType IS NULL OR InsuranceType = ' ' THEN 'Health'\r\n  ELSE InsuranceType\r\nEND AS InsuranceType,\r\nCASE\r\n  WHEN InsuranceGroup = 'products/car-insurance' THEN 'Motor'\r\n  WHEN InsuranceGroup = 'products/health-insurance' THEN 'Health'\r\n  ELSE InsuranceGroup\r\nEND AS InsuranceProduct,\r\n'Insurance' ProductType,\r\nCASE\r\n  WHEN PolicyType = 'LEAD_TYPE_RENEWAL' THEN 'R'\r\n  ELSE 'N'\r\nEND AS PolicyType,\r\nEndorse,\r\nCAST(FORMAT_DATE('%d%m%Y', PolicyDate) AS STRING) AS PolicyDate,\r\nPolicyNo  ,\r\nCAST(EndorsementNo AS STRING) EndorsementNo,\r\nChassisNo ,\r\nLicensePlate  ,\r\nGrossPremium  ,\r\nStampDuty ,\r\nVAT ,\r\nTotalPremium  ,\r\nWHT ,\r\nTotalEIR  ,\r\nTotalSBT  ,\r\nProcessingFee ,\r\nProcessingFeeVat  ,\r\nShippingFee ,\r\nShippingFeeVat  ,\r\nTotalAmount ,\r\nDiscount  ,\r\n    CASE\r\n      WHEN TransactionStatus = 'FOLLOWUP_STATUS_PAID' THEN 'paid'\r\n      WHEN TransactionStatus = 'FOLLOWUP_STATUS_PENDING' THEN 'pending'\r\n      WHEN TransactionStatus = 'SUCCESSFUL' THEN 'paid'\r\n      WHEN TransactionStatus = 'PENDING' THEN 'pending'\r\n      ELSE TransactionStatus\r\n    END AS TransactionStatus,\r\n    CASE\r\n      WHEN SubmissionStatus = 'ITEM_SUBMISSION_STATUS_READY_TO_SUBMIT' THEN 'PENDING'\r\n      WHEN SubmissionStatus = 'ITEM_SUBMISSION_STATUS_PRESUBMITTED' THEN 'PRE-SUBMITTED'\r\n      WHEN SubmissionStatus = 'ITEM_SUBMISSION_STATUS_SUBMITTED' THEN 'SUBMITTED'\r\n      WHEN SubmissionStatus = 'ITEM_SUBMISSION_STATUS_PENDING' THEN 'PENDING'\r\n      ELSE SubmissionStatus\r\n    END AS SubmissionStatus,\r\n    CASE\r\n      WHEN ApprovalStatus = 'ITEM_APPROVAL_STATUS_APPROVED' THEN 'APPROVED'\r\n      WHEN ApprovalStatus = 'ITEM_APPROVAL_STATUS_REJECTED' THEN 'REJECTED'\r\n      WHEN ApprovalStatus = 'ITEM_APPROVAL_STATUS_PENDING' THEN 'PENDING'\r\n      WHEN ApprovalStatus = 'ITEM_APPROVAL_STATUS_POLICY_UPLOADED' THEN 'POLICY UPLOADED'\r\n    END AS ApprovalStatus,\r\n    CASE\r\n      WHEN PaymentStatus = 'SUCCESSFUL' THEN 'Fully paid'\r\n      WHEN PaymentStatus = 'PENDING' THEN 'Not fully paid'\r\n      ELSE PaymentStatus\r\n    END AS PaymentStatus,\r\nExpectedReceived,\r\nActualReceived  ,\r\nInterestThisPeriod  ,\r\nPrincipleThisPeriod ,\r\nInterestEIRThisPeriod ,\r\nPrincipleEIRThisPeriod  ,\r\nCAST(FORMAT_DATE('%d%m%Y', PaymentDate) AS STRING) AS PaymentDate,\r\nPeriod  ,\r\nTotalPeriods  ,\r\nPendingPayment  ,\r\nCASE\r\nWHEN PaymentMethod ='CASH'and PaymentChannel='SERVICE_PROVIDER_UNSPECIFIED' THEN 'TRF Transfer'\r\nWHEN PaymentMethod ='BANK_TRANSFER'and PaymentChannel='KASIKORN' THEN 'TRF Transfer'\r\nWHEN PaymentMethod ='BANK_TRANSFER'and PaymentChannel='KRUNGSRI' THEN 'TRF Transfer'\r\nWHEN PaymentMethod ='BANK_TRANSFER'and PaymentChannel='KRUNGTHAI' THEN 'TRF Transfer'\r\nWHEN PaymentMethod ='BANK_TRANSFER'and PaymentChannel='SCB' THEN 'TRF Transfer'\r\nWHEN PaymentMethod ='DIRECT_PAYMENT'and PaymentChannel='SERVICE_PROVIDER_UNSPECIFIED' THEN 'DPM \u0e08\u0e48\u0e32\u0e22\u0e15\u0e23\u0e07\u0e01\u0e31\u0e1a\u0e1a\u0e23\u0e34\u0e29\u0e31\u0e17\u0e1b\u0e23\u0e30\u0e01\u0e31\u0e19'\r\nWHEN PaymentMethod ='EDC'and PaymentChannel='BANGKOK_BANK' THEN 'EDC EDC'\r\nWHEN PaymentMethod ='EDC'and PaymentChannel='KASIKORN' THEN 'EDC EDC'\r\nWHEN PaymentMethod ='EDC'and PaymentChannel='KRUNGSRI' THEN 'EDC EDC'\r\nWHEN PaymentMethod ='EDC'and PaymentChannel='KRUNGTHAI' THEN 'EDC EDC'\r\nWHEN PaymentMethod ='EDC'and PaymentChannel='SCB' THEN 'EDC EDC'\r\nWHEN PaymentMethod ='EDC'and PaymentChannel='UOB' THEN 'EDC EDC'\r\nWHEN PaymentMethod ='ONLINECARD'and PaymentChannel='OMISE' THEN 'OMC Omise Credit Card'\r\nWHEN PaymentMethod ='ONLINECARD'and PaymentChannel='RCB' THEN 'OMC Omise Credit Card'\r\nWHEN PaymentMethod ='QR_CODE'and PaymentChannel='OMISE' THEN 'OME Omise QR Prompt Pay'\r\nWHEN PaymentMethod ='QR_CODE'and PaymentChannel='RABBIT_LENDING' THEN 'OME Omise QR Prompt Pay'\r\nWHEN PaymentMethod ='QR_CODE'and PaymentChannel='RCB' THEN 'OME Omise QR Prompt Pay'\r\nWHEN PaymentMethod ='EDC'and PaymentChannel='KRUNGTHAI' THEN 'EDC EDC'\r\nWHEN PaymentMethod ='QR_CODE'and PaymentChannel='RABBIT_LENDING' THEN 'OME Omise QR Prompt Pay'\r\nWHEN PaymentMethod ='all'and PaymentChannel='all' THEN 'RCL-CMI-channel'\r\nELSE   'TRF Transfer'\r\nEND AS PaymentMethod  ,\r\nCASE\r\nWHEN PaymentMethod ='CASH'and PaymentChannel='SERVICE_PROVIDER_UNSPECIFIED' THEN 'RCB-Transfer-\u0e2d\u0e37\u0e48\u0e19\u0e46'\r\nWHEN PaymentMethod ='BANK_TRANSFER'and PaymentChannel='KASIKORN' THEN 'RCB-Transfer-KBANK'\r\nWHEN PaymentMethod ='BANK_TRANSFER'and PaymentChannel='KRUNGSRI' THEN 'RCB-Transfer-BAY'\r\nWHEN PaymentMethod ='BANK_TRANSFER'and PaymentChannel='KRUNGTHAI' THEN 'RCB-Transfer-KTB'\r\nWHEN PaymentMethod ='BANK_TRANSFER'and PaymentChannel='SCB' THEN 'RCB-Transfer-SCB'\r\nWHEN PaymentMethod ='DIRECT_PAYMENT'and PaymentChannel='SERVICE_PROVIDER_UNSPECIFIED' THEN 'RCB-DIRECT PAYMENT'\r\nWHEN PaymentMethod ='EDC'and PaymentChannel='BANGKOK_BANK' THEN 'RCB-EDC-BBL'\r\nWHEN PaymentMethod ='EDC'and PaymentChannel='KASIKORN' THEN 'RCB-EDC-KBANK'\r\nWHEN PaymentMethod ='EDC'and PaymentChannel='KRUNGSRI' THEN 'RCB-EDC-BAY'\r\nWHEN PaymentMethod ='EDC'and PaymentChannel='KRUNGTHAI' THEN 'RCB-EDC-KTB'\r\nWHEN PaymentMethod ='EDC'and PaymentChannel='SCB' THEN 'RCB-EDC-SCB'\r\nWHEN PaymentMethod ='EDC'and PaymentChannel='UOB' THEN 'RCB-EDC-UOB'\r\nWHEN PaymentMethod ='ONLINECARD'and PaymentChannel='OMISE' THEN 'RCB-Omise Credit Card-BAY'\r\nWHEN PaymentMethod ='ONLINECARD'and PaymentChannel='RCB' THEN 'RCB-Omise Credit Card-BAY'\r\nWHEN PaymentMethod ='QR_CODE'and PaymentChannel='OMISE' THEN 'RCB-Omise QR Prompt Pay-BAY'\r\nWHEN PaymentMethod ='QR_CODE'and PaymentChannel='RABBIT_LENDING' THEN 'RCB-Omise QR Prompt Pay-BAY'\r\nWHEN PaymentMethod ='QR_CODE'and PaymentChannel='RCB' THEN 'RCB-Omise QR Prompt Pay-BAY'\r\nWHEN PaymentMethod ='EDC'and PaymentChannel='KRUNGTHAI' THEN 'RCL-EDC-KTB'\r\nWHEN PaymentMethod ='QR_CODE'and PaymentChannel='RABBIT_LENDING' THEN 'RCL-Omise QR Prompt Pay-BAY'\r\nWHEN PaymentMethod ='all'and PaymentChannel='all' THEN 'RCL-CMI-channel'\r\nELSE 'RCB-Transfer-\u0e2d\u0e37\u0e48\u0e19\u0e46'\r\nEND AS PaymentChannel ,\r\nCAST(FORMAT_DATE('%d%m%Y', ExpectedDate) AS STRING) AS ExpectedDate,\r\nget_charges_ref.order_id as RefOrder,\r\nRefundAmountBeforeFee ,\r\nRefundAmountAfterFee  ,\r\nBillingAddress  ,\r\nCAST(FORMAT_DATE('%d%m%Y', BatchRunDate) AS STRING) AS BatchRunDate,\r\nfrom onetime_master_go\r\nleft join get_charges_ref on onetime_master_go.InvoiceNo=get_charges_ref.third_party_id and get_charges_ref.order_id != onetime_master_go.OrderID\r\n\r\nWHERE InsuranceGroup = 'products/health-insurance'\r\n",
+    "useLegacySql": false,
+    "privacyPolicy": {}
+  },
+  "location": "asia-southeast1",
+  "numTotalLogicalBytes": "0",
+  "numActiveLogicalBytes": "0",
+  "numLongTermLogicalBytes": "0"
+}

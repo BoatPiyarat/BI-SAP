@@ -1,0 +1,1722 @@
+[
+  {
+    "jobReference": {
+      "projectId": "pacific-plating-282708",
+      "jobId": "codex_careos_month_audit_final_20260926",
+      "location": "asia-southeast1"
+    },
+    "status": {
+      "state": "DONE"
+    },
+    "statistics": {
+      "creationTime": "1790438765832",
+      "startTime": "1790438765996",
+      "endTime": "1790438852428",
+      "totalBytesProcessed": "10925251287",
+      "query": {
+        "totalBytesProcessed": "10925251287",
+        "totalBytesBilled": "10989076480",
+        "totalSlotMs": "1015620",
+        "schema": {
+          "fields": [
+            {
+              "name": "event_type",
+              "type": "STRING",
+              "mode": "NULLABLE"
+            },
+            {
+              "name": "date_scope",
+              "type": "STRING",
+              "mode": "NULLABLE"
+            },
+            {
+              "name": "order_id",
+              "type": "STRING",
+              "mode": "NULLABLE"
+            },
+            {
+              "name": "order_item",
+              "type": "STRING",
+              "mode": "NULLABLE"
+            },
+            {
+              "name": "item_pk",
+              "type": "STRING",
+              "mode": "NULLABLE"
+            },
+            {
+              "name": "transaction_id",
+              "type": "STRING",
+              "mode": "NULLABLE"
+            },
+            {
+              "name": "charge_id",
+              "type": "STRING",
+              "mode": "NULLABLE"
+            },
+            {
+              "name": "installment_period",
+              "type": "INTEGER",
+              "mode": "NULLABLE"
+            },
+            {
+              "name": "business_type",
+              "type": "STRING",
+              "mode": "NULLABLE"
+            },
+            {
+              "name": "product",
+              "type": "STRING",
+              "mode": "NULLABLE"
+            },
+            {
+              "name": "motor_item_type",
+              "type": "STRING",
+              "mode": "NULLABLE"
+            },
+            {
+              "name": "flow",
+              "type": "STRING",
+              "mode": "NULLABLE"
+            },
+            {
+              "name": "payment_mode",
+              "type": "STRING",
+              "mode": "NULLABLE"
+            },
+            {
+              "name": "payment_option",
+              "type": "STRING",
+              "mode": "NULLABLE"
+            },
+            {
+              "name": "careos_total_installments",
+              "type": "INTEGER",
+              "mode": "NULLABLE"
+            },
+            {
+              "name": "paid_date",
+              "type": "DATE",
+              "mode": "NULLABLE"
+            },
+            {
+              "name": "paid_at",
+              "type": "TIMESTAMP",
+              "mode": "NULLABLE"
+            },
+            {
+              "name": "paid_date_source",
+              "type": "STRING",
+              "mode": "NULLABLE"
+            },
+            {
+              "name": "raw_payment_at",
+              "type": "TIMESTAMP",
+              "mode": "NULLABLE"
+            },
+            {
+              "name": "charge_updated_at",
+              "type": "TIMESTAMP",
+              "mode": "NULLABLE"
+            },
+            {
+              "name": "cancellation_date",
+              "type": "DATE",
+              "mode": "NULLABLE"
+            },
+            {
+              "name": "cancelled_at",
+              "type": "TIMESTAMP",
+              "mode": "NULLABLE"
+            },
+            {
+              "name": "charge_amount_thb",
+              "type": "FLOAT",
+              "mode": "NULLABLE"
+            },
+            {
+              "name": "comparable_item_amount_thb",
+              "type": "FLOAT",
+              "mode": "NULLABLE"
+            },
+            {
+              "name": "raw_invoice_no",
+              "type": "STRING",
+              "mode": "NULLABLE"
+            },
+            {
+              "name": "candidate_invoice_nos",
+              "type": "STRING",
+              "mode": "NULLABLE"
+            },
+            {
+              "name": "payment_method",
+              "type": "STRING",
+              "mode": "NULLABLE"
+            },
+            {
+              "name": "service_provider",
+              "type": "STRING",
+              "mode": "NULLABLE"
+            },
+            {
+              "name": "period_charge_rank",
+              "type": "INTEGER",
+              "mode": "NULLABLE"
+            },
+            {
+              "name": "transaction_charge_rank",
+              "type": "INTEGER",
+              "mode": "NULLABLE"
+            },
+            {
+              "name": "order_item_count",
+              "type": "INTEGER",
+              "mode": "NULLABLE"
+            },
+            {
+              "name": "compulsory_item_count",
+              "type": "INTEGER",
+              "mode": "NULLABLE"
+            },
+            {
+              "name": "allocation_scope",
+              "type": "STRING",
+              "mode": "NULLABLE"
+            },
+            {
+              "name": "is_cancelled",
+              "type": "BOOLEAN",
+              "mode": "NULLABLE"
+            },
+            {
+              "name": "is_change_order_new",
+              "type": "BOOLEAN",
+              "mode": "NULLABLE"
+            },
+            {
+              "name": "is_change_order_old",
+              "type": "BOOLEAN",
+              "mode": "NULLABLE"
+            },
+            {
+              "name": "lead_status",
+              "type": "STRING",
+              "mode": "NULLABLE"
+            },
+            {
+              "name": "submission_status",
+              "type": "STRING",
+              "mode": "NULLABLE"
+            },
+            {
+              "name": "approval_status",
+              "type": "STRING",
+              "mode": "NULLABLE"
+            },
+            {
+              "name": "snapshot_periods",
+              "type": "INTEGER",
+              "mode": "NULLABLE"
+            },
+            {
+              "name": "sap_item_rows",
+              "type": "INTEGER",
+              "mode": "NULLABLE"
+            },
+            {
+              "name": "sap_period_rows",
+              "type": "INTEGER",
+              "mode": "NULLABLE"
+            },
+            {
+              "name": "sap_period_paid_rows",
+              "type": "INTEGER",
+              "mode": "NULLABLE"
+            },
+            {
+              "name": "sap_period_statuses",
+              "type": "STRING",
+              "mode": "NULLABLE"
+            },
+            {
+              "name": "matched_sap_rows",
+              "type": "INTEGER",
+              "mode": "NULLABLE"
+            },
+            {
+              "name": "terminal_matches",
+              "type": "INTEGER",
+              "mode": "NULLABLE"
+            },
+            {
+              "name": "matched_statuses",
+              "type": "STRING",
+              "mode": "NULLABLE"
+            },
+            {
+              "name": "matched_invoices",
+              "type": "STRING",
+              "mode": "NULLABLE"
+            },
+            {
+              "name": "matched_docentries",
+              "type": "STRING",
+              "mode": "NULLABLE"
+            },
+            {
+              "name": "sap_matched_actual",
+              "type": "FLOAT",
+              "mode": "NULLABLE"
+            },
+            {
+              "name": "sap_update_at",
+              "type": "TIMESTAMP",
+              "mode": "NULLABLE"
+            },
+            {
+              "name": "sap_paid_date",
+              "type": "DATE",
+              "mode": "NULLABLE"
+            },
+            {
+              "name": "reason_code",
+              "type": "STRING",
+              "mode": "NULLABLE"
+            },
+            {
+              "name": "cancellation_docentry",
+              "type": "INTEGER",
+              "mode": "NULLABLE"
+            },
+            {
+              "name": "counterpart_cancelled_docentries",
+              "type": "STRING",
+              "mode": "NULLABLE"
+            },
+            {
+              "name": "needs_review",
+              "type": "BOOLEAN",
+              "mode": "NULLABLE"
+            },
+            {
+              "name": "reconciliation_status",
+              "type": "STRING",
+              "mode": "NULLABLE"
+            },
+            {
+              "name": "amount_check_scope",
+              "type": "STRING",
+              "mode": "NULLABLE"
+            },
+            {
+              "name": "cause_confidence",
+              "type": "STRING",
+              "mode": "NULLABLE"
+            },
+            {
+              "name": "audit_month_start",
+              "type": "DATE",
+              "mode": "NULLABLE"
+            },
+            {
+              "name": "audit_month_end_exclusive",
+              "type": "DATE",
+              "mode": "NULLABLE"
+            },
+            {
+              "name": "audit_as_of",
+              "type": "TIMESTAMP",
+              "mode": "NULLABLE"
+            }
+          ]
+        },
+        "statementType": "SCRIPT"
+      },
+      "totalSlotMs": "1015620",
+      "numChildJobs": "21"
+    }
+  },
+  {
+    "jobReference": {
+      "projectId": "pacific-plating-282708",
+      "jobId": "codex_month_audit_upstream_final_20260926",
+      "location": "asia-southeast1"
+    },
+    "status": {
+      "state": "DONE"
+    },
+    "statistics": {
+      "creationTime": "1790438961599",
+      "startTime": "1790438961632",
+      "endTime": "1790438997822",
+      "totalBytesProcessed": "9941248672",
+      "query": {
+        "totalBytesProcessed": "9941248672",
+        "totalBytesBilled": "9942597632",
+        "totalSlotMs": "17269771",
+        "schema": {
+          "fields": [
+            {
+              "name": "reason_code",
+              "type": "STRING",
+              "mode": "NULLABLE"
+            },
+            {
+              "name": "flow",
+              "type": "STRING",
+              "mode": "NULLABLE"
+            },
+            {
+              "name": "business_type",
+              "type": "STRING",
+              "mode": "NULLABLE"
+            },
+            {
+              "name": "payment_mode",
+              "type": "STRING",
+              "mode": "NULLABLE"
+            },
+            {
+              "name": "audit_rows",
+              "type": "INTEGER",
+              "mode": "NULLABLE"
+            },
+            {
+              "name": "items",
+              "type": "INTEGER",
+              "mode": "NULLABLE"
+            },
+            {
+              "name": "upstream_period_present",
+              "type": "INTEGER",
+              "mode": "NULLABLE"
+            },
+            {
+              "name": "upstream_invoice_present",
+              "type": "INTEGER",
+              "mode": "NULLABLE"
+            },
+            {
+              "name": "examples",
+              "type": "RECORD",
+              "mode": "REPEATED",
+              "fields": [
+                {
+                  "name": "order_id",
+                  "type": "STRING",
+                  "mode": "NULLABLE"
+                },
+                {
+                  "name": "order_item",
+                  "type": "STRING",
+                  "mode": "NULLABLE"
+                },
+                {
+                  "name": "installment_period",
+                  "type": "INTEGER",
+                  "mode": "NULLABLE"
+                },
+                {
+                  "name": "charge_id",
+                  "type": "STRING",
+                  "mode": "NULLABLE"
+                }
+              ]
+            }
+          ]
+        },
+        "statementType": "SCRIPT"
+      },
+      "totalSlotMs": "17269771",
+      "numChildJobs": "2"
+    }
+  },
+  {
+    "jobReference": {
+      "projectId": "pacific-plating-282708",
+      "jobId": "codex_month_audit_cancel_20260926",
+      "location": "asia-southeast1"
+    },
+    "status": {
+      "state": "DONE"
+    },
+    "statistics": {
+      "creationTime": "1790438869089",
+      "startTime": "1790438869129",
+      "endTime": "1790438891821",
+      "totalBytesProcessed": "8122927950",
+      "query": {
+        "totalBytesProcessed": "8122927950",
+        "totalBytesBilled": "8140095488",
+        "totalSlotMs": "1890100",
+        "schema": {
+          "fields": [
+            {
+              "name": "reason_code",
+              "type": "STRING",
+              "mode": "NULLABLE"
+            },
+            {
+              "name": "flow",
+              "type": "STRING",
+              "mode": "NULLABLE"
+            },
+            {
+              "name": "business_type",
+              "type": "STRING",
+              "mode": "NULLABLE"
+            },
+            {
+              "name": "document_rows",
+              "type": "INTEGER",
+              "mode": "NULLABLE"
+            },
+            {
+              "name": "items",
+              "type": "INTEGER",
+              "mode": "NULLABLE"
+            },
+            {
+              "name": "item_in_cancel_output",
+              "type": "INTEGER",
+              "mode": "NULLABLE"
+            },
+            {
+              "name": "receipt_in_cancel_output",
+              "type": "INTEGER",
+              "mode": "NULLABLE"
+            },
+            {
+              "name": "examples",
+              "type": "RECORD",
+              "mode": "REPEATED",
+              "fields": [
+                {
+                  "name": "order_item",
+                  "type": "STRING",
+                  "mode": "NULLABLE"
+                },
+                {
+                  "name": "installment_period",
+                  "type": "INTEGER",
+                  "mode": "NULLABLE"
+                },
+                {
+                  "name": "cancellation_docentry",
+                  "type": "INTEGER",
+                  "mode": "NULLABLE"
+                }
+              ]
+            }
+          ]
+        },
+        "statementType": "SCRIPT"
+      },
+      "totalSlotMs": "1890100",
+      "numChildJobs": "2"
+    }
+  },
+  {
+    "jobReference": {
+      "projectId": "pacific-plating-282708",
+      "jobId": "codex_month_audit_cancel_membership_fixed_20260926",
+      "location": "asia-southeast1"
+    },
+    "status": {
+      "state": "DONE"
+    },
+    "statistics": {
+      "creationTime": "1790439040828",
+      "startTime": "1790439041273",
+      "endTime": "1790439042450",
+      "totalBytesProcessed": "4883728",
+      "query": {
+        "queryPlan": [
+          {
+            "name": "S00: Input",
+            "id": "0",
+            "startMs": "1790439041408",
+            "endMs": "1790439041449",
+            "waitRatioAvg": 0.05434782608695652,
+            "waitMsAvg": "5",
+            "waitRatioMax": 0.05434782608695652,
+            "waitMsMax": "5",
+            "readRatioAvg": 0.03260869565217391,
+            "readMsAvg": "3",
+            "readRatioMax": 0.03260869565217391,
+            "readMsMax": "3",
+            "computeRatioAvg": 0.11956521739130435,
+            "computeMsAvg": "11",
+            "computeRatioMax": 0.11956521739130435,
+            "computeMsMax": "11",
+            "writeRatioAvg": 0.31521739130434784,
+            "writeMsAvg": "29",
+            "writeRatioMax": 0.31521739130434784,
+            "writeMsMax": "29",
+            "shuffleOutputBytes": "5003",
+            "shuffleOutputBytesSpilled": "0",
+            "recordsRead": "196",
+            "recordsWritten": "196",
+            "parallelInputs": "1",
+            "completedParallelInputs": "1",
+            "status": "COMPLETE",
+            "steps": [
+              {
+                "kind": "READ",
+                "substeps": [
+                  "$10:OrderItem",
+                  "FROM pacific-plating-282708._script8bfe4ff9b4d90206402b9a2b5cf0ebb8e2883c49.cancel_output"
+                ]
+              },
+              {
+                "kind": "COMPUTE",
+                "substeps": [
+                  "$160 := 1"
+                ]
+              },
+              {
+                "kind": "WRITE",
+                "substeps": [
+                  "$10, $160",
+                  "TO __stage00_output"
+                ]
+              }
+            ],
+            "slotMs": "37",
+            "computeMode": "BIGQUERY"
+          },
+          {
+            "name": "S01: Coalesce",
+            "id": "1",
+            "startMs": "1790439041453",
+            "endMs": "1790439041522",
+            "inputStages": [
+              "0"
+            ],
+            "waitRatioAvg": 0.021739130434782608,
+            "waitMsAvg": "2",
+            "waitRatioMax": 0.05434782608695652,
+            "waitMsMax": "5",
+            "readRatioAvg": 0,
+            "readMsAvg": "0",
+            "readRatioMax": 0,
+            "readMsMax": "0",
+            "computeRatioAvg": 0.09782608695652174,
+            "computeMsAvg": "9",
+            "computeRatioMax": 0.17391304347826086,
+            "computeMsMax": "16",
+            "writeRatioAvg": 0.18478260869565216,
+            "writeMsAvg": "17",
+            "writeRatioMax": 0.44565217391304346,
+            "writeMsMax": "41",
+            "shuffleOutputBytes": "5003",
+            "shuffleOutputBytesSpilled": "0",
+            "recordsRead": "196",
+            "recordsWritten": "196",
+            "parallelInputs": "100",
+            "completedParallelInputs": "100",
+            "status": "COMPLETE",
+            "steps": [
+              {
+                "kind": "READ",
+                "substeps": [
+                  "FROM __stage00_output"
+                ]
+              }
+            ],
+            "slotMs": "5645",
+            "computeMode": "BIGQUERY"
+          },
+          {
+            "name": "S02: Join+",
+            "id": "2",
+            "startMs": "1790439041458",
+            "endMs": "1790439041549",
+            "inputStages": [
+              "1"
+            ],
+            "waitRatioAvg": 0.06521739130434782,
+            "waitMsAvg": "6",
+            "waitRatioMax": 0.06521739130434782,
+            "waitMsMax": "6",
+            "readRatioAvg": 0.08695652173913043,
+            "readMsAvg": "8",
+            "readRatioMax": 0.08695652173913043,
+            "readMsMax": "8",
+            "computeRatioAvg": 0.4782608695652174,
+            "computeMsAvg": "44",
+            "computeRatioMax": 0.4782608695652174,
+            "computeMsMax": "44",
+            "writeRatioAvg": 0.043478260869565216,
+            "writeMsAvg": "4",
+            "writeRatioMax": 0.043478260869565216,
+            "writeMsMax": "4",
+            "shuffleOutputBytes": "876374",
+            "shuffleOutputBytesSpilled": "0",
+            "recordsRead": "42445",
+            "recordsWritten": "4944",
+            "parallelInputs": "1",
+            "completedParallelInputs": "1",
+            "status": "COMPLETE",
+            "steps": [
+              {
+                "kind": "READ",
+                "substeps": [
+                  "$21:order_id, $22:order_item, $23:installment_period, $24:business_type, $25:flow, $26:raw_invoice_no, $27:reason_code, $28:cancellation_docentry, $30:reconciliation_status, $20:event_type, $29:needs_review",
+                  "FROM pacific-plating-282708._script854956d6400364d5179432334ac884bec17498b8.audit_result",
+                  "WHERE and(equal($20, 'CANCELLATION'), $29)"
+                ]
+              },
+              {
+                "kind": "READ",
+                "substeps": [
+                  "$10, $160",
+                  "FROM __stage01_output"
+                ]
+              },
+              {
+                "kind": "AGGREGATE",
+                "substeps": [
+                  "GROUP BY $200 := $189",
+                  "$130 := COUNT_STAR()",
+                  "$131 := ANY_VALUE($188)",
+                  "$132 := ANY_VALUE($187)",
+                  "$133 := ANY_VALUE($186)",
+                  "$134 := ANY_VALUE($185)",
+                  "$135 := ANY_VALUE($184)",
+                  "$136 := ANY_VALUE($183)",
+                  "$137 := ANY_VALUE($182)",
+                  "$138 := ANY_VALUE($181)",
+                  "$139 := ANY_VALUE($180)",
+                  "$140 := SUM($190)"
+                ]
+              },
+              {
+                "kind": "JOIN",
+                "substeps": [
+                  "$180 := $21, $181 := $22, $182 := $23, $183 := $24, $184 := $25, $185 := $26, $186 := $27, $187 := $28, $188 := $30, $189 := $150, $190 := $160",
+                  "LEFT OUTER HASH JOIN EACH  WITH ALL  ON $22 = $10"
+                ]
+              },
+              {
+                "kind": "COMPUTE",
+                "substeps": [
+                  "$150 := UNIQUE_ROW_ID()"
+                ]
+              },
+              {
+                "kind": "WRITE",
+                "substeps": [
+                  "$130, $131, $132, $133, $134, $135, $136, $137, $138, $139, $140, $200",
+                  "TO __stage02_output",
+                  "BY HASH($200)"
+                ]
+              }
+            ],
+            "slotMs": "30",
+            "computeMode": "BIGQUERY"
+          },
+          {
+            "name": "S03: Input",
+            "id": "3",
+            "startMs": "1790439041572",
+            "endMs": "1790439041601",
+            "waitRatioAvg": 0.010869565217391304,
+            "waitMsAvg": "1",
+            "waitRatioMax": 0.010869565217391304,
+            "waitMsMax": "1",
+            "readRatioAvg": 0.021739130434782608,
+            "readMsAvg": "2",
+            "readRatioMax": 0.021739130434782608,
+            "readMsMax": "2",
+            "computeRatioAvg": 0.07608695652173914,
+            "computeMsAvg": "7",
+            "computeRatioMax": 0.07608695652173914,
+            "computeMsMax": "7",
+            "writeRatioAvg": 0.21739130434782608,
+            "writeMsAvg": "20",
+            "writeRatioMax": 0.21739130434782608,
+            "writeMsMax": "20",
+            "shuffleOutputBytes": "9201",
+            "shuffleOutputBytesSpilled": "0",
+            "recordsRead": "196",
+            "recordsWritten": "196",
+            "parallelInputs": "1",
+            "completedParallelInputs": "1",
+            "status": "COMPLETE",
+            "steps": [
+              {
+                "kind": "READ",
+                "substeps": [
+                  "$1:OrderItem, $2:period, $3:invoice_no",
+                  "FROM pacific-plating-282708._script8bfe4ff9b4d90206402b9a2b5cf0ebb8e2883c49.cancel_output"
+                ]
+              },
+              {
+                "kind": "COMPUTE",
+                "substeps": [
+                  "$100 := 1"
+                ]
+              },
+              {
+                "kind": "WRITE",
+                "substeps": [
+                  "$1, $2, $3, $100",
+                  "TO __stage03_output"
+                ]
+              }
+            ],
+            "slotMs": "25",
+            "computeMode": "BIGQUERY"
+          },
+          {
+            "name": "S04: Coalesce",
+            "id": "4",
+            "startMs": "1790439041609",
+            "endMs": "1790439041716",
+            "inputStages": [
+              "3"
+            ],
+            "waitRatioAvg": 0.021739130434782608,
+            "waitMsAvg": "2",
+            "waitRatioMax": 0.03260869565217391,
+            "waitMsMax": "3",
+            "readRatioAvg": 0,
+            "readMsAvg": "0",
+            "readRatioMax": 0,
+            "readMsMax": "0",
+            "computeRatioAvg": 0.09782608695652174,
+            "computeMsAvg": "9",
+            "computeRatioMax": 0.22826086956521738,
+            "computeMsMax": "21",
+            "writeRatioAvg": 0.42391304347826086,
+            "writeMsAvg": "39",
+            "writeRatioMax": 0.5652173913043478,
+            "writeMsMax": "52",
+            "shuffleOutputBytes": "9201",
+            "shuffleOutputBytesSpilled": "0",
+            "recordsRead": "196",
+            "recordsWritten": "196",
+            "parallelInputs": "100",
+            "completedParallelInputs": "100",
+            "status": "COMPLETE",
+            "steps": [
+              {
+                "kind": "READ",
+                "substeps": [
+                  "FROM __stage03_output"
+                ]
+              }
+            ],
+            "slotMs": "7035",
+            "computeMode": "BIGQUERY"
+          },
+          {
+            "name": "S05: Join+",
+            "id": "5",
+            "startMs": "1790439041616",
+            "endMs": "1790439041749",
+            "inputStages": [
+              "4",
+              "2"
+            ],
+            "waitRatioAvg": 0.043478260869565216,
+            "waitMsAvg": "4",
+            "waitRatioMax": 0.043478260869565216,
+            "waitMsMax": "4",
+            "readRatioAvg": 0,
+            "readMsAvg": "0",
+            "readRatioMax": 0,
+            "readMsMax": "0",
+            "computeRatioAvg": 0.44565217391304346,
+            "computeMsAvg": "41",
+            "computeRatioMax": 0.44565217391304346,
+            "computeMsMax": "41",
+            "writeRatioAvg": 0.08695652173913043,
+            "writeMsAvg": "8",
+            "writeRatioMax": 0.08695652173913043,
+            "writeMsMax": "8",
+            "shuffleOutputBytes": "876313",
+            "shuffleOutputBytesSpilled": "0",
+            "recordsRead": "5140",
+            "recordsWritten": "4944",
+            "parallelInputs": "1",
+            "completedParallelInputs": "1",
+            "status": "COMPLETE",
+            "steps": [
+              {
+                "kind": "READ",
+                "substeps": [
+                  "$130, $131, $132, $133, $134, $135, $136, $137, $138, $139, $140, $200",
+                  "FROM __stage02_output"
+                ]
+              },
+              {
+                "kind": "READ",
+                "substeps": [
+                  "$1, $2, $3, $100",
+                  "FROM __stage04_output"
+                ]
+              },
+              {
+                "kind": "AGGREGATE",
+                "substeps": [
+                  "GROUP BY $240 := $220",
+                  "$70 := COUNT_STAR()",
+                  "$71 := ANY_VALUE($230)",
+                  "$72 := ANY_VALUE($229)",
+                  "$73 := ANY_VALUE($228)",
+                  "$74 := ANY_VALUE($227)",
+                  "$75 := ANY_VALUE($226)",
+                  "$76 := ANY_VALUE($225)",
+                  "$77 := ANY_VALUE($224)",
+                  "$78 := ANY_VALUE($223)",
+                  "$79 := ANY_VALUE($222)",
+                  "$80 := ANY_VALUE($221)",
+                  "$81 := SUM($232)"
+                ]
+              },
+              {
+                "kind": "JOIN",
+                "substeps": [
+                  "$220 := $90, $221 := $91, $222 := $111, $223 := $112, $224 := $113, $225 := $114, $226 := $115, $227 := $116, $228 := $117, $229 := $118, $230 := $119, $231 := $3, $232 := $100",
+                  "LEFT OUTER HASH JOIN EACH  WITH ALL  ON $118 = $1, $117 = $2"
+                ]
+              },
+              {
+                "kind": "COMPUTE",
+                "substeps": [
+                  "$90 := UNIQUE_ROW_ID()",
+                  "$91 := greater(if(is_null($120), 0, $110), 0)"
+                ]
+              },
+              {
+                "kind": "AGGREGATE",
+                "substeps": [
+                  "GROUP BY $210 := $200",
+                  "$110 := SUM_OF_COUNTS($130)",
+                  "$111 := ANY_VALUE($131)",
+                  "$112 := ANY_VALUE($132)",
+                  "$113 := ANY_VALUE($133)",
+                  "$114 := ANY_VALUE($134)",
+                  "$115 := ANY_VALUE($135)",
+                  "$116 := ANY_VALUE($136)",
+                  "$117 := ANY_VALUE($137)",
+                  "$118 := ANY_VALUE($138)",
+                  "$119 := ANY_VALUE($139)",
+                  "$120 := SUM($140)"
+                ]
+              },
+              {
+                "kind": "WRITE",
+                "substeps": [
+                  "$70, $71, $72, $73, $74, $75, $76, $77, $78, $79, $80, $81, $240",
+                  "TO __stage05_output",
+                  "BY HASH($240)"
+                ]
+              }
+            ],
+            "slotMs": "31",
+            "computeMode": "BIGQUERY"
+          },
+          {
+            "name": "S06: Aggregate+",
+            "id": "6",
+            "startMs": "1790439041796",
+            "endMs": "1790439041854",
+            "inputStages": [
+              "5"
+            ],
+            "waitRatioAvg": 0.021739130434782608,
+            "waitMsAvg": "2",
+            "waitRatioMax": 0.021739130434782608,
+            "waitMsMax": "2",
+            "readRatioAvg": 0,
+            "readMsAvg": "0",
+            "readRatioMax": 0,
+            "readMsMax": "0",
+            "computeRatioAvg": 0.2608695652173913,
+            "computeMsAvg": "24",
+            "computeRatioMax": 0.2608695652173913,
+            "computeMsMax": "24",
+            "writeRatioAvg": 0.42391304347826086,
+            "writeMsAvg": "39",
+            "writeRatioMax": 0.42391304347826086,
+            "writeMsMax": "39",
+            "shuffleOutputBytes": "624204",
+            "shuffleOutputBytesSpilled": "0",
+            "recordsRead": "4944",
+            "recordsWritten": "4944",
+            "parallelInputs": "1",
+            "completedParallelInputs": "1",
+            "status": "COMPLETE",
+            "steps": [
+              {
+                "kind": "READ",
+                "substeps": [
+                  "$70, $71, $72, $73, $74, $75, $76, $77, $78, $79, $80, $81, $240",
+                  "FROM __stage05_output"
+                ]
+              },
+              {
+                "kind": "COMPUTE",
+                "substeps": [
+                  "$40 := greater(if(is_null($61), 0, $50), 0)"
+                ]
+              },
+              {
+                "kind": "AGGREGATE",
+                "substeps": [
+                  "GROUP BY $250 := $240",
+                  "$50 := SUM_OF_COUNTS($70)",
+                  "$51 := ANY_VALUE($71)",
+                  "$52 := ANY_VALUE($72)",
+                  "$53 := ANY_VALUE($73)",
+                  "$54 := ANY_VALUE($74)",
+                  "$55 := ANY_VALUE($75)",
+                  "$56 := ANY_VALUE($76)",
+                  "$57 := ANY_VALUE($77)",
+                  "$58 := ANY_VALUE($78)",
+                  "$59 := ANY_VALUE($79)",
+                  "$60 := ANY_VALUE($80)",
+                  "$61 := SUM($81)"
+                ]
+              },
+              {
+                "kind": "WRITE",
+                "substeps": [
+                  "$40, $51, $52, $53, $54, $55, $56, $57, $58, $59, $60",
+                  "TO __stage06_output"
+                ]
+              }
+            ],
+            "slotMs": "23",
+            "computeMode": "BIGQUERY"
+          },
+          {
+            "name": "S07: Output",
+            "id": "7",
+            "startMs": "1790439041953",
+            "endMs": "1790439042023",
+            "inputStages": [
+              "6"
+            ],
+            "waitRatioAvg": 1,
+            "waitMsAvg": "92",
+            "waitRatioMax": 1,
+            "waitMsMax": "92",
+            "readRatioAvg": 0,
+            "readMsAvg": "0",
+            "readRatioMax": 0,
+            "readMsMax": "0",
+            "computeRatioAvg": 0.6304347826086957,
+            "computeMsAvg": "58",
+            "computeRatioMax": 0.6304347826086957,
+            "computeMsMax": "58",
+            "writeRatioAvg": 0.021739130434782608,
+            "writeMsAvg": "2",
+            "writeRatioMax": 0.021739130434782608,
+            "writeMsMax": "2",
+            "shuffleOutputBytes": "551244",
+            "shuffleOutputBytesSpilled": "0",
+            "recordsRead": "4944",
+            "recordsWritten": "4944",
+            "parallelInputs": "1",
+            "completedParallelInputs": "1",
+            "status": "COMPLETE",
+            "steps": [
+              {
+                "kind": "READ",
+                "substeps": [
+                  "$40, $51, $52, $53, $54, $55, $56, $57, $58, $59, $60",
+                  "FROM __stage06_output"
+                ]
+              },
+              {
+                "kind": "WRITE",
+                "substeps": [
+                  "$40, $51, $52, $53, $54, $55, $56, $57, $58, $59, $60",
+                  "TO __stage07_output"
+                ]
+              }
+            ],
+            "slotMs": "73",
+            "computeMode": "BIGQUERY"
+          }
+        ],
+        "estimatedBytesProcessed": "4883728",
+        "timeline": [
+          {
+            "elapsedMs": "727",
+            "totalSlotMs": "12902",
+            "pendingUnits": "1",
+            "completedUnits": "205",
+            "activeUnits": "0",
+            "estimatedRunnableUnits": "0"
+          },
+          {
+            "elapsedMs": "755",
+            "totalSlotMs": "12902",
+            "pendingUnits": "0",
+            "completedUnits": "206",
+            "estimatedRunnableUnits": "0"
+          }
+        ],
+        "totalPartitionsProcessed": "0",
+        "totalBytesProcessed": "4883728",
+        "totalBytesBilled": "20971520",
+        "billingTier": 1,
+        "totalSlotMs": "12902",
+        "cacheHit": false,
+        "referencedTables": [
+          {
+            "projectId": "pacific-plating-282708",
+            "datasetId": "_script854956d6400364d5179432334ac884bec17498b8",
+            "tableId": "audit_result"
+          },
+          {
+            "projectId": "pacific-plating-282708",
+            "datasetId": "_script8bfe4ff9b4d90206402b9a2b5cf0ebb8e2883c49",
+            "tableId": "cancel_output"
+          }
+        ],
+        "statementType": "SELECT",
+        "searchStatistics": {
+          "indexUsageMode": "UNUSED",
+          "indexUnusedReasons": [
+            {
+              "code": "INDEX_CONFIG_NOT_AVAILABLE",
+              "message": "There is no index configuration for the base table `pacific-plating-282708:_script854956d6400364d5179432334ac884bec17498b8.audit_result`.",
+              "baseTable": {
+                "projectId": "pacific-plating-282708",
+                "datasetId": "_script854956d6400364d5179432334ac884bec17498b8",
+                "tableId": "audit_result"
+              }
+            },
+            {
+              "code": "INDEX_CONFIG_NOT_AVAILABLE",
+              "message": "There is no index configuration for the base table `pacific-plating-282708:_script8bfe4ff9b4d90206402b9a2b5cf0ebb8e2883c49.cancel_output`.",
+              "baseTable": {
+                "projectId": "pacific-plating-282708",
+                "datasetId": "_script8bfe4ff9b4d90206402b9a2b5cf0ebb8e2883c49",
+                "tableId": "cancel_output"
+              }
+            }
+          ]
+        },
+        "performanceInsights": {
+          "avgPreviousExecutionMs": "146"
+        },
+        "queryInfo": {
+          "optimizationDetails": {
+            "optimizations": [
+              {
+                "enhanced_vectorization": "applied"
+              }
+            ]
+          }
+        },
+        "transferredBytes": "0",
+        "metadataCacheStatistics": {
+          "tableMetadataCacheUsage": [
+            {
+              "tableReference": {
+                "projectId": "pacific-plating-282708",
+                "datasetId": "_script854956d6400364d5179432334ac884bec17498b8",
+                "tableId": "audit_result"
+              },
+              "unusedReason": "OTHER_REASON",
+              "explanation": "Table does not have CMETA."
+            },
+            {
+              "tableReference": {
+                "projectId": "pacific-plating-282708",
+                "datasetId": "_script8bfe4ff9b4d90206402b9a2b5cf0ebb8e2883c49",
+                "tableId": "cancel_output"
+              },
+              "unusedReason": "OTHER_REASON",
+              "explanation": "Table does not have CMETA."
+            }
+          ]
+        }
+      },
+      "totalSlotMs": "12902",
+      "finalExecutionDurationMs": "787"
+    }
+  },
+  {
+    "jobReference": {
+      "projectId": "pacific-plating-282708",
+      "jobId": "codex_month_audit_paid_membership_20260926",
+      "location": "asia-southeast1"
+    },
+    "status": {
+      "state": "DONE"
+    },
+    "statistics": {
+      "creationTime": "1790439125262",
+      "startTime": "1790439125310",
+      "endTime": "1790439160738",
+      "totalBytesProcessed": "9819891306",
+      "query": {
+        "totalBytesProcessed": "9819891306",
+        "totalBytesBilled": "9820962816",
+        "totalSlotMs": "14458087",
+        "schema": {
+          "fields": [
+            {
+              "name": "order_id",
+              "type": "STRING",
+              "mode": "NULLABLE"
+            },
+            {
+              "name": "order_item",
+              "type": "STRING",
+              "mode": "NULLABLE"
+            },
+            {
+              "name": "installment_period",
+              "type": "INTEGER",
+              "mode": "NULLABLE"
+            },
+            {
+              "name": "charge_id",
+              "type": "STRING",
+              "mode": "NULLABLE"
+            },
+            {
+              "name": "reason_code",
+              "type": "STRING",
+              "mode": "NULLABLE"
+            },
+            {
+              "name": "flow",
+              "type": "STRING",
+              "mode": "NULLABLE"
+            },
+            {
+              "name": "business_type",
+              "type": "STRING",
+              "mode": "NULLABLE"
+            },
+            {
+              "name": "reconciliation_status",
+              "type": "STRING",
+              "mode": "NULLABLE"
+            },
+            {
+              "name": "upstream_invoice_present",
+              "type": "BOOLEAN",
+              "mode": "NULLABLE"
+            },
+            {
+              "name": "rcl_newpayment_invoice_present",
+              "type": "BOOLEAN",
+              "mode": "NULLABLE"
+            }
+          ]
+        },
+        "statementType": "SCRIPT"
+      },
+      "totalSlotMs": "14458087",
+      "numChildJobs": "2"
+    }
+  },
+  {
+    "jobReference": {
+      "projectId": "pacific-plating-282708",
+      "jobId": "codex_month_audit_source_coverage_20260926",
+      "location": "asia-southeast1"
+    },
+    "status": {
+      "state": "DONE"
+    },
+    "statistics": {
+      "creationTime": "1790439229758",
+      "startTime": "1790439229862",
+      "endTime": "1790439231208",
+      "totalBytesProcessed": "53786866",
+      "query": {
+        "queryPlan": [
+          {
+            "name": "S00: Input",
+            "id": "0",
+            "startMs": "1790439230637",
+            "endMs": "1790439230648",
+            "waitRatioAvg": 0.002531645569620253,
+            "waitMsAvg": "1",
+            "waitRatioMax": 0.002531645569620253,
+            "waitMsMax": "1",
+            "readRatioAvg": 0,
+            "readMsAvg": "0",
+            "readRatioMax": 0,
+            "readMsMax": "0",
+            "computeRatioAvg": 0.015189873417721518,
+            "computeMsAvg": "6",
+            "computeRatioMax": 0.015189873417721518,
+            "computeMsMax": "6",
+            "writeRatioAvg": 0.010126582278481013,
+            "writeMsAvg": "4",
+            "writeRatioMax": 0.010126582278481013,
+            "writeMsMax": "4",
+            "shuffleOutputBytes": "9",
+            "shuffleOutputBytesSpilled": "0",
+            "recordsRead": "0",
+            "recordsWritten": "1",
+            "parallelInputs": "1",
+            "completedParallelInputs": "1",
+            "status": "COMPLETE",
+            "steps": [
+              {
+                "kind": "READ",
+                "substeps": [
+                  "$1:update_time, $2:status, $3:payment_date",
+                  "FROM pacific-plating-282708.careos.carepay_charges",
+                  "WHERE and(equal($2, 'SUCCESSFUL'), is_null($3), is_null($1))"
+                ]
+              },
+              {
+                "kind": "AGGREGATE",
+                "substeps": [
+                  "$90 := COUNT_STAR()"
+                ]
+              },
+              {
+                "kind": "WRITE",
+                "substeps": [
+                  "$90",
+                  "TO __stage00_output"
+                ]
+              }
+            ],
+            "slotMs": "10",
+            "computeMode": "BIGQUERY"
+          },
+          {
+            "name": "S01: Input",
+            "id": "1",
+            "startMs": "1790439230653",
+            "endMs": "1790439230816",
+            "waitRatioAvg": 0.030379746835443037,
+            "waitMsAvg": "12",
+            "waitRatioMax": 0.14936708860759493,
+            "waitMsMax": "59",
+            "readRatioAvg": 0.010126582278481013,
+            "readMsAvg": "4",
+            "readRatioMax": 0.20506329113924052,
+            "readMsMax": "81",
+            "computeRatioAvg": 0.02531645569620253,
+            "computeMsAvg": "10",
+            "computeRatioMax": 0.060759493670886074,
+            "computeMsMax": "24",
+            "writeRatioAvg": 0.015189873417721518,
+            "writeMsAvg": "6",
+            "writeRatioMax": 0.0810126582278481,
+            "writeMsMax": "32",
+            "shuffleOutputBytes": "24129935",
+            "shuffleOutputBytesSpilled": "0",
+            "recordsRead": "588535",
+            "recordsWritten": "588535",
+            "parallelInputs": "1342",
+            "completedParallelInputs": "1342",
+            "status": "COMPLETE",
+            "steps": [
+              {
+                "kind": "READ",
+                "substeps": [
+                  "$10:id",
+                  "FROM pacific-plating-282708.careos.careos_orders"
+                ]
+              },
+              {
+                "kind": "WRITE",
+                "substeps": [
+                  "$10",
+                  "TO __stage01_output"
+                ]
+              }
+            ],
+            "slotMs": "38951",
+            "computeMode": "BIGQUERY"
+          },
+          {
+            "name": "S02: Aggregate+",
+            "id": "2",
+            "startMs": "1790439230654",
+            "endMs": "1790439230755",
+            "inputStages": [
+              "0"
+            ],
+            "waitRatioAvg": 0.005063291139240506,
+            "waitMsAvg": "2",
+            "waitRatioMax": 0.005063291139240506,
+            "waitMsMax": "2",
+            "readRatioAvg": 0,
+            "readMsAvg": "0",
+            "readRatioMax": 0,
+            "readMsMax": "0",
+            "computeRatioAvg": 0.027848101265822784,
+            "computeMsAvg": "11",
+            "computeRatioMax": 0.027848101265822784,
+            "computeMsMax": "11",
+            "writeRatioAvg": 0.035443037974683546,
+            "writeMsAvg": "14",
+            "writeRatioMax": 0.035443037974683546,
+            "writeMsMax": "14",
+            "shuffleOutputBytes": "53",
+            "shuffleOutputBytesSpilled": "0",
+            "recordsRead": "1",
+            "recordsWritten": "1",
+            "parallelInputs": "1",
+            "completedParallelInputs": "1",
+            "status": "COMPLETE",
+            "steps": [
+              {
+                "kind": "READ",
+                "substeps": [
+                  "$90",
+                  "FROM __stage00_output"
+                ]
+              },
+              {
+                "kind": "COMPUTE",
+                "substeps": [
+                  "$50 := 'SUCCESSFUL_CHARGE_WITHOUT_ANY_PAID_DATE'"
+                ]
+              },
+              {
+                "kind": "AGGREGATE",
+                "substeps": [
+                  "$70 := SUM_OF_COUNTS($90)"
+                ]
+              },
+              {
+                "kind": "WRITE",
+                "substeps": [
+                  "$50, $70",
+                  "TO __stage02_output"
+                ]
+              }
+            ],
+            "slotMs": "53",
+            "computeMode": "BIGQUERY"
+          },
+          {
+            "name": "S03: Join+",
+            "id": "3",
+            "startMs": "1790439230820",
+            "endMs": "1790439231030",
+            "inputStages": [
+              "1"
+            ],
+            "waitRatioAvg": 0.005063291139240506,
+            "waitMsAvg": "2",
+            "waitRatioMax": 0.005063291139240506,
+            "waitMsMax": "2",
+            "readRatioAvg": 0.010126582278481013,
+            "readMsAvg": "4",
+            "readRatioMax": 0.027848101265822784,
+            "readMsMax": "11",
+            "computeRatioAvg": 0.11139240506329114,
+            "computeMsAvg": "44",
+            "computeRatioMax": 1,
+            "computeMsMax": "395",
+            "writeRatioAvg": 0.002531645569620253,
+            "writeMsAvg": "1",
+            "writeRatioMax": 0.007594936708860759,
+            "writeMsMax": "3",
+            "shuffleOutputBytes": "423",
+            "shuffleOutputBytesSpilled": "0",
+            "recordsRead": "4323274",
+            "recordsWritten": "47",
+            "parallelInputs": "47",
+            "completedParallelInputs": "47",
+            "status": "COMPLETE",
+            "steps": [
+              {
+                "kind": "READ",
+                "substeps": [
+                  "$22:order_id, $20:cancel_time, $21:is_cancelled",
+                  "FROM pacific-plating-282708.careos.careos_order_items",
+                  "WHERE and(or($21, not(is_null($20))), greater_or_equal(date($20, 'Asia/Bangkok'), 20697), less(date($20, 'Asia/Bangkok'), 20727))"
+                ]
+              },
+              {
+                "kind": "READ",
+                "substeps": [
+                  "$10",
+                  "FROM __stage01_output"
+                ]
+              },
+              {
+                "kind": "AGGREGATE",
+                "substeps": [
+                  "$80 := COUNT_STAR()"
+                ]
+              },
+              {
+                "kind": "FILTER",
+                "substeps": [
+                  "is_null($100)"
+                ]
+              },
+              {
+                "kind": "JOIN",
+                "substeps": [
+                  "$100 := $10",
+                  "LEFT OUTER HASH JOIN EACH  WITH ALL  ON $22 = $10"
+                ]
+              },
+              {
+                "kind": "WRITE",
+                "substeps": [
+                  "$80",
+                  "TO __stage03_output"
+                ]
+              }
+            ],
+            "slotMs": "3322",
+            "computeMode": "BIGQUERY"
+          },
+          {
+            "name": "S04: Aggregate+",
+            "id": "4",
+            "startMs": "1790439230822",
+            "endMs": "1790439231036",
+            "inputStages": [
+              "3"
+            ],
+            "waitRatioAvg": 0.010126582278481013,
+            "waitMsAvg": "4",
+            "waitRatioMax": 0.010126582278481013,
+            "waitMsMax": "4",
+            "readRatioAvg": 0,
+            "readMsAvg": "0",
+            "readRatioMax": 0,
+            "readMsMax": "0",
+            "computeRatioAvg": 0.017721518987341773,
+            "computeMsAvg": "7",
+            "computeRatioMax": 0.017721518987341773,
+            "computeMsMax": "7",
+            "writeRatioAvg": 0.002531645569620253,
+            "writeMsAvg": "1",
+            "writeRatioMax": 0.002531645569620253,
+            "writeMsMax": "1",
+            "shuffleOutputBytes": "48",
+            "shuffleOutputBytesSpilled": "0",
+            "recordsRead": "47",
+            "recordsWritten": "1",
+            "parallelInputs": "1",
+            "completedParallelInputs": "1",
+            "status": "COMPLETE",
+            "steps": [
+              {
+                "kind": "READ",
+                "substeps": [
+                  "$80",
+                  "FROM __stage03_output"
+                ]
+              },
+              {
+                "kind": "COMPUTE",
+                "substeps": [
+                  "$40 := 'CANCELLED_MONTH_ITEM_WITHOUT_ORDER'"
+                ]
+              },
+              {
+                "kind": "AGGREGATE",
+                "substeps": [
+                  "$60 := SUM_OF_COUNTS($80)"
+                ]
+              },
+              {
+                "kind": "WRITE",
+                "substeps": [
+                  "$40, $60",
+                  "TO __stage04_output"
+                ]
+              }
+            ],
+            "slotMs": "71",
+            "computeMode": "BIGQUERY"
+          },
+          {
+            "name": "S05: Output",
+            "id": "5",
+            "startMs": "1790439230836",
+            "endMs": "1790439231046",
+            "inputStages": [
+              "4",
+              "2"
+            ],
+            "waitRatioAvg": 0.010126582278481013,
+            "waitMsAvg": "4",
+            "waitRatioMax": 0.017721518987341773,
+            "waitMsMax": "7",
+            "readRatioAvg": 0,
+            "readMsAvg": "0",
+            "readRatioMax": 0,
+            "readMsMax": "0",
+            "computeRatioAvg": 0.02278481012658228,
+            "computeMsAvg": "9",
+            "computeRatioMax": 0.02531645569620253,
+            "computeMsMax": "10",
+            "writeRatioAvg": 0.010126582278481013,
+            "writeMsAvg": "4",
+            "writeRatioMax": 0.012658227848101266,
+            "writeMsMax": "5",
+            "shuffleOutputBytes": "99",
+            "shuffleOutputBytesSpilled": "0",
+            "recordsRead": "2",
+            "recordsWritten": "2",
+            "parallelInputs": "2",
+            "completedParallelInputs": "2",
+            "status": "COMPLETE",
+            "steps": [
+              {
+                "kind": "READ",
+                "substeps": [
+                  "$40, $60",
+                  "FROM __stage04_output"
+                ]
+              },
+              {
+                "kind": "READ",
+                "substeps": [
+                  "$50, $70",
+                  "FROM __stage02_output"
+                ]
+              },
+              {
+                "kind": "WRITE",
+                "substeps": [
+                  "$30, $31",
+                  "TO __stage05_output"
+                ]
+              }
+            ],
+            "slotMs": "111",
+            "computeMode": "BIGQUERY"
+          }
+        ],
+        "estimatedBytesProcessed": "53786866",
+        "timeline": [
+          {
+            "elapsedMs": "138",
+            "totalSlotMs": "42520",
+            "pendingUnits": "0",
+            "completedUnits": "0",
+            "activeUnits": "0"
+          },
+          {
+            "elapsedMs": "1191",
+            "totalSlotMs": "42520",
+            "pendingUnits": "0",
+            "completedUnits": "1394",
+            "activeUnits": "15",
+            "estimatedRunnableUnits": "1"
+          }
+        ],
+        "totalPartitionsProcessed": "1386",
+        "totalBytesProcessed": "53786866",
+        "totalBytesBilled": "54525952",
+        "billingTier": 1,
+        "totalSlotMs": "42520",
+        "cacheHit": false,
+        "referencedTables": [
+          {
+            "projectId": "pacific-plating-282708",
+            "datasetId": "careos",
+            "tableId": "careos_orders"
+          },
+          {
+            "projectId": "pacific-plating-282708",
+            "datasetId": "careos",
+            "tableId": "carepay_charges"
+          },
+          {
+            "projectId": "pacific-plating-282708",
+            "datasetId": "careos",
+            "tableId": "careos_order_items"
+          }
+        ],
+        "statementType": "SELECT",
+        "searchStatistics": {
+          "indexUsageMode": "UNUSED",
+          "indexUnusedReasons": [
+            {
+              "code": "INDEX_CONFIG_NOT_AVAILABLE",
+              "message": "There is no index configuration for the base table `pacific-plating-282708:careos.careos_order_items`.",
+              "baseTable": {
+                "projectId": "pacific-plating-282708",
+                "datasetId": "careos",
+                "tableId": "careos_order_items"
+              }
+            },
+            {
+              "code": "INDEX_CONFIG_NOT_AVAILABLE",
+              "message": "There is no index configuration for the base table `pacific-plating-282708:careos.careos_orders`.",
+              "baseTable": {
+                "projectId": "pacific-plating-282708",
+                "datasetId": "careos",
+                "tableId": "careos_orders"
+              }
+            },
+            {
+              "code": "INDEX_CONFIG_NOT_AVAILABLE",
+              "message": "There is no index configuration for the base table `pacific-plating-282708:careos.carepay_charges`.",
+              "baseTable": {
+                "projectId": "pacific-plating-282708",
+                "datasetId": "careos",
+                "tableId": "carepay_charges"
+              }
+            }
+          ]
+        },
+        "queryInfo": {
+          "optimizationDetails": {
+            "optimizations": [
+              {
+                "enhanced_vectorization": "applied"
+              }
+            ]
+          }
+        },
+        "transferredBytes": "0",
+        "metadataCacheStatistics": {
+          "tableMetadataCacheUsage": [
+            {
+              "tableReference": {
+                "projectId": "pacific-plating-282708",
+                "datasetId": "careos",
+                "tableId": "careos_orders"
+              },
+              "unusedReason": "OTHER_REASON",
+              "explanation": "Table does not have CMETA."
+            },
+            {
+              "tableReference": {
+                "projectId": "pacific-plating-282708",
+                "datasetId": "careos",
+                "tableId": "carepay_charges"
+              },
+              "staleness": "0s"
+            },
+            {
+              "tableReference": {
+                "projectId": "pacific-plating-282708",
+                "datasetId": "careos",
+                "tableId": "careos_order_items"
+              },
+              "unusedReason": "OTHER_REASON",
+              "explanation": "Table does not have CMETA."
+            }
+          ]
+        }
+      },
+      "totalSlotMs": "42520",
+      "finalExecutionDurationMs": "423"
+    }
+  }
+]
