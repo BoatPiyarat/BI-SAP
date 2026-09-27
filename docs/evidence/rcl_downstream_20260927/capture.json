@@ -1,0 +1,11 @@
+{
+  "captured_at": "2026-09-27T00:08:02.960832+00:00",
+  "objects": {
+    "dashboard": "sap_data_engineer.sap_dashboard_carepay_installment",
+    "newpayment": "sap_integration_v2.RCL 05_newpayment",
+    "gate": "sap_integration_v2.RCL 05_paid by period",
+    "wrapper": "sap_view.RCL_Motor_process_2_newpayment",
+    "create": "sap_view.RCL_Motor_process_1_create",
+    "paid_reader": "sap_integration_v2.rcl_01_new_paid_by_period"
+  }
+}

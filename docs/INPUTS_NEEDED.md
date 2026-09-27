@@ -794,3 +794,8 @@ genuinely unverified, not confirmed dormant or active.
   2026-07-27 to remove stale `raw_sap_live`/B1 references (see `30_SAP_CHANGELOG.md`).
 - `vw_dash_extract_scheduler_health` (the new widget the dashboard design doc now specifies) is
   designed but not yet built — see `docs/AS_BUILT_V3.md`.
+
+
+## 2026-09-27T07:30:17.702583+07:00 — RCL downstream repair
+
+RCL additional receipts: decide mapping/hold for 8 current candidate receipts in periods2–4. ActualReceived is the new charge, but PrincipleThisPeriod/PrincipleEIRThisPeriod retain scheduled amounts. Options asked in chat: hold pending accounting confirmation, or explicitly set both principal fields to ActualReceived. No answer yet; no formula assumed. Row-level evidence: docs/evidence/rcl_downstream_20260927/principal_review.csv. Existing backlog allocation/backfill and carried-spine import idempotency questions remain.

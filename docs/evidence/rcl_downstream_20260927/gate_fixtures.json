@@ -1,0 +1,27 @@
+[
+  {
+    "observed": "true",
+    "order_item": "first-V1",
+    "want": "true"
+  },
+  {
+    "observed": "true",
+    "order_item": "fallback-V1",
+    "want": "true"
+  },
+  {
+    "observed": "true",
+    "order_item": "extra-V1",
+    "want": "true"
+  },
+  {
+    "observed": "false",
+    "order_item": "stale-V1",
+    "want": "false"
+  },
+  {
+    "observed": "false",
+    "order_item": "no_event-V1",
+    "want": "false"
+  }
+]

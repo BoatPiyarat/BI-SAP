@@ -1,0 +1,20 @@
+[
+  {
+    "table": "candidate_newpayment",
+    "columns": 56,
+    "names_order_types_equal": true,
+    "differences": []
+  },
+  {
+    "table": "candidate_gate",
+    "columns": 13,
+    "names_order_types_equal": true,
+    "differences": []
+  },
+  {
+    "table": "candidate_wrapper",
+    "columns": 56,
+    "names_order_types_equal": true,
+    "differences": []
+  }
+]

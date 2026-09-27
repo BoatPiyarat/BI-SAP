@@ -1,0 +1,1667 @@
+[
+  {
+    "ActualReceived": "0.01",
+    "InvoiceNo": "2_L77085994-V1",
+    "OrderID": "L77085994",
+    "OrderItem": "L77085994-V1",
+    "Period": "1",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_INVALID_ADDITIONAL_IDENTITY"
+  },
+  {
+    "ActualReceived": "0.01",
+    "InvoiceNo": "2_L77152999-V1",
+    "OrderID": "L77152999",
+    "OrderItem": "L77152999-V1",
+    "Period": "1",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_AMBIGUOUS_RECEIPT_LINEAGE"
+  },
+  {
+    "ActualReceived": "0.02",
+    "InvoiceNo": "2_L77152999-V1",
+    "OrderID": "L77152999",
+    "OrderItem": "L77152999-V1",
+    "Period": "1",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_AMBIGUOUS_RECEIPT_LINEAGE"
+  },
+  {
+    "ActualReceived": "0.02",
+    "InvoiceNo": "2_L78024277-V1",
+    "OrderID": "L78024277",
+    "OrderItem": "L78024277-V1",
+    "Period": "1",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_INVALID_ADDITIONAL_IDENTITY"
+  },
+  {
+    "ActualReceived": "113.99",
+    "InvoiceNo": "2_L78562610-V1",
+    "OrderID": "L78562610",
+    "OrderItem": "L78562610-V1",
+    "Period": "1",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_INVALID_ADDITIONAL_IDENTITY"
+  },
+  {
+    "ActualReceived": "0.24",
+    "InvoiceNo": "2_L78771935-V1",
+    "OrderID": "L78771935",
+    "OrderItem": "L78771935-V1",
+    "Period": "1",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_INVALID_ADDITIONAL_IDENTITY"
+  },
+  {
+    "ActualReceived": "0.24",
+    "InvoiceNo": "2_L78778955-V1",
+    "OrderID": "L78778955",
+    "OrderItem": "L78778955-V1",
+    "Period": "1",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_INVALID_ADDITIONAL_IDENTITY"
+  },
+  {
+    "ActualReceived": "5795.12",
+    "InvoiceNo": "2_L80738383-V1",
+    "OrderID": "L80738383",
+    "OrderItem": "L80738383-V1",
+    "Period": "1",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_INVALID_ADDITIONAL_IDENTITY"
+  },
+  {
+    "ActualReceived": "1812.5",
+    "InvoiceNo": "2_chrg_664d6elpe6k9qtr0ct6",
+    "OrderID": "L79422945",
+    "OrderItem": "L79422945-V1",
+    "Period": "1",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_INVALID_ADDITIONAL_IDENTITY"
+  },
+  {
+    "ActualReceived": "216.51",
+    "InvoiceNo": "L80641527-V1",
+    "OrderID": "L80641527",
+    "OrderItem": "L80641527-V1",
+    "Period": "2",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_AMBIGUOUS_RECEIPT_LINEAGE"
+  },
+  {
+    "ActualReceived": "116.68",
+    "InvoiceNo": "L80641527-V1",
+    "OrderID": "L80641527",
+    "OrderItem": "L80641527-V1",
+    "Period": "2",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_AMBIGUOUS_RECEIPT_LINEAGE"
+  },
+  {
+    "ActualReceived": "3600.55",
+    "InvoiceNo": "L80738381-V1",
+    "OrderID": "L80738381",
+    "OrderItem": "L80738381-V1",
+    "Period": "2",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_INVALID_ADDITIONAL_IDENTITY"
+  },
+  {
+    "ActualReceived": "0.01",
+    "InvoiceNo": "L77008478-V1",
+    "OrderID": "L77008478",
+    "OrderItem": "L77008478-V1",
+    "Period": "3",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_INVALID_ADDITIONAL_IDENTITY"
+  },
+  {
+    "ActualReceived": "0.01",
+    "InvoiceNo": "L77029353-V1",
+    "OrderID": "L77029353",
+    "OrderItem": "L77029353-V1",
+    "Period": "3",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_INVALID_ADDITIONAL_IDENTITY"
+  },
+  {
+    "ActualReceived": "0.01",
+    "InvoiceNo": "L77051224-V1",
+    "OrderID": "L77051224",
+    "OrderItem": "L77051224-V1",
+    "Period": "3",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_INVALID_ADDITIONAL_IDENTITY"
+  },
+  {
+    "ActualReceived": "0.01",
+    "InvoiceNo": "L77073188-V1",
+    "OrderID": "L77073188",
+    "OrderItem": "L77073188-V1",
+    "Period": "3",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_INVALID_ADDITIONAL_IDENTITY"
+  },
+  {
+    "ActualReceived": "0.01",
+    "InvoiceNo": "L77085190-V1",
+    "OrderID": "L77085190",
+    "OrderItem": "L77085190-V1",
+    "Period": "3",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_INVALID_ADDITIONAL_IDENTITY"
+  },
+  {
+    "ActualReceived": "0.01",
+    "InvoiceNo": "L77090731-V1",
+    "OrderID": "L77090731",
+    "OrderItem": "L77090731-V1",
+    "Period": "3",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_INVALID_ADDITIONAL_IDENTITY"
+  },
+  {
+    "ActualReceived": "0.01",
+    "InvoiceNo": "L77096562-V1",
+    "OrderID": "L77096562",
+    "OrderItem": "L77096562-V1",
+    "Period": "3",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_INVALID_ADDITIONAL_IDENTITY"
+  },
+  {
+    "ActualReceived": "0.01",
+    "InvoiceNo": "L77099910-V1",
+    "OrderID": "L77099910",
+    "OrderItem": "L77099910-V1",
+    "Period": "3",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_INVALID_ADDITIONAL_IDENTITY"
+  },
+  {
+    "ActualReceived": "0.01",
+    "InvoiceNo": "L77108993-V1",
+    "OrderID": "L77108993",
+    "OrderItem": "L77108993-V1",
+    "Period": "3",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_INVALID_ADDITIONAL_IDENTITY"
+  },
+  {
+    "ActualReceived": "0.01",
+    "InvoiceNo": "L77123603-V1",
+    "OrderID": "L77123603",
+    "OrderItem": "L77123603-V1",
+    "Period": "3",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_INVALID_ADDITIONAL_IDENTITY"
+  },
+  {
+    "ActualReceived": "0.01",
+    "InvoiceNo": "L77128927-V1",
+    "OrderID": "L77128927",
+    "OrderItem": "L77128927-V1",
+    "Period": "3",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_AMBIGUOUS_RECEIPT_LINEAGE"
+  },
+  {
+    "ActualReceived": "0.01",
+    "InvoiceNo": "L77128927-V1",
+    "OrderID": "L77128927",
+    "OrderItem": "L77128927-V1",
+    "Period": "3",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_AMBIGUOUS_RECEIPT_LINEAGE"
+  },
+  {
+    "ActualReceived": "0.01",
+    "InvoiceNo": "L77134255-V1",
+    "OrderID": "L77134255",
+    "OrderItem": "L77134255-V1",
+    "Period": "3",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_INVALID_ADDITIONAL_IDENTITY"
+  },
+  {
+    "ActualReceived": "0.01",
+    "InvoiceNo": "L77150477-V1",
+    "OrderID": "L77150477",
+    "OrderItem": "L77150477-V1",
+    "Period": "3",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_INVALID_ADDITIONAL_IDENTITY"
+  },
+  {
+    "ActualReceived": "0.01",
+    "InvoiceNo": "L77183907-V1",
+    "OrderID": "L77183907",
+    "OrderItem": "L77183907-V1",
+    "Period": "3",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_INVALID_ADDITIONAL_IDENTITY"
+  },
+  {
+    "ActualReceived": "0.01",
+    "InvoiceNo": "L77185328-V1",
+    "OrderID": "L77185328",
+    "OrderItem": "L77185328-V1",
+    "Period": "3",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_INVALID_ADDITIONAL_IDENTITY"
+  },
+  {
+    "ActualReceived": "0.01",
+    "InvoiceNo": "L77202190-V1",
+    "OrderID": "L77202190",
+    "OrderItem": "L77202190-V1",
+    "Period": "3",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_INVALID_ADDITIONAL_IDENTITY"
+  },
+  {
+    "ActualReceived": "0.01",
+    "InvoiceNo": "L77206884-V1",
+    "OrderID": "L77206884",
+    "OrderItem": "L77206884-V1",
+    "Period": "3",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_INVALID_ADDITIONAL_IDENTITY"
+  },
+  {
+    "ActualReceived": "0.01",
+    "InvoiceNo": "L77229804-V1",
+    "OrderID": "L77229804",
+    "OrderItem": "L77229804-V1",
+    "Period": "3",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_INVALID_ADDITIONAL_IDENTITY"
+  },
+  {
+    "ActualReceived": "0.01",
+    "InvoiceNo": "L77231838-V1",
+    "OrderID": "L77231838",
+    "OrderItem": "L77231838-V1",
+    "Period": "3",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_INVALID_ADDITIONAL_IDENTITY"
+  },
+  {
+    "ActualReceived": "0.01",
+    "InvoiceNo": "L77234510-V1",
+    "OrderID": "L77234510",
+    "OrderItem": "L77234510-V1",
+    "Period": "3",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_INVALID_ADDITIONAL_IDENTITY"
+  },
+  {
+    "ActualReceived": "0.01",
+    "InvoiceNo": "L77238965-V1",
+    "OrderID": "L77238965",
+    "OrderItem": "L77238965-V1",
+    "Period": "3",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_INVALID_ADDITIONAL_IDENTITY"
+  },
+  {
+    "ActualReceived": "0.01",
+    "InvoiceNo": "L77241615-V1",
+    "OrderID": "L77241615",
+    "OrderItem": "L77241615-V1",
+    "Period": "3",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_INVALID_ADDITIONAL_IDENTITY"
+  },
+  {
+    "ActualReceived": "0.01",
+    "InvoiceNo": "L77299971-V1",
+    "OrderID": "L77299971",
+    "OrderItem": "L77299971-V1",
+    "Period": "3",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_INVALID_ADDITIONAL_IDENTITY"
+  },
+  {
+    "ActualReceived": "0.01",
+    "InvoiceNo": "L77320690-V1",
+    "OrderID": "L77320690",
+    "OrderItem": "L77320690-V1",
+    "Period": "3",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_INVALID_ADDITIONAL_IDENTITY"
+  },
+  {
+    "ActualReceived": "0.01",
+    "InvoiceNo": "L77374339-V1",
+    "OrderID": "L77374339",
+    "OrderItem": "L77374339-V1",
+    "Period": "3",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_INVALID_ADDITIONAL_IDENTITY"
+  },
+  {
+    "ActualReceived": "0.01",
+    "InvoiceNo": "L77470696-V1",
+    "OrderID": "L77470696",
+    "OrderItem": "L77470696-V1",
+    "Period": "3",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_INVALID_ADDITIONAL_IDENTITY"
+  },
+  {
+    "ActualReceived": "0.01",
+    "InvoiceNo": "L77750583-V1",
+    "OrderID": "L77750583",
+    "OrderItem": "L77750583-V1",
+    "Period": "3",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_INVALID_ADDITIONAL_IDENTITY"
+  },
+  {
+    "ActualReceived": "0.01",
+    "InvoiceNo": "L78079601-V1",
+    "OrderID": "L78079601",
+    "OrderItem": "L78079601-V1",
+    "Period": "3",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_AMBIGUOUS_RECEIPT_LINEAGE"
+  },
+  {
+    "ActualReceived": "645.21",
+    "InvoiceNo": "L78079601-V1",
+    "OrderID": "L78079601",
+    "OrderItem": "L78079601-V1",
+    "Period": "3",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_AMBIGUOUS_RECEIPT_LINEAGE"
+  },
+  {
+    "ActualReceived": "0.01",
+    "InvoiceNo": "L78114013-V1",
+    "OrderID": "L78114013",
+    "OrderItem": "L78114013-V1",
+    "Period": "3",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_INVALID_ADDITIONAL_IDENTITY"
+  },
+  {
+    "ActualReceived": "0.01",
+    "InvoiceNo": "L78163127-V1",
+    "OrderID": "L78163127",
+    "OrderItem": "L78163127-V1",
+    "Period": "3",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_INVALID_ADDITIONAL_IDENTITY"
+  },
+  {
+    "ActualReceived": "0.01",
+    "InvoiceNo": "L78166686-V1",
+    "OrderID": "L78166686",
+    "OrderItem": "L78166686-V1",
+    "Period": "3",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_INVALID_ADDITIONAL_IDENTITY"
+  },
+  {
+    "ActualReceived": "0.01",
+    "InvoiceNo": "L78262479-V1",
+    "OrderID": "L78262479",
+    "OrderItem": "L78262479-V1",
+    "Period": "3",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_INVALID_ADDITIONAL_IDENTITY"
+  },
+  {
+    "ActualReceived": "0.01",
+    "InvoiceNo": "L78439855-V1",
+    "OrderID": "L78439855",
+    "OrderItem": "L78439855-V1",
+    "Period": "3",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_INVALID_ADDITIONAL_IDENTITY"
+  },
+  {
+    "ActualReceived": "0.01",
+    "InvoiceNo": "L78547653-V1",
+    "OrderID": "L78547653",
+    "OrderItem": "L78547653-V1",
+    "Period": "3",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_INVALID_ADDITIONAL_IDENTITY"
+  },
+  {
+    "ActualReceived": "1868.33",
+    "InvoiceNo": "chrg_63gjg5e1oct5r4jbh7d",
+    "OrderID": "L77088995",
+    "OrderItem": "L77088995-V1",
+    "Period": "3",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_INVALID_ADDITIONAL_IDENTITY"
+  },
+  {
+    "ActualReceived": "1868.33",
+    "InvoiceNo": "chrg_63i2f2a4eg4yr5ilf1u",
+    "OrderID": "L78081492",
+    "OrderItem": "L78081492-V1",
+    "Period": "3",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_INVALID_ADDITIONAL_IDENTITY"
+  },
+  {
+    "ActualReceived": "2141.69",
+    "InvoiceNo": "chrg_63iaf376tc4tjyk5hbj",
+    "OrderID": "L78079601",
+    "OrderItem": "L78079601-V1",
+    "Period": "3",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_INVALID_ADDITIONAL_IDENTITY"
+  },
+  {
+    "ActualReceived": "6333.33",
+    "InvoiceNo": "chrg_63lyjkop9cbwszlhlg1",
+    "OrderID": "L78115579",
+    "OrderItem": "L78115579-V1",
+    "Period": "3",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_INVALID_ADDITIONAL_IDENTITY"
+  },
+  {
+    "ActualReceived": "4047.0",
+    "InvoiceNo": "chrg_63nbex0deheu349rd9e",
+    "OrderID": "L78104149",
+    "OrderItem": "L78104149-V1",
+    "Period": "3",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_INVALID_ADDITIONAL_IDENTITY"
+  },
+  {
+    "ActualReceived": "1868.33",
+    "InvoiceNo": "chrg_63ows4qrri1zxh6aor4",
+    "OrderID": "L77129603",
+    "OrderItem": "L77129603-V1",
+    "Period": "3",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_INVALID_ADDITIONAL_IDENTITY"
+  },
+  {
+    "ActualReceived": "3008.33",
+    "InvoiceNo": "chrg_63p4n4plj9qmrlanmdi",
+    "OrderID": "L78144304",
+    "OrderItem": "L78144304-V1",
+    "Period": "3",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_INVALID_ADDITIONAL_IDENTITY"
+  },
+  {
+    "ActualReceived": "1868.33",
+    "InvoiceNo": "chrg_63pkt4y8kuue3pm1qd1",
+    "OrderID": "L77084511",
+    "OrderItem": "L77084511-V1",
+    "Period": "3",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_INVALID_ADDITIONAL_IDENTITY"
+  },
+  {
+    "ActualReceived": "1868.33",
+    "InvoiceNo": "chrg_63r7xsfwfz0ge4dkz2j",
+    "OrderID": "L77066515",
+    "OrderItem": "L77066515-V1",
+    "Period": "3",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_INVALID_ADDITIONAL_IDENTITY"
+  },
+  {
+    "ActualReceived": "1868.33",
+    "InvoiceNo": "chrg_63u50bhslcvqq4uhcau",
+    "OrderID": "L77128927",
+    "OrderItem": "L77128927-V1",
+    "Period": "3",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_INVALID_ADDITIONAL_IDENTITY"
+  },
+  {
+    "ActualReceived": "2058.33",
+    "InvoiceNo": "chrg_63vd5xtac8f809e3nwp",
+    "OrderID": "L76933754",
+    "OrderItem": "L76933754-V1",
+    "Period": "3",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_INVALID_ADDITIONAL_IDENTITY"
+  },
+  {
+    "ActualReceived": "1868.33",
+    "InvoiceNo": "chrg_63y6tg0uyesg7wryxik",
+    "OrderID": "L77111163",
+    "OrderItem": "L77111163-V1",
+    "Period": "3",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_INVALID_ADDITIONAL_IDENTITY"
+  },
+  {
+    "ActualReceived": "1868.33",
+    "InvoiceNo": "chrg_63zpt2iqimrtd8j9o6y",
+    "OrderID": "L77149520",
+    "OrderItem": "L77149520-V1",
+    "Period": "3",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_INVALID_ADDITIONAL_IDENTITY"
+  },
+  {
+    "ActualReceived": "10831.52",
+    "InvoiceNo": "chrg_647z5g949qzxpzgkekm",
+    "OrderID": "L78190341",
+    "OrderItem": "L78190341-V1",
+    "Period": "3",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_INVALID_ADDITIONAL_IDENTITY"
+  },
+  {
+    "ActualReceived": "2263.31",
+    "InvoiceNo": "chrg_648lw0x3qkp28k0fwb8",
+    "OrderID": "L77295672",
+    "OrderItem": "L77295672-V1",
+    "Period": "3",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_INVALID_ADDITIONAL_IDENTITY"
+  },
+  {
+    "ActualReceived": "2360.18",
+    "InvoiceNo": "chrg_64c7zac3jv8bj3q8bg2",
+    "OrderID": "L77730127",
+    "OrderItem": "L77730127-V1",
+    "Period": "3",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_INVALID_ADDITIONAL_IDENTITY"
+  },
+  {
+    "ActualReceived": "2440.79",
+    "InvoiceNo": "chrg_64d008c9i1609d76tyj",
+    "OrderID": "L78315011",
+    "OrderItem": "L78315011-V1",
+    "Period": "3",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_INVALID_ADDITIONAL_IDENTITY"
+  },
+  {
+    "ActualReceived": "1584.33",
+    "InvoiceNo": "chrg_64e5xtgw8870fze5wif",
+    "OrderID": "L77225966",
+    "OrderItem": "L77225966-V1",
+    "Period": "3",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_INVALID_ADDITIONAL_IDENTITY"
+  },
+  {
+    "ActualReceived": "2263.31",
+    "InvoiceNo": "chrg_64e9iz71wxrjpth2387",
+    "OrderID": "L78326453",
+    "OrderItem": "L78326453-V1",
+    "Period": "3",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_INVALID_ADDITIONAL_IDENTITY"
+  },
+  {
+    "ActualReceived": "2554.33",
+    "InvoiceNo": "chrg_64e9ww19664c2488h3g",
+    "OrderID": "L78349699",
+    "OrderItem": "L78349699-V1",
+    "Period": "3",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_INVALID_ADDITIONAL_IDENTITY"
+  },
+  {
+    "ActualReceived": "1584.33",
+    "InvoiceNo": "chrg_64eieqmn1ir1t8i6oxu",
+    "OrderID": "L78304237",
+    "OrderItem": "L78304237-V1",
+    "Period": "3",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_INVALID_ADDITIONAL_IDENTITY"
+  },
+  {
+    "ActualReceived": "6601.88",
+    "InvoiceNo": "chrg_64f0jhaw7ucefm3ca4a",
+    "OrderID": "L77283873",
+    "OrderItem": "L77283873-V1",
+    "Period": "3",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_INVALID_ADDITIONAL_IDENTITY"
+  },
+  {
+    "ActualReceived": "0.01",
+    "InvoiceNo": "L77624694-V1",
+    "OrderID": "L77624694",
+    "OrderItem": "L77624694-V1",
+    "Period": "5",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_INVALID_ADDITIONAL_IDENTITY"
+  },
+  {
+    "ActualReceived": "0.01",
+    "InvoiceNo": "L74730737-V1",
+    "OrderID": "L74730737",
+    "OrderItem": "L74730737-V1",
+    "Period": "6",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_INVALID_ADDITIONAL_IDENTITY"
+  },
+  {
+    "ActualReceived": "0.01",
+    "InvoiceNo": "L74769603-V1",
+    "OrderID": "L74769603",
+    "OrderItem": "L74769603-V1",
+    "Period": "6",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_INVALID_ADDITIONAL_IDENTITY"
+  },
+  {
+    "ActualReceived": "0.01",
+    "InvoiceNo": "L74780515-V1",
+    "OrderID": "L74780515",
+    "OrderItem": "L74780515-V1",
+    "Period": "6",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_INVALID_ADDITIONAL_IDENTITY"
+  },
+  {
+    "ActualReceived": "0.01",
+    "InvoiceNo": "L74811671-V1",
+    "OrderID": "L74811671",
+    "OrderItem": "L74811671-V1",
+    "Period": "6",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_INVALID_ADDITIONAL_IDENTITY"
+  },
+  {
+    "ActualReceived": "0.02",
+    "InvoiceNo": "L76916867-V1",
+    "OrderID": "L76916867",
+    "OrderItem": "L76916867-V1",
+    "Period": "6",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_INVALID_ADDITIONAL_IDENTITY"
+  },
+  {
+    "ActualReceived": "0.01",
+    "InvoiceNo": "L76919182-V1",
+    "OrderID": "L76919182",
+    "OrderItem": "L76919182-V1",
+    "Period": "6",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_INVALID_ADDITIONAL_IDENTITY"
+  },
+  {
+    "ActualReceived": "0.01",
+    "InvoiceNo": "L76955544-V1",
+    "OrderID": "L76955544",
+    "OrderItem": "L76955544-V1",
+    "Period": "6",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_AMBIGUOUS_RECEIPT_LINEAGE"
+  },
+  {
+    "ActualReceived": "0.01",
+    "InvoiceNo": "L76955544-V1",
+    "OrderID": "L76955544",
+    "OrderItem": "L76955544-V1",
+    "Period": "6",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_AMBIGUOUS_RECEIPT_LINEAGE"
+  },
+  {
+    "ActualReceived": "0.01",
+    "InvoiceNo": "L76979936-V1",
+    "OrderID": "L76979936",
+    "OrderItem": "L76979936-V1",
+    "Period": "6",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_INVALID_ADDITIONAL_IDENTITY"
+  },
+  {
+    "ActualReceived": "11.81",
+    "InvoiceNo": "L76995801-V1",
+    "OrderID": "L76995801",
+    "OrderItem": "L76995801-V1",
+    "Period": "6",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_INVALID_ADDITIONAL_IDENTITY"
+  },
+  {
+    "ActualReceived": "0.01",
+    "InvoiceNo": "L76995808-V1",
+    "OrderID": "L76995808",
+    "OrderItem": "L76995808-V1",
+    "Period": "6",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_AMBIGUOUS_RECEIPT_LINEAGE"
+  },
+  {
+    "ActualReceived": "13.49",
+    "InvoiceNo": "L76995808-V1",
+    "OrderID": "L76995808",
+    "OrderItem": "L76995808-V1",
+    "Period": "6",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_AMBIGUOUS_RECEIPT_LINEAGE"
+  },
+  {
+    "ActualReceived": "0.01",
+    "InvoiceNo": "L77004778-V1",
+    "OrderID": "L77004778",
+    "OrderItem": "L77004778-V1",
+    "Period": "6",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_AMBIGUOUS_RECEIPT_LINEAGE"
+  },
+  {
+    "ActualReceived": "0.01",
+    "InvoiceNo": "L77004778-V1",
+    "OrderID": "L77004778",
+    "OrderItem": "L77004778-V1",
+    "Period": "6",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_AMBIGUOUS_RECEIPT_LINEAGE"
+  },
+  {
+    "ActualReceived": "0.01",
+    "InvoiceNo": "L77012166-V1",
+    "OrderID": "L77012166",
+    "OrderItem": "L77012166-V1",
+    "Period": "6",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_AMBIGUOUS_RECEIPT_LINEAGE"
+  },
+  {
+    "ActualReceived": "0.01",
+    "InvoiceNo": "L77012166-V1",
+    "OrderID": "L77012166",
+    "OrderItem": "L77012166-V1",
+    "Period": "6",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_AMBIGUOUS_RECEIPT_LINEAGE"
+  },
+  {
+    "ActualReceived": "0.01",
+    "InvoiceNo": "L77024412-V1",
+    "OrderID": "L77024412",
+    "OrderItem": "L77024412-V1",
+    "Period": "6",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_AMBIGUOUS_RECEIPT_LINEAGE"
+  },
+  {
+    "ActualReceived": "0.01",
+    "InvoiceNo": "L77024412-V1",
+    "OrderID": "L77024412",
+    "OrderItem": "L77024412-V1",
+    "Period": "6",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_AMBIGUOUS_RECEIPT_LINEAGE"
+  },
+  {
+    "ActualReceived": "0.02",
+    "InvoiceNo": "L77025978-V1",
+    "OrderID": "L77025978",
+    "OrderItem": "L77025978-V1",
+    "Period": "6",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_INVALID_ADDITIONAL_IDENTITY"
+  },
+  {
+    "ActualReceived": "0.01",
+    "InvoiceNo": "L77029546-V1",
+    "OrderID": "L77029546",
+    "OrderItem": "L77029546-V1",
+    "Period": "6",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_AMBIGUOUS_RECEIPT_LINEAGE"
+  },
+  {
+    "ActualReceived": "0.01",
+    "InvoiceNo": "L77029546-V1",
+    "OrderID": "L77029546",
+    "OrderItem": "L77029546-V1",
+    "Period": "6",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_AMBIGUOUS_RECEIPT_LINEAGE"
+  },
+  {
+    "ActualReceived": "0.02",
+    "InvoiceNo": "L77030131-V1",
+    "OrderID": "L77030131",
+    "OrderItem": "L77030131-V1",
+    "Period": "6",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_INVALID_ADDITIONAL_IDENTITY"
+  },
+  {
+    "ActualReceived": "0.01",
+    "InvoiceNo": "L77041603-V1",
+    "OrderID": "L77041603",
+    "OrderItem": "L77041603-V1",
+    "Period": "6",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_INVALID_ADDITIONAL_IDENTITY"
+  },
+  {
+    "ActualReceived": "0.01",
+    "InvoiceNo": "L77046957-V1",
+    "OrderID": "L77046957",
+    "OrderItem": "L77046957-V1",
+    "Period": "6",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_AMBIGUOUS_RECEIPT_LINEAGE"
+  },
+  {
+    "ActualReceived": "5.93",
+    "InvoiceNo": "L77046957-V1",
+    "OrderID": "L77046957",
+    "OrderItem": "L77046957-V1",
+    "Period": "6",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_AMBIGUOUS_RECEIPT_LINEAGE"
+  },
+  {
+    "ActualReceived": "0.01",
+    "InvoiceNo": "L77051654-V1",
+    "OrderID": "L77051654",
+    "OrderItem": "L77051654-V1",
+    "Period": "6",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_AMBIGUOUS_RECEIPT_LINEAGE"
+  },
+  {
+    "ActualReceived": "0.01",
+    "InvoiceNo": "L77051654-V1",
+    "OrderID": "L77051654",
+    "OrderItem": "L77051654-V1",
+    "Period": "6",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_AMBIGUOUS_RECEIPT_LINEAGE"
+  },
+  {
+    "ActualReceived": "0.01",
+    "InvoiceNo": "L77080066-V1",
+    "OrderID": "L77080066",
+    "OrderItem": "L77080066-V1",
+    "Period": "6",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_AMBIGUOUS_RECEIPT_LINEAGE"
+  },
+  {
+    "ActualReceived": "0.01",
+    "InvoiceNo": "L77080066-V1",
+    "OrderID": "L77080066",
+    "OrderItem": "L77080066-V1",
+    "Period": "6",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_AMBIGUOUS_RECEIPT_LINEAGE"
+  },
+  {
+    "ActualReceived": "0.01",
+    "InvoiceNo": "L77102723-V1",
+    "OrderID": "L77102723",
+    "OrderItem": "L77102723-V1",
+    "Period": "6",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_AMBIGUOUS_RECEIPT_LINEAGE"
+  },
+  {
+    "ActualReceived": "0.01",
+    "InvoiceNo": "L77102723-V1",
+    "OrderID": "L77102723",
+    "OrderItem": "L77102723-V1",
+    "Period": "6",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_AMBIGUOUS_RECEIPT_LINEAGE"
+  },
+  {
+    "ActualReceived": "0.01",
+    "InvoiceNo": "L77113641-V1",
+    "OrderID": "L77113641",
+    "OrderItem": "L77113641-V1",
+    "Period": "6",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_AMBIGUOUS_RECEIPT_LINEAGE"
+  },
+  {
+    "ActualReceived": "0.01",
+    "InvoiceNo": "L77113641-V1",
+    "OrderID": "L77113641",
+    "OrderItem": "L77113641-V1",
+    "Period": "6",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_AMBIGUOUS_RECEIPT_LINEAGE"
+  },
+  {
+    "ActualReceived": "0.01",
+    "InvoiceNo": "L77123648-V1",
+    "OrderID": "L77123648",
+    "OrderItem": "L77123648-V1",
+    "Period": "6",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_AMBIGUOUS_RECEIPT_LINEAGE"
+  },
+  {
+    "ActualReceived": "0.01",
+    "InvoiceNo": "L77123648-V1",
+    "OrderID": "L77123648",
+    "OrderItem": "L77123648-V1",
+    "Period": "6",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_AMBIGUOUS_RECEIPT_LINEAGE"
+  },
+  {
+    "ActualReceived": "0.01",
+    "InvoiceNo": "L77146702-V1",
+    "OrderID": "L77146702",
+    "OrderItem": "L77146702-V1",
+    "Period": "6",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_AMBIGUOUS_RECEIPT_LINEAGE"
+  },
+  {
+    "ActualReceived": "0.01",
+    "InvoiceNo": "L77146702-V1",
+    "OrderID": "L77146702",
+    "OrderItem": "L77146702-V1",
+    "Period": "6",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_AMBIGUOUS_RECEIPT_LINEAGE"
+  },
+  {
+    "ActualReceived": "0.01",
+    "InvoiceNo": "L77233036-V1",
+    "OrderID": "L77233036",
+    "OrderItem": "L77233036-V1",
+    "Period": "6",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_AMBIGUOUS_RECEIPT_LINEAGE"
+  },
+  {
+    "ActualReceived": "0.01",
+    "InvoiceNo": "L77233036-V1",
+    "OrderID": "L77233036",
+    "OrderItem": "L77233036-V1",
+    "Period": "6",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_AMBIGUOUS_RECEIPT_LINEAGE"
+  },
+  {
+    "ActualReceived": "0.01",
+    "InvoiceNo": "L77287419-V1",
+    "OrderID": "L77287419",
+    "OrderItem": "L77287419-V1",
+    "Period": "6",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_AMBIGUOUS_RECEIPT_LINEAGE"
+  },
+  {
+    "ActualReceived": "0.01",
+    "InvoiceNo": "L77287419-V1",
+    "OrderID": "L77287419",
+    "OrderItem": "L77287419-V1",
+    "Period": "6",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_AMBIGUOUS_RECEIPT_LINEAGE"
+  },
+  {
+    "ActualReceived": "0.02",
+    "InvoiceNo": "L77336150-V1",
+    "OrderID": "L77336150",
+    "OrderItem": "L77336150-V1",
+    "Period": "6",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_INVALID_ADDITIONAL_IDENTITY"
+  },
+  {
+    "ActualReceived": "0.01",
+    "InvoiceNo": "L77999762-V1",
+    "OrderID": "L77999762",
+    "OrderItem": "L77999762-V1",
+    "Period": "6",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_AMBIGUOUS_RECEIPT_LINEAGE"
+  },
+  {
+    "ActualReceived": "0.01",
+    "InvoiceNo": "L77999762-V1",
+    "OrderID": "L77999762",
+    "OrderItem": "L77999762-V1",
+    "Period": "6",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_AMBIGUOUS_RECEIPT_LINEAGE"
+  },
+  {
+    "ActualReceived": "0.01",
+    "InvoiceNo": "L78021746-V1",
+    "OrderID": "L78021746",
+    "OrderItem": "L78021746-V1",
+    "Period": "6",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_AMBIGUOUS_RECEIPT_LINEAGE"
+  },
+  {
+    "ActualReceived": "0.01",
+    "InvoiceNo": "L78021746-V1",
+    "OrderID": "L78021746",
+    "OrderItem": "L78021746-V1",
+    "Period": "6",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_AMBIGUOUS_RECEIPT_LINEAGE"
+  },
+  {
+    "ActualReceived": "0.01",
+    "InvoiceNo": "L78046750-V1",
+    "OrderID": "L78046750",
+    "OrderItem": "L78046750-V1",
+    "Period": "6",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_AMBIGUOUS_RECEIPT_LINEAGE"
+  },
+  {
+    "ActualReceived": "0.01",
+    "InvoiceNo": "L78046750-V1",
+    "OrderID": "L78046750",
+    "OrderItem": "L78046750-V1",
+    "Period": "6",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_AMBIGUOUS_RECEIPT_LINEAGE"
+  },
+  {
+    "ActualReceived": "0.01",
+    "InvoiceNo": "L78050891-V1",
+    "OrderID": "L78050891",
+    "OrderItem": "L78050891-V1",
+    "Period": "6",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_AMBIGUOUS_RECEIPT_LINEAGE"
+  },
+  {
+    "ActualReceived": "5.49",
+    "InvoiceNo": "L78050891-V1",
+    "OrderID": "L78050891",
+    "OrderItem": "L78050891-V1",
+    "Period": "6",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_AMBIGUOUS_RECEIPT_LINEAGE"
+  },
+  {
+    "ActualReceived": "0.01",
+    "InvoiceNo": "L78069032-V1",
+    "OrderID": "L78069032",
+    "OrderItem": "L78069032-V1",
+    "Period": "6",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_AMBIGUOUS_RECEIPT_LINEAGE"
+  },
+  {
+    "ActualReceived": "0.01",
+    "InvoiceNo": "L78069032-V1",
+    "OrderID": "L78069032",
+    "OrderItem": "L78069032-V1",
+    "Period": "6",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_AMBIGUOUS_RECEIPT_LINEAGE"
+  },
+  {
+    "ActualReceived": "0.01",
+    "InvoiceNo": "L78072972-V1",
+    "OrderID": "L78072972",
+    "OrderItem": "L78072972-V1",
+    "Period": "6",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_AMBIGUOUS_RECEIPT_LINEAGE"
+  },
+  {
+    "ActualReceived": "0.01",
+    "InvoiceNo": "L78072972-V1",
+    "OrderID": "L78072972",
+    "OrderItem": "L78072972-V1",
+    "Period": "6",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_AMBIGUOUS_RECEIPT_LINEAGE"
+  },
+  {
+    "ActualReceived": "0.01",
+    "InvoiceNo": "L78085609-V1",
+    "OrderID": "L78085609",
+    "OrderItem": "L78085609-V1",
+    "Period": "6",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_AMBIGUOUS_RECEIPT_LINEAGE"
+  },
+  {
+    "ActualReceived": "0.02",
+    "InvoiceNo": "L78085609-V1",
+    "OrderID": "L78085609",
+    "OrderItem": "L78085609-V1",
+    "Period": "6",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_AMBIGUOUS_RECEIPT_LINEAGE"
+  },
+  {
+    "ActualReceived": "0.01",
+    "InvoiceNo": "L78099522-V1",
+    "OrderID": "L78099522",
+    "OrderItem": "L78099522-V1",
+    "Period": "6",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_AMBIGUOUS_RECEIPT_LINEAGE"
+  },
+  {
+    "ActualReceived": "0.01",
+    "InvoiceNo": "L78099522-V1",
+    "OrderID": "L78099522",
+    "OrderItem": "L78099522-V1",
+    "Period": "6",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_AMBIGUOUS_RECEIPT_LINEAGE"
+  },
+  {
+    "ActualReceived": "0.01",
+    "InvoiceNo": "L78213014-V1",
+    "OrderID": "L78213014",
+    "OrderItem": "L78213014-V1",
+    "Period": "6",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_AMBIGUOUS_RECEIPT_LINEAGE"
+  },
+  {
+    "ActualReceived": "0.01",
+    "InvoiceNo": "L78213014-V1",
+    "OrderID": "L78213014",
+    "OrderItem": "L78213014-V1",
+    "Period": "6",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_AMBIGUOUS_RECEIPT_LINEAGE"
+  },
+  {
+    "ActualReceived": "0.01",
+    "InvoiceNo": "L78268488-V1",
+    "OrderID": "L78268488",
+    "OrderItem": "L78268488-V1",
+    "Period": "6",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_AMBIGUOUS_RECEIPT_LINEAGE"
+  },
+  {
+    "ActualReceived": "0.01",
+    "InvoiceNo": "L78268488-V1",
+    "OrderID": "L78268488",
+    "OrderItem": "L78268488-V1",
+    "Period": "6",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_AMBIGUOUS_RECEIPT_LINEAGE"
+  },
+  {
+    "ActualReceived": "0.01",
+    "InvoiceNo": "L78288078-V1",
+    "OrderID": "L78288078",
+    "OrderItem": "L78288078-V1",
+    "Period": "6",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_AMBIGUOUS_RECEIPT_LINEAGE"
+  },
+  {
+    "ActualReceived": "0.01",
+    "InvoiceNo": "L78288078-V1",
+    "OrderID": "L78288078",
+    "OrderItem": "L78288078-V1",
+    "Period": "6",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_AMBIGUOUS_RECEIPT_LINEAGE"
+  },
+  {
+    "ActualReceived": "0.01",
+    "InvoiceNo": "L78402169-V1",
+    "OrderID": "L78402169",
+    "OrderItem": "L78402169-V1",
+    "Period": "6",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_INVALID_ADDITIONAL_IDENTITY"
+  },
+  {
+    "ActualReceived": "0.01",
+    "InvoiceNo": "L78463260-V1",
+    "OrderID": "L78463260",
+    "OrderItem": "L78463260-V1",
+    "Period": "6",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_AMBIGUOUS_RECEIPT_LINEAGE"
+  },
+  {
+    "ActualReceived": "0.01",
+    "InvoiceNo": "L78463260-V1",
+    "OrderID": "L78463260",
+    "OrderItem": "L78463260-V1",
+    "Period": "6",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_AMBIGUOUS_RECEIPT_LINEAGE"
+  },
+  {
+    "ActualReceived": "2223.6",
+    "InvoiceNo": "chrg_638jblibu827hrrbems",
+    "OrderID": "L74800780",
+    "OrderItem": "L74800780-V1",
+    "Period": "6",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_INVALID_ADDITIONAL_IDENTITY"
+  },
+  {
+    "ActualReceived": "2416.77",
+    "InvoiceNo": "chrg_63pxsbcy1p5e32n5a9r",
+    "OrderID": "L78268488",
+    "OrderItem": "L78268488-V1",
+    "Period": "6",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_INVALID_ADDITIONAL_IDENTITY"
+  },
+  {
+    "ActualReceived": "2674.34",
+    "InvoiceNo": "chrg_63rz9y180h2mu4y4haq",
+    "OrderID": "L77231964",
+    "OrderItem": "L77231964-V1",
+    "Period": "6",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_INVALID_ADDITIONAL_IDENTITY"
+  },
+  {
+    "ActualReceived": "3273.97",
+    "InvoiceNo": "chrg_63v2f33rwlr9xa1weu6",
+    "OrderID": "L77129808",
+    "OrderItem": "L77129808-V1",
+    "Period": "6",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_INVALID_ADDITIONAL_IDENTITY"
+  },
+  {
+    "ActualReceived": "2776.83",
+    "InvoiceNo": "chrg_63wco6d5llza0sgcryz",
+    "OrderID": "L76896603",
+    "OrderItem": "L76896603-V1",
+    "Period": "6",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_INVALID_ADDITIONAL_IDENTITY"
+  },
+  {
+    "ActualReceived": "1415.39",
+    "InvoiceNo": "chrg_63xrwoobuuywmalo0k6",
+    "OrderID": "L78046750",
+    "OrderItem": "L78046750-V1",
+    "Period": "6",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_INVALID_ADDITIONAL_IDENTITY"
+  },
+  {
+    "ActualReceived": "1573.12",
+    "InvoiceNo": "chrg_63y6333ykruvkbmqewg",
+    "OrderID": "L77287419",
+    "OrderItem": "L77287419-V1",
+    "Period": "6",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_INVALID_ADDITIONAL_IDENTITY"
+  },
+  {
+    "ActualReceived": "1845.73",
+    "InvoiceNo": "chrg_63y7h2fu7stcae2ltmw",
+    "OrderID": "L77041690",
+    "OrderItem": "L77041690-V1",
+    "Period": "6",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_INVALID_ADDITIONAL_IDENTITY"
+  },
+  {
+    "ActualReceived": "2186.54",
+    "InvoiceNo": "chrg_63zrqywn1pzkxdolrri",
+    "OrderID": "L77146702",
+    "OrderItem": "L77146702-V1",
+    "Period": "6",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_INVALID_ADDITIONAL_IDENTITY"
+  },
+  {
+    "ActualReceived": "2748.33",
+    "InvoiceNo": "chrg_643n4szopztvivjsnf8",
+    "OrderID": "L78099522",
+    "OrderItem": "L78099522-V1",
+    "Period": "6",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_INVALID_ADDITIONAL_IDENTITY"
+  },
+  {
+    "ActualReceived": "1212.5",
+    "InvoiceNo": "chrg_646pvuvle2pa4yh9caq",
+    "OrderID": "L77012166",
+    "OrderItem": "L77012166-V1",
+    "Period": "6",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_INVALID_ADDITIONAL_IDENTITY"
+  },
+  {
+    "ActualReceived": "1083.33",
+    "InvoiceNo": "chrg_648dv39sz91n3ksaag1",
+    "OrderID": "L78463260",
+    "OrderItem": "L78463260-V1",
+    "Period": "6",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_INVALID_ADDITIONAL_IDENTITY"
+  },
+  {
+    "ActualReceived": "1350.16",
+    "InvoiceNo": "chrg_648ou1zncg09qaevvm4",
+    "OrderID": "L77829701",
+    "OrderItem": "L77829701-V1",
+    "Period": "6",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_INVALID_ADDITIONAL_IDENTITY"
+  },
+  {
+    "ActualReceived": "1050.87",
+    "InvoiceNo": "chrg_649h6cl0vgwdhium6y5",
+    "OrderID": "L78085609",
+    "OrderItem": "L78085609-V1",
+    "Period": "6",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_INVALID_ADDITIONAL_IDENTITY"
+  },
+  {
+    "ActualReceived": "2497.75",
+    "InvoiceNo": "chrg_64c6nrzd07e9e9f4603",
+    "OrderID": "L76995808",
+    "OrderItem": "L76995808-V1",
+    "Period": "6",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_INVALID_ADDITIONAL_IDENTITY"
+  },
+  {
+    "ActualReceived": "2581.01",
+    "InvoiceNo": "chrg_64e1fq4j9bf20xsj8z7",
+    "OrderID": "L78037906",
+    "OrderItem": "L78037906-V1",
+    "Period": "6",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_INVALID_ADDITIONAL_IDENTITY"
+  },
+  {
+    "ActualReceived": "2612.58",
+    "InvoiceNo": "chrg_64e688ho7z75ng5a423",
+    "OrderID": "L77233036",
+    "OrderItem": "L77233036-V1",
+    "Period": "6",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_INVALID_ADDITIONAL_IDENTITY"
+  },
+  {
+    "ActualReceived": "2438.35",
+    "InvoiceNo": "chrg_64e6ht6qwjhpizgzzu2",
+    "OrderID": "L77205458",
+    "OrderItem": "L77205458-V1",
+    "Period": "6",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_INVALID_ADDITIONAL_IDENTITY"
+  },
+  {
+    "ActualReceived": "1099.01",
+    "InvoiceNo": "chrg_64enf8v63xnzhn481av",
+    "OrderID": "L77046957",
+    "OrderItem": "L77046957-V1",
+    "Period": "6",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_INVALID_ADDITIONAL_IDENTITY"
+  },
+  {
+    "ActualReceived": "1082.4",
+    "InvoiceNo": "chrg_64eq5byaplooqfj0971",
+    "OrderID": "L77984353",
+    "OrderItem": "L77984353-V1",
+    "Period": "6",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_INVALID_ADDITIONAL_IDENTITY"
+  },
+  {
+    "ActualReceived": "1209.22",
+    "InvoiceNo": "chrg_64ex9w6x8ck0f5kxym1",
+    "OrderID": "L77051654",
+    "OrderItem": "L77051654-V1",
+    "Period": "6",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_INVALID_ADDITIONAL_IDENTITY"
+  },
+  {
+    "ActualReceived": "1050.87",
+    "InvoiceNo": "chrg_64flgj33y0hquud3zec",
+    "OrderID": "L78069032",
+    "OrderItem": "L78069032-V1",
+    "Period": "6",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_INVALID_ADDITIONAL_IDENTITY"
+  },
+  {
+    "ActualReceived": "2355.51",
+    "InvoiceNo": "chrg_64giat8i0e807dqlzx6",
+    "OrderID": "L77123648",
+    "OrderItem": "L77123648-V1",
+    "Period": "6",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_INVALID_ADDITIONAL_IDENTITY"
+  },
+  {
+    "ActualReceived": "2302.35",
+    "InvoiceNo": "chrg_64gvnjzbrqvj8hofkfx",
+    "OrderID": "L77044468",
+    "OrderItem": "L77044468-V1",
+    "Period": "6",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_INVALID_ADDITIONAL_IDENTITY"
+  },
+  {
+    "ActualReceived": "2765.0",
+    "InvoiceNo": "chrg_64h34r2su9huqjths5y",
+    "OrderID": "L77024412",
+    "OrderItem": "L77024412-V1",
+    "Period": "6",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_INVALID_ADDITIONAL_IDENTITY"
+  },
+  {
+    "ActualReceived": "1883.39",
+    "InvoiceNo": "chrg_64haa1nynik27if0hg6",
+    "OrderID": "L78099741",
+    "OrderItem": "L78099741-V1",
+    "Period": "6",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_INVALID_ADDITIONAL_IDENTITY"
+  },
+  {
+    "ActualReceived": "1212.61",
+    "InvoiceNo": "chrg_64hcbndc4vn5yctmsde",
+    "OrderID": "L77102723",
+    "OrderItem": "L77102723-V1",
+    "Period": "6",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_INVALID_ADDITIONAL_IDENTITY"
+  },
+  {
+    "ActualReceived": "1050.87",
+    "InvoiceNo": "chrg_64hf18q117xiulyrbwn",
+    "OrderID": "L77080066",
+    "OrderItem": "L77080066-V1",
+    "Period": "6",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_INVALID_ADDITIONAL_IDENTITY"
+  },
+  {
+    "ActualReceived": "2126.48",
+    "InvoiceNo": "chrg_64hn19ngly27auwenpq",
+    "OrderID": "L76978657",
+    "OrderItem": "L76978657-V1",
+    "Period": "6",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_INVALID_ADDITIONAL_IDENTITY"
+  },
+  {
+    "ActualReceived": "1711.32",
+    "InvoiceNo": "chrg_64hncmfthplbf7wanbb",
+    "OrderID": "L77108813",
+    "OrderItem": "L77108813-V1",
+    "Period": "6",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_INVALID_ADDITIONAL_IDENTITY"
+  },
+  {
+    "ActualReceived": "1535.74",
+    "InvoiceNo": "chrg_64hozxmbgxj9t7ilmy0",
+    "OrderID": "L77999762",
+    "OrderItem": "L77999762-V1",
+    "Period": "6",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_INVALID_ADDITIONAL_IDENTITY"
+  },
+  {
+    "ActualReceived": "1065.83",
+    "InvoiceNo": "chrg_64hp1bxqowbtogoi69m",
+    "OrderID": "L78050655",
+    "OrderItem": "L78050655-V1",
+    "Period": "6",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_INVALID_ADDITIONAL_IDENTITY"
+  },
+  {
+    "ActualReceived": "2117.83",
+    "InvoiceNo": "chrg_64ia3jmjdcdo25fpsha",
+    "OrderID": "L78072972",
+    "OrderItem": "L78072972-V1",
+    "Period": "6",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_INVALID_ADDITIONAL_IDENTITY"
+  },
+  {
+    "ActualReceived": "2602.83",
+    "InvoiceNo": "chrg_64wpv4h986qmme89p7m",
+    "OrderID": "L78132266",
+    "OrderItem": "L78132266-V1",
+    "Period": "6",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_INVALID_ADDITIONAL_IDENTITY"
+  },
+  {
+    "ActualReceived": "2256.27",
+    "InvoiceNo": "chrg_64wy195wpzeojw1qvce",
+    "OrderID": "L78348016",
+    "OrderItem": "L78348016-V1",
+    "Period": "6",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_INVALID_ADDITIONAL_IDENTITY"
+  },
+  {
+    "ActualReceived": "1500.0",
+    "InvoiceNo": "chrg_658p3x322jt6cmj7a8c",
+    "OrderID": "L77032552",
+    "OrderItem": "L77032552-V1",
+    "Period": "6",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_INVALID_ADDITIONAL_IDENTITY"
+  },
+  {
+    "ActualReceived": "1017.39",
+    "InvoiceNo": "chrg_65aga5fhih11v2lob35",
+    "OrderID": "L77212914",
+    "OrderItem": "L77212914-V1",
+    "Period": "6",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_INVALID_ADDITIONAL_IDENTITY"
+  },
+  {
+    "ActualReceived": "1067.89",
+    "InvoiceNo": "chrg_65agb9lqtw8vo1k8eab",
+    "OrderID": "L77183898",
+    "OrderItem": "L77183898-V1",
+    "Period": "6",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_INVALID_ADDITIONAL_IDENTITY"
+  },
+  {
+    "ActualReceived": "1064.47",
+    "InvoiceNo": "chrg_65appkbyl6yr6ktd2f0",
+    "OrderID": "L77052305",
+    "OrderItem": "L77052305-V1",
+    "Period": "6",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_INVALID_ADDITIONAL_IDENTITY"
+  },
+  {
+    "ActualReceived": "0.01",
+    "InvoiceNo": "L77051403-V1",
+    "OrderID": "L77051403",
+    "OrderItem": "L77051403-V1",
+    "Period": "8",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_INVALID_ADDITIONAL_IDENTITY"
+  },
+  {
+    "ActualReceived": "0.01",
+    "InvoiceNo": "L77073203-V1",
+    "OrderID": "L77073203",
+    "OrderItem": "L77073203-V1",
+    "Period": "8",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_AMBIGUOUS_RECEIPT_LINEAGE"
+  },
+  {
+    "ActualReceived": "0.01",
+    "InvoiceNo": "L77073203-V1",
+    "OrderID": "L77073203",
+    "OrderItem": "L77073203-V1",
+    "Period": "8",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_AMBIGUOUS_RECEIPT_LINEAGE"
+  },
+  {
+    "ActualReceived": "0.01",
+    "InvoiceNo": "L77073203-V1",
+    "OrderID": "L77073203",
+    "OrderItem": "L77073203-V1",
+    "Period": "8",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_AMBIGUOUS_RECEIPT_LINEAGE"
+  },
+  {
+    "ActualReceived": "1732.46",
+    "InvoiceNo": "chrg_6592oltutv7t0wjdcyt",
+    "OrderID": "L77051212",
+    "OrderItem": "L77051212-V1",
+    "Period": "8",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_INVALID_ADDITIONAL_IDENTITY"
+  },
+  {
+    "ActualReceived": "2793.29",
+    "InvoiceNo": "chrg_65apnh7lcr76snr1ggw",
+    "OrderID": "L77018006",
+    "OrderItem": "L77018006-V1",
+    "Period": "8",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_INVALID_ADDITIONAL_IDENTITY"
+  },
+  {
+    "ActualReceived": "1812.31",
+    "InvoiceNo": "chrg_67ggri3d14y81u6pk58",
+    "OrderID": "L77534919",
+    "OrderItem": "L77534919-V1",
+    "Period": "8",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_INVALID_ADDITIONAL_IDENTITY"
+  },
+  {
+    "ActualReceived": "0.01",
+    "InvoiceNo": "L77373818-V1",
+    "OrderID": "L77373818",
+    "OrderItem": "L77373818-V1",
+    "Period": "10",
+    "checked_at_utc": "2026-09-27 00:15:00",
+    "rule_code": "RCL_INVALID_ADDITIONAL_IDENTITY"
+  }
+]

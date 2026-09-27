@@ -620,3 +620,8 @@ allocation remains unanswered; runtime holds and import idempotency remain relea
 ## 2026-09-26T21:53:57+07:00 — Latest dashboard-only scope
 
 User explicitly requested immediate fix of only sap_dashboard_carepay_installment and deferred review of its readers. This one view is now deployed; newpayment/gate remain unchanged, V3 held. Deployment and rollback evidence: docs/FINDINGS_RCL_DASHBOARD_DEPLOY_20260926.md. Do not represent this as a complete downstream SAP import fix.
+
+
+## 2026-09-27T07:30:17.702583+07:00 — RCL downstream repair
+
+User requested downstream inspection and fixing after dashboard review. Scope now includes legacy downstream source corrections; V3 remains held. This does not resolve the pending later-period principal allocation or establish SAP import idempotency. Dashboard remains deployed unchanged.

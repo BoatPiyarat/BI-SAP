@@ -1,0 +1,4905 @@
+[
+  {
+    "added_distribution": [
+      {
+        "TransactionStatus": "Paid",
+        "actual_sum": "147135.04",
+        "old_order": "false",
+        "older_than_window": "false",
+        "row_count": "80",
+        "source_charge_rank": "1"
+      },
+      {
+        "TransactionStatus": "Paid",
+        "actual_sum": "14097.2",
+        "old_order": "false",
+        "older_than_window": null,
+        "row_count": "6",
+        "source_charge_rank": null
+      },
+      {
+        "TransactionStatus": "Paid",
+        "actual_sum": "21265.24",
+        "old_order": "false",
+        "older_than_window": "true",
+        "row_count": "9",
+        "source_charge_rank": "1"
+      },
+      {
+        "TransactionStatus": "Paid",
+        "actual_sum": "1177.54",
+        "old_order": "false",
+        "older_than_window": "true",
+        "row_count": "1",
+        "source_charge_rank": "2"
+      },
+      {
+        "TransactionStatus": "paid",
+        "actual_sum": "3575.05",
+        "old_order": "false",
+        "older_than_window": "false",
+        "row_count": "6",
+        "source_charge_rank": "3"
+      },
+      {
+        "TransactionStatus": "Paid",
+        "actual_sum": "2973.14",
+        "old_order": "false",
+        "older_than_window": "false",
+        "row_count": "2",
+        "source_charge_rank": "2"
+      },
+      {
+        "TransactionStatus": "paid",
+        "actual_sum": "25811.31",
+        "old_order": "false",
+        "older_than_window": "false",
+        "row_count": "72",
+        "source_charge_rank": "2"
+      },
+      {
+        "TransactionStatus": "Paid",
+        "actual_sum": "1335167.71",
+        "old_order": "true",
+        "older_than_window": "true",
+        "row_count": "581",
+        "source_charge_rank": "1"
+      },
+      {
+        "TransactionStatus": "Paid",
+        "actual_sum": "818.97",
+        "old_order": "true",
+        "older_than_window": "true",
+        "row_count": "1",
+        "source_charge_rank": "3"
+      },
+      {
+        "TransactionStatus": "Paid",
+        "actual_sum": "511.63",
+        "old_order": "true",
+        "older_than_window": "true",
+        "row_count": "4",
+        "source_charge_rank": "2"
+      },
+      {
+        "TransactionStatus": "Paid",
+        "actual_sum": "433.02",
+        "old_order": "false",
+        "older_than_window": "false",
+        "row_count": "2",
+        "source_charge_rank": null
+      },
+      {
+        "TransactionStatus": "paid",
+        "actual_sum": "200.02",
+        "old_order": "false",
+        "older_than_window": "false",
+        "row_count": "1",
+        "source_charge_rank": "4"
+      },
+      {
+        "TransactionStatus": "Pending",
+        "actual_sum": "0.0",
+        "old_order": "true",
+        "older_than_window": null,
+        "row_count": "3",
+        "source_charge_rank": null
+      },
+      {
+        "TransactionStatus": "Pending",
+        "actual_sum": "0.0",
+        "old_order": "false",
+        "older_than_window": null,
+        "row_count": "490",
+        "source_charge_rank": null
+      },
+      {
+        "TransactionStatus": "paid",
+        "actual_sum": "195412.12",
+        "old_order": "true",
+        "older_than_window": "false",
+        "row_count": "85",
+        "source_charge_rank": "1"
+      },
+      {
+        "TransactionStatus": "Paid",
+        "actual_sum": "388889.35",
+        "old_order": "true",
+        "older_than_window": "false",
+        "row_count": "169",
+        "source_charge_rank": "1"
+      }
+    ],
+    "checked_at_utc": "2026-09-27 00:19:05",
+    "older_paid_exposure": [
+      {
+        "ActualReceived": "2938.94",
+        "InvoiceNo": "2_chrg_662um7wlz2hxtynfczz",
+        "OrderItem": "L79327908-V1",
+        "Period": "1",
+        "raw_update_time": "2025-12-18 07:49:32",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2200.0",
+        "InvoiceNo": "2_chrg_6620wss6sa4bwv94s10",
+        "OrderItem": "L79335013-V1",
+        "Period": "1",
+        "raw_update_time": "2025-12-16 10:37:52",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1819.86",
+        "InvoiceNo": "2_chrg_662sd10yymyz571lflo",
+        "OrderItem": "L77852962-V1",
+        "Period": "1",
+        "raw_update_time": "2025-12-18 02:54:18",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2220.0",
+        "InvoiceNo": "2_chrg_6675k00nsrj9pngvzeo",
+        "OrderItem": "L79371835-V1",
+        "Period": "1",
+        "raw_update_time": "2025-12-29 06:55:30",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2180.0",
+        "InvoiceNo": "2_chrg_663m5ygfbyiu4gmsydq",
+        "OrderItem": "L79352011-V1",
+        "Period": "1",
+        "raw_update_time": "2025-12-20 06:05:36",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1806.91",
+        "InvoiceNo": "2_chrg_6620bygqohxz4u6if12",
+        "OrderItem": "L77837553-V1",
+        "Period": "1",
+        "raw_update_time": "2025-12-16 03:13:29",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1928.6",
+        "InvoiceNo": "2_chrg_65y5gjbglor45s6hs7t",
+        "OrderItem": "L78290719-V1",
+        "Period": "1",
+        "raw_update_time": "2025-12-08 11:31:42",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1990.0",
+        "InvoiceNo": "2_chrg_6606408me0m3f500fp4",
+        "OrderItem": "L79319556-V1",
+        "Period": "1",
+        "raw_update_time": "2025-12-11 10:19:11",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2700.04",
+        "InvoiceNo": "2_chrg_663a6o4ajg3snftxihe",
+        "OrderItem": "L77760989-V1",
+        "Period": "1",
+        "raw_update_time": "2025-12-19 09:25:37",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2020.0",
+        "InvoiceNo": "2_chrg_664tbhalfor22pkc22q",
+        "OrderItem": "L77939883-V1",
+        "Period": "1",
+        "raw_update_time": "2025-12-23 07:16:11",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2400.0",
+        "InvoiceNo": "2_chrg_6620oh1ifag0dqpxldw",
+        "OrderItem": "L79293316-V1",
+        "Period": "1",
+        "raw_update_time": "2025-12-16 11:56:33",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2170.0",
+        "InvoiceNo": "2_chrg_663luiej2p56dyfna1l",
+        "OrderItem": "L79305182-V1",
+        "Period": "1",
+        "raw_update_time": "2025-12-20 05:44:28",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2350.0",
+        "InvoiceNo": "2_chrg_664qi5omsbeh1pi8rc4",
+        "OrderItem": "L79369672-V1",
+        "Period": "1",
+        "raw_update_time": "2025-12-23 02:32:09",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2970.0",
+        "InvoiceNo": "2_chrg_665izs0nlrka7tinzfb",
+        "OrderItem": "L77770286-V1",
+        "Period": "1",
+        "raw_update_time": "2025-12-25 03:01:34",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1950.0",
+        "InvoiceNo": "2_chrg_664r9z9epexocs3m3b1",
+        "OrderItem": "L79368739-V1",
+        "Period": "1",
+        "raw_update_time": "2025-12-24 03:02:34",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "4200.18",
+        "InvoiceNo": "2_chrg_664rjtxmpbbvrvejvcg",
+        "OrderItem": "L77902124-V1",
+        "Period": "1",
+        "raw_update_time": "2025-12-23 04:20:51",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1888.87",
+        "InvoiceNo": "2_chrg_664v35f9bkjbjd5ifr6",
+        "OrderItem": "L77887594-V1",
+        "Period": "1",
+        "raw_update_time": "2025-12-23 10:23:03",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1850.0",
+        "InvoiceNo": "2_chrg_664e86q6cxkxnqv0se0",
+        "OrderItem": "L79379882-V1",
+        "Period": "1",
+        "raw_update_time": "2025-12-22 05:37:17",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2250.0",
+        "InvoiceNo": "2_chrg_665xts69blo2zdploxg",
+        "OrderItem": "L79337161-V1",
+        "Period": "1",
+        "raw_update_time": "2025-12-26 04:24:13",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1800.0",
+        "InvoiceNo": "2_chrg_6636ejvvqsq4vbhh9jb",
+        "OrderItem": "L79326837-V1",
+        "Period": "1",
+        "raw_update_time": "2025-12-19 08:01:12",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2350.0",
+        "InvoiceNo": "2_chrg_665j00ltg9h6fjix01j",
+        "OrderItem": "L79131897-V1",
+        "Period": "1",
+        "raw_update_time": "2025-12-25 03:01:42",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2220.0",
+        "InvoiceNo": "2_chrg_665y2g7pj3va862ma46",
+        "OrderItem": "L79383396-V1",
+        "Period": "1",
+        "raw_update_time": "2025-12-26 04:44:51",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2135.88",
+        "InvoiceNo": "2_chrg_6775i6mec5ysw20y34q",
+        "OrderItem": "L80317696-V1",
+        "Period": "1",
+        "raw_update_time": "2026-03-31 07:44:24",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2099.98",
+        "InvoiceNo": "2_chrg_662iwnni6iz7a72780e",
+        "OrderItem": "L79346906-V1",
+        "Period": "1",
+        "raw_update_time": "2025-12-17 10:47:43",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1083.35",
+        "InvoiceNo": "2_chrg_67n8jgzctquf8w8kirg",
+        "OrderItem": "L80305641-V1",
+        "Period": "1",
+        "raw_update_time": "2026-05-11 10:40:33",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2470.0",
+        "InvoiceNo": "2_chrg_660gspf5q575rh16gf8",
+        "OrderItem": "L79305074-V1",
+        "Period": "1",
+        "raw_update_time": "2025-12-12 04:29:33",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2280.93",
+        "InvoiceNo": "2_chrg_665ww67bcg3y1nvzbe8",
+        "OrderItem": "L79384548-V1",
+        "Period": "1",
+        "raw_update_time": "2025-12-26 02:44:00",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2043.17",
+        "InvoiceNo": "2_chrg_661rknma0sezrvn2g2q",
+        "OrderItem": "L78070298-V1",
+        "Period": "1",
+        "raw_update_time": "2025-12-15 12:39:38",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2864.43",
+        "InvoiceNo": "2_chrg_661lxxlguwcua2s7n7q",
+        "OrderItem": "L79331377-V1",
+        "Period": "1",
+        "raw_update_time": "2025-12-15 02:38:46",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1850.0",
+        "InvoiceNo": "2_chrg_665o3w5rregpf832wgu",
+        "OrderItem": "L79327992-V1",
+        "Period": "1",
+        "raw_update_time": "2025-12-25 12:00:16",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2042.63",
+        "InvoiceNo": "2_chrg_661zlvjcl0ikywnt2cu",
+        "OrderItem": "L77842056-V1",
+        "Period": "1",
+        "raw_update_time": "2025-12-16 07:39:54",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2226.66",
+        "InvoiceNo": "2_chrg_6660bzqcjl51s98rwcd",
+        "OrderItem": "L77426856-V1",
+        "Period": "1",
+        "raw_update_time": "2025-12-26 10:05:39",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2469.39",
+        "InvoiceNo": "2_chrg_663nmjqopfgsb62iq85",
+        "OrderItem": "L77841952-V1",
+        "Period": "1",
+        "raw_update_time": "2025-12-20 08:11:10",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2120.0",
+        "InvoiceNo": "2_chrg_662sv4iqh00z71kk5fw",
+        "OrderItem": "L79342833-V1",
+        "Period": "1",
+        "raw_update_time": "2025-12-18 03:48:25",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1930.0",
+        "InvoiceNo": "2_chrg_662eil0e0nzju4agxqy",
+        "OrderItem": "L79342818-V1",
+        "Period": "1",
+        "raw_update_time": "2025-12-17 03:18:52",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2550.02",
+        "InvoiceNo": "2_chrg_65zn9on12n2ddcr1wua",
+        "OrderItem": "L79312967-V1",
+        "Period": "1",
+        "raw_update_time": "2025-12-10 03:02:17",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2086.61",
+        "InvoiceNo": "2_chrg_660gh1ba1fvxx649t53",
+        "OrderItem": "L79321084-V1",
+        "Period": "1",
+        "raw_update_time": "2025-12-12 10:28:26",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2625.57",
+        "InvoiceNo": "2_chrg_662jam1y5blwku39zqt",
+        "OrderItem": "L79312952-V1",
+        "Period": "1",
+        "raw_update_time": "2025-12-17 11:28:40",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "3650.09",
+        "InvoiceNo": "2_chrg_661rah1khddn4ycq08z",
+        "OrderItem": "L79329663-V1",
+        "Period": "1",
+        "raw_update_time": "2025-12-15 12:01:36",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2880.01",
+        "InvoiceNo": "2_chrg_664r2bifuqcmn2qskxt",
+        "OrderItem": "L77902487-V1",
+        "Period": "1",
+        "raw_update_time": "2025-12-23 09:51:08",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1936.38",
+        "InvoiceNo": "2_chrg_662ecftt37lmbzh4fbt",
+        "OrderItem": "L78115399-V1",
+        "Period": "1",
+        "raw_update_time": "2025-12-17 03:01:18",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1992.77",
+        "InvoiceNo": "2_chrg_6621d0woljob43fmgog",
+        "OrderItem": "L79334831-V1",
+        "Period": "1",
+        "raw_update_time": "2025-12-16 05:08:15",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2081.58",
+        "InvoiceNo": "2_chrg_66289mvwp0e1gsq39ak",
+        "OrderItem": "L77842519-V1",
+        "Period": "1",
+        "raw_update_time": "2025-12-16 16:39:46",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1900.0",
+        "InvoiceNo": "2_chrg_665lnx050wktv8gb9mq",
+        "OrderItem": "L79325029-V1",
+        "Period": "1",
+        "raw_update_time": "2025-12-25 07:36:52",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2370.0",
+        "InvoiceNo": "2_chrg_664fl94qic85ttjrkcd",
+        "OrderItem": "L79367726-V1",
+        "Period": "1",
+        "raw_update_time": "2025-12-22 08:18:19",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2149.95",
+        "InvoiceNo": "2_chrg_661pslve5sikumlzp3n",
+        "OrderItem": "L79332731-V1",
+        "Period": "1",
+        "raw_update_time": "2025-12-15 09:11:08",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2099.98",
+        "InvoiceNo": "chrg_66f2gw4stkko9vc7v4x",
+        "OrderItem": "L79346906-V1",
+        "Period": "2",
+        "raw_update_time": "2026-01-18 12:27:59",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2400.0",
+        "InvoiceNo": "chrg_66g3m3mgwxewnjmhm7u",
+        "OrderItem": "L79293316-V1",
+        "Period": "2",
+        "raw_update_time": "2026-01-21 03:47:49",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1831.01",
+        "InvoiceNo": "chrg_66e4874fh2ly6qxdwrb",
+        "OrderItem": "L77833543-V1",
+        "Period": "2",
+        "raw_update_time": "2026-01-16 02:06:41",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1819.86",
+        "InvoiceNo": "chrg_66f1eqwjeo4wzutit3p",
+        "OrderItem": "L77852962-V1",
+        "Period": "2",
+        "raw_update_time": "2026-01-18 10:38:52",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2350.0",
+        "InvoiceNo": "chrg_66gu4rfeyzj17cnq4jo",
+        "OrderItem": "L79131897-V1",
+        "Period": "2",
+        "raw_update_time": "2026-01-23 00:57:42",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2022.3",
+        "InvoiceNo": "chrg_66gw2xpz142vu8kp022",
+        "OrderItem": "L77680280-V1",
+        "Period": "2",
+        "raw_update_time": "2026-01-23 04:18:18",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2625.57",
+        "InvoiceNo": "chrg_66gvdxlbz9uw1al0zw8",
+        "OrderItem": "L79312952-V1",
+        "Period": "2",
+        "raw_update_time": "2026-01-23 03:10:33",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1920.65",
+        "InvoiceNo": "chrg_66ejulht6sg35x6fc8i",
+        "OrderItem": "L77879228-V1",
+        "Period": "2",
+        "raw_update_time": "2026-01-17 04:42:50",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2864.43",
+        "InvoiceNo": "chrg_66g02inubjat6zvmhio",
+        "OrderItem": "L79369426-V1",
+        "Period": "2",
+        "raw_update_time": "2026-01-20 21:45:53",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2042.63",
+        "InvoiceNo": "chrg_66e74pevwrzesp51pov",
+        "OrderItem": "L77842056-V1",
+        "Period": "2",
+        "raw_update_time": "2026-01-16 13:58:42",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1800.0",
+        "InvoiceNo": "chrg_66jzz2sp59cp7v5v2px",
+        "OrderItem": "L79326837-V1",
+        "Period": "2",
+        "raw_update_time": "2026-01-31 03:02:33",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2370.0",
+        "InvoiceNo": "chrg_66ggm387g73gqkvt79t",
+        "OrderItem": "L79367726-V1",
+        "Period": "2",
+        "raw_update_time": "2026-01-22 05:12:14",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1083.33",
+        "InvoiceNo": "chrg_67zc8dqttlnvjerergl",
+        "OrderItem": "L80305641-V1",
+        "Period": "2",
+        "raw_update_time": "2026-06-11 09:29:38",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2180.0",
+        "InvoiceNo": "chrg_66focs4vvng1p8rx2zu",
+        "OrderItem": "L79352011-V1",
+        "Period": "2",
+        "raw_update_time": "2026-01-20 01:45:50",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1885.17",
+        "InvoiceNo": "chrg_66frkmugmvy6hw9rjux",
+        "OrderItem": "L79368552-V1",
+        "Period": "2",
+        "raw_update_time": "2026-01-20 07:14:52",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2300.0",
+        "InvoiceNo": "chrg_66ftf6rjeykp7rczeqj",
+        "OrderItem": "L78980730-V1",
+        "Period": "2",
+        "raw_update_time": "2026-01-20 10:23:43",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2081.58",
+        "InvoiceNo": "chrg_66ehf5sc2nlmd0nxa94",
+        "OrderItem": "L77842519-V1",
+        "Period": "2",
+        "raw_update_time": "2026-01-17 14:26:25",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2135.9",
+        "InvoiceNo": "chrg_67ix3rr637y50deypq5",
+        "OrderItem": "L80317696-V1",
+        "Period": "2",
+        "raw_update_time": "2026-04-30 09:44:11",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1950.0",
+        "InvoiceNo": "chrg_66g924og7x91pk1uwwq",
+        "OrderItem": "L78901743-V1",
+        "Period": "2",
+        "raw_update_time": "2026-01-21 13:05:01",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2300.0",
+        "InvoiceNo": "chrg_66jpkdvhdtxv7t0fc6h",
+        "OrderItem": "L79372740-V1",
+        "Period": "2",
+        "raw_update_time": "2026-01-30 09:16:51",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2550.02",
+        "InvoiceNo": "chrg_66ev4vd27v4xxceacsz",
+        "OrderItem": "L79312967-V1",
+        "Period": "2",
+        "raw_update_time": "2026-01-17 23:58:03",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1919.7",
+        "InvoiceNo": "chrg_66frasiwc2jyqrpznlo",
+        "OrderItem": "L79379882-V1",
+        "Period": "2",
+        "raw_update_time": "2026-01-20 06:47:05",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2900.13",
+        "InvoiceNo": "chrg_66dskuou0mjld2xz4gr",
+        "OrderItem": "L79071637-V1",
+        "Period": "2",
+        "raw_update_time": "2026-01-15 08:23:25",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1950.0",
+        "InvoiceNo": "chrg_66itd6aiku3tve0g176",
+        "OrderItem": "L79368739-V1",
+        "Period": "2",
+        "raw_update_time": "2026-01-28 02:25:58",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2170.07",
+        "InvoiceNo": "chrg_66czu0ao2l1wi5xrp4u",
+        "OrderItem": "L77943767-V1",
+        "Period": "2",
+        "raw_update_time": "2026-01-13 05:14:38",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1850.0",
+        "InvoiceNo": "chrg_66ieswfgsztcom8uhjb",
+        "OrderItem": "L79112971-V1",
+        "Period": "2",
+        "raw_update_time": "2026-01-27 01:34:55",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2755.04",
+        "InvoiceNo": "chrg_66gxyxmoht10cg5yd20",
+        "OrderItem": "L77920555-V1",
+        "Period": "2",
+        "raw_update_time": "2026-01-23 07:30:37",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2880.01",
+        "InvoiceNo": "chrg_66hfaypvuy47l05o1ni",
+        "OrderItem": "L77902487-V1",
+        "Period": "2",
+        "raw_update_time": "2026-01-24 13:04:16",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2469.39",
+        "InvoiceNo": "chrg_66fo91e5ak44qo50qro",
+        "OrderItem": "L77841952-V1",
+        "Period": "2",
+        "raw_update_time": "2026-01-20 01:35:41",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2938.94",
+        "InvoiceNo": "chrg_66ez1ewlvcw3ih9jk9b",
+        "OrderItem": "L79327908-V1",
+        "Period": "2",
+        "raw_update_time": "2026-01-18 06:37:16",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1918.08",
+        "InvoiceNo": "chrg_66m0mwjggkijvub7g6q",
+        "OrderItem": "L77897388-V1",
+        "Period": "2",
+        "raw_update_time": "2026-02-05 06:51:04",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2956.73",
+        "InvoiceNo": "chrg_66dqsqshqhkqzvpu18a",
+        "OrderItem": "L77832414-V1",
+        "Period": "2",
+        "raw_update_time": "2026-01-15 03:22:58",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2170.0",
+        "InvoiceNo": "chrg_66j20hu86hw2x5dizj1",
+        "OrderItem": "L79305182-V1",
+        "Period": "2",
+        "raw_update_time": "2026-01-28 17:06:54",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2700.0",
+        "InvoiceNo": "chrg_66e8191azjbd3u29mt1",
+        "OrderItem": "L79325329-V1",
+        "Period": "2",
+        "raw_update_time": "2026-01-16 08:35:02",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2273.67",
+        "InvoiceNo": "chrg_66k2vonnudxlwrx055g",
+        "OrderItem": "L77983511-V1",
+        "Period": "2",
+        "raw_update_time": "2026-01-31 08:03:41",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2280.0",
+        "InvoiceNo": "chrg_66tk1vroyyrnf015f1x",
+        "OrderItem": "L79379524-V1",
+        "Period": "2",
+        "raw_update_time": "2026-02-24 13:28:28",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2120.0",
+        "InvoiceNo": "chrg_66ejf8cz8xyo2usdbl3",
+        "OrderItem": "L79342833-V1",
+        "Period": "2",
+        "raw_update_time": "2026-01-17 04:00:12",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1787.65",
+        "InvoiceNo": "chrg_66feic5ysfknexa8gv9",
+        "OrderItem": "L79332731-V1",
+        "Period": "2",
+        "raw_update_time": "2026-01-19 08:58:32",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "4200.64",
+        "InvoiceNo": "chrg_67tsf6aojsxi53ijqif",
+        "OrderItem": "L80673380-V1",
+        "Period": "2",
+        "raw_update_time": "2026-05-28 04:42:47",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1850.0",
+        "InvoiceNo": "chrg_66hat9po5prl7d1y7wl",
+        "OrderItem": "L79359671-V1",
+        "Period": "2",
+        "raw_update_time": "2026-01-24 05:23:54",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2656.57",
+        "InvoiceNo": "chrg_66fw4hwozkhdsoq5l8i",
+        "OrderItem": "L79357058-V1",
+        "Period": "2",
+        "raw_update_time": "2026-01-20 15:00:17",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2280.0",
+        "InvoiceNo": "chrg_66gu0jaq7jss4a28pah",
+        "OrderItem": "L79383396-V1",
+        "Period": "2",
+        "raw_update_time": "2026-01-23 00:45:48",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1950.0",
+        "InvoiceNo": "chrg_66ulqhs898ouw98q29k",
+        "OrderItem": "L79368739-V1",
+        "Period": "3",
+        "raw_update_time": "2026-02-27 05:41:47",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "4200.18",
+        "InvoiceNo": "chrg_66tz2prq8s7gx5zw7cw",
+        "OrderItem": "L77902124-V1",
+        "Period": "3",
+        "raw_update_time": "2026-02-25 15:04:12",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2280.93",
+        "InvoiceNo": "chrg_66uk340ql75prl8fmje",
+        "OrderItem": "L79384548-V1",
+        "Period": "3",
+        "raw_update_time": "2026-02-27 02:53:33",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1918.08",
+        "InvoiceNo": "chrg_66xumqrmi66f62rm7b2",
+        "OrderItem": "L77897388-V1",
+        "Period": "3",
+        "raw_update_time": "2026-03-07 12:56:30",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2864.43",
+        "InvoiceNo": "chrg_66p2rerconurenk35k0",
+        "OrderItem": "L79331377-V1",
+        "Period": "3",
+        "raw_update_time": "2026-02-13 02:33:08",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2900.13",
+        "InvoiceNo": "chrg_66qpwf61mqi9vx39n6a",
+        "OrderItem": "L79071637-V1",
+        "Period": "3",
+        "raw_update_time": "2026-02-17 07:21:25",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "3299.99",
+        "InvoiceNo": "chrg_66pytm7duxgb1iianyg",
+        "OrderItem": "L79329562-V1",
+        "Period": "3",
+        "raw_update_time": "2026-02-15 09:12:04",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1860.0",
+        "InvoiceNo": "chrg_66qaxxgj7m7z6v1vjoo",
+        "OrderItem": "L79365147-V1",
+        "Period": "3",
+        "raw_update_time": "2026-02-16 05:52:13",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2099.98",
+        "InvoiceNo": "chrg_66qiuftrxv1kg6yvi0d",
+        "OrderItem": "L79346906-V1",
+        "Period": "3",
+        "raw_update_time": "2026-02-16 19:19:40",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2370.0",
+        "InvoiceNo": "chrg_66sxw6n55q8ix7awoth",
+        "OrderItem": "L79367726-V1",
+        "Period": "3",
+        "raw_update_time": "2026-02-22 23:42:00",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1888.87",
+        "InvoiceNo": "chrg_66sqf7vrdlyafvlp4el",
+        "OrderItem": "L77887594-V1",
+        "Period": "3",
+        "raw_update_time": "2026-02-22 11:06:14",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2469.39",
+        "InvoiceNo": "chrg_66rwezfez4l3six8jlv",
+        "OrderItem": "L77841952-V1",
+        "Period": "3",
+        "raw_update_time": "2026-02-20 07:48:50",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1800.0",
+        "InvoiceNo": "chrg_66upi3psxmb5vzzl9hz",
+        "OrderItem": "L79326837-V1",
+        "Period": "3",
+        "raw_update_time": "2026-02-27 12:07:39",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1885.17",
+        "InvoiceNo": "chrg_66qnj8duf29zc89zh81",
+        "OrderItem": "L79368552-V1",
+        "Period": "3",
+        "raw_update_time": "2026-02-17 03:19:29",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2894.96",
+        "InvoiceNo": "chrg_66q8jskuo1uxy24pruh",
+        "OrderItem": "L79266659-V1",
+        "Period": "3",
+        "raw_update_time": "2026-02-16 01:46:50",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2022.3",
+        "InvoiceNo": "chrg_66s8jk3y1e8ih92zrei",
+        "OrderItem": "L77680280-V1",
+        "Period": "3",
+        "raw_update_time": "2026-02-21 04:29:26",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2081.58",
+        "InvoiceNo": "chrg_66qunf3a9hryhta6jic",
+        "OrderItem": "L77842519-V1",
+        "Period": "3",
+        "raw_update_time": "2026-02-17 15:27:23",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1990.0",
+        "InvoiceNo": "chrg_66opmmt614zm4u1s2cq",
+        "OrderItem": "L79319556-V1",
+        "Period": "3",
+        "raw_update_time": "2026-02-12 04:10:36",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2042.63",
+        "InvoiceNo": "chrg_66qtkzgb6sikc2ez0b2",
+        "OrderItem": "L77842056-V1",
+        "Period": "3",
+        "raw_update_time": "2026-02-17 13:42:04",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1950.0",
+        "InvoiceNo": "chrg_66rzyzf9f7ll3bew8hn",
+        "OrderItem": "L78901743-V1",
+        "Period": "3",
+        "raw_update_time": "2026-02-20 13:53:03",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1928.6",
+        "InvoiceNo": "chrg_66ny4id0ruorpw4e5i9",
+        "OrderItem": "L78290719-V1",
+        "Period": "3",
+        "raw_update_time": "2026-02-10 05:19:24",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2219.93",
+        "InvoiceNo": "chrg_66qc9su75ve85nuafxo",
+        "OrderItem": "L79333640-V1",
+        "Period": "3",
+        "raw_update_time": "2026-02-17 07:20:52",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2200.0",
+        "InvoiceNo": "chrg_66q8hgg7z2vrqz02k8r",
+        "OrderItem": "L79335013-V1",
+        "Period": "3",
+        "raw_update_time": "2026-02-16 01:40:24",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2769.05",
+        "InvoiceNo": "chrg_66t1osj8jbco6xd1348",
+        "OrderItem": "L79357058-V1",
+        "Period": "3",
+        "raw_update_time": "2026-02-23 06:10:47",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2250.0",
+        "InvoiceNo": "chrg_670shv3bz0sc8cqnfbi",
+        "OrderItem": "L79337161-V1",
+        "Period": "3",
+        "raw_update_time": "2026-03-15 01:22:54",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2350.0",
+        "InvoiceNo": "chrg_66tqd7w25egzunwaj7y",
+        "OrderItem": "L79131897-V1",
+        "Period": "3",
+        "raw_update_time": "2026-02-25 00:13:35",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1879.99",
+        "InvoiceNo": "chrg_66saz8kzpzrxdusmqcs",
+        "OrderItem": "L77831230-V1",
+        "Period": "3",
+        "raw_update_time": "2026-02-21 10:05:30",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1900.0",
+        "InvoiceNo": "chrg_66q9nxkeh4y4aqs9p3s",
+        "OrderItem": "L79332913-V1",
+        "Period": "3",
+        "raw_update_time": "2026-02-16 05:28:08",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1850.0",
+        "InvoiceNo": "chrg_66rzqh5zd6lp0c0pnvu",
+        "OrderItem": "L79112971-V1",
+        "Period": "3",
+        "raw_update_time": "2026-02-20 13:29:25",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1850.0",
+        "InvoiceNo": "chrg_66spbhpgk11ynjvswev",
+        "OrderItem": "L79322515-V1",
+        "Period": "3",
+        "raw_update_time": "2026-02-22 09:05:35",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2700.0",
+        "InvoiceNo": "chrg_66s9zi7g8z0p1c8ryu0",
+        "OrderItem": "L79264923-V1",
+        "Period": "3",
+        "raw_update_time": "2026-02-21 06:57:54",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1831.01",
+        "InvoiceNo": "chrg_66qp0vlfvpfajvrco6e",
+        "OrderItem": "L77833543-V1",
+        "Period": "3",
+        "raw_update_time": "2026-02-17 11:47:02",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2625.57",
+        "InvoiceNo": "chrg_66tuv8jfi9iex6mfkck",
+        "OrderItem": "L79312952-V1",
+        "Period": "3",
+        "raw_update_time": "2026-02-25 07:55:38",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1930.0",
+        "InvoiceNo": "chrg_66tegwgd39burttf7k2",
+        "OrderItem": "L79342818-V1",
+        "Period": "3",
+        "raw_update_time": "2026-02-24 03:57:03",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1936.38",
+        "InvoiceNo": "chrg_66r3fzmh70sn1teq23e",
+        "OrderItem": "L78115399-V1",
+        "Period": "3",
+        "raw_update_time": "2026-02-18 06:26:05",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1919.7",
+        "InvoiceNo": "chrg_66rwyhlo01eer6s0zxd",
+        "OrderItem": "L79379882-V1",
+        "Period": "3",
+        "raw_update_time": "2026-02-20 08:45:28",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2956.73",
+        "InvoiceNo": "chrg_66qpgndpvsrzuq7urca",
+        "OrderItem": "L77832414-V1",
+        "Period": "3",
+        "raw_update_time": "2026-02-17 06:36:43",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2226.66",
+        "InvoiceNo": "chrg_66ts8k26t7yyud66jqn",
+        "OrderItem": "L77426856-V1",
+        "Period": "3",
+        "raw_update_time": "2026-02-25 03:26:02",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1920.65",
+        "InvoiceNo": "chrg_66r45chl18a5fgtb4o2",
+        "OrderItem": "L77879228-V1",
+        "Period": "3",
+        "raw_update_time": "2026-02-18 07:38:21",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2565.22",
+        "InvoiceNo": "chrg_66tu89h0s3autywtq5g",
+        "OrderItem": "L77942102-V1",
+        "Period": "3",
+        "raw_update_time": "2026-02-25 06:49:48",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2625.11",
+        "InvoiceNo": "chrg_66u83h0d6x5fknc63by",
+        "OrderItem": "L78118535-V1",
+        "Period": "3",
+        "raw_update_time": "2026-02-26 06:28:20",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2170.07",
+        "InvoiceNo": "chrg_66oq2td6lvy22lsvtd7",
+        "OrderItem": "L77943767-V1",
+        "Period": "3",
+        "raw_update_time": "2026-02-12 04:56:08",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2970.0",
+        "InvoiceNo": "chrg_66u6fg3qyqqoholj3mr",
+        "OrderItem": "L77770286-V1",
+        "Period": "3",
+        "raw_update_time": "2026-02-26 03:37:46",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1900.0",
+        "InvoiceNo": "chrg_66skwfailc03c57pjpc",
+        "OrderItem": "L79325029-V1",
+        "Period": "3",
+        "raw_update_time": "2026-02-22 01:34:01",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2220.0",
+        "InvoiceNo": "chrg_66uk0hugpvmt9ojix9p",
+        "OrderItem": "L79371835-V1",
+        "Period": "3",
+        "raw_update_time": "2026-02-27 02:46:59",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2273.67",
+        "InvoiceNo": "chrg_66vr3akpey9ok4g7lss",
+        "OrderItem": "L77983511-V1",
+        "Period": "3",
+        "raw_update_time": "2026-03-02 04:11:02",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1968.8",
+        "InvoiceNo": "chrg_66pjulu6dytsvwxd6ft",
+        "OrderItem": "L79332731-V1",
+        "Period": "3",
+        "raw_update_time": "2026-02-14 07:43:04",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2625.57",
+        "InvoiceNo": "chrg_674p8nnpjxz9y0sncfm",
+        "OrderItem": "L79312952-V1",
+        "Period": "4",
+        "raw_update_time": "2026-03-25 01:16:49",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1819.86",
+        "InvoiceNo": "chrg_671yyn9wmankucobrrm",
+        "OrderItem": "L77852962-V1",
+        "Period": "4",
+        "raw_update_time": "2026-03-18 01:45:51",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1919.7",
+        "InvoiceNo": "chrg_674fo0jgvtklt8x1thk",
+        "OrderItem": "L79379882-V1",
+        "Period": "4",
+        "raw_update_time": "2026-03-24 08:57:56",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2520.0",
+        "InvoiceNo": "chrg_6734luo066quyuf7zfs",
+        "OrderItem": "L79358642-V1",
+        "Period": "4",
+        "raw_update_time": "2026-03-21 00:45:44",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2864.43",
+        "InvoiceNo": "chrg_6740rstwo0u8qgdswop",
+        "OrderItem": "L79369426-V1",
+        "Period": "4",
+        "raw_update_time": "2026-03-23 07:34:58",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2018.77",
+        "InvoiceNo": "chrg_670z2si7q3tlkm1bzvv",
+        "OrderItem": "L77914090-V1",
+        "Period": "4",
+        "raw_update_time": "2026-03-15 12:36:38",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2220.0",
+        "InvoiceNo": "chrg_6754hl126uj8stxufao",
+        "OrderItem": "L79389582-V1",
+        "Period": "4",
+        "raw_update_time": "2026-03-26 03:16:24",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1950.0",
+        "InvoiceNo": "chrg_67722chyi86hb5gsisg",
+        "OrderItem": "L79368739-V1",
+        "Period": "4",
+        "raw_update_time": "2026-03-31 01:51:07",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2280.93",
+        "InvoiceNo": "chrg_675khx3lhymim71afqh",
+        "OrderItem": "L79384548-V1",
+        "Period": "4",
+        "raw_update_time": "2026-03-27 06:32:57",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2150.06",
+        "InvoiceNo": "chrg_672fxklucbb99gg7q3l",
+        "OrderItem": "L77830918-V1",
+        "Period": "4",
+        "raw_update_time": "2026-03-19 06:41:40",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1888.87",
+        "InvoiceNo": "chrg_673p7z6ne426eb8ds01",
+        "OrderItem": "L77887594-V1",
+        "Period": "4",
+        "raw_update_time": "2026-03-22 11:53:27",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2550.0",
+        "InvoiceNo": "chrg_671yir3kjetcidf4tym",
+        "OrderItem": "L79358147-V1",
+        "Period": "4",
+        "raw_update_time": "2026-03-18 01:01:02",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1850.0",
+        "InvoiceNo": "chrg_672rda5roxkmpugxu6q",
+        "OrderItem": "L79359671-V1",
+        "Period": "4",
+        "raw_update_time": "2026-03-20 02:11:01",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1950.0",
+        "InvoiceNo": "chrg_672ysikuszl0n3gu9nh",
+        "OrderItem": "L78901743-V1",
+        "Period": "4",
+        "raw_update_time": "2026-03-20 14:50:30",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2625.11",
+        "InvoiceNo": "chrg_67712t2vxtcmeg2nrvv",
+        "OrderItem": "L78118535-V1",
+        "Period": "4",
+        "raw_update_time": "2026-03-31 00:10:37",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2170.07",
+        "InvoiceNo": "chrg_670fbzz7kdrl1eser32",
+        "OrderItem": "L77943767-V1",
+        "Period": "4",
+        "raw_update_time": "2026-03-14 02:57:35",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2370.0",
+        "InvoiceNo": "chrg_673wlth8q4wmtqugi83",
+        "OrderItem": "L79367726-V1",
+        "Period": "4",
+        "raw_update_time": "2026-03-23 00:28:28",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "3650.09",
+        "InvoiceNo": "chrg_674qzyxhvkycj19lqd7",
+        "OrderItem": "L79329663-V1",
+        "Period": "4",
+        "raw_update_time": "2026-03-25 04:16:32",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2350.0",
+        "InvoiceNo": "chrg_6743rpsfuor4m64jxwx",
+        "OrderItem": "L79369672-V1",
+        "Period": "4",
+        "raw_update_time": "2026-03-23 12:41:07",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2894.96",
+        "InvoiceNo": "chrg_67175uiaviiz6rb3h2v",
+        "OrderItem": "L79266659-V1",
+        "Period": "4",
+        "raw_update_time": "2026-03-16 02:22:45",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1850.0",
+        "InvoiceNo": "chrg_674vn40rg31mw0h9wi4",
+        "OrderItem": "L79327992-V1",
+        "Period": "4",
+        "raw_update_time": "2026-03-25 12:11:07",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2022.3",
+        "InvoiceNo": "chrg_674ctr2bkx7rb0iz7yb",
+        "OrderItem": "L77680280-V1",
+        "Period": "4",
+        "raw_update_time": "2026-03-24 04:06:40",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2700.0",
+        "InvoiceNo": "chrg_671lx9ljiw8wczugnms",
+        "OrderItem": "L79325329-V1",
+        "Period": "4",
+        "raw_update_time": "2026-03-17 03:32:23",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2043.17",
+        "InvoiceNo": "chrg_67q8kxno1jnh3snaoyu",
+        "OrderItem": "L78070298-V1",
+        "Period": "4",
+        "raw_update_time": "2026-05-19 02:49:27",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2081.58",
+        "InvoiceNo": "chrg_6719b5rygq27nf1fbwl",
+        "OrderItem": "L77842519-V1",
+        "Period": "4",
+        "raw_update_time": "2026-03-16 06:02:40",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2170.0",
+        "InvoiceNo": "chrg_6776899qv49m83pxrj5",
+        "OrderItem": "L79305182-V1",
+        "Period": "4",
+        "raw_update_time": "2026-03-31 08:57:31",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1870.0",
+        "InvoiceNo": "chrg_672kp7nlffqybzbh3ej",
+        "OrderItem": "L79325214-V1",
+        "Period": "4",
+        "raw_update_time": "2026-03-19 14:48:27",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1806.91",
+        "InvoiceNo": "chrg_671lnepd5hxiivxl4wx",
+        "OrderItem": "L77837553-V1",
+        "Period": "4",
+        "raw_update_time": "2026-03-17 03:07:14",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2099.98",
+        "InvoiceNo": "chrg_6703banbcfu78dh36be",
+        "OrderItem": "L79346906-V1",
+        "Period": "4",
+        "raw_update_time": "2026-03-13 06:27:33",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2300.0",
+        "InvoiceNo": "chrg_672wb12hwc212p1qzeg",
+        "OrderItem": "L78980730-V1",
+        "Period": "4",
+        "raw_update_time": "2026-03-20 10:35:58",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1920.65",
+        "InvoiceNo": "chrg_66yg3frc5ziup5xh2zu",
+        "OrderItem": "L77879228-V1",
+        "Period": "4",
+        "raw_update_time": "2026-03-09 01:31:26",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "3299.99",
+        "InvoiceNo": "chrg_6710vcnq05owf521z7o",
+        "OrderItem": "L79329562-V1",
+        "Period": "4",
+        "raw_update_time": "2026-03-15 15:39:36",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2956.73",
+        "InvoiceNo": "chrg_671yzx2emsoqpogdp0z",
+        "OrderItem": "L77832414-V1",
+        "Period": "4",
+        "raw_update_time": "2026-03-18 01:49:34",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2755.04",
+        "InvoiceNo": "chrg_674h2tjylas66tsztdz",
+        "OrderItem": "L77920555-V1",
+        "Period": "4",
+        "raw_update_time": "2026-03-24 11:21:41",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1885.17",
+        "InvoiceNo": "chrg_674bo8j660usyiirxfe",
+        "OrderItem": "L79368552-V1",
+        "Period": "4",
+        "raw_update_time": "2026-03-24 02:09:44",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2220.0",
+        "InvoiceNo": "chrg_670f9q8dmzqphvenxh6",
+        "OrderItem": "L79307435-V1",
+        "Period": "4",
+        "raw_update_time": "2026-03-14 02:52:13",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2769.05",
+        "InvoiceNo": "chrg_672wbbb6ifzjny9a4w8",
+        "OrderItem": "L79357058-V1",
+        "Period": "4",
+        "raw_update_time": "2026-03-20 10:36:33",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1930.0",
+        "InvoiceNo": "chrg_67228n3a1izyts7hkhz",
+        "OrderItem": "L79342818-V1",
+        "Period": "4",
+        "raw_update_time": "2026-03-18 07:20:59",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2469.39",
+        "InvoiceNo": "chrg_672uf7a1bznw5lcac5m",
+        "OrderItem": "L77841952-V1",
+        "Period": "4",
+        "raw_update_time": "2026-03-20 07:23:05",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2300.0",
+        "InvoiceNo": "chrg_675a59cqzfy8lrgax4h",
+        "OrderItem": "L79372740-V1",
+        "Period": "4",
+        "raw_update_time": "2026-03-26 12:54:37",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1919.7",
+        "InvoiceNo": "chrg_67g6sstyxj56uhu5z89",
+        "OrderItem": "L79379882-V1",
+        "Period": "5",
+        "raw_update_time": "2026-04-23 10:10:59",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2280.93",
+        "InvoiceNo": "chrg_67hmlc3md4wdtwyl3ck",
+        "OrderItem": "L79384548-V1",
+        "Period": "5",
+        "raw_update_time": "2026-04-27 02:26:25",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2170.07",
+        "InvoiceNo": "chrg_67bg8ew2m0x5mq329ew",
+        "OrderItem": "L77943767-V1",
+        "Period": "5",
+        "raw_update_time": "2026-04-11 07:27:23",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1870.0",
+        "InvoiceNo": "chrg_67d8x1gh38884gngyqw",
+        "OrderItem": "L74803702-V1",
+        "Period": "5",
+        "raw_update_time": "2026-04-15 21:41:52",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1920.65",
+        "InvoiceNo": "chrg_67ddo5ipg2qp3jb0j0g",
+        "OrderItem": "L77879228-V1",
+        "Period": "5",
+        "raw_update_time": "2026-04-16 05:50:21",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1860.0",
+        "InvoiceNo": "chrg_67f151cc2iirg3vpvx4",
+        "OrderItem": "L79365147-V1",
+        "Period": "5",
+        "raw_update_time": "2026-04-20 12:03:33",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2956.73",
+        "InvoiceNo": "chrg_67fthv2w7dixqbr6n1d",
+        "OrderItem": "L77832414-V1",
+        "Period": "5",
+        "raw_update_time": "2026-04-22 11:29:28",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2250.0",
+        "InvoiceNo": "chrg_67oni8n3eoz7rw7livc",
+        "OrderItem": "L79337161-V1",
+        "Period": "5",
+        "raw_update_time": "2026-05-15 01:32:57",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2864.43",
+        "InvoiceNo": "chrg_67gw9mxmiolff9cfxsu",
+        "OrderItem": "L79369426-V1",
+        "Period": "5",
+        "raw_update_time": "2026-04-25 05:34:29",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1819.86",
+        "InvoiceNo": "chrg_67e4e1qyq4kyam1mnl2",
+        "OrderItem": "L77852962-V1",
+        "Period": "5",
+        "raw_update_time": "2026-04-18 03:20:18",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2220.0",
+        "InvoiceNo": "chrg_67hc61mco9ci5sv2juc",
+        "OrderItem": "L79389582-V1",
+        "Period": "5",
+        "raw_update_time": "2026-04-26 08:41:27",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1850.0",
+        "InvoiceNo": "chrg_67g9g5djbpt8yftmj43",
+        "OrderItem": "L79322515-V1",
+        "Period": "5",
+        "raw_update_time": "2026-04-23 23:30:20",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2370.0",
+        "InvoiceNo": "chrg_67fekb9ebky12m3kihx",
+        "OrderItem": "L79367726-V1",
+        "Period": "5",
+        "raw_update_time": "2026-04-21 10:02:29",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2700.04",
+        "InvoiceNo": "chrg_67g2mtagyb2gcvo2d6k",
+        "OrderItem": "L77760989-V1",
+        "Period": "5",
+        "raw_update_time": "2026-04-23 05:52:32",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1850.0",
+        "InvoiceNo": "chrg_67hanai5j8q3zfymhsj",
+        "OrderItem": "L79327992-V1",
+        "Period": "5",
+        "raw_update_time": "2026-04-26 06:04:43",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2769.05",
+        "InvoiceNo": "chrg_67g4bgevgfek379pvjw",
+        "OrderItem": "L79357058-V1",
+        "Period": "5",
+        "raw_update_time": "2026-04-23 05:56:17",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2700.0",
+        "InvoiceNo": "chrg_67ena9h9orwllvk6w1l",
+        "OrderItem": "L79325329-V1",
+        "Period": "5",
+        "raw_update_time": "2026-04-19 11:32:55",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2938.94",
+        "InvoiceNo": "chrg_67e3juljrwl3ppsvg61",
+        "OrderItem": "L79327908-V1",
+        "Period": "5",
+        "raw_update_time": "2026-04-18 01:54:34",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1850.0",
+        "InvoiceNo": "chrg_67ghbtocyvi6p26uuba",
+        "OrderItem": "L79112971-V1",
+        "Period": "5",
+        "raw_update_time": "2026-04-24 04:06:45",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2700.0",
+        "InvoiceNo": "chrg_67fcnor3te01lz7vd92",
+        "OrderItem": "L79264923-V1",
+        "Period": "5",
+        "raw_update_time": "2026-04-21 06:48:19",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2550.0",
+        "InvoiceNo": "chrg_67epid2vypqphiqv8lo",
+        "OrderItem": "L79358147-V1",
+        "Period": "5",
+        "raw_update_time": "2026-04-19 15:20:46",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2220.0",
+        "InvoiceNo": "chrg_67btl7ftrl48rqamljd",
+        "OrderItem": "L79307435-V1",
+        "Period": "5",
+        "raw_update_time": "2026-04-12 06:15:18",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1870.0",
+        "InvoiceNo": "chrg_67gj7kq5viid9trtm4k",
+        "OrderItem": "L79325214-V1",
+        "Period": "5",
+        "raw_update_time": "2026-04-24 12:22:38",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2520.0",
+        "InvoiceNo": "chrg_67f2m7oeg2r9yaxssfh",
+        "OrderItem": "L79358642-V1",
+        "Period": "5",
+        "raw_update_time": "2026-04-20 16:07:20",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1806.91",
+        "InvoiceNo": "chrg_67dxlfzigdojzno0ix0",
+        "OrderItem": "L77837553-V1",
+        "Period": "5",
+        "raw_update_time": "2026-04-17 15:45:14",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2042.63",
+        "InvoiceNo": "chrg_67e75ww0vyl1sv1ky35",
+        "OrderItem": "L77842056-V1",
+        "Period": "5",
+        "raw_update_time": "2026-04-18 08:06:43",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2894.96",
+        "InvoiceNo": "chrg_67dvizzbf7sdpcu7kvi",
+        "OrderItem": "L79266659-V1",
+        "Period": "5",
+        "raw_update_time": "2026-04-17 12:14:41",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1928.6",
+        "InvoiceNo": "chrg_67bj6lm0ecv1y75dsce",
+        "OrderItem": "L78290719-V1",
+        "Period": "5",
+        "raw_update_time": "2026-04-11 12:28:32",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2300.0",
+        "InvoiceNo": "chrg_67ezcbi6livrrne9sgj",
+        "OrderItem": "L78980730-V1",
+        "Period": "5",
+        "raw_update_time": "2026-04-20 08:05:43",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2755.04",
+        "InvoiceNo": "chrg_67eyc7si4b7fqn5kgqt",
+        "OrderItem": "L77920555-V1",
+        "Period": "5",
+        "raw_update_time": "2026-04-20 06:24:03",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2864.43",
+        "InvoiceNo": "chrg_67azzqrmx7do5lawlcg",
+        "OrderItem": "L79331377-V1",
+        "Period": "5",
+        "raw_update_time": "2026-04-10 03:46:18",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2150.06",
+        "InvoiceNo": "chrg_67ffkeam6w2akwkq1yz",
+        "OrderItem": "L77830918-V1",
+        "Period": "5",
+        "raw_update_time": "2026-04-21 11:44:52",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2625.11",
+        "InvoiceNo": "chrg_67h2fl1xw0bzsv16pio",
+        "OrderItem": "L78118535-V1",
+        "Period": "5",
+        "raw_update_time": "2026-04-25 16:05:40",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2565.22",
+        "InvoiceNo": "chrg_67gvsz74j0ao7qm39a8",
+        "OrderItem": "L77942102-V1",
+        "Period": "5",
+        "raw_update_time": "2026-04-25 04:47:44",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1850.0",
+        "InvoiceNo": "chrg_67tedr6vy7hdxyiliv3",
+        "OrderItem": "L79112971-V1",
+        "Period": "6",
+        "raw_update_time": "2026-05-27 04:46:36",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2220.0",
+        "InvoiceNo": "chrg_67teshui7023p4d3pyy",
+        "OrderItem": "L79371835-V1",
+        "Period": "6",
+        "raw_update_time": "2026-05-27 05:29:16",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2232.56",
+        "InvoiceNo": "chrg_67gkmnhep8bneggqu6g",
+        "OrderItem": "L77916481-V1",
+        "Period": "6",
+        "raw_update_time": "2026-04-24 09:43:55",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2170.0",
+        "InvoiceNo": "chrg_67u9lh1n4bawsoz7guq",
+        "OrderItem": "L79305182-V1",
+        "Period": "6",
+        "raw_update_time": "2026-05-29 09:59:13",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2550.02",
+        "InvoiceNo": "chrg_67ntpk8lnmyamw2sua8",
+        "OrderItem": "L79312967-V1",
+        "Period": "6",
+        "raw_update_time": "2026-05-12 22:44:36",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2469.39",
+        "InvoiceNo": "chrg_67qqw5scclke9kn1faf",
+        "OrderItem": "L77841952-V1",
+        "Period": "6",
+        "raw_update_time": "2026-05-20 10:04:51",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2700.0",
+        "InvoiceNo": "chrg_67rg6umanlyrduzb0os",
+        "OrderItem": "L79264923-V1",
+        "Period": "6",
+        "raw_update_time": "2026-05-22 05:08:40",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2864.43",
+        "InvoiceNo": "chrg_67slkwvufu1meybqzsd",
+        "OrderItem": "L79369426-V1",
+        "Period": "6",
+        "raw_update_time": "2026-05-25 03:41:32",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2625.57",
+        "InvoiceNo": "chrg_67so7wrlrp63a5t96qy",
+        "OrderItem": "L79312952-V1",
+        "Period": "6",
+        "raw_update_time": "2026-05-25 08:13:23",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2550.0",
+        "InvoiceNo": "chrg_67qlx39mzzkw8f4qohq",
+        "OrderItem": "L79358147-V1",
+        "Period": "6",
+        "raw_update_time": "2026-05-20 01:32:23",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2226.66",
+        "InvoiceNo": "chrg_67sxcfekvxzn1npigob",
+        "OrderItem": "L77426856-V1",
+        "Period": "6",
+        "raw_update_time": "2026-05-25 23:44:48",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2880.01",
+        "InvoiceNo": "chrg_67tcbpleg3gt1wumjew",
+        "OrderItem": "L77902487-V1",
+        "Period": "6",
+        "raw_update_time": "2026-05-27 01:16:32",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1928.6",
+        "InvoiceNo": "chrg_67o3xflarw74onwnjgt",
+        "OrderItem": "L78290719-V1",
+        "Period": "6",
+        "raw_update_time": "2026-05-16 09:25:14",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1879.99",
+        "InvoiceNo": "chrg_67r3aoarcyw9zo3f0vu",
+        "OrderItem": "L77831230-V1",
+        "Period": "6",
+        "raw_update_time": "2026-05-22 02:21:54",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2970.0",
+        "InvoiceNo": "chrg_67sizdo4x0pzgnyffj0",
+        "OrderItem": "L77770286-V1",
+        "Period": "6",
+        "raw_update_time": "2026-05-24 23:15:11",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1930.0",
+        "InvoiceNo": "chrg_67mucwx0epqow3jvccj",
+        "OrderItem": "L79342818-V1",
+        "Period": "6",
+        "raw_update_time": "2026-05-10 10:29:18",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2280.93",
+        "InvoiceNo": "chrg_67tiafzsm0t7m28i35y",
+        "OrderItem": "L79384548-V1",
+        "Period": "6",
+        "raw_update_time": "2026-05-27 11:26:12",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2370.0",
+        "InvoiceNo": "chrg_67rckquoql7gdsxublk",
+        "OrderItem": "L79367726-V1",
+        "Period": "6",
+        "raw_update_time": "2026-05-21 22:58:40",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2267.0",
+        "InvoiceNo": "chrg_681qo7gpvnqrmer07dk",
+        "OrderItem": "L79322265-V1",
+        "Period": "6",
+        "raw_update_time": "2026-06-17 12:37:36",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2170.07",
+        "InvoiceNo": "chrg_67nzh5s52xo6hpae4p6",
+        "OrderItem": "L77943767-V1",
+        "Period": "6",
+        "raw_update_time": "2026-05-13 08:34:33",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2200.0",
+        "InvoiceNo": "chrg_67nxlxwux8ys7dbfu4a",
+        "OrderItem": "L79335013-V1",
+        "Period": "6",
+        "raw_update_time": "2026-05-13 05:23:30",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2520.0",
+        "InvoiceNo": "chrg_67qtxt7d9gcbvfulpaw",
+        "OrderItem": "L79358642-V1",
+        "Period": "6",
+        "raw_update_time": "2026-05-20 15:12:54",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1870.0",
+        "InvoiceNo": "chrg_67p3d783mgl181z5dbl",
+        "OrderItem": "L74803702-V1",
+        "Period": "6",
+        "raw_update_time": "2026-05-16 04:34:34",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2769.05",
+        "InvoiceNo": "chrg_67qguucvrxdi1apuusk",
+        "OrderItem": "L79357058-V1",
+        "Period": "6",
+        "raw_update_time": "2026-05-19 16:54:32",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2565.22",
+        "InvoiceNo": "chrg_67sjymon10l2g9ufvl2",
+        "OrderItem": "L77942102-V1",
+        "Period": "6",
+        "raw_update_time": "2026-05-25 00:55:48",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2273.67",
+        "InvoiceNo": "chrg_67tr3jd7ei75ff1uj3d",
+        "OrderItem": "L77983511-V1",
+        "Period": "6",
+        "raw_update_time": "2026-05-28 02:26:56",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2900.13",
+        "InvoiceNo": "chrg_67lusnjklol5dgc08j2",
+        "OrderItem": "L79071637-V1",
+        "Period": "6",
+        "raw_update_time": "2026-05-07 21:51:59",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2020.0",
+        "InvoiceNo": "chrg_67rzrfope1cm0b1u4v3",
+        "OrderItem": "L77939883-V1",
+        "Period": "6",
+        "raw_update_time": "2026-05-23 14:29:54",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2300.0",
+        "InvoiceNo": "chrg_67qtxy9ala25zxjg44m",
+        "OrderItem": "L78980730-V1",
+        "Period": "6",
+        "raw_update_time": "2026-05-20 15:48:21",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2280.0",
+        "InvoiceNo": "chrg_684wcgxvzy1yknic8hu",
+        "OrderItem": "L79379524-V1",
+        "Period": "6",
+        "raw_update_time": "2026-06-25 14:21:48",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2700.0",
+        "InvoiceNo": "chrg_67r5clu5nvlqvi3rkpv",
+        "OrderItem": "L79325329-V1",
+        "Period": "6",
+        "raw_update_time": "2026-05-21 10:39:58",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1992.77",
+        "InvoiceNo": "chrg_67r2elal2unlg1b3fpj",
+        "OrderItem": "L79334831-V1",
+        "Period": "6",
+        "raw_update_time": "2026-05-21 05:38:08",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1900.0",
+        "InvoiceNo": "chrg_67ptrvr9s60b9zv33ym",
+        "OrderItem": "L79325029-V1",
+        "Period": "6",
+        "raw_update_time": "2026-05-18 01:34:40",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2099.98",
+        "InvoiceNo": "chrg_67qfhf935z89qc6ywg8",
+        "OrderItem": "L79346906-V1",
+        "Period": "6",
+        "raw_update_time": "2026-05-19 14:36:15",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2150.06",
+        "InvoiceNo": "chrg_67qc7hmugwam9urbzij",
+        "OrderItem": "L77830918-V1",
+        "Period": "6",
+        "raw_update_time": "2026-05-19 09:00:26",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2120.0",
+        "InvoiceNo": "chrg_67pxbqc0jc071aumfyn",
+        "OrderItem": "L79342833-V1",
+        "Period": "6",
+        "raw_update_time": "2026-05-18 07:37:27",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "4200.18",
+        "InvoiceNo": "chrg_67ujuc28wbl8w1oxcfm",
+        "OrderItem": "L77902124-V1",
+        "Period": "6",
+        "raw_update_time": "2026-05-30 03:28:00",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1888.87",
+        "InvoiceNo": "chrg_67pfwz5mj6gv6e57zte",
+        "OrderItem": "L77887594-V1",
+        "Period": "6",
+        "raw_update_time": "2026-05-17 01:57:26",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1950.0",
+        "InvoiceNo": "chrg_67qtz8rmzu0hqeg2cm9",
+        "OrderItem": "L78901743-V1",
+        "Period": "6",
+        "raw_update_time": "2026-05-20 15:17:02",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2220.0",
+        "InvoiceNo": "chrg_67sygxvpvloroozixyk",
+        "OrderItem": "L79389582-V1",
+        "Period": "6",
+        "raw_update_time": "2026-05-26 01:39:27",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1850.0",
+        "InvoiceNo": "chrg_67sn5zz7pugcyr7as6s",
+        "OrderItem": "L79327992-V1",
+        "Period": "6",
+        "raw_update_time": "2026-05-25 06:24:38",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2400.0",
+        "InvoiceNo": "chrg_67rj26pby2ieu9707nc",
+        "OrderItem": "L79293316-V1",
+        "Period": "6",
+        "raw_update_time": "2026-05-22 10:01:48",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1850.0",
+        "InvoiceNo": "chrg_67rkhcwep19yu19x956",
+        "OrderItem": "L79322515-V1",
+        "Period": "6",
+        "raw_update_time": "2026-05-22 12:27:51",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1885.17",
+        "InvoiceNo": "chrg_67rgmdv47qf1zkkfz90",
+        "OrderItem": "L79368552-V1",
+        "Period": "6",
+        "raw_update_time": "2026-05-22 05:53:01",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2894.96",
+        "InvoiceNo": "chrg_67ptosghlwlf21u0omm",
+        "OrderItem": "L79266659-V1",
+        "Period": "6",
+        "raw_update_time": "2026-05-18 01:25:14",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1806.91",
+        "InvoiceNo": "chrg_67qslig0aj310h2gq3o",
+        "OrderItem": "L77837553-V1",
+        "Period": "6",
+        "raw_update_time": "2026-05-20 12:55:14",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2280.0",
+        "InvoiceNo": "chrg_67skehzlxxsqf7dv6br",
+        "OrderItem": "L79383396-V1",
+        "Period": "6",
+        "raw_update_time": "2026-05-25 01:40:27",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2350.0",
+        "InvoiceNo": "chrg_67tcfjtx05grg4qeqzh",
+        "OrderItem": "L79131897-V1",
+        "Period": "6",
+        "raw_update_time": "2026-05-27 01:33:56",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2700.0",
+        "InvoiceNo": "chrg_683nvp7pphq2ns0vng7",
+        "OrderItem": "L79264923-V1",
+        "Period": "7",
+        "raw_update_time": "2026-06-22 10:34:45",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2226.66",
+        "InvoiceNo": "chrg_684q70wig8jexe0j3gn",
+        "OrderItem": "L77426856-V1",
+        "Period": "7",
+        "raw_update_time": "2026-06-25 03:52:34",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2550.0",
+        "InvoiceNo": "chrg_681yvvktog5qb68mych",
+        "OrderItem": "L79358147-V1",
+        "Period": "7",
+        "raw_update_time": "2026-06-18 02:36:35",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2081.58",
+        "InvoiceNo": "chrg_6825ljpyw43cdgri7oa",
+        "OrderItem": "L77842519-V1",
+        "Period": "7",
+        "raw_update_time": "2026-06-18 14:03:15",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1850.0",
+        "InvoiceNo": "chrg_67tee7itbfwwxxvnrj1",
+        "OrderItem": "L79112971-V1",
+        "Period": "7",
+        "raw_update_time": "2026-05-27 04:47:38",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2099.98",
+        "InvoiceNo": "chrg_68191c5d9oeabb4bvmg",
+        "OrderItem": "L79346906-V1",
+        "Period": "7",
+        "raw_update_time": "2026-06-16 06:32:54",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2300.0",
+        "InvoiceNo": "chrg_684hqyjhmykbop1rfmz",
+        "OrderItem": "L79372740-V1",
+        "Period": "7",
+        "raw_update_time": "2026-06-24 13:29:06",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2470.0",
+        "InvoiceNo": "chrg_681khjnla6ehi7c3btx",
+        "OrderItem": "L79305074-V1",
+        "Period": "7",
+        "raw_update_time": "2026-06-17 02:03:41",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1900.0",
+        "InvoiceNo": "chrg_682eayty5wv7ewbqx3e",
+        "OrderItem": "L79325029-V1",
+        "Period": "7",
+        "raw_update_time": "2026-06-19 04:53:36",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2170.0",
+        "InvoiceNo": "chrg_6862y01y72t3f5ojivo",
+        "OrderItem": "L79305182-V1",
+        "Period": "7",
+        "raw_update_time": "2026-06-28 14:58:14",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2086.61",
+        "InvoiceNo": "chrg_680byzvrcbfymyn4nvv",
+        "OrderItem": "L79321084-V1",
+        "Period": "7",
+        "raw_update_time": "2026-06-13 22:12:06",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2864.43",
+        "InvoiceNo": "chrg_684omu0omrsyjv9ayky",
+        "OrderItem": "L79369426-V1",
+        "Period": "7",
+        "raw_update_time": "2026-06-25 01:12:37",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1879.99",
+        "InvoiceNo": "chrg_683xgn48mtm4og12smt",
+        "OrderItem": "L77831230-V1",
+        "Period": "7",
+        "raw_update_time": "2026-06-23 02:54:22",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2938.94",
+        "InvoiceNo": "chrg_681zbbqwkpiprlyg1wi",
+        "OrderItem": "L79327908-V1",
+        "Period": "7",
+        "raw_update_time": "2026-06-18 03:21:25",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2150.06",
+        "InvoiceNo": "chrg_683wsr6u9jgqe692yxo",
+        "OrderItem": "L77830918-V1",
+        "Period": "7",
+        "raw_update_time": "2026-06-23 01:46:07",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1850.0",
+        "InvoiceNo": "chrg_6852aq7qsxegpw3q7sf",
+        "OrderItem": "L79359671-V1",
+        "Period": "7",
+        "raw_update_time": "2026-06-26 00:30:15",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2900.13",
+        "InvoiceNo": "chrg_67xzsqnpg6sf8fgnprx",
+        "OrderItem": "L79071637-V1",
+        "Period": "7",
+        "raw_update_time": "2026-06-07 22:42:58",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1936.38",
+        "InvoiceNo": "chrg_682thgflqsuxpafocwh",
+        "OrderItem": "L78115399-V1",
+        "Period": "7",
+        "raw_update_time": "2026-06-20 06:45:26",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2370.0",
+        "InvoiceNo": "chrg_683il9nsmfp4qjhqojr",
+        "OrderItem": "L79367726-V1",
+        "Period": "7",
+        "raw_update_time": "2026-06-22 01:32:59",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2565.22",
+        "InvoiceNo": "chrg_684qvmrwpvjd3g663dv",
+        "OrderItem": "L77942102-V1",
+        "Period": "7",
+        "raw_update_time": "2026-06-25 05:03:02",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2350.0",
+        "InvoiceNo": "chrg_6843mm820amtdug4kap",
+        "OrderItem": "L79369672-V1",
+        "Period": "7",
+        "raw_update_time": "2026-06-23 13:24:53",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "3650.09",
+        "InvoiceNo": "chrg_684pmyvkf61zqj52v50",
+        "OrderItem": "L79329663-V1",
+        "Period": "7",
+        "raw_update_time": "2026-06-25 02:56:21",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2219.93",
+        "InvoiceNo": "chrg_680zau8thbuftd0r48l",
+        "OrderItem": "L79333640-V1",
+        "Period": "7",
+        "raw_update_time": "2026-06-15 13:57:57",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2520.0",
+        "InvoiceNo": "chrg_682wfc2tq7jw8ixexc3",
+        "OrderItem": "L79358642-V1",
+        "Period": "7",
+        "raw_update_time": "2026-06-20 11:46:11",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1920.65",
+        "InvoiceNo": "chrg_681lyhvf5jl5do0gafv",
+        "OrderItem": "L77879228-V1",
+        "Period": "7",
+        "raw_update_time": "2026-06-17 04:34:21",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1800.0",
+        "InvoiceNo": "chrg_685hal1bc5m69rr5qbs",
+        "OrderItem": "L79326837-V1",
+        "Period": "7",
+        "raw_update_time": "2026-06-27 02:03:44",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1990.0",
+        "InvoiceNo": "chrg_681cexi4thk2v1hw6me",
+        "OrderItem": "L79319556-V1",
+        "Period": "7",
+        "raw_update_time": "2026-06-16 12:18:27",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1992.77",
+        "InvoiceNo": "chrg_683jg0mtosra2kudwjl",
+        "OrderItem": "L79334831-V1",
+        "Period": "7",
+        "raw_update_time": "2026-06-22 05:30:34",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1888.87",
+        "InvoiceNo": "chrg_682smnz69rpt9p0njo9",
+        "OrderItem": "L77887594-V1",
+        "Period": "7",
+        "raw_update_time": "2026-06-20 05:18:40",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1950.0",
+        "InvoiceNo": "chrg_686n9h2fcmyahjdfi9h",
+        "OrderItem": "L79368739-V1",
+        "Period": "7",
+        "raw_update_time": "2026-06-30 01:35:34",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1900.0",
+        "InvoiceNo": "chrg_68163y23qsmirbquun4",
+        "OrderItem": "L79332913-V1",
+        "Period": "7",
+        "raw_update_time": "2026-06-16 01:33:36",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2700.0",
+        "InvoiceNo": "chrg_681nbdt1d88xsxv2z57",
+        "OrderItem": "L79325329-V1",
+        "Period": "7",
+        "raw_update_time": "2026-06-17 06:53:22",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1950.0",
+        "InvoiceNo": "chrg_682y9a9qi7z8ro16hxo",
+        "OrderItem": "L78901743-V1",
+        "Period": "7",
+        "raw_update_time": "2026-06-20 14:54:09",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1819.86",
+        "InvoiceNo": "chrg_681xnzdls06du51mnqj",
+        "OrderItem": "L77852962-V1",
+        "Period": "7",
+        "raw_update_time": "2026-06-18 00:33:30",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1968.8",
+        "InvoiceNo": "chrg_67y3zalw2ninho1o2vo",
+        "OrderItem": "L79332731-V1",
+        "Period": "7",
+        "raw_update_time": "2026-06-08 05:50:46",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2400.0",
+        "InvoiceNo": "chrg_68413l5xuirknacye70",
+        "OrderItem": "L79293316-V1",
+        "Period": "7",
+        "raw_update_time": "2026-06-23 09:05:48",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1831.01",
+        "InvoiceNo": "chrg_681m68qb282a4kfb9wl",
+        "OrderItem": "L77833543-V1",
+        "Period": "7",
+        "raw_update_time": "2026-06-17 10:10:30",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1885.17",
+        "InvoiceNo": "chrg_686dydtq85w4vdxatsl",
+        "OrderItem": "L79368552-V1",
+        "Period": "7",
+        "raw_update_time": "2026-06-29 09:45:10",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2220.0",
+        "InvoiceNo": "chrg_6835irqsiagu56d3idf",
+        "OrderItem": "L79371835-V1",
+        "Period": "7",
+        "raw_update_time": "2026-06-21 03:17:37",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2180.0",
+        "InvoiceNo": "chrg_684c2ql9jlwtbp602fk",
+        "OrderItem": "L79352011-V1",
+        "Period": "7",
+        "raw_update_time": "2026-06-24 03:48:43",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2300.0",
+        "InvoiceNo": "chrg_683aj6e6kee1catnw5l",
+        "OrderItem": "L78980730-V1",
+        "Period": "7",
+        "raw_update_time": "2026-06-21 15:27:50",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "69.7",
+        "InvoiceNo": "2_chrg_6659sn7b3dwjus4zebr",
+        "OrderItem": "L79379882-V1",
+        "Period": "1",
+        "raw_update_time": "2025-12-24 11:21:37",
+        "source_charge_rank": "2"
+      },
+      {
+        "ActualReceived": "818.97",
+        "InvoiceNo": "2_chrg_662ex43q0evr6uqumvs",
+        "OrderItem": "L79357058-V1",
+        "Period": "1",
+        "raw_update_time": "2025-12-17 12:13:23",
+        "source_charge_rank": "3"
+      },
+      {
+        "ActualReceived": "2300.0",
+        "InvoiceNo": "2_chrg_667l8ez9a1hcm483dbk",
+        "OrderItem": "L79372740-V1",
+        "Period": "1",
+        "raw_update_time": "2025-12-30 09:38:42",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "3299.99",
+        "InvoiceNo": "2_chrg_660gbbno0ipq6adrvxh",
+        "OrderItem": "L79329562-V1",
+        "Period": "1",
+        "raw_update_time": "2025-12-12 09:08:07",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1870.0",
+        "InvoiceNo": "2_chrg_662scqp1p89fu17fys1",
+        "OrderItem": "L79325214-V1",
+        "Period": "1",
+        "raw_update_time": "2025-12-18 12:37:02",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2170.07",
+        "InvoiceNo": "2_chrg_65yvca49jksdh84edpp",
+        "OrderItem": "L77943767-V1",
+        "Period": "1",
+        "raw_update_time": "2025-12-08 02:34:18",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1900.0",
+        "InvoiceNo": "2_chrg_6622xi92vpfvwal1ata",
+        "OrderItem": "L79332913-V1",
+        "Period": "1",
+        "raw_update_time": "2025-12-16 07:57:25",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2220.0",
+        "InvoiceNo": "2_chrg_661gmlzyi00qh58woxo",
+        "OrderItem": "L79307435-V1",
+        "Period": "1",
+        "raw_update_time": "2025-12-15 05:55:10",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2700.0",
+        "InvoiceNo": "2_chrg_660x0z8mjhnnoi0406o",
+        "OrderItem": "L79325329-V1",
+        "Period": "1",
+        "raw_update_time": "2025-12-13 08:36:20",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2900.13",
+        "InvoiceNo": "2_chrg_65y69aiqmi69yby5vhj",
+        "OrderItem": "L79071637-V1",
+        "Period": "1",
+        "raw_update_time": "2025-12-06 08:11:13",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2267.0",
+        "InvoiceNo": "2_chrg_665js8b34o66u5xcwoq",
+        "OrderItem": "L79322265-V1",
+        "Period": "1",
+        "raw_update_time": "2025-12-25 23:10:38",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1850.0",
+        "InvoiceNo": "2_chrg_664efguzotx0nwmwe2y",
+        "OrderItem": "L79322515-V1",
+        "Period": "1",
+        "raw_update_time": "2025-12-22 05:56:56",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2300.0",
+        "InvoiceNo": "2_chrg_6602bhshbro6kpv43kc",
+        "OrderItem": "L78980730-V1",
+        "Period": "1",
+        "raw_update_time": "2025-12-11 03:48:39",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "3150.08",
+        "InvoiceNo": "2_chrg_660g21kuu6ooa780wbu",
+        "OrderItem": "L77431939-V1",
+        "Period": "1",
+        "raw_update_time": "2025-12-12 05:29:16",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1885.17",
+        "InvoiceNo": "2_chrg_664guwimwfpv4y3tzf1",
+        "OrderItem": "L79368552-V1",
+        "Period": "1",
+        "raw_update_time": "2025-12-22 10:01:28",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1920.65",
+        "InvoiceNo": "2_chrg_660hidnq9szsvqs0xh2",
+        "OrderItem": "L77879228-V1",
+        "Period": "1",
+        "raw_update_time": "2025-12-12 05:42:05",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2565.22",
+        "InvoiceNo": "2_chrg_66769135i4qpf0svwoe",
+        "OrderItem": "L77942102-V1",
+        "Period": "1",
+        "raw_update_time": "2025-12-29 08:05:10",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2220.0",
+        "InvoiceNo": "2_chrg_6660gc5w5r7ajmmfvf4",
+        "OrderItem": "L79389582-V1",
+        "Period": "1",
+        "raw_update_time": "2025-12-26 08:53:07",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1831.01",
+        "InvoiceNo": "2_chrg_662f7y7wxpe0dtihfvh",
+        "OrderItem": "L77833543-V1",
+        "Period": "1",
+        "raw_update_time": "2025-12-17 04:32:16",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2894.96",
+        "InvoiceNo": "2_chrg_660v21q6vw5l21uvfbw",
+        "OrderItem": "L79266659-V1",
+        "Period": "1",
+        "raw_update_time": "2025-12-13 10:00:19",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2232.56",
+        "InvoiceNo": "2_chrg_65wyftq9089i9r35o69",
+        "OrderItem": "L77916481-V1",
+        "Period": "1",
+        "raw_update_time": "2025-12-03 10:25:16",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2864.43",
+        "InvoiceNo": "2_chrg_664guo5m6ikw5eaafzq",
+        "OrderItem": "L79369426-V1",
+        "Period": "1",
+        "raw_update_time": "2025-12-22 10:27:22",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2220.14",
+        "InvoiceNo": "2_chrg_65uko9q93wd7ppolssy",
+        "OrderItem": "L79379524-V1",
+        "Period": "1",
+        "raw_update_time": "2025-11-27 15:53:48",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1850.0",
+        "InvoiceNo": "2_chrg_665ytk1aj1o9i7njzxz",
+        "OrderItem": "L79359671-V1",
+        "Period": "1",
+        "raw_update_time": "2025-12-26 08:55:21",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2625.11",
+        "InvoiceNo": "2_chrg_666eoub9wg2hlv7cjuu",
+        "OrderItem": "L78118535-V1",
+        "Period": "1",
+        "raw_update_time": "2025-12-27 09:31:36",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1740.49",
+        "InvoiceNo": "2_chrg_65w5smqv5vow45rhkk3",
+        "OrderItem": "L79357058-V1",
+        "Period": "1",
+        "raw_update_time": "2025-12-01 04:27:30",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2550.0",
+        "InvoiceNo": "2_chrg_662v2ghq63lr8j61wyi",
+        "OrderItem": "L79358147-V1",
+        "Period": "1",
+        "raw_update_time": "2025-12-18 09:13:36",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1850.0",
+        "InvoiceNo": "2_chrg_666cy4vqjuqqw1d13s6",
+        "OrderItem": "L79112971-V1",
+        "Period": "1",
+        "raw_update_time": "2025-12-27 06:05:48",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2755.04",
+        "InvoiceNo": "2_chrg_6655gaggma81vw93l9o",
+        "OrderItem": "L77920555-V1",
+        "Period": "1",
+        "raw_update_time": "2025-12-25 02:45:37",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2144.78",
+        "InvoiceNo": "2_chrg_6754aa0ctg97gc4n8ik",
+        "OrderItem": "L78276298-V1",
+        "Period": "1",
+        "raw_update_time": "2026-03-30 04:40:35",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2520.0",
+        "InvoiceNo": "2_chrg_663mm4x4je5ov1f8r9c",
+        "OrderItem": "L79358642-V1",
+        "Period": "1",
+        "raw_update_time": "2025-12-20 07:09:11",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1879.99",
+        "InvoiceNo": "2_chrg_661lotk2qrtsnudgheu",
+        "OrderItem": "L77831230-V1",
+        "Period": "1",
+        "raw_update_time": "2025-12-17 07:50:24",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2700.0",
+        "InvoiceNo": "2_chrg_664dvq1ecb4e93prqzw",
+        "OrderItem": "L79264923-V1",
+        "Period": "1",
+        "raw_update_time": "2025-12-22 11:18:15",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2018.77",
+        "InvoiceNo": "2_chrg_664fjhmglse03hpgbkw",
+        "OrderItem": "L77914090-V1",
+        "Period": "1",
+        "raw_update_time": "2025-12-22 07:50:17",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1918.08",
+        "InvoiceNo": "2_chrg_666b24ultqxkdgghes1",
+        "OrderItem": "L77897388-V1",
+        "Period": "1",
+        "raw_update_time": "2025-12-30 00:47:41",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2150.06",
+        "InvoiceNo": "2_chrg_660hec63ibs10czf21o",
+        "OrderItem": "L77830918-V1",
+        "Period": "1",
+        "raw_update_time": "2025-12-12 05:33:25",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2956.73",
+        "InvoiceNo": "2_chrg_662scjxh2212c750ltj",
+        "OrderItem": "L77832414-V1",
+        "Period": "1",
+        "raw_update_time": "2025-12-18 02:55:09",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2219.93",
+        "InvoiceNo": "2_chrg_661esrcb788242e6mz5",
+        "OrderItem": "L79333640-V1",
+        "Period": "1",
+        "raw_update_time": "2025-12-14 14:26:00",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1950.0",
+        "InvoiceNo": "2_chrg_663psrwt4lamrnrrlhh",
+        "OrderItem": "L78901743-V1",
+        "Period": "1",
+        "raw_update_time": "2025-12-20 12:16:26",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1870.0",
+        "InvoiceNo": "2_chrg_660jarq8mr1x27dye8z",
+        "OrderItem": "L74803702-V1",
+        "Period": "1",
+        "raw_update_time": "2025-12-12 09:19:30",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2022.3",
+        "InvoiceNo": "2_chrg_667hderwgl05ungws2k",
+        "OrderItem": "L77680280-V1",
+        "Period": "1",
+        "raw_update_time": "2025-12-30 03:09:14",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2273.67",
+        "InvoiceNo": "2_chrg_665x98ubk1lzp8ycynz",
+        "OrderItem": "L77983511-V1",
+        "Period": "1",
+        "raw_update_time": "2025-12-26 03:20:27",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1860.0",
+        "InvoiceNo": "2_chrg_664r0iclt6cgkm03fgk",
+        "OrderItem": "L79365147-V1",
+        "Period": "1",
+        "raw_update_time": "2025-12-23 03:21:02",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1936.38",
+        "InvoiceNo": "chrg_66hczsghor3u3zepd9m",
+        "OrderItem": "L78115399-V1",
+        "Period": "2",
+        "raw_update_time": "2026-01-24 12:50:17",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1870.0",
+        "InvoiceNo": "chrg_66fajvqkit6hmhnbr5v",
+        "OrderItem": "L79325214-V1",
+        "Period": "2",
+        "raw_update_time": "2026-01-19 02:13:32",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1870.0",
+        "InvoiceNo": "chrg_66cw53sh9985e37k72u",
+        "OrderItem": "L74803702-V1",
+        "Period": "2",
+        "raw_update_time": "2026-01-12 22:57:06",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1930.0",
+        "InvoiceNo": "chrg_66cdlj86raa9a0v8z1b",
+        "OrderItem": "L79342818-V1",
+        "Period": "2",
+        "raw_update_time": "2026-01-11 15:20:28",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2470.0",
+        "InvoiceNo": "chrg_66bsryje5iji0co8rij",
+        "OrderItem": "L79305074-V1",
+        "Period": "2",
+        "raw_update_time": "2026-01-10 03:51:21",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1992.77",
+        "InvoiceNo": "chrg_66dsq6wy2bcszt1l8h9",
+        "OrderItem": "L79334831-V1",
+        "Period": "2",
+        "raw_update_time": "2026-01-15 06:29:43",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1888.87",
+        "InvoiceNo": "chrg_66gz9pqwsm09uq7hovk",
+        "OrderItem": "L77887594-V1",
+        "Period": "2",
+        "raw_update_time": "2026-01-23 09:53:02",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2280.93",
+        "InvoiceNo": "chrg_66kra51c82emw688qe8",
+        "OrderItem": "L79384548-V1",
+        "Period": "2",
+        "raw_update_time": "2026-02-02 01:33:07",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2043.17",
+        "InvoiceNo": "chrg_672y2x73nqu9zyydopa",
+        "OrderItem": "L78070298-V1",
+        "Period": "2",
+        "raw_update_time": "2026-03-20 13:37:39",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1900.0",
+        "InvoiceNo": "chrg_66e7vrxs7gw1rzzuj6f",
+        "OrderItem": "L79332913-V1",
+        "Period": "2",
+        "raw_update_time": "2026-01-16 08:20:09",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1850.0",
+        "InvoiceNo": "chrg_66i2p7oot5c3smqstqa",
+        "OrderItem": "L79327992-V1",
+        "Period": "2",
+        "raw_update_time": "2026-01-26 04:57:26",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1860.0",
+        "InvoiceNo": "chrg_66hdx5fsvtexjh348tm",
+        "OrderItem": "L79365147-V1",
+        "Period": "2",
+        "raw_update_time": "2026-01-24 10:41:21",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "4200.18",
+        "InvoiceNo": "chrg_66ikq7iims49phc7o1s",
+        "OrderItem": "L77902124-V1",
+        "Period": "2",
+        "raw_update_time": "2026-01-27 11:43:33",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2144.82",
+        "InvoiceNo": "chrg_67kbmfogp71quhnptv2",
+        "OrderItem": "L78276298-V1",
+        "Period": "2",
+        "raw_update_time": "2026-05-03 23:50:07",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2350.0",
+        "InvoiceNo": "chrg_66gw1agd1m8b4wlhtjx",
+        "OrderItem": "L79369672-V1",
+        "Period": "2",
+        "raw_update_time": "2026-01-23 04:12:44",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2018.77",
+        "InvoiceNo": "chrg_66ggy074wu54hz4z954",
+        "OrderItem": "L77914090-V1",
+        "Period": "2",
+        "raw_update_time": "2026-01-22 08:37:05",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1806.91",
+        "InvoiceNo": "chrg_66dtbaa6fqodi98dr2c",
+        "OrderItem": "L77837553-V1",
+        "Period": "2",
+        "raw_update_time": "2026-01-15 07:29:29",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "3150.08",
+        "InvoiceNo": "chrg_66dseg6m3d3gqhr2dr2",
+        "OrderItem": "L77431939-V1",
+        "Period": "2",
+        "raw_update_time": "2026-01-15 06:00:13",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2220.0",
+        "InvoiceNo": "chrg_66j7g7344ngk33793az",
+        "OrderItem": "L79371835-V1",
+        "Period": "2",
+        "raw_update_time": "2026-01-29 03:36:16",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2520.0",
+        "InvoiceNo": "chrg_66h30lven7ezg7fhd23",
+        "OrderItem": "L79358642-V1",
+        "Period": "2",
+        "raw_update_time": "2026-01-23 16:06:45",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2150.06",
+        "InvoiceNo": "chrg_66fh7wxn2451ce13w11",
+        "OrderItem": "L77830918-V1",
+        "Period": "2",
+        "raw_update_time": "2026-01-19 13:42:08",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2086.61",
+        "InvoiceNo": "chrg_66ehe8fhcgipz668874",
+        "OrderItem": "L79321084-V1",
+        "Period": "2",
+        "raw_update_time": "2026-01-17 00:32:09",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1850.0",
+        "InvoiceNo": "chrg_66ghcvn2oe5s7qv6pdr",
+        "OrderItem": "L79322515-V1",
+        "Period": "2",
+        "raw_update_time": "2026-01-22 03:12:04",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "3299.99",
+        "InvoiceNo": "chrg_66cm3jwq2g4y5wc4ru4",
+        "OrderItem": "L79329562-V1",
+        "Period": "2",
+        "raw_update_time": "2026-01-12 05:49:53",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2700.0",
+        "InvoiceNo": "chrg_66ggojln1a9vmzfk03q",
+        "OrderItem": "L79264923-V1",
+        "Period": "2",
+        "raw_update_time": "2026-01-22 02:03:27",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2220.0",
+        "InvoiceNo": "chrg_66hry8qm9gl6rsijz65",
+        "OrderItem": "L79389582-V1",
+        "Period": "2",
+        "raw_update_time": "2026-01-26 01:23:36",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2970.0",
+        "InvoiceNo": "chrg_66kegzkx5t1in00xvwu",
+        "OrderItem": "L77770286-V1",
+        "Period": "2",
+        "raw_update_time": "2026-02-01 03:50:59",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2625.11",
+        "InvoiceNo": "chrg_66i8j8pto108i5ce5c8",
+        "OrderItem": "L78118535-V1",
+        "Period": "2",
+        "raw_update_time": "2026-01-26 14:52:39",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2894.96",
+        "InvoiceNo": "chrg_66dv7bqqbyhml1i5tke",
+        "OrderItem": "L79266659-V1",
+        "Period": "2",
+        "raw_update_time": "2026-01-15 10:42:29",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2226.66",
+        "InvoiceNo": "chrg_66ieaqil72s4fgb8i9o",
+        "OrderItem": "L77426856-V1",
+        "Period": "2",
+        "raw_update_time": "2026-01-27 00:43:29",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2565.22",
+        "InvoiceNo": "chrg_66jdbj4htypdd5g1fds",
+        "OrderItem": "L77942102-V1",
+        "Period": "2",
+        "raw_update_time": "2026-01-29 12:23:36",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2267.0",
+        "InvoiceNo": "chrg_66rt640nfncbth3ikic",
+        "OrderItem": "L79322265-V1",
+        "Period": "2",
+        "raw_update_time": "2026-02-20 05:56:44",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2200.0",
+        "InvoiceNo": "chrg_66e33xa9t9s1hbbop8n",
+        "OrderItem": "L79335013-V1",
+        "Period": "2",
+        "raw_update_time": "2026-01-16 00:11:52",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1928.6",
+        "InvoiceNo": "chrg_66c6x8nugppa95enov1",
+        "OrderItem": "L78290719-V1",
+        "Period": "2",
+        "raw_update_time": "2026-01-11 03:58:26",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "3650.09",
+        "InvoiceNo": "chrg_66expkbisr4um2s092s",
+        "OrderItem": "L79329663-V1",
+        "Period": "2",
+        "raw_update_time": "2026-01-18 04:20:47",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2550.0",
+        "InvoiceNo": "chrg_66fw6vkxk5n3i0hwp4p",
+        "OrderItem": "L79358147-V1",
+        "Period": "2",
+        "raw_update_time": "2026-01-21 00:07:39",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2864.43",
+        "InvoiceNo": "chrg_66dqw3f9gvu11kktec7",
+        "OrderItem": "L79331377-V1",
+        "Period": "2",
+        "raw_update_time": "2026-01-15 03:21:32",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1879.99",
+        "InvoiceNo": "chrg_66g7ko7phyep8shlgxq",
+        "OrderItem": "L77831230-V1",
+        "Period": "2",
+        "raw_update_time": "2026-01-21 10:30:40",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2700.04",
+        "InvoiceNo": "chrg_66faa4qo7u3b072phdb",
+        "OrderItem": "L77760989-V1",
+        "Period": "2",
+        "raw_update_time": "2026-01-19 01:46:20",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2020.0",
+        "InvoiceNo": "chrg_66gyoyspvmdwig02rju",
+        "OrderItem": "L77939883-V1",
+        "Period": "2",
+        "raw_update_time": "2026-01-23 08:44:33",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2232.56",
+        "InvoiceNo": "chrg_66fe9ax28vn0yxuq10m",
+        "OrderItem": "L77916481-V1",
+        "Period": "2",
+        "raw_update_time": "2026-01-19 10:24:14",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2219.93",
+        "InvoiceNo": "chrg_66dxg8io2f1o3ve8nuk",
+        "OrderItem": "L79333640-V1",
+        "Period": "2",
+        "raw_update_time": "2026-01-15 14:32:58",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2220.0",
+        "InvoiceNo": "chrg_66cmezr890re2nsck0i",
+        "OrderItem": "L79307435-V1",
+        "Period": "2",
+        "raw_update_time": "2026-01-12 06:24:01",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2250.0",
+        "InvoiceNo": "chrg_66op0sq8nkd45wq9rf9",
+        "OrderItem": "L79337161-V1",
+        "Period": "2",
+        "raw_update_time": "2026-02-12 03:12:28",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1900.0",
+        "InvoiceNo": "chrg_66gml7mliurs28gia0c",
+        "OrderItem": "L79325029-V1",
+        "Period": "2",
+        "raw_update_time": "2026-01-22 12:07:14",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1990.0",
+        "InvoiceNo": "chrg_66cz7md1mvbf1q7psdy",
+        "OrderItem": "L79319556-V1",
+        "Period": "2",
+        "raw_update_time": "2026-01-13 04:10:53",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2120.0",
+        "InvoiceNo": "chrg_66qp9lx4oqae86veb0q",
+        "OrderItem": "L79342833-V1",
+        "Period": "3",
+        "raw_update_time": "2026-02-17 06:17:44",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2300.0",
+        "InvoiceNo": "chrg_66ts01furmgojkhrn3z",
+        "OrderItem": "L79372740-V1",
+        "Period": "3",
+        "raw_update_time": "2026-02-25 03:02:53",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2018.77",
+        "InvoiceNo": "chrg_66rfqor2o3d1gt6qtq6",
+        "OrderItem": "L77914090-V1",
+        "Period": "3",
+        "raw_update_time": "2026-02-19 03:26:13",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1806.91",
+        "InvoiceNo": "chrg_66qrwi3o1qar8ni02dj",
+        "OrderItem": "L77837553-V1",
+        "Period": "3",
+        "raw_update_time": "2026-02-17 10:46:02",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1992.77",
+        "InvoiceNo": "chrg_66qbje15djypkd610tv",
+        "OrderItem": "L79334831-V1",
+        "Period": "3",
+        "raw_update_time": "2026-02-16 06:52:51",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2550.02",
+        "InvoiceNo": "chrg_66psxfi0ha0xcsp03vd",
+        "OrderItem": "L79312967-V1",
+        "Period": "3",
+        "raw_update_time": "2026-02-14 23:09:53",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "3650.09",
+        "InvoiceNo": "chrg_66qn5pcrp3as3wrcegw",
+        "OrderItem": "L79329663-V1",
+        "Period": "3",
+        "raw_update_time": "2026-02-17 02:40:56",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2938.94",
+        "InvoiceNo": "chrg_66r0wd0or3amakbt1d2",
+        "OrderItem": "L79327908-V1",
+        "Period": "3",
+        "raw_update_time": "2026-02-18 02:07:04",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2280.0",
+        "InvoiceNo": "chrg_66tprvxl9pz70lxmkk0",
+        "OrderItem": "L79383396-V1",
+        "Period": "3",
+        "raw_update_time": "2026-02-24 23:13:16",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2280.0",
+        "InvoiceNo": "chrg_6758v213lil2gqun5lv",
+        "OrderItem": "L79379524-V1",
+        "Period": "3",
+        "raw_update_time": "2026-03-26 10:43:40",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2135.9",
+        "InvoiceNo": "chrg_67w9u5eo2pkdysrdeli",
+        "OrderItem": "L80317696-V1",
+        "Period": "3",
+        "raw_update_time": "2026-06-03 13:07:13",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2470.0",
+        "InvoiceNo": "chrg_66oo669gfmc6rdapm83",
+        "OrderItem": "L79305074-V1",
+        "Period": "3",
+        "raw_update_time": "2026-02-12 01:41:17",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2700.0",
+        "InvoiceNo": "chrg_66q9ve1t8n4q94zr6d5",
+        "OrderItem": "L79325329-V1",
+        "Period": "3",
+        "raw_update_time": "2026-02-16 04:02:14",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1819.86",
+        "InvoiceNo": "chrg_66r3e28j5bxxwhmidyv",
+        "OrderItem": "L77852962-V1",
+        "Period": "3",
+        "raw_update_time": "2026-02-18 06:21:08",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2520.0",
+        "InvoiceNo": "chrg_66rz90qw2n6794pita5",
+        "OrderItem": "L79358642-V1",
+        "Period": "3",
+        "raw_update_time": "2026-02-20 12:38:58",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2880.01",
+        "InvoiceNo": "chrg_66ulw7jfzu1lxjqg6aj",
+        "OrderItem": "L77902487-V1",
+        "Period": "3",
+        "raw_update_time": "2026-02-27 06:52:56",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2550.0",
+        "InvoiceNo": "chrg_66qt5bq5zhvyid3dyld",
+        "OrderItem": "L79358147-V1",
+        "Period": "3",
+        "raw_update_time": "2026-02-17 12:53:33",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2232.56",
+        "InvoiceNo": "chrg_66nk81s0dahxpzz2dp1",
+        "OrderItem": "L77916481-V1",
+        "Period": "3",
+        "raw_update_time": "2026-02-09 05:35:45",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2400.0",
+        "InvoiceNo": "chrg_66t3elkjpxvbno5o9ne",
+        "OrderItem": "L79293316-V1",
+        "Period": "3",
+        "raw_update_time": "2026-02-23 09:05:37",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1870.0",
+        "InvoiceNo": "chrg_66ru17jwmhfuk0jj2bx",
+        "OrderItem": "L79325214-V1",
+        "Period": "3",
+        "raw_update_time": "2026-02-23 03:28:37",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2020.0",
+        "InvoiceNo": "chrg_66rgw98nvhf5f2eqxp3",
+        "OrderItem": "L77939883-V1",
+        "Period": "3",
+        "raw_update_time": "2026-02-19 05:23:13",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2864.43",
+        "InvoiceNo": "chrg_66teof97j9xyjzv08oh",
+        "OrderItem": "L79369426-V1",
+        "Period": "3",
+        "raw_update_time": "2026-02-24 04:19:05",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2267.0",
+        "InvoiceNo": "chrg_67084owmylll9ttwuj2",
+        "OrderItem": "L79322265-V1",
+        "Period": "3",
+        "raw_update_time": "2026-03-13 14:41:14",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2086.61",
+        "InvoiceNo": "chrg_66o48l0gomh8uyy0jkv",
+        "OrderItem": "L79321084-V1",
+        "Period": "3",
+        "raw_update_time": "2026-02-10 15:42:37",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2350.0",
+        "InvoiceNo": "chrg_66szrhqaczfr1chwynh",
+        "OrderItem": "L79369672-V1",
+        "Period": "3",
+        "raw_update_time": "2026-02-23 02:53:02",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "3150.08",
+        "InvoiceNo": "chrg_66r3mdeo5bnhebylsss",
+        "OrderItem": "L77431939-V1",
+        "Period": "3",
+        "raw_update_time": "2026-02-18 06:45:08",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2300.0",
+        "InvoiceNo": "chrg_66sapkktnl7xjb6pf03",
+        "OrderItem": "L78980730-V1",
+        "Period": "3",
+        "raw_update_time": "2026-02-21 08:11:10",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1870.0",
+        "InvoiceNo": "chrg_66oz0muo4pomxzssxf0",
+        "OrderItem": "L74803702-V1",
+        "Period": "3",
+        "raw_update_time": "2026-02-12 20:10:43",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2700.04",
+        "InvoiceNo": "chrg_66rrq86lelk8u1r0io1",
+        "OrderItem": "L77760989-V1",
+        "Period": "3",
+        "raw_update_time": "2026-02-19 23:50:00",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2043.17",
+        "InvoiceNo": "chrg_67czbzegol02hs0h2p0",
+        "OrderItem": "L78070298-V1",
+        "Period": "3",
+        "raw_update_time": "2026-04-15 05:21:51",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2180.0",
+        "InvoiceNo": "chrg_66rss5l8np2yg3ufqy0",
+        "OrderItem": "L79352011-V1",
+        "Period": "3",
+        "raw_update_time": "2026-02-20 01:37:58",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2150.06",
+        "InvoiceNo": "chrg_66r837qm9qkwr14xlky",
+        "OrderItem": "L77830918-V1",
+        "Period": "3",
+        "raw_update_time": "2026-02-18 14:22:11",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1850.0",
+        "InvoiceNo": "chrg_66spu64sb5it82ucdb7",
+        "OrderItem": "L79359671-V1",
+        "Period": "3",
+        "raw_update_time": "2026-02-22 09:58:24",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2755.04",
+        "InvoiceNo": "chrg_66tf2ni10mtjbg5btpv",
+        "OrderItem": "L77920555-V1",
+        "Period": "3",
+        "raw_update_time": "2026-02-24 05:02:02",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2220.0",
+        "InvoiceNo": "chrg_66oi3695cu2fkx6spht",
+        "OrderItem": "L79307435-V1",
+        "Period": "3",
+        "raw_update_time": "2026-02-11 15:18:47",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "4200.64",
+        "InvoiceNo": "chrg_686h8o303avn517q3c4",
+        "OrderItem": "L80673380-V1",
+        "Period": "3",
+        "raw_update_time": "2026-06-29 15:20:24",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2170.0",
+        "InvoiceNo": "chrg_66v6t2funi6q0dsf5sw",
+        "OrderItem": "L79305182-V1",
+        "Period": "3",
+        "raw_update_time": "2026-02-28 17:37:06",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2220.0",
+        "InvoiceNo": "chrg_66u6nfj6hwgjhvjq246",
+        "OrderItem": "L79389582-V1",
+        "Period": "3",
+        "raw_update_time": "2026-02-26 03:59:43",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1850.0",
+        "InvoiceNo": "chrg_66ucsa3lj8sw0vk40jq",
+        "OrderItem": "L79327992-V1",
+        "Period": "3",
+        "raw_update_time": "2026-02-26 14:26:29",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2086.61",
+        "InvoiceNo": "chrg_66zfjl9ijdu8liy8lec",
+        "OrderItem": "L79321084-V1",
+        "Period": "4",
+        "raw_update_time": "2026-03-12 01:34:54",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2400.0",
+        "InvoiceNo": "chrg_6743dthjm77h5axx7i0",
+        "OrderItem": "L79293316-V1",
+        "Period": "4",
+        "raw_update_time": "2026-03-23 12:01:00",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "3150.08",
+        "InvoiceNo": "chrg_67230jgpm57bg2quw9k",
+        "OrderItem": "L77431939-V1",
+        "Period": "4",
+        "raw_update_time": "2026-03-18 08:40:05",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2970.0",
+        "InvoiceNo": "chrg_674q9nkhon3vmp744xd",
+        "OrderItem": "L77770286-V1",
+        "Period": "4",
+        "raw_update_time": "2026-03-25 03:01:31",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2938.94",
+        "InvoiceNo": "chrg_672003a6a5a6561sxkd",
+        "OrderItem": "L79327908-V1",
+        "Period": "4",
+        "raw_update_time": "2026-03-18 03:32:34",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1860.0",
+        "InvoiceNo": "chrg_6719wvftdvkdgnj9rjr",
+        "OrderItem": "L79365147-V1",
+        "Period": "4",
+        "raw_update_time": "2026-03-16 07:05:06",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2350.0",
+        "InvoiceNo": "chrg_674rle6yxul3jmtg12x",
+        "OrderItem": "L79131897-V1",
+        "Period": "4",
+        "raw_update_time": "2026-03-25 05:17:08",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1928.6",
+        "InvoiceNo": "chrg_66z0g4mq75fe4ws094w",
+        "OrderItem": "L78290719-V1",
+        "Period": "4",
+        "raw_update_time": "2026-03-10 12:13:16",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2565.22",
+        "InvoiceNo": "chrg_674pbn5qowtn4d8k2o1",
+        "OrderItem": "L77942102-V1",
+        "Period": "4",
+        "raw_update_time": "2026-03-25 01:24:59",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1879.99",
+        "InvoiceNo": "chrg_674ayfn78ebgt9uaz5u",
+        "OrderItem": "L77831230-V1",
+        "Period": "4",
+        "raw_update_time": "2026-03-24 02:05:05",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2020.0",
+        "InvoiceNo": "chrg_673z3qjm4dqwe19tyq7",
+        "OrderItem": "L77939883-V1",
+        "Period": "4",
+        "raw_update_time": "2026-03-23 04:43:38",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2864.43",
+        "InvoiceNo": "chrg_67202vzakji4upxfzfk",
+        "OrderItem": "L79331377-V1",
+        "Period": "4",
+        "raw_update_time": "2026-03-18 03:40:21",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1800.0",
+        "InvoiceNo": "chrg_677gyfwx27yvbfazoyr",
+        "OrderItem": "L79326837-V1",
+        "Period": "4",
+        "raw_update_time": "2026-04-01 03:14:11",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1900.0",
+        "InvoiceNo": "chrg_674ol4x4g7r4jeaivk8",
+        "OrderItem": "L79325029-V1",
+        "Period": "4",
+        "raw_update_time": "2026-03-25 00:10:34",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2232.56",
+        "InvoiceNo": "chrg_66ym1y1ao9hzvzfwzgw",
+        "OrderItem": "L77916481-V1",
+        "Period": "4",
+        "raw_update_time": "2026-03-09 11:40:29",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2042.63",
+        "InvoiceNo": "chrg_671o9j5pjgw1gr6h1sy",
+        "OrderItem": "L77842056-V1",
+        "Period": "4",
+        "raw_update_time": "2026-03-17 07:36:31",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1990.0",
+        "InvoiceNo": "chrg_66zo4iz52xilujk5ulq",
+        "OrderItem": "L79319556-V1",
+        "Period": "4",
+        "raw_update_time": "2026-03-12 04:34:24",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2120.0",
+        "InvoiceNo": "chrg_67175fo6h0d60b9u8is",
+        "OrderItem": "L79342833-V1",
+        "Period": "4",
+        "raw_update_time": "2026-03-16 02:22:23",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1850.0",
+        "InvoiceNo": "chrg_673xork80fgjtaphpkr",
+        "OrderItem": "L79112971-V1",
+        "Period": "4",
+        "raw_update_time": "2026-03-23 02:19:03",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2280.0",
+        "InvoiceNo": "chrg_674o5pfnwdgv7jcudh3",
+        "OrderItem": "L79383396-V1",
+        "Period": "4",
+        "raw_update_time": "2026-03-24 23:25:47",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "4200.18",
+        "InvoiceNo": "chrg_67632dd6uhzzn5g0gxu",
+        "OrderItem": "L77902124-V1",
+        "Period": "4",
+        "raw_update_time": "2026-03-28 14:14:58",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2267.0",
+        "InvoiceNo": "chrg_67e9y29old7biw3832y",
+        "OrderItem": "L79322265-V1",
+        "Period": "4",
+        "raw_update_time": "2026-04-18 12:49:06",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1870.0",
+        "InvoiceNo": "chrg_670j7oqygglh1k1cs7k",
+        "OrderItem": "L74803702-V1",
+        "Period": "4",
+        "raw_update_time": "2026-03-14 09:33:57",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1831.01",
+        "InvoiceNo": "chrg_67236y0ukel12gxtfvj",
+        "OrderItem": "L77833543-V1",
+        "Period": "4",
+        "raw_update_time": "2026-03-18 08:58:38",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2550.02",
+        "InvoiceNo": "chrg_670fpi7566fxdzvh5xz",
+        "OrderItem": "L79312967-V1",
+        "Period": "4",
+        "raw_update_time": "2026-03-14 03:35:11",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2250.0",
+        "InvoiceNo": "chrg_67az0oiazgodnt7nhzs",
+        "OrderItem": "L79337161-V1",
+        "Period": "4",
+        "raw_update_time": "2026-04-10 02:06:13",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1918.08",
+        "InvoiceNo": "chrg_67caf9iehpvmseqa00t",
+        "OrderItem": "L77897388-V1",
+        "Period": "4",
+        "raw_update_time": "2026-04-13 10:54:23",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2470.0",
+        "InvoiceNo": "chrg_66wao3q54tijc95qdwn",
+        "OrderItem": "L79305074-V1",
+        "Period": "4",
+        "raw_update_time": "2026-03-03 13:33:35",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1850.0",
+        "InvoiceNo": "chrg_673s0pflbn95hycfln8",
+        "OrderItem": "L79322515-V1",
+        "Period": "4",
+        "raw_update_time": "2026-03-22 16:39:27",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2226.66",
+        "InvoiceNo": "chrg_6753vbi8cjniheykxi1",
+        "OrderItem": "L77426856-V1",
+        "Period": "4",
+        "raw_update_time": "2026-03-26 02:12:41",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1936.38",
+        "InvoiceNo": "chrg_674czd6twwaebma4h9l",
+        "OrderItem": "L78115399-V1",
+        "Period": "4",
+        "raw_update_time": "2026-03-24 04:22:35",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2900.13",
+        "InvoiceNo": "chrg_672344qfjrzg5k9qfq3",
+        "OrderItem": "L79071637-V1",
+        "Period": "4",
+        "raw_update_time": "2026-03-18 08:50:20",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1968.8",
+        "InvoiceNo": "chrg_66y2154sx0bn6ryjv70",
+        "OrderItem": "L79332731-V1",
+        "Period": "4",
+        "raw_update_time": "2026-03-08 01:33:12",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2200.0",
+        "InvoiceNo": "chrg_672f8e8bf10ceowjfd3",
+        "OrderItem": "L79335013-V1",
+        "Period": "4",
+        "raw_update_time": "2026-03-19 05:30:05",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2180.0",
+        "InvoiceNo": "chrg_672yc706qigmjx2etwx",
+        "OrderItem": "L79352011-V1",
+        "Period": "4",
+        "raw_update_time": "2026-03-20 14:03:44",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2220.0",
+        "InvoiceNo": "chrg_675x0c43n3z5wigyrpt",
+        "OrderItem": "L79371835-V1",
+        "Period": "4",
+        "raw_update_time": "2026-03-28 03:54:06",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2280.0",
+        "InvoiceNo": "chrg_67i0yc6sm5hcahuex1z",
+        "OrderItem": "L79379524-V1",
+        "Period": "4",
+        "raw_update_time": "2026-04-28 02:56:02",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2880.01",
+        "InvoiceNo": "chrg_675yc1cx6fjt2bj4oco",
+        "OrderItem": "L77902487-V1",
+        "Period": "4",
+        "raw_update_time": "2026-03-28 06:08:53",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2700.04",
+        "InvoiceNo": "chrg_6739ngteufdokc6fl2u",
+        "OrderItem": "L77760989-V1",
+        "Period": "4",
+        "raw_update_time": "2026-03-22 05:48:47",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2219.93",
+        "InvoiceNo": "chrg_670vmgsrn9wfa8uka56",
+        "OrderItem": "L79333640-V1",
+        "Period": "4",
+        "raw_update_time": "2026-03-15 06:42:52",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1900.0",
+        "InvoiceNo": "chrg_6716p084cfufm8mn57n",
+        "OrderItem": "L79332913-V1",
+        "Period": "4",
+        "raw_update_time": "2026-03-16 01:35:01",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1992.77",
+        "InvoiceNo": "chrg_671y23b3mb73t8kjxp2",
+        "OrderItem": "L79334831-V1",
+        "Period": "4",
+        "raw_update_time": "2026-03-18 00:13:35",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2273.67",
+        "InvoiceNo": "chrg_6753n615l8dlv9ajswf",
+        "OrderItem": "L77983511-V1",
+        "Period": "4",
+        "raw_update_time": "2026-03-26 01:49:58",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2700.0",
+        "InvoiceNo": "chrg_673iik37de31vr41mhx",
+        "OrderItem": "L79264923-V1",
+        "Period": "4",
+        "raw_update_time": "2026-03-22 00:27:18",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1950.0",
+        "InvoiceNo": "chrg_67i44tkdqweyg4vlq7f",
+        "OrderItem": "L79368739-V1",
+        "Period": "5",
+        "raw_update_time": "2026-04-28 08:20:47",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2022.3",
+        "InvoiceNo": "chrg_67hm8moxnyf8l5ubfkk",
+        "OrderItem": "L77680280-V1",
+        "Period": "5",
+        "raw_update_time": "2026-04-27 01:50:24",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2273.67",
+        "InvoiceNo": "chrg_67it8no7lkkfrunellk",
+        "OrderItem": "L77983511-V1",
+        "Period": "5",
+        "raw_update_time": "2026-04-30 03:08:07",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2469.39",
+        "InvoiceNo": "chrg_67eyw6unuqbeqyhgc5a",
+        "OrderItem": "L77841952-V1",
+        "Period": "5",
+        "raw_update_time": "2026-04-20 07:19:46",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1950.0",
+        "InvoiceNo": "chrg_67f1r4apxq9tbjj7sik",
+        "OrderItem": "L78901743-V1",
+        "Period": "5",
+        "raw_update_time": "2026-04-20 12:12:45",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2267.0",
+        "InvoiceNo": "chrg_67p4676dzhg5sfsu1b0",
+        "OrderItem": "L79322265-V1",
+        "Period": "5",
+        "raw_update_time": "2026-05-16 05:57:33",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1968.8",
+        "InvoiceNo": "chrg_67a6j8d7koqmv9yoca3",
+        "OrderItem": "L79332731-V1",
+        "Period": "5",
+        "raw_update_time": "2026-04-08 01:33:16",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2086.61",
+        "InvoiceNo": "chrg_67cpltn7d1968l70n8v",
+        "OrderItem": "L79321084-V1",
+        "Period": "5",
+        "raw_update_time": "2026-04-14 12:46:34",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "3299.99",
+        "InvoiceNo": "chrg_67drltqssay7ta2gnpf",
+        "OrderItem": "L79329562-V1",
+        "Period": "5",
+        "raw_update_time": "2026-04-17 05:33:19",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "3150.08",
+        "InvoiceNo": "chrg_67e8vrcfguixrtn44pm",
+        "OrderItem": "L77431939-V1",
+        "Period": "5",
+        "raw_update_time": "2026-04-19 08:13:02",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2220.0",
+        "InvoiceNo": "chrg_67it18doyy3gt7dbmzn",
+        "OrderItem": "L79371835-V1",
+        "Period": "5",
+        "raw_update_time": "2026-04-30 02:47:49",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2470.0",
+        "InvoiceNo": "chrg_678a30s12qq1fzmkq6s",
+        "OrderItem": "L79305074-V1",
+        "Period": "5",
+        "raw_update_time": "2026-04-03 04:52:57",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2018.77",
+        "InvoiceNo": "chrg_67fp6awu9xpfbtusruh",
+        "OrderItem": "L77914090-V1",
+        "Period": "5",
+        "raw_update_time": "2026-04-22 04:08:25",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2099.98",
+        "InvoiceNo": "chrg_67f13djha9p5b1oby3k",
+        "OrderItem": "L79346906-V1",
+        "Period": "5",
+        "raw_update_time": "2026-04-20 11:04:55",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1992.77",
+        "InvoiceNo": "chrg_67dceufv23nl59uehsy",
+        "OrderItem": "L79334831-V1",
+        "Period": "5",
+        "raw_update_time": "2026-04-16 06:59:44",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1918.08",
+        "InvoiceNo": "chrg_67oua28dljd0kdpap3u",
+        "OrderItem": "L77897388-V1",
+        "Period": "5",
+        "raw_update_time": "2026-05-15 13:04:33",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2120.0",
+        "InvoiceNo": "chrg_67dqjngo0c2hkj9yq8k",
+        "OrderItem": "L79342833-V1",
+        "Period": "5",
+        "raw_update_time": "2026-04-17 03:44:55",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2900.13",
+        "InvoiceNo": "chrg_67dqjp97y495ysmasy8",
+        "OrderItem": "L79071637-V1",
+        "Period": "5",
+        "raw_update_time": "2026-04-17 03:44:38",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1930.0",
+        "InvoiceNo": "chrg_67d4c77m82sy1moqgs9",
+        "OrderItem": "L79342818-V1",
+        "Period": "5",
+        "raw_update_time": "2026-04-15 13:53:42",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2880.01",
+        "InvoiceNo": "chrg_67hmnte88stjgyqpw90",
+        "OrderItem": "L77902487-V1",
+        "Period": "5",
+        "raw_update_time": "2026-04-27 02:38:55",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1888.87",
+        "InvoiceNo": "chrg_67ektx3gcjy5762wo7q",
+        "OrderItem": "L77887594-V1",
+        "Period": "5",
+        "raw_update_time": "2026-04-19 07:21:30",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2043.17",
+        "InvoiceNo": "chrg_67yk5w664jgf92zkbdk",
+        "OrderItem": "L78070298-V1",
+        "Period": "5",
+        "raw_update_time": "2026-06-09 09:25:30",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2280.0",
+        "InvoiceNo": "chrg_67gh25rexzots0nad5p",
+        "OrderItem": "L79383396-V1",
+        "Period": "5",
+        "raw_update_time": "2026-04-24 03:45:37",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2219.93",
+        "InvoiceNo": "chrg_67dem7s2mr8rypjp3pj",
+        "OrderItem": "L79333640-V1",
+        "Period": "5",
+        "raw_update_time": "2026-04-16 16:00:42",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1990.0",
+        "InvoiceNo": "chrg_67desmcguajuovei85l",
+        "OrderItem": "L79319556-V1",
+        "Period": "5",
+        "raw_update_time": "2026-04-16 07:42:43",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2232.56",
+        "InvoiceNo": "chrg_67arri2c8iawncyu0sy",
+        "OrderItem": "L77916481-V1",
+        "Period": "5",
+        "raw_update_time": "2026-04-09 13:44:15",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1936.38",
+        "InvoiceNo": "chrg_67cjj2d5ip8exbt72b8",
+        "OrderItem": "L78115399-V1",
+        "Period": "5",
+        "raw_update_time": "2026-04-14 02:25:23",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1900.0",
+        "InvoiceNo": "chrg_67d6vukq65t5ht57s14",
+        "OrderItem": "L79332913-V1",
+        "Period": "5",
+        "raw_update_time": "2026-04-15 18:15:49",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2180.0",
+        "InvoiceNo": "chrg_67exffilq92gpssq4qq",
+        "OrderItem": "L79352011-V1",
+        "Period": "5",
+        "raw_update_time": "2026-04-20 04:50:06",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1885.17",
+        "InvoiceNo": "chrg_67fbtc9n8t9xol898mq",
+        "OrderItem": "L79368552-V1",
+        "Period": "5",
+        "raw_update_time": "2026-04-21 05:21:40",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2400.0",
+        "InvoiceNo": "chrg_67g78rfzdtahijrgioh",
+        "OrderItem": "L79293316-V1",
+        "Period": "5",
+        "raw_update_time": "2026-04-23 10:55:12",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2280.0",
+        "InvoiceNo": "chrg_67t50r2po5ox4a0eh2e",
+        "OrderItem": "L79379524-V1",
+        "Period": "5",
+        "raw_update_time": "2026-05-26 12:50:04",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2200.0",
+        "InvoiceNo": "chrg_67dd0e1ra09viiu08dv",
+        "OrderItem": "L79335013-V1",
+        "Period": "5",
+        "raw_update_time": "2026-04-16 04:41:29",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "3650.09",
+        "InvoiceNo": "chrg_67azdnbt1zirixm6n5b",
+        "OrderItem": "L79329663-V1",
+        "Period": "5",
+        "raw_update_time": "2026-04-10 03:22:12",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "4200.18",
+        "InvoiceNo": "chrg_67im0t93ysoq7reztn1",
+        "OrderItem": "L77902124-V1",
+        "Period": "5",
+        "raw_update_time": "2026-04-29 14:50:02",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1831.01",
+        "InvoiceNo": "chrg_67drqrckf69qe338jml",
+        "OrderItem": "L77833543-V1",
+        "Period": "5",
+        "raw_update_time": "2026-04-17 05:47:22",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2226.66",
+        "InvoiceNo": "chrg_67hm1735baezh667vua",
+        "OrderItem": "L77426856-V1",
+        "Period": "5",
+        "raw_update_time": "2026-04-27 01:29:28",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1879.99",
+        "InvoiceNo": "chrg_67g2dqpd6xue68ffn15",
+        "OrderItem": "L77831230-V1",
+        "Period": "5",
+        "raw_update_time": "2026-04-23 02:47:33",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2970.0",
+        "InvoiceNo": "chrg_67je3yi9788fshrvtmt",
+        "OrderItem": "L77770286-V1",
+        "Period": "5",
+        "raw_update_time": "2026-05-01 14:42:22",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2300.0",
+        "InvoiceNo": "chrg_67hnnt1xwzkzyifxc3o",
+        "OrderItem": "L79372740-V1",
+        "Period": "5",
+        "raw_update_time": "2026-04-27 04:16:56",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2350.0",
+        "InvoiceNo": "chrg_67g9twncfzfv2gs59u8",
+        "OrderItem": "L79369672-V1",
+        "Period": "5",
+        "raw_update_time": "2026-04-23 15:19:37",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1850.0",
+        "InvoiceNo": "chrg_67fuerdb3xnnn76b5ti",
+        "OrderItem": "L79359671-V1",
+        "Period": "5",
+        "raw_update_time": "2026-04-22 13:03:26",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2020.0",
+        "InvoiceNo": "chrg_67g9lblbh1z22l0w6jf",
+        "OrderItem": "L77939883-V1",
+        "Period": "5",
+        "raw_update_time": "2026-04-23 14:55:47",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1800.0",
+        "InvoiceNo": "chrg_67id5q1fpykwe1umbgz",
+        "OrderItem": "L79326837-V1",
+        "Period": "5",
+        "raw_update_time": "2026-04-28 23:44:35",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2350.0",
+        "InvoiceNo": "chrg_67h0p1f0vrde3efq3wx",
+        "OrderItem": "L79131897-V1",
+        "Period": "5",
+        "raw_update_time": "2026-04-25 13:07:18",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2170.0",
+        "InvoiceNo": "chrg_67i1oi5o9584c1enzu6",
+        "OrderItem": "L79305182-V1",
+        "Period": "5",
+        "raw_update_time": "2026-04-28 04:16:10",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2550.02",
+        "InvoiceNo": "chrg_67bbuz0b2zkmxu97x1k",
+        "OrderItem": "L79312967-V1",
+        "Period": "5",
+        "raw_update_time": "2026-04-10 23:59:38",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2625.57",
+        "InvoiceNo": "chrg_67gjcgu06y7vmaiz8fv",
+        "OrderItem": "L79312952-V1",
+        "Period": "5",
+        "raw_update_time": "2026-04-24 07:33:59",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2081.58",
+        "InvoiceNo": "chrg_67emt7xygukf0kj6cts",
+        "OrderItem": "L77842519-V1",
+        "Period": "5",
+        "raw_update_time": "2026-04-19 10:44:37",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1900.0",
+        "InvoiceNo": "chrg_67fmpreufm4yhjybkyj",
+        "OrderItem": "L79325029-V1",
+        "Period": "5",
+        "raw_update_time": "2026-04-21 23:57:02",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2180.0",
+        "InvoiceNo": "chrg_67r45h57v2gaalb0187",
+        "OrderItem": "L79352011-V1",
+        "Period": "6",
+        "raw_update_time": "2026-05-21 08:37:29",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2755.04",
+        "InvoiceNo": "chrg_67sbyhg645a27wwkh5t",
+        "OrderItem": "L77920555-V1",
+        "Period": "6",
+        "raw_update_time": "2026-05-24 11:17:08",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2300.0",
+        "InvoiceNo": "chrg_67t120fux7emd2gfh4c",
+        "OrderItem": "L79372740-V1",
+        "Period": "6",
+        "raw_update_time": "2026-05-26 06:05:36",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1800.0",
+        "InvoiceNo": "chrg_67sjv0r70y5yoptso3g",
+        "OrderItem": "L79326837-V1",
+        "Period": "6",
+        "raw_update_time": "2026-05-25 00:45:22",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1918.08",
+        "InvoiceNo": "chrg_67y9lxbdmdkll27950v",
+        "OrderItem": "L77897388-V1",
+        "Period": "6",
+        "raw_update_time": "2026-06-08 15:26:51",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1990.0",
+        "InvoiceNo": "chrg_67nj8g5ojf3m7bfnhpr",
+        "OrderItem": "L79319556-V1",
+        "Period": "6",
+        "raw_update_time": "2026-05-12 04:52:55",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2086.61",
+        "InvoiceNo": "chrg_67nvuu8mb9pfs2ien1s",
+        "OrderItem": "L79321084-V1",
+        "Period": "6",
+        "raw_update_time": "2026-05-13 02:23:59",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2625.11",
+        "InvoiceNo": "chrg_67tlaovg91xydfvuo3d",
+        "OrderItem": "L78118535-V1",
+        "Period": "6",
+        "raw_update_time": "2026-05-27 16:33:57",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2219.93",
+        "InvoiceNo": "chrg_67plbpoa6gudyvpd4sq",
+        "OrderItem": "L79333640-V1",
+        "Period": "6",
+        "raw_update_time": "2026-05-17 11:10:32",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1831.01",
+        "InvoiceNo": "chrg_67pl1ohdh03bs4u5pd1",
+        "OrderItem": "L77833543-V1",
+        "Period": "6",
+        "raw_update_time": "2026-05-17 10:42:45",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1870.0",
+        "InvoiceNo": "chrg_67rljc93aegt489gvl2",
+        "OrderItem": "L79325214-V1",
+        "Period": "6",
+        "raw_update_time": "2026-05-22 14:14:39",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2220.0",
+        "InvoiceNo": "chrg_67oq1yrbemecb11x34y",
+        "OrderItem": "L79307435-V1",
+        "Period": "6",
+        "raw_update_time": "2026-05-15 05:52:13",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2042.63",
+        "InvoiceNo": "chrg_67qosbmib59zuox1uuz",
+        "OrderItem": "L77842056-V1",
+        "Period": "6",
+        "raw_update_time": "2026-05-20 10:00:04",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1850.0",
+        "InvoiceNo": "chrg_67qzc4ts5zmyhhzlbit",
+        "OrderItem": "L79359671-V1",
+        "Period": "6",
+        "raw_update_time": "2026-05-21 00:25:50",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1968.8",
+        "InvoiceNo": "chrg_67q8wj36sf6q3hsii6e",
+        "OrderItem": "L79332731-V1",
+        "Period": "6",
+        "raw_update_time": "2026-05-19 03:21:10",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2350.0",
+        "InvoiceNo": "chrg_67s7dy3k5vde5v4y11t",
+        "OrderItem": "L79369672-V1",
+        "Period": "6",
+        "raw_update_time": "2026-05-24 03:29:33",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2938.94",
+        "InvoiceNo": "chrg_67pug0eyihcqpxcihc9",
+        "OrderItem": "L79327908-V1",
+        "Period": "6",
+        "raw_update_time": "2026-05-18 02:42:45",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "3299.99",
+        "InvoiceNo": "chrg_67pxspam774na56apw8",
+        "OrderItem": "L79329562-V1",
+        "Period": "6",
+        "raw_update_time": "2026-05-18 08:25:47",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1819.86",
+        "InvoiceNo": "chrg_67pfnk77a1fuordshjm",
+        "OrderItem": "L77852962-V1",
+        "Period": "6",
+        "raw_update_time": "2026-05-18 01:23:48",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2018.77",
+        "InvoiceNo": "chrg_67q8x62juctfmthvh8q",
+        "OrderItem": "L77914090-V1",
+        "Period": "6",
+        "raw_update_time": "2026-05-19 03:23:34",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "3150.08",
+        "InvoiceNo": "chrg_67qebikvkqoe99qiyy8",
+        "OrderItem": "L77431939-V1",
+        "Period": "6",
+        "raw_update_time": "2026-05-19 12:35:17",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "3650.09",
+        "InvoiceNo": "chrg_67smfzirdia0ij15m83",
+        "OrderItem": "L79329663-V1",
+        "Period": "6",
+        "raw_update_time": "2026-05-25 05:09:39",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1900.0",
+        "InvoiceNo": "chrg_67p5t3tsr5sno1olrcc",
+        "OrderItem": "L79332913-V1",
+        "Period": "6",
+        "raw_update_time": "2026-05-16 08:43:36",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2081.58",
+        "InvoiceNo": "chrg_67p2pxkh87ih6me9754",
+        "OrderItem": "L77842519-V1",
+        "Period": "6",
+        "raw_update_time": "2026-05-17 02:48:06",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2022.3",
+        "InvoiceNo": "chrg_67v1y2onweqzim2zvi2",
+        "OrderItem": "L77680280-V1",
+        "Period": "6",
+        "raw_update_time": "2026-05-31 10:17:51",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1950.0",
+        "InvoiceNo": "chrg_67p1yp9anpsi0k2w7zr",
+        "OrderItem": "L79368739-V1",
+        "Period": "6",
+        "raw_update_time": "2026-05-16 02:10:12",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2700.04",
+        "InvoiceNo": "chrg_67t433aa0wyidvbx3hh",
+        "OrderItem": "L77760989-V1",
+        "Period": "6",
+        "raw_update_time": "2026-05-26 11:13:35",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1936.38",
+        "InvoiceNo": "chrg_67mp3y6qwgc485wmxd4",
+        "OrderItem": "L78115399-V1",
+        "Period": "6",
+        "raw_update_time": "2026-05-10 01:32:11",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1920.65",
+        "InvoiceNo": "chrg_67q01t5a3n7v70f9ouz",
+        "OrderItem": "L77879228-V1",
+        "Period": "6",
+        "raw_update_time": "2026-05-18 12:15:46",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2470.0",
+        "InvoiceNo": "chrg_67jsysqzpmi6eqyop19",
+        "OrderItem": "L79305074-V1",
+        "Period": "6",
+        "raw_update_time": "2026-05-02 16:01:38",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2956.73",
+        "InvoiceNo": "chrg_67r2l01wfm767n9i6ej",
+        "OrderItem": "L77832414-V1",
+        "Period": "6",
+        "raw_update_time": "2026-05-21 05:56:30",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2250.0",
+        "InvoiceNo": "chrg_680sl0ozmmd07cp79ut",
+        "OrderItem": "L79337161-V1",
+        "Period": "6",
+        "raw_update_time": "2026-06-15 02:30:21",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1919.7",
+        "InvoiceNo": "chrg_67s52iiifjijxdluvop",
+        "OrderItem": "L79379882-V1",
+        "Period": "6",
+        "raw_update_time": "2026-05-23 23:32:51",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2864.43",
+        "InvoiceNo": "chrg_67r5pvbvd77jlolpuhf",
+        "OrderItem": "L79331377-V1",
+        "Period": "6",
+        "raw_update_time": "2026-05-21 11:17:33",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1860.0",
+        "InvoiceNo": "chrg_67sefcx7pb8aom41gyz",
+        "OrderItem": "L79365147-V1",
+        "Period": "6",
+        "raw_update_time": "2026-05-24 15:30:38",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2280.0",
+        "InvoiceNo": "chrg_684njk8krh6gvmadf4h",
+        "OrderItem": "L79383396-V1",
+        "Period": "7",
+        "raw_update_time": "2026-06-24 23:21:06",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2022.3",
+        "InvoiceNo": "chrg_686n9ltrlwoc2y7360w",
+        "OrderItem": "L77680280-V1",
+        "Period": "7",
+        "raw_update_time": "2026-06-30 01:35:54",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2220.0",
+        "InvoiceNo": "chrg_68554o2xqw46xddinf6",
+        "OrderItem": "L79389582-V1",
+        "Period": "7",
+        "raw_update_time": "2026-06-26 05:20:16",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2864.43",
+        "InvoiceNo": "chrg_6815alf1wyhyg3clzfs",
+        "OrderItem": "L79331377-V1",
+        "Period": "7",
+        "raw_update_time": "2026-06-16 00:09:52",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2350.0",
+        "InvoiceNo": "chrg_684pan1kczffuumnh7u",
+        "OrderItem": "L79131897-V1",
+        "Period": "7",
+        "raw_update_time": "2026-06-25 02:20:36",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2625.57",
+        "InvoiceNo": "chrg_684sij3j5lfb8h0vlsp",
+        "OrderItem": "L79312952-V1",
+        "Period": "7",
+        "raw_update_time": "2026-06-25 07:50:19",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1850.0",
+        "InvoiceNo": "chrg_685h6jm50tangd0usw9",
+        "OrderItem": "L79327992-V1",
+        "Period": "7",
+        "raw_update_time": "2026-06-27 01:52:37",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2880.01",
+        "InvoiceNo": "chrg_684pdg2g4rxu66duqrv",
+        "OrderItem": "L77902487-V1",
+        "Period": "7",
+        "raw_update_time": "2026-06-26 02:28:47",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1928.6",
+        "InvoiceNo": "chrg_681dpoiuuk77f7kqnh4",
+        "OrderItem": "L78290719-V1",
+        "Period": "7",
+        "raw_update_time": "2026-06-16 14:31:34",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1930.0",
+        "InvoiceNo": "chrg_67zma2qhgx9ybvkib82",
+        "OrderItem": "L79342818-V1",
+        "Period": "7",
+        "raw_update_time": "2026-06-12 02:24:01",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2200.0",
+        "InvoiceNo": "chrg_680e8d4k3vcbopn7sou",
+        "OrderItem": "L79335013-V1",
+        "Period": "7",
+        "raw_update_time": "2026-06-14 02:02:49",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2469.39",
+        "InvoiceNo": "chrg_682wsocc49719oweepa",
+        "OrderItem": "L77841952-V1",
+        "Period": "7",
+        "raw_update_time": "2026-06-20 12:26:31",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2273.67",
+        "InvoiceNo": "chrg_684btdi85r93yhjwt6h",
+        "OrderItem": "L77983511-V1",
+        "Period": "7",
+        "raw_update_time": "2026-06-24 03:22:14",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2018.77",
+        "InvoiceNo": "chrg_683bsgvei28tkjugeke",
+        "OrderItem": "L77914090-V1",
+        "Period": "7",
+        "raw_update_time": "2026-06-21 13:58:04",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2755.04",
+        "InvoiceNo": "chrg_6853tnr4o390ezjjc9i",
+        "OrderItem": "L77920555-V1",
+        "Period": "7",
+        "raw_update_time": "2026-06-26 03:06:02",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2550.02",
+        "InvoiceNo": "chrg_680jnq1aepbcqsa6fhc",
+        "OrderItem": "L79312967-V1",
+        "Period": "7",
+        "raw_update_time": "2026-06-14 11:17:39",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2769.05",
+        "InvoiceNo": "chrg_68324hj8o9o0xd4cpch",
+        "OrderItem": "L79357058-V1",
+        "Period": "7",
+        "raw_update_time": "2026-06-20 21:29:01",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "3150.08",
+        "InvoiceNo": "chrg_682djtk8637rvlpkzdv",
+        "OrderItem": "L77431939-V1",
+        "Period": "7",
+        "raw_update_time": "2026-06-19 03:36:14",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1919.7",
+        "InvoiceNo": "chrg_684c6epgaov1l7fwaav",
+        "OrderItem": "L79379882-V1",
+        "Period": "7",
+        "raw_update_time": "2026-06-24 03:59:38",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2280.93",
+        "InvoiceNo": "chrg_68558lr5drl96fxe4ij",
+        "OrderItem": "L79384548-V1",
+        "Period": "7",
+        "raw_update_time": "2026-06-26 05:31:03",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2170.07",
+        "InvoiceNo": "chrg_6804ueufaaaapu7oti3",
+        "OrderItem": "L77943767-V1",
+        "Period": "7",
+        "raw_update_time": "2026-06-13 12:43:25",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "4200.18",
+        "InvoiceNo": "chrg_686h25hk581hmkw89xs",
+        "OrderItem": "L77902124-V1",
+        "Period": "7",
+        "raw_update_time": "2026-06-29 15:01:12",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2956.73",
+        "InvoiceNo": "chrg_6823nxl5a5exoims6m5",
+        "OrderItem": "L77832414-V1",
+        "Period": "7",
+        "raw_update_time": "2026-06-18 10:45:00",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2894.96",
+        "InvoiceNo": "chrg_680slk1bta5m4yu4k0w",
+        "OrderItem": "L79266659-V1",
+        "Period": "7",
+        "raw_update_time": "2026-06-15 02:31:30",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1870.0",
+        "InvoiceNo": "chrg_68137xrrt0yswrtfbf8",
+        "OrderItem": "L74803702-V1",
+        "Period": "7",
+        "raw_update_time": "2026-06-16 05:00:48",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2970.0",
+        "InvoiceNo": "chrg_684nv0zre74z1dbw80x",
+        "OrderItem": "L77770286-V1",
+        "Period": "7",
+        "raw_update_time": "2026-06-24 23:53:34",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2232.56",
+        "InvoiceNo": "chrg_67yzjgyk49fdl18mpja",
+        "OrderItem": "L77916481-V1",
+        "Period": "7",
+        "raw_update_time": "2026-06-10 11:38:06",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1870.0",
+        "InvoiceNo": "chrg_683k13axuqmzj6j9u6i",
+        "OrderItem": "L79325214-V1",
+        "Period": "7",
+        "raw_update_time": "2026-06-22 04:00:07",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2700.04",
+        "InvoiceNo": "chrg_683yps08b0yk4d2k5mx",
+        "OrderItem": "L77760989-V1",
+        "Period": "7",
+        "raw_update_time": "2026-06-23 05:02:15",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1860.0",
+        "InvoiceNo": "chrg_682t9do9shd5dsmzveh",
+        "OrderItem": "L79365147-V1",
+        "Period": "7",
+        "raw_update_time": "2026-06-20 06:22:42",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1806.91",
+        "InvoiceNo": "chrg_68174csk0zcv02yjvr7",
+        "OrderItem": "L77837553-V1",
+        "Period": "7",
+        "raw_update_time": "2026-06-16 03:16:46",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2020.0",
+        "InvoiceNo": "chrg_6842hbj2r4pliky7oe0",
+        "OrderItem": "L77939883-V1",
+        "Period": "7",
+        "raw_update_time": "2026-06-23 11:27:34",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "1850.0",
+        "InvoiceNo": "chrg_684obq6qq46648rc70r",
+        "OrderItem": "L79322515-V1",
+        "Period": "7",
+        "raw_update_time": "2026-06-25 00:43:04",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2120.0",
+        "InvoiceNo": "chrg_6823s5vxvih3da3hwcx",
+        "OrderItem": "L79342833-V1",
+        "Period": "7",
+        "raw_update_time": "2026-06-18 10:58:54",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2220.0",
+        "InvoiceNo": "chrg_680suv5fcabevzqivdm",
+        "OrderItem": "L79307435-V1",
+        "Period": "7",
+        "raw_update_time": "2026-06-15 02:59:28",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "3299.99",
+        "InvoiceNo": "chrg_681dqxgej1654ebkwym",
+        "OrderItem": "L79329562-V1",
+        "Period": "7",
+        "raw_update_time": "2026-06-16 14:35:55",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "2042.63",
+        "InvoiceNo": "chrg_682fxq22comqtsth4lk",
+        "OrderItem": "L77842056-V1",
+        "Period": "7",
+        "raw_update_time": "2026-06-19 07:40:19",
+        "source_charge_rank": "1"
+      },
+      {
+        "ActualReceived": "59.86",
+        "InvoiceNo": "2_chrg_6659seph2lxr4q3c449",
+        "OrderItem": "L79379524-V1",
+        "Period": "1",
+        "raw_update_time": "2025-12-24 11:27:21",
+        "source_charge_rank": "2"
+      },
+      {
+        "ActualReceived": "322.07",
+        "InvoiceNo": "2_chrg_65w7l69d6di4o8235s5",
+        "OrderItem": "L79357058-V1",
+        "Period": "1",
+        "raw_update_time": "2025-12-01 07:26:33",
+        "source_charge_rank": "2"
+      },
+      {
+        "ActualReceived": "60.0",
+        "InvoiceNo": "2_chrg_666051n5qsblklfr85o",
+        "OrderItem": "L79383396-V1",
+        "Period": "1",
+        "raw_update_time": "2025-12-26 08:14:59",
+        "source_charge_rank": "2"
+      },
+      {
+        "ActualReceived": "1177.54",
+        "InvoiceNo": "chrg_686rqcvcchn31z0kvu8",
+        "OrderItem": "L78276298-V1",
+        "Period": "4",
+        "raw_update_time": "2026-06-30 09:13:17",
+        "source_charge_rank": "2"
+      }
+    ]
+  }
+]

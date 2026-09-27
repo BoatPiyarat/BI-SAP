@@ -1,0 +1,95 @@
+{
+  "creationTime": "1788013795182",
+  "etag": "zdY1dKIIlJt3foZNr1TFkg==",
+  "id": "pacific-plating-282708:sap_integration_v2.RCL 05_paid by period",
+  "kind": "bigquery#table",
+  "lastModifiedTime": "1788013805076",
+  "location": "asia-southeast1",
+  "numActiveLogicalBytes": "0",
+  "numBytes": "0",
+  "numLongTermBytes": "0",
+  "numLongTermLogicalBytes": "0",
+  "numRows": "0",
+  "numTotalLogicalBytes": "0",
+  "schema": {
+    "fields": [
+      {
+        "mode": "NULLABLE",
+        "name": "human_id",
+        "type": "STRING"
+      },
+      {
+        "mode": "NULLABLE",
+        "name": "order_item",
+        "type": "STRING"
+      },
+      {
+        "mode": "NULLABLE",
+        "name": "order_create_time",
+        "type": "TIMESTAMP"
+      },
+      {
+        "mode": "NULLABLE",
+        "name": "order_update_time",
+        "type": "TIMESTAMP"
+      },
+      {
+        "mode": "NULLABLE",
+        "name": "is_fully_paid",
+        "type": "BOOLEAN"
+      },
+      {
+        "mode": "NULLABLE",
+        "name": "is_cancelled",
+        "type": "BOOLEAN"
+      },
+      {
+        "mode": "NULLABLE",
+        "name": "payment_option",
+        "type": "STRING"
+      },
+      {
+        "mode": "NULLABLE",
+        "name": "installment_number",
+        "type": "INTEGER"
+      },
+      {
+        "mode": "NULLABLE",
+        "name": "cancel_time",
+        "type": "TIMESTAMP"
+      },
+      {
+        "mode": "NULLABLE",
+        "name": "charges_update_time",
+        "type": "TIMESTAMP"
+      },
+      {
+        "mode": "NULLABLE",
+        "name": "sql_view_using",
+        "type": "STRING"
+      },
+      {
+        "mode": "NULLABLE",
+        "name": "product",
+        "type": "STRING"
+      },
+      {
+        "mode": "NULLABLE",
+        "name": "InsuranceType",
+        "type": "STRING"
+      }
+    ]
+  },
+  "selfLink": "https://bigquery.googleapis.com/bigquery/v2/projects/pacific-plating-282708/datasets/sap_integration_v2/tables/RCL 05_paid by period",
+  "tableReference": {
+    "datasetId": "sap_integration_v2",
+    "projectId": "pacific-plating-282708",
+    "tableId": "RCL 05_paid by period"
+  },
+  "type": "VIEW",
+  "view": {
+    "privacyPolicy": {},
+    "query": "\r\n-- RCL 05_paid by period -- FIXED & CREATED 2026-08-29 (Boat review)\r\n-- Previously this logic lived (mislabeled) under `RCL 05_newpayment`.\r\n-- Bug fixed here: original version joined `sap` to `charges` (ALL periods\r\n-- ever paid) instead of `charges_ranking` (latest period only), then\r\n-- relied on DISTINCT to collapse -- this let orders where an OLD period\r\n-- was still missing from SAP mask the fact that the LATEST period was\r\n-- already Paid+Paid, producing false \"qualified\" rows\r\n-- (e.g. \"1/10 CareOS paid, SAP paid\" wrongly surfaced).\r\n-- Fix: NOT EXISTS check scoped to charges_ranking.installment_number\r\n-- (the actual latest period) plus OrderItem-level join key (was OrderID-only).\r\nWITH charges AS (\r\n  SELECT *\r\n  FROM `pacific-plating-282708.careos.carepay_charges`\r\n  WHERE status = 'SUCCESSFUL'\r\n),\r\n\r\ncharges_ranking AS (\r\n  SELECT *,\r\n    ROW_NUMBER() OVER (PARTITION BY transaction_id ORDER BY installment_number DESC) AS rank\r\n  FROM charges\r\n  QUALIFY rank = 1\r\n),\r\n\r\nsap_paid_periods AS (\r\n  -- exact per-(OrderItem, Period) existence check -- NOT a MAX watermark, NOT an all-period fan-out\r\n  SELECT DISTINCT\r\n    U_OrderItem AS order_item,\r\n    SAFE_CAST(U_Period AS INT64) AS period\r\n  FROM `pacific-plating-282708.sap_integration_v2.SAP_LIVE_FULL`\r\n  WHERE TransactionStatus IN ('Paid', 'paid')\r\n)\r\n\r\nSELECT DISTINCT\r\n  orders.human_id,\r\n  oi.human_id AS order_item,\r\n  orders.create_time AS order_create_time,\r\n  orders.update_time AS order_update_time,\r\n  orders.is_fully_paid,\r\n  orders.is_cancelled,\r\n  transactions.payment_option,\r\n  charges_ranking.installment_number,\r\n  orders.cancel_time,\r\n  charges_ranking.update_time AS charges_update_time,\r\n  CASE\r\n    WHEN orders.create_time < '2024-03-28' THEN 'icollection'\r\n    ELSE 'carepay'\r\n  END AS sql_view_using,\r\n  orders.product,\r\n  oi.motor_item_type AS InsuranceType\r\nFROM `pacific-plating-282708.careos.careos_orders` AS orders\r\nLEFT JOIN `pacific-plating-282708.careos.careos_order_items` AS oi\r\n  ON orders.id = oi.order_id\r\nLEFT JOIN `pacific-plating-282708.careos.carepay_transactions` AS transactions\r\n  ON CONCAT('transactions/', transactions.id) = orders.payment\r\nLEFT JOIN charges_ranking\r\n  ON charges_ranking.transaction_id = transactions.id\r\nWHERE 1=1\r\n  AND charges_ranking.installment_number IS NOT NULL\r\n  AND DATE(charges_ranking.update_time)\r\n      BETWEEN DATE_TRUNC(DATE_SUB(CURRENT_DATE(), INTERVAL 2 MONTH), MONTH)\r\n      AND CURRENT_DATE()\r\n  AND transactions.payment_option = 'RABBIT_CARE_INSTALLMENT'\r\n  AND NOT EXISTS (\r\n    SELECT 1\r\n    FROM sap_paid_periods p\r\n    WHERE p.order_item = oi.human_id\r\n      AND p.period = charges_ranking.installment_number\r\n  )\r\nORDER BY orders.create_time ASC;",
+    "useLegacySql": false
+  }
+}

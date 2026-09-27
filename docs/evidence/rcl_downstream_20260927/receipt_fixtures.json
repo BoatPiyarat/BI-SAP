@@ -1,0 +1,223 @@
+[
+  "Created pacific-plating-282708._script031244b844978331af0288d97ca84c3891bc3453.fixture_charges\n",
+  "Created pacific-plating-282708._script031244b844978331af0288d97ca84c3891bc3453.fixture_orders\n",
+  "Created pacific-plating-282708._script031244b844978331af0288d97ca84c3891bc3453.fixture_order_items\n",
+  "Created pacific-plating-282708._script031244b844978331af0288d97ca84c3891bc3453.all_dashboard\n",
+  "Created pacific-plating-282708._script031244b844978331af0288d97ca84c3891bc3453.fixture_sap\n",
+  "Created pacific-plating-282708._script031244b844978331af0288d97ca84c3891bc3453.expected\n",
+  "Created pacific-plating-282708._script031244b844978331af0288d97ca84c3891bc3453.verdicts\n",
+  "Created pacific-plating-282708._script031244b844978331af0288d97ca84c3891bc3453.fixture_dashboard\n",
+  "Created pacific-plating-282708._script031244b844978331af0288d97ca84c3891bc3453.actual\n",
+  "Created pacific-plating-282708._script031244b844978331af0288d97ca84c3891bc3453.sap_after_posting\n",
+  "Created pacific-plating-282708._script031244b844978331af0288d97ca84c3891bc3453.replay\n",
+  "Number of affected rows: 1\n",
+  "Number of affected rows: 1\n",
+  "Number of affected rows: 1\n",
+  "Number of affected rows: 1\n",
+  "Number of affected rows: 1\n",
+  "Number of affected rows: 1\n",
+  "Number of affected rows: 1\n",
+  "Number of affected rows: 1\n",
+  "Number of affected rows: 1\n",
+  "Number of affected rows: 1\n",
+  "Number of affected rows: 1\n",
+  "Number of affected rows: 1\n",
+  "Number of affected rows: 1\n",
+  "Number of affected rows: 1\n",
+  "Number of affected rows: 1\n",
+  "Number of affected rows: 1\n",
+  "Number of affected rows: 1\n",
+  "Number of affected rows: 1\n",
+  "Number of affected rows: 1\n",
+  "Number of affected rows: 1\n",
+  "Number of affected rows: 1\n",
+  "Number of affected rows: 1\n",
+  "Number of affected rows: 1\n",
+  "Number of affected rows: 1\n",
+  "Number of affected rows: 1\n",
+  "Number of affected rows: 1\n",
+  [
+    {
+      "OrderItem": "blank-V1",
+      "emitted": null,
+      "error": "Already Exists: Table pacific-plating-282708:_script031244b844978331af0288d97ca84c3891bc3453.fixture_dashboard at [1472:2]",
+      "replayed": null,
+      "should_emit": "false"
+    },
+    {
+      "OrderItem": "cancelled-V1",
+      "emitted": null,
+      "error": "Already Exists: Table pacific-plating-282708:_script031244b844978331af0288d97ca84c3891bc3453.fixture_dashboard at [1472:2]",
+      "replayed": null,
+      "should_emit": "false"
+    },
+    {
+      "OrderItem": "change_cancelled-V1",
+      "emitted": "0",
+      "error": null,
+      "replayed": "0",
+      "should_emit": "false"
+    },
+    {
+      "OrderItem": "collision-V1",
+      "emitted": null,
+      "error": "Already Exists: Table pacific-plating-282708:_script031244b844978331af0288d97ca84c3891bc3453.fixture_dashboard at [1472:2]",
+      "replayed": null,
+      "should_emit": "false"
+    },
+    {
+      "OrderItem": "compulsory_first_missing_invoice-V1",
+      "emitted": null,
+      "error": "Already Exists: Table pacific-plating-282708:_script031244b844978331af0288d97ca84c3891bc3453.fixture_dashboard at [1472:2]",
+      "replayed": null,
+      "should_emit": "true"
+    },
+    {
+      "OrderItem": "compulsory_zero_first_missing_invoice-V1",
+      "emitted": null,
+      "error": "Already Exists: Table pacific-plating-282708:_script031244b844978331af0288d97ca84c3891bc3453.fixture_dashboard at [1472:2]",
+      "replayed": null,
+      "should_emit": "true"
+    },
+    {
+      "OrderItem": "exact_paid-V1",
+      "emitted": null,
+      "error": "Already Exists: Table pacific-plating-282708:_script031244b844978331af0288d97ca84c3891bc3453.fixture_dashboard at [1472:2]",
+      "replayed": null,
+      "should_emit": "false"
+    },
+    {
+      "OrderItem": "gap_period-V1",
+      "emitted": null,
+      "error": "Already Exists: Table pacific-plating-282708:_script031244b844978331af0288d97ca84c3891bc3453.fixture_dashboard at [1472:2]",
+      "replayed": null,
+      "should_emit": "true"
+    },
+    {
+      "OrderItem": "invalid_extra_pending-V1",
+      "emitted": null,
+      "error": "Already Exists: Table pacific-plating-282708:_script031244b844978331af0288d97ca84c3891bc3453.fixture_dashboard at [1472:2]",
+      "replayed": null,
+      "should_emit": "false"
+    },
+    {
+      "OrderItem": "literal_null-V1",
+      "emitted": null,
+      "error": "Already Exists: Table pacific-plating-282708:_script031244b844978331af0288d97ca84c3891bc3453.fixture_dashboard at [1472:2]",
+      "replayed": null,
+      "should_emit": "false"
+    },
+    {
+      "OrderItem": "missing_raw-V1",
+      "emitted": null,
+      "error": "Already Exists: Table pacific-plating-282708:_script031244b844978331af0288d97ca84c3891bc3453.fixture_dashboard at [1472:2]",
+      "replayed": null,
+      "should_emit": "false"
+    },
+    {
+      "OrderItem": "new_period-V1",
+      "emitted": null,
+      "error": "Already Exists: Table pacific-plating-282708:_script031244b844978331af0288d97ca84c3891bc3453.fixture_dashboard at [1472:2]",
+      "replayed": null,
+      "should_emit": "true"
+    },
+    {
+      "OrderItem": "normal_paid-V1",
+      "emitted": null,
+      "error": "Already Exists: Table pacific-plating-282708:_script031244b844978331af0288d97ca84c3891bc3453.fixture_dashboard at [1472:2]",
+      "replayed": null,
+      "should_emit": "false"
+    },
+    {
+      "OrderItem": "null_expected-V1",
+      "emitted": null,
+      "error": "Already Exists: Table pacific-plating-282708:_script031244b844978331af0288d97ca84c3891bc3453.fixture_dashboard at [1472:2]",
+      "replayed": null,
+      "should_emit": "false"
+    },
+    {
+      "OrderItem": "null_invoice-V1",
+      "emitted": null,
+      "error": "Already Exists: Table pacific-plating-282708:_script031244b844978331af0288d97ca84c3891bc3453.fixture_dashboard at [1472:2]",
+      "replayed": null,
+      "should_emit": "false"
+    },
+    {
+      "OrderItem": "other_item-V1",
+      "emitted": null,
+      "error": "Already Exists: Table pacific-plating-282708:_script031244b844978331af0288d97ca84c3891bc3453.fixture_dashboard at [1472:2]",
+      "replayed": null,
+      "should_emit": "true"
+    },
+    {
+      "OrderItem": "other_period-V1",
+      "emitted": null,
+      "error": "Already Exists: Table pacific-plating-282708:_script031244b844978331af0288d97ca84c3891bc3453.fixture_dashboard at [1472:2]",
+      "replayed": null,
+      "should_emit": "true"
+    },
+    {
+      "OrderItem": "pending_not_topup-V1",
+      "emitted": null,
+      "error": "Already Exists: Table pacific-plating-282708:_script031244b844978331af0288d97ca84c3891bc3453.fixture_dashboard at [1472:2]",
+      "replayed": null,
+      "should_emit": "false"
+    },
+    {
+      "OrderItem": "period2_prefix-V1",
+      "emitted": null,
+      "error": "Already Exists: Table pacific-plating-282708:_script031244b844978331af0288d97ca84c3891bc3453.fixture_dashboard at [1472:2]",
+      "replayed": null,
+      "should_emit": "true"
+    },
+    {
+      "OrderItem": "raw_paid-V1",
+      "emitted": null,
+      "error": "Already Exists: Table pacific-plating-282708:_script031244b844978331af0288d97ca84c3891bc3453.fixture_dashboard at [1472:2]",
+      "replayed": null,
+      "should_emit": "false"
+    },
+    {
+      "OrderItem": "tie-V1",
+      "emitted": null,
+      "error": "Already Exists: Table pacific-plating-282708:_script031244b844978331af0288d97ca84c3891bc3453.fixture_dashboard at [1472:2]",
+      "replayed": null,
+      "should_emit": "false"
+    },
+    {
+      "OrderItem": "topup-V1",
+      "emitted": null,
+      "error": "Already Exists: Table pacific-plating-282708:_script031244b844978331af0288d97ca84c3891bc3453.fixture_dashboard at [1472:2]",
+      "replayed": null,
+      "should_emit": "true"
+    },
+    {
+      "OrderItem": "zero_expected_first_new-V1",
+      "emitted": null,
+      "error": "Already Exists: Table pacific-plating-282708:_script031244b844978331af0288d97ca84c3891bc3453.fixture_dashboard at [1472:2]",
+      "replayed": null,
+      "should_emit": "true"
+    },
+    {
+      "OrderItem": "zero_expected_first_paid-V1",
+      "emitted": null,
+      "error": "Already Exists: Table pacific-plating-282708:_script031244b844978331af0288d97ca84c3891bc3453.fixture_dashboard at [1472:2]",
+      "replayed": null,
+      "should_emit": "false"
+    },
+    {
+      "OrderItem": "zero_first_missing_invoice-V1",
+      "emitted": null,
+      "error": "Already Exists: Table pacific-plating-282708:_script031244b844978331af0288d97ca84c3891bc3453.fixture_dashboard at [1472:2]",
+      "replayed": null,
+      "should_emit": "true"
+    },
+    {
+      "OrderItem": "zero_first_tied-V1",
+      "emitted": null,
+      "error": "Already Exists: Table pacific-plating-282708:_script031244b844978331af0288d97ca84c3891bc3453.fixture_dashboard at [1472:2]",
+      "replayed": null,
+      "should_emit": "true"
+    }
+  ]
+]

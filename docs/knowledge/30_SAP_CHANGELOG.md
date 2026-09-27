@@ -3491,3 +3491,8 @@ Decided: ไม่ใช้ custom MCP server (ADC) สำหรับ BigQuery 
 workaround query-and-paste (OAuth bug redirect_uri_mismatch ฝั่ง Anthropic)
 
 Established: AI_BOOTSTRAP + CONTEXT/PROGRESS/CHANGELOG pattern; เชื่อม Gmail/Drive สำเร็จ
+
+
+## 2026-09-27T07:30:17.702583+07:00 — RCL downstream repair
+
+Prepared and verified downstream RCL fixes on current deployed dashboard; incorporated Claude review branch and independent response-round findings. No production changes. See FINDINGS_RCL_DOWNSTREAM_20260927.md.

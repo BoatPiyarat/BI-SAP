@@ -3615,3 +3615,8 @@ replayed export runs or destination URIs. REST dry-run at `2026-08-03T08:45:58.5
 at 0 bytes; deploy job `codex_deploy_062_20260803_154635_317` completed DONE, error null, 0/0
 processed/billed. No procedure CALL, GCS copy, or scheduler mutation occurred. `DELIVERED` remains
 strictly distinct from SAP pickup and acknowledgement.
+
+
+## 2026-09-27T07:30:17.702583+07:00 — RCL downstream repair
+
+RCL downstream source fixed: receipt-aware all-period gate, lineage runtime assertion and old-order eligibility/date ordering. Final snapshot 14→1525 wrapper rows, original payload removals/duplicate keys/incomplete spines all0; targetextras22.04/645.21. Source-only, NOT DEPLOYED; 8 later-period principal mappings + operational holds/import idempotency remain release gates. V3 held. See FINDINGS_RCL_DOWNSTREAM_20260927.md.

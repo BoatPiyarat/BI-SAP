@@ -1,0 +1,70 @@
+[
+  {
+    "jobReference": {
+      "jobId": "script_job_9d4089d09cf9a7719569b89475bd1007_3",
+      "location": "asia-southeast1",
+      "projectId": "pacific-plating-282708"
+    },
+    "status": {
+      "state": "DONE"
+    },
+    "destinationTable": {
+      "datasetId": "_b40227f1087cbcbcec8537ef3426bca9d3d3fe18",
+      "projectId": "pacific-plating-282708",
+      "tableId": "anon323d1690_6757_4d09_b6d8_870ba66ee583"
+    },
+    "query_sha256": "9caad96dc6b60e31a679f5f63415b48c79780865c3fa85045408a860a7cb7361",
+    "query_prefix": "SELECT CURRENT_TIMESTAMP() AS checked_at_utc,\n(SELECT COUNT(*) FROM `pacific-pla"
+  },
+  {
+    "jobReference": {
+      "jobId": "script_job_7679f065faee328e6b53a24ffc1e114a_2",
+      "location": "asia-southeast1",
+      "projectId": "pacific-plating-282708"
+    },
+    "status": {
+      "state": "DONE"
+    },
+    "destinationTable": {
+      "datasetId": "_script5b6f832a02368d19d349e841cace8aba59182e10",
+      "projectId": "pacific-plating-282708",
+      "tableId": "candidate_wrapper"
+    },
+    "query_sha256": "bad784ee8b8bd6340108e187d75fcd41992a347fc85930e9767f8dba25756c8c",
+    "query_prefix": "CREATE TEMP TABLE candidate_wrapper AS -- 2026-09-27 downstream candidate; SELEC"
+  },
+  {
+    "jobReference": {
+      "jobId": "script_job_ac0411ad49d9a4dbaeb7ffade5c59fa3_1",
+      "location": "asia-southeast1",
+      "projectId": "pacific-plating-282708"
+    },
+    "status": {
+      "state": "DONE"
+    },
+    "destinationTable": {
+      "datasetId": "_script5b6f832a02368d19d349e841cace8aba59182e10",
+      "projectId": "pacific-plating-282708",
+      "tableId": "candidate_gate"
+    },
+    "query_sha256": "40d5c20e7df74a6b972468fb2487c9ced05d4754d153c4df1e6ba1dd9ded2d93",
+    "query_prefix": "CREATE TEMP TABLE candidate_gate AS -- 2026-09-27 downstream candidate; SELECT o"
+  },
+  {
+    "jobReference": {
+      "jobId": "script_job_d13e4ad9a4c8e318485160fb4886d400_0",
+      "location": "asia-southeast1",
+      "projectId": "pacific-plating-282708"
+    },
+    "status": {
+      "state": "DONE"
+    },
+    "destinationTable": {
+      "datasetId": "_script5b6f832a02368d19d349e841cace8aba59182e10",
+      "projectId": "pacific-plating-282708",
+      "tableId": "candidate_newpayment"
+    },
+    "query_sha256": "3daba4a8e1c4261ba7f80a4ff6f756fe136b78463c126e44f1c0c70744273f43",
+    "query_prefix": "CREATE TEMP TABLE candidate_newpayment AS -- 2026-09-27 downstream candidate; SE"
+  }
+]

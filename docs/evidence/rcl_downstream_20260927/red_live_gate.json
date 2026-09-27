@@ -1,0 +1,10 @@
+[
+  {
+    "cases": "26",
+    "checked_at_utc": "2026-09-27 00:09:12",
+    "duplicate_event_keys": "0",
+    "emitted_rows": "10",
+    "membership_failures": "7",
+    "replay_rows_after_posting": "1"
+  }
+]
