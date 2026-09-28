@@ -625,3 +625,8 @@ User explicitly requested immediate fix of only sap_dashboard_carepay_installmen
 ## 2026-09-27T07:30:17.702583+07:00 — RCL downstream repair
 
 User requested downstream inspection and fixing after dashboard review. Scope now includes legacy downstream source corrections; V3 remains held. This does not resolve the pending later-period principal allocation or establish SAP import idempotency. Dashboard remains deployed unchanged.
+
+
+## 2026-09-28T09:54:16.431085+07:00 — Authorized downstream deployment and principal rule
+
+User explicitly authorizes applying the prepared legacy corrections directly to production views. User also confirms both PrincipleThisPeriod and PrincipleEIRThisPeriod for additional receipts equal the new charge amount (ActualReceived). Apply at dashboard final projection using is_additional_receipt; keep original SAP-carried payloads immutable and V3 held. This supersedes the previously pending additional-receipt principal decision and source-only scope. No extra deploy permission is required for this repair.

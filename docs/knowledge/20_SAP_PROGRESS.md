@@ -3620,3 +3620,8 @@ strictly distinct from SAP pickup and acknowledgement.
 ## 2026-09-27T07:30:17.702583+07:00 — RCL downstream repair
 
 RCL downstream source fixed: receipt-aware all-period gate, lineage runtime assertion and old-order eligibility/date ordering. Final snapshot 14→1525 wrapper rows, original payload removals/duplicate keys/incomplete spines all0; targetextras22.04/645.21. Source-only, NOT DEPLOYED; 8 later-period principal mappings + operational holds/import idempotency remain release gates. V3 held. See FINDINGS_RCL_DOWNSTREAM_20260927.md.
+
+
+## 2026-09-28T09:54:16.431085+07:00 — Authorized downstream deployment and principal rule
+
+Production deployment authorized; additional-receipt principal formula confirmed as ActualReceived for both fields. Preparing dashboard +3 downstream views. No production change yet: Google Cloud reauthentication pending.

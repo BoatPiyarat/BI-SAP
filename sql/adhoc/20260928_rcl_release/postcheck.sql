@@ -1,0 +1,13 @@
+WITH emitted AS (SELECT * FROM `pacific-plating-282708.sap_view.RCL_Motor_process_2_newpayment`),
+principal_targets AS (
+SELECT OrderID,OrderItem,Period,InvoiceNo,ExpectedReceived,ActualReceived,PrincipleThisPeriod,PrincipleEIRThisPeriod
+FROM `pacific-plating-282708.sap_data_engineer.sap_dashboard_carepay_installment`
+WHERE InvoiceNo IN ('chrg_68deu5b7df67kv7yxfz', 'chrg_68xalkz1xl5qxjrkke2', 'chrg_68uxtfwqojes0i2ofyu', 'chrg_6915gciza85q2p6a1ss', 'chrg_68n7bh4ujnp7sgj571l', 'chrg_68ao022t8irh2hl8n5i', 'chrg_6905tt2e328w2f1r1nq', 'chrg_6874vi8l12n8visryk6', '2_chrg_68w87npgw0hbvid58ho', '2_chrg_68ve8ufva4h1iil7wrn'))
+SELECT CURRENT_TIMESTAMP() AS checked_at_utc,
+(SELECT COUNT(*) FROM emitted) AS output_rows,
+(SELECT COUNT(DISTINCT OrderItem) FROM emitted) AS output_items,
+(SELECT COUNT(*) FROM (SELECT OrderItem,Period,InvoiceNo FROM emitted GROUP BY 1,2,3 HAVING COUNT(*)>1)) AS duplicate_event_keys,
+(SELECT COUNT(*) FROM (SELECT OrderItem FROM emitted GROUP BY OrderItem HAVING COUNT(DISTINCT Period)!=MAX(TotalPeriods) OR MIN(Period)!=1 OR MAX(Period)!=MAX(TotalPeriods))) AS incomplete_spines,
+(SELECT COUNT(*) FROM principal_targets WHERE PrincipleThisPeriod IS DISTINCT FROM ActualReceived OR PrincipleEIRThisPeriod IS DISTINCT FROM ActualReceived OR ExpectedReceived IS DISTINCT FROM 0.0) AS target_principal_failures,
+ARRAY(SELECT AS STRUCT * FROM principal_targets ORDER BY OrderItem,Period,InvoiceNo) AS principal_targets,
+ARRAY(SELECT AS STRUCT OrderID,OrderItem,Period,InvoiceNo,ExpectedReceived,ActualReceived,PrincipleThisPeriod,PrincipleEIRThisPeriod FROM emitted WHERE OrderID IN ('L80570054','L79109956') AND ExpectedReceived=0 AND ActualReceived>0) AS emitted_reported_extras;

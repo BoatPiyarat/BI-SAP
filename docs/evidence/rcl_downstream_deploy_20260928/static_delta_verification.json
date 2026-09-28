@@ -1,0 +1,11 @@
+{
+  "checked_at": "2026-09-28T03:02:53.725132+00:00",
+  "dashboard_exact_two_expression_delta": true,
+  "downstream_semantically_identical_to_reviewed_source": true,
+  "source_sha256": {
+    "RCL_05_newpayment.sql": "6b65d947dd49239b7f852956090d10fe99e4d217f988a75633a5ce7ead3605b1",
+    "RCL_05_paid_by_period.sql": "f8394d835259433e061bef9791c24a17858da9a77c9c90537bae353b9c7872db",
+    "RCL_Motor_process_2_newpayment.sql": "3d3a62d40cc5cbd1c6db64507c5d7926f42164b38abaa478aa92c8d3f42e3890",
+    "sap_dashboard_carepay_installment.sql": "5f03f2a788a6a95824eaaae4062a9ee405eaa10480ceab432a7bb319f61aaf31"
+  }
+}

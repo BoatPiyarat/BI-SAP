@@ -799,3 +799,8 @@ genuinely unverified, not confirmed dormant or active.
 ## 2026-09-27T07:30:17.702583+07:00 — RCL downstream repair
 
 RCL additional receipts: decide mapping/hold for 8 current candidate receipts in periods2–4. ActualReceived is the new charge, but PrincipleThisPeriod/PrincipleEIRThisPeriod retain scheduled amounts. Options asked in chat: hold pending accounting confirmation, or explicitly set both principal fields to ActualReceived. No answer yet; no formula assumed. Row-level evidence: docs/evidence/rcl_downstream_20260927/principal_review.csv. Existing backlog allocation/backfill and carried-spine import idempotency questions remain.
+
+
+## 2026-09-28T09:54:16.431085+07:00 — Authorized downstream deployment and principal rule
+
+RESOLVED: user confirms both principal fields for additional receipts equal the new charge amount. Prior 8-row principal question is closed; validate all-date affected rows, not only the previous snapshot. Production view update authorized. Current execution prerequisite: Google Cloud authentication expired; sign-in opened for data@rabbit.co.th.
