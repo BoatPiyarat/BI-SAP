@@ -1,3 +1,4 @@
+CREATE OR REPLACE VIEW `pacific-plating-282708.sap_view.RCB_Motor_process_4_creditshell` AS
 -- Full source-only legacy fix proposal for:
 --   pacific-plating-282708.sap_view.RCL_Motor_process_4_creditshell
 --

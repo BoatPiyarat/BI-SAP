@@ -1,3 +1,4 @@
+CREATE OR REPLACE VIEW `pacific-plating-282708.sap_integration_v2.RCL 04_new order credit shell` AS
 -- SOURCE-ONLY LEGACY PROPOSAL — DO NOT DEPLOY
 -- Object: pacific-plating-282708.sap_integration_v2.RCL 04_new order credit shell
 -- Live definition last modified: 2026-08-23 14:47:19 +00:00
@@ -565,46 +566,6 @@ expected_received_fixed AS (
   FROM expected_received_ranked
 )
 
-SELECT * REPLACE (
-  CASE WHEN InsuranceGroup IN ('Health', 'TA') THEN CASE InsurerCode
-    WHEN '1' THEN 'N024'
-    WHEN '3' THEN 'N082'
-    WHEN '6' THEN 'N067'
-    WHEN '7' THEN 'N021'
-    WHEN '8' THEN 'N092'
-    WHEN '9' THEN 'N072'
-    WHEN '10' THEN 'N040'
-    WHEN '11' THEN 'N003'
-    WHEN '12' THEN 'N091'
-    WHEN '13' THEN 'N066'
-    WHEN '14' THEN 'N090'
-    WHEN '15' THEN 'N058'
-    WHEN '16' THEN 'N089'
-    WHEN '17' THEN 'N015'
-    WHEN '18' THEN 'N088'
-    WHEN '20' THEN 'N054'
-    WHEN '23' THEN 'N087'
-    WHEN '24' THEN 'N086'
-    WHEN '26' THEN 'N062'
-    WHEN '27' THEN 'N017'
-    WHEN '28' THEN 'N069'
-    WHEN '29' THEN 'N085'
-    WHEN '30' THEN 'N30'
-    WHEN '31' THEN 'N061'
-    WHEN '33' THEN 'N011'
-    WHEN '34' THEN 'N079'
-    WHEN '36' THEN 'N084'
-    WHEN '37' THEN 'N083'
-    WHEN '40' THEN 'N033'
-    WHEN '42' THEN 'N064'
-    WHEN '43' THEN 'N080'
-    WHEN '44' THEN 'N081'
-    WHEN '46' THEN 'N105'
-    WHEN '48' THEN 'N103'
-    WHEN '49' THEN 'N107'
-    ELSE InsurerCode END ELSE InsurerCode END AS InsurerCode,
-  CASE WHEN InsuranceGroup IN ('Health', 'TA') AND LOWER(TransactionStatus) = 'pending'
-       THEN ExpectedReceived ELSE ActualReceived END AS ActualReceived
-)
+SELECT *
 FROM expected_received_fixed
-ORDER BY OrderItem, Period
+ORDER BY OrderItem, Period;

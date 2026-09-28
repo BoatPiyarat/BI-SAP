@@ -1,3 +1,4 @@
+CREATE OR REPLACE VIEW `pacific-plating-282708.sap_view.RCB_Motor_process_4_creditshell` AS
 -- Full source-only legacy fix proposal for:
 --   pacific-plating-282708.sap_view.RCL_Motor_process_4_creditshell
 --
@@ -128,13 +129,6 @@ WITH
     FROM routed
   )
 
-SELECT DISTINCT * REPLACE (
-  CASE WHEN InsuranceGroup IN ('Health', 'TA') AND LOWER(TransactionStatus) = 'pending'
-       THEN ExpectedReceived ELSE ActualReceived END AS ActualReceived,
-  CASE WHEN InsuranceGroup IN ('Health', 'TA') AND LOWER(TransactionStatus) = 'paid'
-         AND SAFE.PARSE_DATE('%d%m%Y', NULLIF(PaymentDate, '')) < DATE_TRUNC(CURRENT_DATE('Asia/Bangkok'), MONTH)
-       THEN FORMAT_DATE('%d%m%Y', DATE_TRUNC(CURRENT_DATE('Asia/Bangkok'), MONTH))
-       ELSE PaymentDate END AS PaymentDate
-)
+SELECT DISTINCT *
 FROM payment_date_fixed
 ORDER BY OrderItem, Period;

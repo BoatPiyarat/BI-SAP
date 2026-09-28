@@ -1,3 +1,4 @@
+CREATE OR REPLACE VIEW `pacific-plating-282708.sap_integration_v2.RCL 04_new order credit shell` AS
 -- SOURCE-ONLY LEGACY PROPOSAL — DO NOT DEPLOY
 -- Object: pacific-plating-282708.sap_integration_v2.RCL 04_new order credit shell
 -- Live definition last modified: 2026-08-23 14:47:19 +00:00
@@ -607,4 +608,4 @@ SELECT * REPLACE (
        THEN ExpectedReceived ELSE ActualReceived END AS ActualReceived
 )
 FROM expected_received_fixed
-ORDER BY OrderItem, Period
+ORDER BY OrderItem, Period;

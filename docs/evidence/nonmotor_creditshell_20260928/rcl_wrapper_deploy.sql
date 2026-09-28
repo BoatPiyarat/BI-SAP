@@ -1,3 +1,4 @@
+CREATE OR REPLACE VIEW `pacific-plating-282708.sap_view.RCL_Motor_process_4_creditshell` AS
 WITH filtered AS (
   SELECT
     src.*
@@ -115,4 +116,4 @@ FROM
   fixed
 ORDER BY
   OrderItem,
-  Period
+  Period;

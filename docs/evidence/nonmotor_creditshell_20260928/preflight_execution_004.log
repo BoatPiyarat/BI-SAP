@@ -1,0 +1,3 @@
+== bq_safe_query: dry-run =========================================
+Dry-run estimate: 0 bytes (~0.000 GiB)
+== bq_safe_query: real run (--maximum_bytes_billed=21474836480) ===========
