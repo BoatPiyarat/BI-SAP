@@ -3625,3 +3625,8 @@ RCL downstream source fixed: receipt-aware all-period gate, lineage runtime asse
 ## 2026-09-28T09:54:16.431085+07:00 — Authorized downstream deployment and principal rule
 
 Production deployment authorized; additional-receipt principal formula confirmed as ActualReceived for both fields. Preparing dashboard +3 downstream views. No production change yet: Google Cloud reauthentication pending.
+
+
+## 2026-09-28T10:14:10.790580+07:00 — RCL view deployment complete
+
+DEPLOYED four RCL views: dashboard principal for extras=ActualReceived; newpayment invoice-aware eligibility; all-period receipt gate; Motor wrapper old-order eligibility and deterministic dates. All four read-back/schema checks PASS. Live postcheck10:11ICT:4032rows/523items, duplicates0/incomplete spines0; all10 principal targets pass and both reported extras22.04/645.21 emitted. No SAP import claim, export/scheduler change or V3 mutation. See FINDINGS_RCL_VIEW_DEPLOY_20260928.md.

@@ -1,6 +1,8 @@
 # RCL downstream repair — 2026-09-27
 
-**Source fixed and verified; NOT DEPLOYED. V3 remains held.** User requested continued downstream
+**Historical September27 source report. The four-view release is now deployed: see [September28 deployment](FINDINGS_RCL_VIEW_DEPLOY_20260928.md).**
+
+The following records the pre-deployment state; its pending principal decision was subsequently resolved by the user. V3 remains held. User requested continued downstream
 inspection and repair after Claude's dashboard/newpayment review. Existing deployed dashboard stays live;
 this unit does not alter it. Formal reviews from the RCL branch were merged into this branch before work.
 

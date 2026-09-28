@@ -1,0 +1,37 @@
+[
+  {
+    "object": "sap_data_engineer.sap_dashboard_carepay_installment",
+    "job_id": "rcl_release_deploy_dashboard_20260928_001",
+    "status": "DONE",
+    "definition_matches": true,
+    "schema_matches": true,
+    "checked_at": "2026-09-28T03:06:37.439316+00:00"
+  },
+  {
+    "object": "sap_integration_v2.RCL 05_newpayment",
+    "job_id": "rcl_release_deploy_newpayment_20260928_001",
+    "status": "DONE",
+    "definition_matches": true,
+    "schema_matches": true,
+    "checked_at": "2026-09-28T03:08:51.040161+00:00",
+    "normalization": "BigQuery strips only leading SQL comment lines"
+  },
+  {
+    "object": "sap_integration_v2.RCL 05_paid by period",
+    "job_id": "rcl_release_deploy_gate_20260928_001",
+    "status": "DONE",
+    "definition_matches": true,
+    "schema_matches": true,
+    "checked_at": "2026-09-28T03:09:13.857093+00:00",
+    "normalization": "leading comments and whitespace only"
+  },
+  {
+    "object": "sap_view.RCL_Motor_process_2_newpayment",
+    "job_id": "rcl_release_deploy_wrapper_20260928_001",
+    "status": "DONE",
+    "definition_matches": true,
+    "schema_matches": true,
+    "checked_at": "2026-09-28T03:09:37.223671+00:00",
+    "normalization": "leading comments and whitespace only"
+  }
+]

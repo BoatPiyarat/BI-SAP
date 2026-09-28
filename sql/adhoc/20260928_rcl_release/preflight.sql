@@ -1549,282 +1549,556 @@ finish_2 AS (
 
 SELECT * FROM finish_2
 ORDER BY OrderItem, Period;
-CREATE TEMP TABLE evidence_paid AS -- RCL 05_paid -- FIXED & TUNED VERSION
--- Fixed & tuned: 2026-08-28 (Boat review)
--- Changes:
---  1. FIX (crash risk): SPLIT(...)[OFFSET(1)] -> SAFE_OFFSET(1). OFFSET
---     throws a hard runtime error if U_InsurerCode has no '-'; SAFE_OFFSET
---     returns NULL instead. No behavior change for well-formed data.
---  2. FIX (perf + clarity): removed the `newpayment` CTE (MAX(Period) WHERE
---     Paid, GROUP BY OrderItem) and its JOIN + `Period <= pp` condition.
---     This was NOT a real watermark bug here (unlike 05_newpayment) --
---     since the main WHERE already requires TransactionStatus IN
---     ('Paid','paid'), any surviving row's own period is BY DEFINITION <=
---     the max paid period for its OrderItem (it's part of the set being
---     maxed). The condition was tautological for every row that passes.
---     Its only real effect: SAFE_CAST(Period AS INT64) returning NULL for
---     non-numeric Period values made `NULL <= pp` evaluate NULL, silently
---     dropping those rows. That guard is now explicit and direct below,
---     without paying for a full-table GROUP BY over SAP_LIVE_FULL to get it.
---  3. NOT changed (confirmed with Boat, keep as-is): the TransactionStatus
---     override (any row with a non-null InvoiceNo not starting with 'L'
---     gets forced to 'Paid') -- known legacy workaround, intentional.
---  4. NOT changed (flagged, not yet confirmed): `cmi` CTE's date cutoff
---     (create_time < start of this month) means CMI order items created
---     THIS month are not excluded and can still pass through. Flagging
---     only -- not changed since not explicitly confirmed either way.
--- ============================================================
-
-WITH
-  sap AS (
-  SELECT
-    DISTINCT CompanyDB,
-    U_OrderID OrderID,
-    U_OrderItem OrderItem,
-    U_InvoiceNo InvoiceNo,
-    OrderDate AS OrderDate,
-    U_InsuredID InsuredID,
-    U_Title Title,
-    U_FirstName FirstName,
-    U_LastName LastName,
-    SPLIT(U_InsurerCode, '-')[SAFE_OFFSET(1)] AS InsurerCode,
-    U_InsuranceGroup InsuranceGroup,
-    U_InsuranceType InsuranceType,
-    U_InsuranceProduct InsuranceProduct,
-    CASE
-      WHEN U_ProductType = 'NULL' THEN 'Insurance'
-      ELSE U_ProductType
-    END
-    AS ProductType,
-    U_PolicyType PolicyType,
-    'N' Endorse,
-    PolicyDate AS PolicyDate,
-    U_PolicyNo PolicyNo,
-    EndorsementNo EndorsementNo,
-    U_ChassisNo ChassisNo,
-    U_LicensePlate LicensePlate,
-    GrossPremium GrossPremium,
-    StampDuty StampDuty,
-    VAT VAT,
-    TotalPremium TotalPremium,
-    WHT WHT,
-    TotalEIR TotalEIR,
-    TotalSBT TotalSBT,
-    U_ProcessingFee ProcessingFee,
-    U_ProcessingFeeVat ProcessingFeeVat,
-    U_ShippingFee ShippingFee,
-    U_ShippingFeeVat ShippingFeeVat,
-    U_TotalAmount TotalAmount,
-    U_Discount Discount,
-    --CASE WHEN change.old_human_id IS NOT NULL THEN 'Cancelled (Change order / Rejected)' ELSE 'Cancelled'END AS TransactionStatus,
-    -- NOT changed (confirmed with Boat, 2026-08-28): keep this override as-is.
-    CASE WHEN TransactionStatus NOT IN ('Paid', 'paid') AND U_InvoiceNo IS NOT NULL AND U_InvoiceNo NOT LIKE 'L%'
-    THEN 'Paid' ELSE TransactionStatus END AS TransactionStatus,
-    U_SubmissionStatus SubmissionStatus,
-    U_ApprovalStatus ApprovalStatus,
-    U_PaymentStatus PaymentStatus,
-    ExpectedReceived,
-    U_ActualReceived ActualReceived,
-    U_InterestThisPeriod InterestThisPeriod,
-    U_PrincipleThisPeriod PrincipleThisPeriod,
-    U_InterestEIRThisPeriod InterestEIRThisPeriod,
-    U_PrincipleEIRThisPeriod PrincipleEIRThisPeriod,
-    CASE
-      WHEN PaymentDate = 'NULL' THEN ''
-      ELSE PaymentDate
-  END
-    AS PaymentDate,
-    U_Period Period,
-    TotalPeriods TotalPeriods,
-    PendingPayment PendingPayment,
-    CASE
-      WHEN PaymentMethod = 'NULL' THEN ''
-      ELSE PaymentMethod
-  END
-    AS PaymentMethod,
-    CASE
-      WHEN PaymentChannel = 'NULL' THEN ''
-      ELSE PaymentChannel
-  END
-    AS PaymentChannel,
-    ExpectedDate AS ExpectedDate,
-    RefOrder RefOrder,
-    RefundAmountBeforeFee RefundAmountBeforeFee,
-    RefundAmountAfterFee RefundAmountAfterFee,
-    BillingAddress BillingAddress,
-    CAST(FORMAT_DATE('%d%m%Y', CURRENT_DATE()) AS STRING) AS BatchRunDate
-
-  FROM
-    evidence_sap
-    WHERE PaymentChannel LIKE '%RCL%'),
-
-  cancelled AS (  SELECT distinct U_OrderItem
-  FROM evidence_sap
-  WHERE (U_OrderID like '%C%'
-  OR TransactionStatus in ('Cancelled','Cancelled (Change order / Rejected)'))
-  AND PaymentChannel LIKE '%RCL%'
-),
-
-  cmi AS (SELECT human_id order_item,*
-  FROM `pacific-plating-282708.careos.careos_order_items`
-  WHERE DATE(create_time) < DATE(DATE_TRUNC(CURRENT_DATE(), MONTH))
-  AND motor_item_type = 'MOTOR_TYPE_COMPULSORY'
-  )
-
-SELECT DISTINCT
-  sap.*
-FROM sap
-LEFT JOIN cancelled
-  ON cancelled.U_OrderItem = sap.OrderItem
-LEFT JOIN cmi
-  ON cmi.order_item = sap.OrderItem
-WHERE
-SAFE_CAST(sap.Period AS INT64) IS NOT NULL  -- FIX 2: direct guard, replaces the removed MAX-watermark join
-AND OrderID NOT LIKE '%_X%'
-AND cancelled.U_OrderItem IS NULL
-AND cmi.order_item IS NULL
-AND sap.InvoiceNo IS NOT NULL
-AND sap.TransactionStatus in ('Paid', 'paid')
-
+CREATE TEMP TABLE evidence_paid AS -- RCL 05_paid -- FIXED & TUNED VERSION
+
+-- Fixed & tuned: 2026-08-28 (Boat review)
+
+-- Changes:
+
+--  1. FIX (crash risk): SPLIT(...)[OFFSET(1)] -> SAFE_OFFSET(1). OFFSET
+
+--     throws a hard runtime error if U_InsurerCode has no '-'; SAFE_OFFSET
+
+--     returns NULL instead. No behavior change for well-formed data.
+
+--  2. FIX (perf + clarity): removed the `newpayment` CTE (MAX(Period) WHERE
+
+--     Paid, GROUP BY OrderItem) and its JOIN + `Period <= pp` condition.
+
+--     This was NOT a real watermark bug here (unlike 05_newpayment) --
+
+--     since the main WHERE already requires TransactionStatus IN
+
+--     ('Paid','paid'), any surviving row's own period is BY DEFINITION <=
+
+--     the max paid period for its OrderItem (it's part of the set being
+
+--     maxed). The condition was tautological for every row that passes.
+
+--     Its only real effect: SAFE_CAST(Period AS INT64) returning NULL for
+
+--     non-numeric Period values made `NULL <= pp` evaluate NULL, silently
+
+--     dropping those rows. That guard is now explicit and direct below,
+
+--     without paying for a full-table GROUP BY over SAP_LIVE_FULL to get it.
+
+--  3. NOT changed (confirmed with Boat, keep as-is): the TransactionStatus
+
+--     override (any row with a non-null InvoiceNo not starting with 'L'
+
+--     gets forced to 'Paid') -- known legacy workaround, intentional.
+
+--  4. NOT changed (flagged, not yet confirmed): `cmi` CTE's date cutoff
+
+--     (create_time < start of this month) means CMI order items created
+
+--     THIS month are not excluded and can still pass through. Flagging
+
+--     only -- not changed since not explicitly confirmed either way.
+
+-- ============================================================
+
+
+
+WITH
+
+  sap AS (
+
+  SELECT
+
+    DISTINCT CompanyDB,
+
+    U_OrderID OrderID,
+
+    U_OrderItem OrderItem,
+
+    U_InvoiceNo InvoiceNo,
+
+    OrderDate AS OrderDate,
+
+    U_InsuredID InsuredID,
+
+    U_Title Title,
+
+    U_FirstName FirstName,
+
+    U_LastName LastName,
+
+    SPLIT(U_InsurerCode, '-')[SAFE_OFFSET(1)] AS InsurerCode,
+
+    U_InsuranceGroup InsuranceGroup,
+
+    U_InsuranceType InsuranceType,
+
+    U_InsuranceProduct InsuranceProduct,
+
+    CASE
+
+      WHEN U_ProductType = 'NULL' THEN 'Insurance'
+
+      ELSE U_ProductType
+
+    END
+
+    AS ProductType,
+
+    U_PolicyType PolicyType,
+
+    'N' Endorse,
+
+    PolicyDate AS PolicyDate,
+
+    U_PolicyNo PolicyNo,
+
+    EndorsementNo EndorsementNo,
+
+    U_ChassisNo ChassisNo,
+
+    U_LicensePlate LicensePlate,
+
+    GrossPremium GrossPremium,
+
+    StampDuty StampDuty,
+
+    VAT VAT,
+
+    TotalPremium TotalPremium,
+
+    WHT WHT,
+
+    TotalEIR TotalEIR,
+
+    TotalSBT TotalSBT,
+
+    U_ProcessingFee ProcessingFee,
+
+    U_ProcessingFeeVat ProcessingFeeVat,
+
+    U_ShippingFee ShippingFee,
+
+    U_ShippingFeeVat ShippingFeeVat,
+
+    U_TotalAmount TotalAmount,
+
+    U_Discount Discount,
+
+    --CASE WHEN change.old_human_id IS NOT NULL THEN 'Cancelled (Change order / Rejected)' ELSE 'Cancelled'END AS TransactionStatus,
+
+    -- NOT changed (confirmed with Boat, 2026-08-28): keep this override as-is.
+
+    CASE WHEN TransactionStatus NOT IN ('Paid', 'paid') AND U_InvoiceNo IS NOT NULL AND U_InvoiceNo NOT LIKE 'L%'
+
+    THEN 'Paid' ELSE TransactionStatus END AS TransactionStatus,
+
+    U_SubmissionStatus SubmissionStatus,
+
+    U_ApprovalStatus ApprovalStatus,
+
+    U_PaymentStatus PaymentStatus,
+
+    ExpectedReceived,
+
+    U_ActualReceived ActualReceived,
+
+    U_InterestThisPeriod InterestThisPeriod,
+
+    U_PrincipleThisPeriod PrincipleThisPeriod,
+
+    U_InterestEIRThisPeriod InterestEIRThisPeriod,
+
+    U_PrincipleEIRThisPeriod PrincipleEIRThisPeriod,
+
+    CASE
+
+      WHEN PaymentDate = 'NULL' THEN ''
+
+      ELSE PaymentDate
+
+  END
+
+    AS PaymentDate,
+
+    U_Period Period,
+
+    TotalPeriods TotalPeriods,
+
+    PendingPayment PendingPayment,
+
+    CASE
+
+      WHEN PaymentMethod = 'NULL' THEN ''
+
+      ELSE PaymentMethod
+
+  END
+
+    AS PaymentMethod,
+
+    CASE
+
+      WHEN PaymentChannel = 'NULL' THEN ''
+
+      ELSE PaymentChannel
+
+  END
+
+    AS PaymentChannel,
+
+    ExpectedDate AS ExpectedDate,
+
+    RefOrder RefOrder,
+
+    RefundAmountBeforeFee RefundAmountBeforeFee,
+
+    RefundAmountAfterFee RefundAmountAfterFee,
+
+    BillingAddress BillingAddress,
+
+    CAST(FORMAT_DATE('%d%m%Y', CURRENT_DATE()) AS STRING) AS BatchRunDate
+
+
+
+  FROM
+
+    evidence_sap
+
+    WHERE PaymentChannel LIKE '%RCL%'),
+
+
+
+  cancelled AS (  SELECT distinct U_OrderItem
+
+  FROM evidence_sap
+
+  WHERE (U_OrderID like '%C%'
+
+  OR TransactionStatus in ('Cancelled','Cancelled (Change order / Rejected)'))
+
+  AND PaymentChannel LIKE '%RCL%'
+
+),
+
+
+
+  cmi AS (SELECT human_id order_item,*
+
+  FROM `pacific-plating-282708.careos.careos_order_items`
+
+  WHERE DATE(create_time) < DATE(DATE_TRUNC(CURRENT_DATE(), MONTH))
+
+  AND motor_item_type = 'MOTOR_TYPE_COMPULSORY'
+
+  )
+
+
+
+SELECT DISTINCT
+
+  sap.*
+
+FROM sap
+
+LEFT JOIN cancelled
+
+  ON cancelled.U_OrderItem = sap.OrderItem
+
+LEFT JOIN cmi
+
+  ON cmi.order_item = sap.OrderItem
+
+WHERE
+
+SAFE_CAST(sap.Period AS INT64) IS NOT NULL  -- FIX 2: direct guard, replaces the removed MAX-watermark join
+
+AND OrderID NOT LIKE '%_X%'
+
+AND cancelled.U_OrderItem IS NULL
+
+AND cmi.order_item IS NULL
+
+AND sap.InvoiceNo IS NOT NULL
+
+AND sap.TransactionStatus in ('Paid', 'paid')
+
+
+
 Order by OrderID, Period;
-CREATE TEMP TABLE baseline_newpayment AS -- RCL 05_newpayment -- FIXED & TUNED VERSION
--- Fixed & tuned: 2026-08-28 (Boat review)
--- Changes:
---  1. FIX (dead code / perf): removed the `sap` CTE (a full transform of
---     all of SAP_LIVE_FULL) and the `cancelled` CTE -- neither was
---     referenced anywhere in the final SELECT (only `newpayment` and
---     `interface` were used). That was a full-table scan+transform paid
---     for nothing.
---  2. FIX (correctness, confirmed with Boat -- same root cause suspected
---     for Chain 3 / DDL 043): replaced the MAX(Period)-per-OrderItem
---     "watermark" with a genuine PER-PERIOD existence check. The old logic
---     (`careos_installment > MAX(paid period)`) assumed periods are paid
---     strictly in sequence with no gaps -- if period 2 was skipped but
---     period 3 got marked Paid, period 2 would be wrongly treated as
---     "already covered" forever and never surface as missing/new. The new
---     logic checks, for each exact (OrderItem, Period) pair CareOS says
---     should exist, whether THAT SPECIFIC period is already Paid in SAP --
---     no assumption of contiguous sequence.
--- ============================================================
--- RCL 05_newpayment -- FIXED & TUNED VERSION
--- Fixed & tuned: 2026-08-28 (Boat review)
--- Redeployed 2026-08-29: previous live definition under this name was
--- actually the 13-col `RCL 05_paid by period` logic (careos_orders join) --
--- wrong definition, root cause of UNION ALL column-count mismatch in
--- 06_02. This corrects it to the intended 56-col, schema-matched-to-
--- RCL-05_paid definition.
-
--- RCL 05_newpayment -- FIXED & TUNED VERSION
--- Redeployed 2026-08-29 (Boat review): previous live definition under
--- this name was actually the 13-col `RCL 05_paid by period` logic --
--- wrong definition, root cause of UNION ALL column-count mismatch
--- (56 vs 13) in 06_02. Corrected to the intended 56-col definition,
--- schema-matched to RCL 05_paid via sap_dashboard_carepay_installment.
--- Also explicitly casts RefundAmountBeforeFee/AfterFee to FLOAT64
--- (source has them as INT64; RCL 05_paid has them as FLOAT64 --
--- BigQuery would implicit-coerce in UNION ALL, but made explicit here
--- to avoid relying on that behavior silently).
-WITH
-  sap_paid_periods AS (
-    -- exact per-(OrderItem, Period) existence check -- NOT a MAX watermark, NOT an all-period fan-out
-    SELECT DISTINCT
-      U_OrderItem AS order_item,
-      SAFE_CAST(U_Period AS INT64) AS period
-    FROM evidence_sap
-    WHERE TransactionStatus IN ('Paid', 'paid')
-  ),
-
-  interface AS (
-    SELECT
-      * REPLACE (
-        CAST(RefundAmountBeforeFee AS FLOAT64) AS RefundAmountBeforeFee,
-        CAST(RefundAmountAfterFee AS FLOAT64) AS RefundAmountAfterFee
-      ),
-      SAFE_CAST(Period AS INT64) AS careos_installment
-    FROM live_dashboard
-  )
-
-SELECT DISTINCT
-  interface.* EXCEPT(careos_installment)
-FROM interface
-WHERE
-  interface.careos_installment IS NOT NULL
-  AND NOT EXISTS (
-    SELECT 1
-    FROM sap_paid_periods p
-    WHERE p.order_item = interface.OrderItem
-      AND p.period = interface.careos_installment
-  )
-
+CREATE TEMP TABLE baseline_newpayment AS -- RCL 05_newpayment -- FIXED & TUNED VERSION
+
+-- Fixed & tuned: 2026-08-28 (Boat review)
+
+-- Changes:
+
+--  1. FIX (dead code / perf): removed the `sap` CTE (a full transform of
+
+--     all of SAP_LIVE_FULL) and the `cancelled` CTE -- neither was
+
+--     referenced anywhere in the final SELECT (only `newpayment` and
+
+--     `interface` were used). That was a full-table scan+transform paid
+
+--     for nothing.
+
+--  2. FIX (correctness, confirmed with Boat -- same root cause suspected
+
+--     for Chain 3 / DDL 043): replaced the MAX(Period)-per-OrderItem
+
+--     "watermark" with a genuine PER-PERIOD existence check. The old logic
+
+--     (`careos_installment > MAX(paid period)`) assumed periods are paid
+
+--     strictly in sequence with no gaps -- if period 2 was skipped but
+
+--     period 3 got marked Paid, period 2 would be wrongly treated as
+
+--     "already covered" forever and never surface as missing/new. The new
+
+--     logic checks, for each exact (OrderItem, Period) pair CareOS says
+
+--     should exist, whether THAT SPECIFIC period is already Paid in SAP --
+
+--     no assumption of contiguous sequence.
+
+-- ============================================================
+
+-- RCL 05_newpayment -- FIXED & TUNED VERSION
+
+-- Fixed & tuned: 2026-08-28 (Boat review)
+
+-- Redeployed 2026-08-29: previous live definition under this name was
+
+-- actually the 13-col `RCL 05_paid by period` logic (careos_orders join) --
+
+-- wrong definition, root cause of UNION ALL column-count mismatch in
+
+-- 06_02. This corrects it to the intended 56-col, schema-matched-to-
+
+-- RCL-05_paid definition.
+
+
+
+-- RCL 05_newpayment -- FIXED & TUNED VERSION
+
+-- Redeployed 2026-08-29 (Boat review): previous live definition under
+
+-- this name was actually the 13-col `RCL 05_paid by period` logic --
+
+-- wrong definition, root cause of UNION ALL column-count mismatch
+
+-- (56 vs 13) in 06_02. Corrected to the intended 56-col definition,
+
+-- schema-matched to RCL 05_paid via sap_dashboard_carepay_installment.
+
+-- Also explicitly casts RefundAmountBeforeFee/AfterFee to FLOAT64
+
+-- (source has them as INT64; RCL 05_paid has them as FLOAT64 --
+
+-- BigQuery would implicit-coerce in UNION ALL, but made explicit here
+
+-- to avoid relying on that behavior silently).
+
+WITH
+
+  sap_paid_periods AS (
+
+    -- exact per-(OrderItem, Period) existence check -- NOT a MAX watermark, NOT an all-period fan-out
+
+    SELECT DISTINCT
+
+      U_OrderItem AS order_item,
+
+      SAFE_CAST(U_Period AS INT64) AS period
+
+    FROM evidence_sap
+
+    WHERE TransactionStatus IN ('Paid', 'paid')
+
+  ),
+
+
+
+  interface AS (
+
+    SELECT
+
+      * REPLACE (
+
+        CAST(RefundAmountBeforeFee AS FLOAT64) AS RefundAmountBeforeFee,
+
+        CAST(RefundAmountAfterFee AS FLOAT64) AS RefundAmountAfterFee
+
+      ),
+
+      SAFE_CAST(Period AS INT64) AS careos_installment
+
+    FROM live_dashboard
+
+  )
+
+
+
+SELECT DISTINCT
+
+  interface.* EXCEPT(careos_installment)
+
+FROM interface
+
+WHERE
+
+  interface.careos_installment IS NOT NULL
+
+  AND NOT EXISTS (
+
+    SELECT 1
+
+    FROM sap_paid_periods p
+
+    WHERE p.order_item = interface.OrderItem
+
+      AND p.period = interface.careos_installment
+
+  )
+
+
+
 ORDER BY interface.OrderItem, careos_installment;
-CREATE TEMP TABLE baseline_gate AS -- RCL 05_paid by period -- FIXED & CREATED 2026-08-29 (Boat review)
--- Previously this logic lived (mislabeled) under `RCL 05_newpayment`.
--- Bug fixed here: original version joined `sap` to `charges` (ALL periods
--- ever paid) instead of `charges_ranking` (latest period only), then
--- relied on DISTINCT to collapse -- this let orders where an OLD period
--- was still missing from SAP mask the fact that the LATEST period was
--- already Paid+Paid, producing false "qualified" rows
--- (e.g. "1/10 CareOS paid, SAP paid" wrongly surfaced).
--- Fix: NOT EXISTS check scoped to charges_ranking.installment_number
--- (the actual latest period) plus OrderItem-level join key (was OrderID-only).
-WITH charges AS (
-  SELECT *
-  FROM `pacific-plating-282708.careos.carepay_charges`
-  WHERE status = 'SUCCESSFUL'
-),
-
-charges_ranking AS (
-  SELECT *,
-    ROW_NUMBER() OVER (PARTITION BY transaction_id ORDER BY installment_number DESC) AS rank
-  FROM charges
-  QUALIFY rank = 1
-),
-
-sap_paid_periods AS (
-  -- exact per-(OrderItem, Period) existence check -- NOT a MAX watermark, NOT an all-period fan-out
-  SELECT DISTINCT
-    U_OrderItem AS order_item,
-    SAFE_CAST(U_Period AS INT64) AS period
-  FROM evidence_sap
-  WHERE TransactionStatus IN ('Paid', 'paid')
-)
-
-SELECT DISTINCT
-  orders.human_id,
-  oi.human_id AS order_item,
-  orders.create_time AS order_create_time,
-  orders.update_time AS order_update_time,
-  orders.is_fully_paid,
-  orders.is_cancelled,
-  transactions.payment_option,
-  charges_ranking.installment_number,
-  orders.cancel_time,
-  charges_ranking.update_time AS charges_update_time,
-  CASE
-    WHEN orders.create_time < '2024-03-28' THEN 'icollection'
-    ELSE 'carepay'
-  END AS sql_view_using,
-  orders.product,
-  oi.motor_item_type AS InsuranceType
-FROM `pacific-plating-282708.careos.careos_orders` AS orders
-LEFT JOIN `pacific-plating-282708.careos.careos_order_items` AS oi
-  ON orders.id = oi.order_id
-LEFT JOIN `pacific-plating-282708.careos.carepay_transactions` AS transactions
-  ON CONCAT('transactions/', transactions.id) = orders.payment
-LEFT JOIN charges_ranking
-  ON charges_ranking.transaction_id = transactions.id
-WHERE 1=1
-  AND charges_ranking.installment_number IS NOT NULL
-  AND DATE(charges_ranking.update_time)
-      BETWEEN DATE_TRUNC(DATE_SUB(CURRENT_DATE(), INTERVAL 2 MONTH), MONTH)
-      AND CURRENT_DATE()
-  AND transactions.payment_option = 'RABBIT_CARE_INSTALLMENT'
-  AND NOT EXISTS (
-    SELECT 1
-    FROM sap_paid_periods p
-    WHERE p.order_item = oi.human_id
-      AND p.period = charges_ranking.installment_number
-  )
+CREATE TEMP TABLE baseline_gate AS -- RCL 05_paid by period -- FIXED & CREATED 2026-08-29 (Boat review)
+
+-- Previously this logic lived (mislabeled) under `RCL 05_newpayment`.
+
+-- Bug fixed here: original version joined `sap` to `charges` (ALL periods
+
+-- ever paid) instead of `charges_ranking` (latest period only), then
+
+-- relied on DISTINCT to collapse -- this let orders where an OLD period
+
+-- was still missing from SAP mask the fact that the LATEST period was
+
+-- already Paid+Paid, producing false "qualified" rows
+
+-- (e.g. "1/10 CareOS paid, SAP paid" wrongly surfaced).
+
+-- Fix: NOT EXISTS check scoped to charges_ranking.installment_number
+
+-- (the actual latest period) plus OrderItem-level join key (was OrderID-only).
+
+WITH charges AS (
+
+  SELECT *
+
+  FROM `pacific-plating-282708.careos.carepay_charges`
+
+  WHERE status = 'SUCCESSFUL'
+
+),
+
+
+
+charges_ranking AS (
+
+  SELECT *,
+
+    ROW_NUMBER() OVER (PARTITION BY transaction_id ORDER BY installment_number DESC) AS rank
+
+  FROM charges
+
+  QUALIFY rank = 1
+
+),
+
+
+
+sap_paid_periods AS (
+
+  -- exact per-(OrderItem, Period) existence check -- NOT a MAX watermark, NOT an all-period fan-out
+
+  SELECT DISTINCT
+
+    U_OrderItem AS order_item,
+
+    SAFE_CAST(U_Period AS INT64) AS period
+
+  FROM evidence_sap
+
+  WHERE TransactionStatus IN ('Paid', 'paid')
+
+)
+
+
+
+SELECT DISTINCT
+
+  orders.human_id,
+
+  oi.human_id AS order_item,
+
+  orders.create_time AS order_create_time,
+
+  orders.update_time AS order_update_time,
+
+  orders.is_fully_paid,
+
+  orders.is_cancelled,
+
+  transactions.payment_option,
+
+  charges_ranking.installment_number,
+
+  orders.cancel_time,
+
+  charges_ranking.update_time AS charges_update_time,
+
+  CASE
+
+    WHEN orders.create_time < '2024-03-28' THEN 'icollection'
+
+    ELSE 'carepay'
+
+  END AS sql_view_using,
+
+  orders.product,
+
+  oi.motor_item_type AS InsuranceType
+
+FROM `pacific-plating-282708.careos.careos_orders` AS orders
+
+LEFT JOIN `pacific-plating-282708.careos.careos_order_items` AS oi
+
+  ON orders.id = oi.order_id
+
+LEFT JOIN `pacific-plating-282708.careos.carepay_transactions` AS transactions
+
+  ON CONCAT('transactions/', transactions.id) = orders.payment
+
+LEFT JOIN charges_ranking
+
+  ON charges_ranking.transaction_id = transactions.id
+
+WHERE 1=1
+
+  AND charges_ranking.installment_number IS NOT NULL
+
+  AND DATE(charges_ranking.update_time)
+
+      BETWEEN DATE_TRUNC(DATE_SUB(CURRENT_DATE(), INTERVAL 2 MONTH), MONTH)
+
+      AND CURRENT_DATE()
+
+  AND transactions.payment_option = 'RABBIT_CARE_INSTALLMENT'
+
+  AND NOT EXISTS (
+
+    SELECT 1
+
+    FROM sap_paid_periods p
+
+    WHERE p.order_item = oi.human_id
+
+      AND p.period = charges_ranking.installment_number
+
+  )
+
 ORDER BY orders.create_time ASC;
 CREATE TEMP TABLE baseline_wrapper AS -- Full source-only legacy root-fix proposal for:
 --   pacific-plating-282708.sap_view.RCL_Motor_process_2_newpayment

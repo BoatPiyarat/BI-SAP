@@ -3496,3 +3496,8 @@ Established: AI_BOOTSTRAP + CONTEXT/PROGRESS/CHANGELOG pattern; เชื่อ�
 ## 2026-09-27T07:30:17.702583+07:00 — RCL downstream repair
 
 Prepared and verified downstream RCL fixes on current deployed dashboard; incorporated Claude review branch and independent response-round findings. No production changes. See FINDINGS_RCL_DOWNSTREAM_20260927.md.
+
+
+## 2026-09-28T10:14:10.790580+07:00 — RCL view deployment complete
+
+Applied user-authorized four-view RCL release and confirmed live output. Principal policy confirmed by user and implemented at dashboard. Fresh preflight +metadata/schema/read-back +live postcheck pass. Exact four DDL jobs and rollback retained in docs/evidence/rcl_downstream_deploy_20260928/.

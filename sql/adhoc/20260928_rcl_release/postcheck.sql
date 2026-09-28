@@ -1,8 +1,7 @@
-WITH emitted AS (SELECT * FROM `pacific-plating-282708.sap_view.RCL_Motor_process_2_newpayment`),
-principal_targets AS (
-SELECT OrderID,OrderItem,Period,InvoiceNo,ExpectedReceived,ActualReceived,PrincipleThisPeriod,PrincipleEIRThisPeriod
+CREATE TEMP TABLE emitted AS SELECT `CompanyDB`,`OrderID`,`OrderItem`,`InvoiceNo`,`OrderDate`,`InsuredID`,`Title`,`FirstName`,`LastName`,`InsurerCode`,`InsuranceGroup`,`InsuranceType`,`InsuranceProduct`,`ProductType`,`PolicyType`,`Endorse`,`PolicyDate`,`PolicyNo`,`EndorsementNo`,`ChassisNo`,`LicensePlate`,`GrossPremium`,`StampDuty`,`VAT`,`TotalPremium`,`WHT`,`TotalEIR`,`TotalSBT`,`ProcessingFee`,`ProcessingFeeVat`,`ShippingFee`,`ShippingFeeVat`,`TotalAmount`,`Discount`,`TransactionStatus`,`SubmissionStatus`,`ApprovalStatus`,`PaymentStatus`,`ExpectedReceived`,`ActualReceived`,`InterestThisPeriod`,`PrincipleThisPeriod`,`InterestEIRThisPeriod`,`PrincipleEIRThisPeriod`,`PaymentDate`,`Period`,`TotalPeriods`,`PendingPayment`,`PaymentMethod`,`PaymentChannel`,`ExpectedDate`,`RefOrder`,`RefundAmountBeforeFee`,`RefundAmountAfterFee`,`BillingAddress`,`BatchRunDate` FROM `pacific-plating-282708.sap_view.RCL_Motor_process_2_newpayment`;
+CREATE TEMP TABLE principal_targets AS SELECT OrderID,OrderItem,Period,InvoiceNo,ExpectedReceived,ActualReceived,PrincipleThisPeriod,PrincipleEIRThisPeriod
 FROM `pacific-plating-282708.sap_data_engineer.sap_dashboard_carepay_installment`
-WHERE InvoiceNo IN ('chrg_68deu5b7df67kv7yxfz', 'chrg_68xalkz1xl5qxjrkke2', 'chrg_68uxtfwqojes0i2ofyu', 'chrg_6915gciza85q2p6a1ss', 'chrg_68n7bh4ujnp7sgj571l', 'chrg_68ao022t8irh2hl8n5i', 'chrg_6905tt2e328w2f1r1nq', 'chrg_6874vi8l12n8visryk6', '2_chrg_68w87npgw0hbvid58ho', '2_chrg_68ve8ufva4h1iil7wrn'))
+WHERE InvoiceNo IN ('chrg_68deu5b7df67kv7yxfz', 'chrg_68xalkz1xl5qxjrkke2', 'chrg_68uxtfwqojes0i2ofyu', 'chrg_6915gciza85q2p6a1ss', 'chrg_68n7bh4ujnp7sgj571l', 'chrg_68ao022t8irh2hl8n5i', 'chrg_6905tt2e328w2f1r1nq', 'chrg_6874vi8l12n8visryk6', '2_chrg_68w87npgw0hbvid58ho', '2_chrg_68ve8ufva4h1iil7wrn');
 SELECT CURRENT_TIMESTAMP() AS checked_at_utc,
 (SELECT COUNT(*) FROM emitted) AS output_rows,
 (SELECT COUNT(DISTINCT OrderItem) FROM emitted) AS output_items,

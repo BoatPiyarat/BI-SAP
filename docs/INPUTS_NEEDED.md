@@ -804,3 +804,8 @@ RCL additional receipts: decide mapping/hold for 8 current candidate receipts in
 ## 2026-09-28T09:54:16.431085+07:00 — Authorized downstream deployment and principal rule
 
 RESOLVED: user confirms both principal fields for additional receipts equal the new charge amount. Prior 8-row principal question is closed; validate all-date affected rows, not only the previous snapshot. Production view update authorized. Current execution prerequisite: Google Cloud authentication expired; sign-in opened for data@rabbit.co.th.
+
+
+## 2026-09-28T10:14:10.790580+07:00 — RCL view deployment complete
+
+RCL principal decision and Google Cloud authentication resolved; four live views deployed and checked. All8 previously flagged principal exceptions now equal new charge in both fields. No additional deployment confirmation needed for this completed unit. SAP import confirmation and other flow/backlog investigations remain separate.

@@ -14,3 +14,10 @@ Offline 12-case CASE-expression tests supplement the BigQuery checks; they do no
 Source snapshot preflight output: baseline2474 -> candidate4036 rows. Snapshot output counts are not
 SAP import counts. Existing carried SAP payloads are unchanged. No V3 or interface-file mutation.
 Deployment and postcheck job records are added after successful execution.
+
+## Completed deployment
+
+All4 DDL jobs DONE, definition/schema read-back PASS. Live postcheck_result.json confirms4032rows/523items,
+zero duplicate keys/incomplete spines/principal failures,10 target invoices and both reported extras.
+Run scripts/verify_rcl_release_20260928.py. Leading comments are removed by BigQuery storage; comparison
+normalizes those comments and whitespace only. Full report: docs/FINDINGS_RCL_VIEW_DEPLOY_20260928.md.
