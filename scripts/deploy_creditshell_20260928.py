@@ -13,9 +13,10 @@ def norm(s):
  return '\n'.join(a).strip()
 def schema(d):return [(f['name'],f['type']) for f in d['schema']['fields']]
 def read(n):return json.loads((p/n).read_text(encoding='utf-8'))
-assert read('preflight_final_job.json')['status']=={'state':'DONE'}
-assert all(x['match'] for x in read('schema_preflight.json'))
-assert Path('docs/reviews/2026-09-28-creditshell-independent.md').exists()
+from verify_creditshell_20260928 import verify
+hashes=verify()
+review=read('release_review.json')
+assert review['verdict']=='PASS' and review['candidate_hashes']==hashes
 for name,obj in objects.items():
  current=bq(['show','--format=prettyjson','pacific-plating-282708:'+obj]);before=read(name+'_before.json')
  assert norm(current['view']['query'])==norm(before['view']['query']),('drift',obj)
