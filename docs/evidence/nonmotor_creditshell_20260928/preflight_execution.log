@@ -1,0 +1,138 @@
+== bq_safe_query: dry-run =========================================
+Dry-run estimate: 0 bytes (~0.000 GiB)
+== bq_safe_query: real run (--maximum_bytes_billed=21474836480) ===========
+
+Waiting on creditshell_preflight_20260928_001 ... (0s) Current status: RUNNING
+
+Waiting on creditshell_preflight_20260928_001 ... (1s) Current status: RUNNING
+
+Waiting on creditshell_preflight_20260928_001 ... (2s) Current status: RUNNING
+
+Waiting on creditshell_preflight_20260928_001 ... (3s) Current status: RUNNING
+
+Waiting on creditshell_preflight_20260928_001 ... (4s) Current status: RUNNING
+
+Waiting on creditshell_preflight_20260928_001 ... (5s) Current status: RUNNING
+
+Waiting on creditshell_preflight_20260928_001 ... (6s) Current status: RUNNING
+
+Waiting on creditshell_preflight_20260928_001 ... (7s) Current status: RUNNING
+
+Waiting on creditshell_preflight_20260928_001 ... (8s) Current status: RUNNING
+
+Waiting on creditshell_preflight_20260928_001 ... (9s) Current status: RUNNING
+
+Waiting on creditshell_preflight_20260928_001 ... (10s) Current status: RUNNING
+
+Waiting on creditshell_preflight_20260928_001 ... (11s) Current status: RUNNING
+
+Waiting on creditshell_preflight_20260928_001 ... (12s) Current status: RUNNING
+
+Waiting on creditshell_preflight_20260928_001 ... (13s) Current status: RUNNING
+
+Waiting on creditshell_preflight_20260928_001 ... (14s) Current status: RUNNING
+
+Waiting on creditshell_preflight_20260928_001 ... (15s) Current status: RUNNING
+
+Waiting on creditshell_preflight_20260928_001 ... (16s) Current status: RUNNING
+
+Waiting on creditshell_preflight_20260928_001 ... (17s) Current status: RUNNING
+
+Waiting on creditshell_preflight_20260928_001 ... (18s) Current status: RUNNING
+
+Waiting on creditshell_preflight_20260928_001 ... (19s) Current status: RUNNING
+
+Waiting on creditshell_preflight_20260928_001 ... (20s) Current status: RUNNING
+
+Waiting on creditshell_preflight_20260928_001 ... (21s) Current status: RUNNING
+
+Waiting on creditshell_preflight_20260928_001 ... (22s) Current status: RUNNING
+
+Waiting on creditshell_preflight_20260928_001 ... (24s) Current status: RUNNING
+
+Waiting on creditshell_preflight_20260928_001 ... (25s) Current status: RUNNING
+
+Waiting on creditshell_preflight_20260928_001 ... (26s) Current status: RUNNING
+
+Waiting on creditshell_preflight_20260928_001 ... (27s) Current status: RUNNING
+
+Waiting on creditshell_preflight_20260928_001 ... (28s) Current status: RUNNING
+
+Waiting on creditshell_preflight_20260928_001 ... (29s) Current status: RUNNING
+
+Waiting on creditshell_preflight_20260928_001 ... (30s) Current status: RUNNING
+
+Waiting on creditshell_preflight_20260928_001 ... (31s) Current status: RUNNING
+
+Waiting on creditshell_preflight_20260928_001 ... (32s) Current status: RUNNING
+
+Waiting on creditshell_preflight_20260928_001 ... (33s) Current status: RUNNING
+
+Waiting on creditshell_preflight_20260928_001 ... (34s) Current status: RUNNING
+
+Waiting on creditshell_preflight_20260928_001 ... (35s) Current status: RUNNING
+
+Waiting on creditshell_preflight_20260928_001 ... (36s) Current status: RUNNING
+
+Waiting on creditshell_preflight_20260928_001 ... (37s) Current status: RUNNING
+
+Waiting on creditshell_preflight_20260928_001 ... (38s) Current status: RUNNING
+
+Waiting on creditshell_preflight_20260928_001 ... (39s) Current status: RUNNING
+
+Waiting on creditshell_preflight_20260928_001 ... (40s) Current status: RUNNING
+
+Waiting on creditshell_preflight_20260928_001 ... (41s) Current status: RUNNING
+
+Waiting on creditshell_preflight_20260928_001 ... (42s) Current status: RUNNING
+
+Waiting on creditshell_preflight_20260928_001 ... (43s) Current status: RUNNING
+
+Waiting on creditshell_preflight_20260928_001 ... (44s) Current status: RUNNING
+
+Waiting on creditshell_preflight_20260928_001 ... (45s) Current status: RUNNING
+
+Waiting on creditshell_preflight_20260928_001 ... (46s) Current status: RUNNING
+
+Waiting on creditshell_preflight_20260928_001 ... (47s) Current status: RUNNING
+
+Waiting on creditshell_preflight_20260928_001 ... (48s) Current status: RUNNING
+
+Waiting on creditshell_preflight_20260928_001 ... (49s) Current status: RUNNING
+
+Waiting on creditshell_preflight_20260928_001 ... (50s) Current status: RUNNING
+
+Waiting on creditshell_preflight_20260928_001 ... (51s) Current status: RUNNING
+
+Waiting on creditshell_preflight_20260928_001 ... (52s) Current status: RUNNING
+
+Waiting on creditshell_preflight_20260928_001 ... (53s) Current status: RUNNING
+
+Waiting on creditshell_preflight_20260928_001 ... (54s) Current status: RUNNING
+
+Waiting on creditshell_preflight_20260928_001 ... (55s) Current status: RUNNING
+
+Waiting on creditshell_preflight_20260928_001 ... (56s) Current status: RUNNING
+
+Waiting on creditshell_preflight_20260928_001 ... (57s) Current status: RUNNING
+
+Waiting on creditshell_preflight_20260928_001 ... (58s) Current status: RUNNING
+
+Waiting on creditshell_preflight_20260928_001 ... (59s) Current status: RUNNING
+
+Waiting on creditshell_preflight_20260928_001 ... (60s) Current status: RUNNING
+
+Waiting on creditshell_preflight_20260928_001 ... (61s) Current status: RUNNING
+
+Waiting on creditshell_preflight_20260928_001 ... (62s) Current status: RUNNING
+
+Waiting on creditshell_preflight_20260928_001 ... (63s) Current status: RUNNING
+
+Waiting on creditshell_preflight_20260928_001 ... (64s) Current status: RUNNING
+
+Waiting on creditshell_preflight_20260928_001 ... (65s) Current status: RUNNING
+
+Waiting on creditshell_preflight_20260928_001 ... (65s) Current status: DONE
+Error in query string: Error processing job 'pacific-
+plating-282708:creditshell_preflight_20260928_001': Query exceeded limit for
+bytes billed: 2646605824. 7948206080 or higher required. at [1435:1]

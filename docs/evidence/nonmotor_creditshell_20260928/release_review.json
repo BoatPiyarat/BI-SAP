@@ -1,0 +1,15 @@
+{
+  "verdict": "PASS",
+  "reviewed_commit": "a07b771",
+  "reviewers": [
+    "creditshell_standards",
+    "creditshell_spec"
+  ],
+  "candidate_hashes": {
+    "producer": "0985ed91cf99c85d5fec86cb13c95fa3381c29e1b05375455b148fca72075f44",
+    "rcl_wrapper": "25de2fb17c9e6a13696066ad6d727405c8c84461abebec1ae5c7ac01a2eea473",
+    "rcb_wrapper": "48212777d3cbe50c520f5a0c288d47d67f834b15566e0da60bd6d9cef953b049"
+  },
+  "recorded_at": "2026-09-28T03:48:30.699298+00:00",
+  "scope": "exact-source preflight and three legacy view candidates; no SAP posting claim"
+}

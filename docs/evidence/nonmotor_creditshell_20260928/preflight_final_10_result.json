@@ -1,0 +1,15 @@
+[
+  {
+    "added_motor": "0",
+    "added_other_fields": "0",
+    "after_rows": "101",
+    "before_rows": "101",
+    "insurer_failures": "0",
+    "object": "rcl_wrapper",
+    "observed_at": "2026-09-28 03:42:24",
+    "pending_amount_failures": "0",
+    "prior_month_paid": "0",
+    "removed_motor": "0",
+    "removed_other_fields": "0"
+  }
+]

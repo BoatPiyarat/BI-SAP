@@ -4,6 +4,20 @@ Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request firs
 review history; link the completed review and record its verdict.
 
 
+## RQ-20260928-1051-nonmotor-creditshell-deploy
+Status: OPEN
+Reviewer: Claude Code
+Class: A
+Artifact: commits `a07b771` and `e267c8d`; three authorized legacy CreditShell view replacements.
+Opened: 2026-09-28T10:51:56+07:00
+Claim: NonMotor insurer mapping, final Pending Actual=Expected, current-month Paid dates deployed.
+Evidence: docs/FINDINGS_NONMOTOR_CREDITSHELL_20260928.md; exact-source preflight004, schema56x3,
+independent Standards/Spec PASS, three successful DDL/readbacks, live postcheck03:50:19 UTC.
+Same84 Health rows/9items per wrapper; zero requested defect metrics; zero preflight Motor,
+paid-amount, multiplicity and unrelated-field changes. No TA sample; upstream fallback preserved.
+Scope: retrospective deployment verification; V3/exports/schedules/SAP data unchanged.
+No SAP posting claim. Independent review: docs/reviews/2026-09-28-creditshell-independent.md.
+
 ## RQ-20260928-1014-rcl-four-view-deploy
 Status: OPEN
 Reviewer: Claude Code

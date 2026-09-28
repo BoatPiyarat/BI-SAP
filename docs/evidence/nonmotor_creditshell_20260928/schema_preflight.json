@@ -1,0 +1,20 @@
+[
+  {
+    "name": "rcb_wrapper",
+    "columns": 56,
+    "match": true,
+    "source_job": "creditshell_preflight_20260928_004"
+  },
+  {
+    "name": "rcl_wrapper",
+    "columns": 56,
+    "match": true,
+    "source_job": "creditshell_preflight_20260928_004"
+  },
+  {
+    "name": "producer",
+    "columns": 56,
+    "match": true,
+    "source_job": "creditshell_preflight_20260928_004"
+  }
+]

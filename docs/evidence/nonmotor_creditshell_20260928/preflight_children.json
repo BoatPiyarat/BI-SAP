@@ -1,0 +1,27 @@
+[
+  {
+    "jobReference": {
+      "jobId": "script_job_40273138d7a1eedc1482a402992ae9e7_0",
+      "location": "asia-southeast1",
+      "projectId": "pacific-plating-282708"
+    },
+    "status": {
+      "errorResult": {
+        "location": "combined",
+        "message": "Table \"combined\" must be qualified with a dataset (e.g. dataset.table).",
+        "reason": "invalid"
+      },
+      "errors": [
+        {
+          "location": "combined",
+          "message": "Table \"combined\" must be qualified with a dataset (e.g. dataset.table).",
+          "reason": "invalid"
+        }
+      ],
+      "state": "DONE"
+    },
+    "destinationTable": null,
+    "query_sha256": "0b2f97418c13f929f8a78aa11dc09ee347f0e807ad3432ed3d1ba8ef403ca59f",
+    "query_prefix": "CREATE TEMP TABLE shared_combined AS\n-- SOURCE-ONLY LEGACY PROPOSAL \u2014 DO NOT DEP"
+  }
+]

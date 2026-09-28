@@ -630,3 +630,16 @@ User requested downstream inspection and fixing after dashboard review. Scope no
 ## 2026-09-28T09:54:16.431085+07:00 — Authorized downstream deployment and principal rule
 
 User explicitly authorizes applying the prepared legacy corrections directly to production views. User also confirms both PrincipleThisPeriod and PrincipleEIRThisPeriod for additional receipts equal the new charge amount (ActualReceived). Apply at dashboard final projection using is_additional_receipt; keep original SAP-carried payloads immutable and V3 held. This supersedes the previously pending additional-receipt principal decision and source-only scope. No extra deploy permission is required for this repair.
+
+
+## 2026-09-28 — CreditShell NonMotor correction authorized by Boat
+
+User requests existing legacy views support CreditShell NonMotor: historical paid PaymentDate
+posts in the current month under the existing first-day rule; insurer IDs use the N-prefixed
+mapping from live RCL_HEALTH; unpaid periods carry ActualReceived=ExpectedReceived until
+a successful charge supplies the actual amount. Pending status and blank PaymentDate remain.
+Scope is NonMotor (Health/TA); Motor values are preserved. Direct legacy view correction is
+authorized by the user, superseding older legacy DDL restrictions for this task; V3 stays held.
+No SAP posting or production file export is authorized/claimed by this view correction.
+
+Deployment completed 2026-09-28T10:51:55.608851+07:00. Source, wrappers and postcheck verified; see FINDINGS_NONMOTOR_CREDITSHELL_20260928.md.
