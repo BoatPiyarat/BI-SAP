@@ -3,102 +3,102 @@ Dry-run estimate: 0 bytes (~0.000 GiB)
 == bq_safe_query: real run (--maximum_bytes_billed=21474836480) ===========
 
 Waiting on creditshell_preflight_20260928_003 ... (0s) Current status: RUNNING
-                                                                              
+
 Waiting on creditshell_preflight_20260928_003 ... (1s) Current status: RUNNING
-                                                                              
+
 Waiting on creditshell_preflight_20260928_003 ... (2s) Current status: RUNNING
-                                                                              
+
 Waiting on creditshell_preflight_20260928_003 ... (3s) Current status: RUNNING
-                                                                              
+
 Waiting on creditshell_preflight_20260928_003 ... (4s) Current status: RUNNING
-                                                                              
+
 Waiting on creditshell_preflight_20260928_003 ... (5s) Current status: RUNNING
-                                                                              
+
 Waiting on creditshell_preflight_20260928_003 ... (6s) Current status: RUNNING
-                                                                              
+
 Waiting on creditshell_preflight_20260928_003 ... (7s) Current status: RUNNING
-                                                                              
+
 Waiting on creditshell_preflight_20260928_003 ... (8s) Current status: RUNNING
-                                                                              
+
 Waiting on creditshell_preflight_20260928_003 ... (9s) Current status: RUNNING
-                                                                              
+
 Waiting on creditshell_preflight_20260928_003 ... (10s) Current status: RUNNING
-                                                                               
+
 Waiting on creditshell_preflight_20260928_003 ... (11s) Current status: RUNNING
-                                                                               
+
 Waiting on creditshell_preflight_20260928_003 ... (12s) Current status: RUNNING
-                                                                               
+
 Waiting on creditshell_preflight_20260928_003 ... (13s) Current status: RUNNING
-                                                                               
+
 Waiting on creditshell_preflight_20260928_003 ... (14s) Current status: RUNNING
-                                                                               
+
 Waiting on creditshell_preflight_20260928_003 ... (15s) Current status: RUNNING
-                                                                               
+
 Waiting on creditshell_preflight_20260928_003 ... (16s) Current status: RUNNING
-                                                                               
+
 Waiting on creditshell_preflight_20260928_003 ... (17s) Current status: RUNNING
-                                                                               
+
 Waiting on creditshell_preflight_20260928_003 ... (18s) Current status: RUNNING
-                                                                               
+
 Waiting on creditshell_preflight_20260928_003 ... (19s) Current status: RUNNING
-                                                                               
+
 Waiting on creditshell_preflight_20260928_003 ... (20s) Current status: RUNNING
-                                                                               
+
 Waiting on creditshell_preflight_20260928_003 ... (21s) Current status: RUNNING
-                                                                               
+
 Waiting on creditshell_preflight_20260928_003 ... (22s) Current status: RUNNING
-                                                                               
+
 Waiting on creditshell_preflight_20260928_003 ... (24s) Current status: RUNNING
-                                                                               
+
 Waiting on creditshell_preflight_20260928_003 ... (25s) Current status: RUNNING
-                                                                               
+
 Waiting on creditshell_preflight_20260928_003 ... (26s) Current status: RUNNING
-                                                                               
+
 Waiting on creditshell_preflight_20260928_003 ... (27s) Current status: RUNNING
-                                                                               
+
 Waiting on creditshell_preflight_20260928_003 ... (28s) Current status: RUNNING
-                                                                               
+
 Waiting on creditshell_preflight_20260928_003 ... (29s) Current status: RUNNING
-                                                                               
+
 Waiting on creditshell_preflight_20260928_003 ... (30s) Current status: RUNNING
-                                                                               
+
 Waiting on creditshell_preflight_20260928_003 ... (31s) Current status: RUNNING
-                                                                               
+
 Waiting on creditshell_preflight_20260928_003 ... (32s) Current status: RUNNING
-                                                                               
+
 Waiting on creditshell_preflight_20260928_003 ... (33s) Current status: RUNNING
-                                                                               
+
 Waiting on creditshell_preflight_20260928_003 ... (34s) Current status: RUNNING
-                                                                               
+
 Waiting on creditshell_preflight_20260928_003 ... (35s) Current status: RUNNING
-                                                                               
+
 Waiting on creditshell_preflight_20260928_003 ... (36s) Current status: RUNNING
-                                                                               
+
 Waiting on creditshell_preflight_20260928_003 ... (37s) Current status: RUNNING
-                                                                               
+
 Waiting on creditshell_preflight_20260928_003 ... (38s) Current status: RUNNING
-                                                                               
+
 Waiting on creditshell_preflight_20260928_003 ... (39s) Current status: RUNNING
-                                                                               
+
 Waiting on creditshell_preflight_20260928_003 ... (40s) Current status: RUNNING
-                                                                               
+
 Waiting on creditshell_preflight_20260928_003 ... (41s) Current status: RUNNING
-                                                                               
+
 Waiting on creditshell_preflight_20260928_003 ... (42s) Current status: RUNNING
-                                                                               
+
 Waiting on creditshell_preflight_20260928_003 ... (43s) Current status: RUNNING
-                                                                               
+
 Waiting on creditshell_preflight_20260928_003 ... (44s) Current status: RUNNING
-                                                                               
+
 Waiting on creditshell_preflight_20260928_003 ... (45s) Current status: RUNNING
-                                                                               
+
 Waiting on creditshell_preflight_20260928_003 ... (46s) Current status: RUNNING
-                                                                               
+
 Waiting on creditshell_preflight_20260928_003 ... (47s) Current status: RUNNING
-                                                                               
+
 Waiting on creditshell_preflight_20260928_003 ... (48s) Current status: RUNNING
-                                                                               
-Waiting on creditshell_preflight_20260928_003 ... (48s) Current status: DONE   
+
+Waiting on creditshell_preflight_20260928_003 ... (48s) Current status: DONE
 ["Created pacific-plating-282708._script962dc4b570907a1f84e267ab9f0a5795930cf568.shared_combined\n"
 ,"Created pacific-plating-282708._script962dc4b570907a1f84e267ab9f0a5795930cf568.sap_items\n"
 ,"Created pacific-plating-282708._script962dc4b570907a1f84e267ab9f0a5795930cf568.change_orders\n"

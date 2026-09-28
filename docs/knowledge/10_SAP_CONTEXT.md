@@ -641,3 +641,5 @@ a successful charge supplies the actual amount. Pending status and blank Payment
 Scope is NonMotor (Health/TA); Motor values are preserved. Direct legacy view correction is
 authorized by the user, superseding older legacy DDL restrictions for this task; V3 stays held.
 No SAP posting or production file export is authorized/claimed by this view correction.
+
+Deployment completed 2026-09-28T10:51:55.608851+07:00. Source, wrappers and postcheck verified; see FINDINGS_NONMOTOR_CREDITSHELL_20260928.md.

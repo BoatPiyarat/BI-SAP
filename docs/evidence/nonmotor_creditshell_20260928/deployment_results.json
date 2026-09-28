@@ -1,0 +1,26 @@
+[
+  {
+    "object": "sap_integration_v2.RCL 04_new order credit shell",
+    "job": "creditshell_deploy_producer_20260928_001",
+    "status": "DONE",
+    "definition_matches": true,
+    "schema_matches": true,
+    "verified_at": "2026-09-28T03:49:02.609718+00:00"
+  },
+  {
+    "object": "sap_view.RCL_Motor_process_4_creditshell",
+    "job": "creditshell_deploy_rcl_wrapper_20260928_001",
+    "status": "DONE",
+    "definition_matches": true,
+    "schema_matches": true,
+    "verified_at": "2026-09-28T03:49:22.786759+00:00"
+  },
+  {
+    "object": "sap_view.RCB_Motor_process_4_creditshell",
+    "job": "creditshell_deploy_rcb_wrapper_20260928_001",
+    "status": "DONE",
+    "definition_matches": true,
+    "schema_matches": true,
+    "verified_at": "2026-09-28T03:49:43.504358+00:00"
+  }
+]

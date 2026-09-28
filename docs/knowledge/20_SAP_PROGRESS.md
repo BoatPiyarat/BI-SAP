@@ -1,5 +1,14 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-09-28T10:51:55.608851+07:00 — CreditShell NonMotor legacy views deployed
+
+Deployed shared RCL04 CreditShell producer and RCL/RCB process4 wrappers under user authorization.
+Exact RCL_HEALTH insurer mappings applied after ranking; Pending Actual=finalExpected; historical
+NonMotor Paid dates clamp to current Bangkok month after ranking. Final preflight004 and independent
+Standards/Spec PASS; all56 columns preserved, zero Motor/paid/multiplicity/unrelated-field changes.
+Live postcheck2026-09-28 03:50:19 UTC: same84 Health rows/9items per wrapper, all three defects0.
+Evidence: docs/FINDINGS_NONMOTOR_CREDITSHELL_20260928.md; PR5. V3 held; SAP posting unverified.
+
 ## 2026-09-26T23:41:18+07:00 — Scenario root-cause map prepared
 
 All 12 sap_view routes checked for the fixed September missing population. Paid: 703 identity-present /203 absent /435 no-order; cancel:134 present /50 absent. Primary blockers and payload/owner risks documented in docs/FINDINGS_CAREOS_SCENARIO_ROOT_CAUSES_20260926.md. Preparation only; no production mutation or V3 work.

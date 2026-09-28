@@ -1,0 +1,253 @@
+{
+  "creationTime": "1790567358182",
+  "etag": "M9k9iq1h9Voccys1uMTRtg==",
+  "id": "pacific-plating-282708:sap_view.RCL_Motor_process_4_creditshell",
+  "kind": "bigquery#table",
+  "lastModifiedTime": "1790567358182",
+  "location": "asia-southeast1",
+  "numActiveLogicalBytes": "0",
+  "numBytes": "0",
+  "numLongTermBytes": "0",
+  "numLongTermLogicalBytes": "0",
+  "numRows": "0",
+  "numTotalLogicalBytes": "0",
+  "schema": {
+    "fields": [
+      {
+        "name": "CompanyDB",
+        "type": "STRING"
+      },
+      {
+        "name": "OrderID",
+        "type": "STRING"
+      },
+      {
+        "name": "OrderItem",
+        "type": "STRING"
+      },
+      {
+        "name": "InvoiceNo",
+        "type": "STRING"
+      },
+      {
+        "name": "OrderDate",
+        "type": "STRING"
+      },
+      {
+        "name": "InsuredID",
+        "type": "STRING"
+      },
+      {
+        "name": "Title",
+        "type": "STRING"
+      },
+      {
+        "name": "FirstName",
+        "type": "STRING"
+      },
+      {
+        "name": "LastName",
+        "type": "STRING"
+      },
+      {
+        "name": "InsurerCode",
+        "type": "STRING"
+      },
+      {
+        "name": "InsuranceGroup",
+        "type": "STRING"
+      },
+      {
+        "name": "InsuranceType",
+        "type": "STRING"
+      },
+      {
+        "name": "InsuranceProduct",
+        "type": "STRING"
+      },
+      {
+        "name": "ProductType",
+        "type": "STRING"
+      },
+      {
+        "name": "PolicyType",
+        "type": "STRING"
+      },
+      {
+        "name": "Endorse",
+        "type": "STRING"
+      },
+      {
+        "name": "PolicyDate",
+        "type": "STRING"
+      },
+      {
+        "name": "PolicyNo",
+        "type": "STRING"
+      },
+      {
+        "name": "EndorsementNo",
+        "type": "INTEGER"
+      },
+      {
+        "name": "ChassisNo",
+        "type": "STRING"
+      },
+      {
+        "name": "LicensePlate",
+        "type": "STRING"
+      },
+      {
+        "name": "GrossPremium",
+        "type": "FLOAT"
+      },
+      {
+        "name": "StampDuty",
+        "type": "FLOAT"
+      },
+      {
+        "name": "VAT",
+        "type": "FLOAT"
+      },
+      {
+        "name": "TotalPremium",
+        "type": "FLOAT"
+      },
+      {
+        "name": "WHT",
+        "type": "FLOAT"
+      },
+      {
+        "name": "TotalEIR",
+        "type": "FLOAT"
+      },
+      {
+        "name": "TotalSBT",
+        "type": "FLOAT"
+      },
+      {
+        "name": "ProcessingFee",
+        "type": "FLOAT"
+      },
+      {
+        "name": "ProcessingFeeVat",
+        "type": "FLOAT"
+      },
+      {
+        "name": "ShippingFee",
+        "type": "FLOAT"
+      },
+      {
+        "name": "ShippingFeeVat",
+        "type": "FLOAT"
+      },
+      {
+        "name": "TotalAmount",
+        "type": "FLOAT"
+      },
+      {
+        "name": "Discount",
+        "type": "FLOAT"
+      },
+      {
+        "name": "TransactionStatus",
+        "type": "STRING"
+      },
+      {
+        "name": "SubmissionStatus",
+        "type": "STRING"
+      },
+      {
+        "name": "ApprovalStatus",
+        "type": "STRING"
+      },
+      {
+        "name": "PaymentStatus",
+        "type": "STRING"
+      },
+      {
+        "name": "ExpectedReceived",
+        "type": "FLOAT"
+      },
+      {
+        "name": "ActualReceived",
+        "type": "FLOAT"
+      },
+      {
+        "name": "InterestThisPeriod",
+        "type": "FLOAT"
+      },
+      {
+        "name": "PrincipleThisPeriod",
+        "type": "FLOAT"
+      },
+      {
+        "name": "InterestEIRThisPeriod",
+        "type": "FLOAT"
+      },
+      {
+        "name": "PrincipleEIRThisPeriod",
+        "type": "FLOAT"
+      },
+      {
+        "name": "PaymentDate",
+        "type": "STRING"
+      },
+      {
+        "name": "Period",
+        "type": "INTEGER"
+      },
+      {
+        "name": "TotalPeriods",
+        "type": "INTEGER"
+      },
+      {
+        "name": "PendingPayment",
+        "type": "FLOAT"
+      },
+      {
+        "name": "PaymentMethod",
+        "type": "STRING"
+      },
+      {
+        "name": "PaymentChannel",
+        "type": "STRING"
+      },
+      {
+        "name": "ExpectedDate",
+        "type": "STRING"
+      },
+      {
+        "name": "RefOrder",
+        "type": "STRING"
+      },
+      {
+        "name": "RefundAmountBeforeFee",
+        "type": "STRING"
+      },
+      {
+        "name": "RefundAmountAfterFee",
+        "type": "STRING"
+      },
+      {
+        "name": "BillingAddress",
+        "type": "STRING"
+      },
+      {
+        "name": "BatchRunDate",
+        "type": "STRING"
+      }
+    ]
+  },
+  "selfLink": "https://bigquery.googleapis.com/bigquery/v2/projects/pacific-plating-282708/datasets/sap_view/tables/RCL_Motor_process_4_creditshell",
+  "tableReference": {
+    "datasetId": "sap_view",
+    "projectId": "pacific-plating-282708",
+    "tableId": "RCL_Motor_process_4_creditshell"
+  },
+  "type": "VIEW",
+  "view": {
+    "query": "WITH filtered AS (\n  SELECT\n    src.*\n  FROM\n    `pacific-plating-282708.sap_integration_v2.RCL 04_new order credit shell` AS src\n  WHERE\n    -- Required to preserve the behavior of the original NOT IN condition.\n    -- Upstream currently contains OrderItem NULL rows.\n    src.OrderItem IS NOT NULL\n\n    AND NOT EXISTS (\n      SELECT\n        1\n      FROM\n        `pacific-plating-282708.sap_integration_v2.SAP_LIVE_FULL` AS sap\n      WHERE\n        sap.U_OrderItem = src.OrderItem\n    )\n\n    AND EXISTS (\n      SELECT\n        1\n      FROM\n        `pacific-plating-282708.careos.cancelled_change_orders` AS change_order\n      WHERE\n        change_order.current_human_id = src.OrderID\n    )\n\n    AND (\n      src.OrderDate LIKE '%2025%'\n      OR src.OrderDate LIKE '%2026%'\n    )\n\n    AND src.OrderID NOT IN (\n      'L79128866', -- incorrect insurer id\n      'L79217528', -- incorrect insurer id\n      'L79291428'  -- incorrect insurer id\n    )\n\n    -- Malformed rows wait until the upstream transaction data is complete.\n    AND src.Period IS NOT NULL\n    AND src.TotalPeriods IS NOT NULL\n    AND src.Period BETWEEN 1 AND src.TotalPeriods\n),\n\nranked AS (\n  SELECT\n    filtered.*,\n\n    ROW_NUMBER() OVER (\n      PARTITION BY\n        filtered.OrderItem,\n        filtered.Period\n      ORDER BY\n        -- A successful payment row is the expected schedule row.\n        CASE\n          WHEN LOWER(filtered.TransactionStatus) = 'paid' THEN 0\n          ELSE 1\n        END,\n\n        -- Earlier payment keeps ExpectedReceived.\n        SAFE.PARSE_DATE(\n          '%d%m%Y',\n          NULLIF(filtered.PaymentDate, '')\n        ) NULLS LAST,\n\n        NULLIF(filtered.InvoiceNo, '') NULLS LAST,\n\n        -- Stable tie-breaker without removing valid additional payments.\n        FARM_FINGERPRINT(TO_JSON_STRING(filtered))\n    ) AS duplicate_period_seq\n  FROM\n    filtered\n),\n\nfixed AS (\n  SELECT\n    * EXCEPT (duplicate_period_seq)\n\n    REPLACE (\n      -- Period duplication is allowed, but ExpectedReceived must not repeat.\n      CASE\n        WHEN duplicate_period_seq = 1\n          THEN ExpectedReceived\n        ELSE 0\n      END AS ExpectedReceived,\n\n      -- Pending transactions have no successful charge information.\n      CASE\n        WHEN LOWER(TransactionStatus) = 'pending'\n          THEN ''\n        ELSE IFNULL(PaymentMethod, '')\n      END AS PaymentMethod,\n\n      CASE\n        WHEN LOWER(TransactionStatus) = 'pending'\n          THEN ''\n        ELSE IFNULL(PaymentChannel, '')\n      END AS PaymentChannel\n    )\n  FROM\n    ranked\n)\n\nSELECT DISTINCT\n  * REPLACE (\n  CASE WHEN InsuranceGroup IN ('Health', 'TA') AND LOWER(TransactionStatus) = 'pending'\n       THEN ExpectedReceived ELSE ActualReceived END AS ActualReceived,\n  CASE WHEN InsuranceGroup IN ('Health', 'TA') AND LOWER(TransactionStatus) = 'paid'\n         AND SAFE.PARSE_DATE('%d%m%Y', NULLIF(PaymentDate, '')) < DATE_TRUNC(CURRENT_DATE('Asia/Bangkok'), MONTH)\n       THEN FORMAT_DATE('%d%m%Y', DATE_TRUNC(CURRENT_DATE('Asia/Bangkok'), MONTH))\n       ELSE PaymentDate END AS PaymentDate\n)\nFROM\n  fixed\nORDER BY\n  OrderItem,\n  Period",
+    "useLegacySql": false
+  }
+}

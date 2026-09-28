@@ -1,0 +1,904 @@
+[
+  {
+    "InsuranceGroup": "Health",
+    "InsurerCode": "N017",
+    "TransactionStatus": "paid",
+    "insurer_failures": "0",
+    "items": "2",
+    "observed_at": "2026-09-28 03:50:19",
+    "pending_amount_wrong": "0",
+    "prior_month_paid": "0",
+    "row_count": "4",
+    "samples": [
+      {
+        "ActualReceived": "1654.8",
+        "ExpectedReceived": "1654.8",
+        "InvoiceNo": "chrg_68btbxxvbm1v74lct76",
+        "OrderID": "L80700230",
+        "OrderItem": "L80700230-1",
+        "PaymentChannel": "RCL-Credit Shell",
+        "PaymentDate": "01092026",
+        "Period": "1",
+        "TotalPeriods": "10"
+      },
+      {
+        "ActualReceived": "1654.8",
+        "ExpectedReceived": "1654.8",
+        "InvoiceNo": "chrg_68btbzyvx0kz8y9jkq0",
+        "OrderID": "L80700246",
+        "OrderItem": "L80700246-1",
+        "PaymentChannel": "RCL-Credit Shell",
+        "PaymentDate": "01092026",
+        "Period": "1",
+        "TotalPeriods": "10"
+      },
+      {
+        "ActualReceived": "1654.8",
+        "ExpectedReceived": "1654.8",
+        "InvoiceNo": "chrg_68uufkb7jlumk902z4q",
+        "OrderID": "L80700246",
+        "OrderItem": "L80700246-1",
+        "PaymentChannel": "RCL-Omise QR Prompt Pay-Health",
+        "PaymentDate": "01092026",
+        "Period": "2",
+        "TotalPeriods": "10"
+      }
+    ],
+    "wrapper": "RCB"
+  },
+  {
+    "InsuranceGroup": "Health",
+    "InsurerCode": "N017",
+    "TransactionStatus": "pending",
+    "insurer_failures": "0",
+    "items": "2",
+    "observed_at": "2026-09-28 03:50:19",
+    "pending_amount_wrong": "0",
+    "prior_month_paid": "0",
+    "row_count": "16",
+    "samples": [
+      {
+        "ActualReceived": "1654.8",
+        "ExpectedReceived": "1654.8",
+        "InvoiceNo": "",
+        "OrderID": "L80700246",
+        "OrderItem": "L80700246-1",
+        "PaymentChannel": "",
+        "PaymentDate": "",
+        "Period": "3",
+        "TotalPeriods": "10"
+      },
+      {
+        "ActualReceived": "1654.8",
+        "ExpectedReceived": "1654.8",
+        "InvoiceNo": "",
+        "OrderID": "L80700230",
+        "OrderItem": "L80700230-1",
+        "PaymentChannel": "",
+        "PaymentDate": "",
+        "Period": "9",
+        "TotalPeriods": "10"
+      },
+      {
+        "ActualReceived": "1654.8",
+        "ExpectedReceived": "1654.8",
+        "InvoiceNo": "",
+        "OrderID": "L80700230",
+        "OrderItem": "L80700230-1",
+        "PaymentChannel": "",
+        "PaymentDate": "",
+        "Period": "6",
+        "TotalPeriods": "10"
+      }
+    ],
+    "wrapper": "RCB"
+  },
+  {
+    "InsuranceGroup": "Health",
+    "InsurerCode": "N079",
+    "TransactionStatus": "paid",
+    "insurer_failures": "0",
+    "items": "5",
+    "observed_at": "2026-09-28 03:50:19",
+    "pending_amount_wrong": "0",
+    "prior_month_paid": "0",
+    "row_count": "10",
+    "samples": [
+      {
+        "ActualReceived": "1381.0",
+        "ExpectedReceived": "1090.0",
+        "InvoiceNo": "chrg_68q94by4297bfz16nfs",
+        "OrderID": "L80901219",
+        "OrderItem": "L80901219-1",
+        "PaymentChannel": "RCL-Credit Shell",
+        "PaymentDate": "01092026",
+        "Period": "1",
+        "TotalPeriods": "8"
+      },
+      {
+        "ActualReceived": "1896.0",
+        "ExpectedReceived": "2464.2",
+        "InvoiceNo": "chrg_68xbzzey4106h23nky7",
+        "OrderID": "L80843199",
+        "OrderItem": "L80843199-1",
+        "PaymentChannel": "RCL-Credit Shell",
+        "PaymentDate": "06092026",
+        "Period": "3",
+        "TotalPeriods": "10"
+      },
+      {
+        "ActualReceived": "915.0",
+        "ExpectedReceived": "1674.34",
+        "InvoiceNo": "chrg_68opmsbvzzm58t5nw5l",
+        "OrderID": "L80779150",
+        "OrderItem": "L80779150-1",
+        "PaymentChannel": "RCL-Credit Shell",
+        "PaymentDate": "01092026",
+        "Period": "1",
+        "TotalPeriods": "3"
+      }
+    ],
+    "wrapper": "RCB"
+  },
+  {
+    "InsuranceGroup": "Health",
+    "InsurerCode": "N079",
+    "TransactionStatus": "pending",
+    "insurer_failures": "0",
+    "items": "5",
+    "observed_at": "2026-09-28 03:50:19",
+    "pending_amount_wrong": "0",
+    "prior_month_paid": "0",
+    "row_count": "34",
+    "samples": [
+      {
+        "ActualReceived": "1090.0",
+        "ExpectedReceived": "1090.0",
+        "InvoiceNo": "",
+        "OrderID": "L80901219",
+        "OrderItem": "L80901219-1",
+        "PaymentChannel": "",
+        "PaymentDate": "",
+        "Period": "5",
+        "TotalPeriods": "8"
+      },
+      {
+        "ActualReceived": "2843.0",
+        "ExpectedReceived": "2843.0",
+        "InvoiceNo": "",
+        "OrderID": "L80911334",
+        "OrderItem": "L80911334-1",
+        "PaymentChannel": "",
+        "PaymentDate": "",
+        "Period": "2",
+        "TotalPeriods": "10"
+      },
+      {
+        "ActualReceived": "2843.0",
+        "ExpectedReceived": "2843.0",
+        "InvoiceNo": "",
+        "OrderID": "L80911334",
+        "OrderItem": "L80911334-1",
+        "PaymentChannel": "",
+        "PaymentDate": "",
+        "Period": "3",
+        "TotalPeriods": "10"
+      }
+    ],
+    "wrapper": "RCB"
+  },
+  {
+    "InsuranceGroup": "Health",
+    "InsurerCode": "N105",
+    "TransactionStatus": "paid",
+    "insurer_failures": "0",
+    "items": "2",
+    "observed_at": "2026-09-28 03:50:19",
+    "pending_amount_wrong": "0",
+    "prior_month_paid": "0",
+    "row_count": "2",
+    "samples": [
+      {
+        "ActualReceived": "1645.1",
+        "ExpectedReceived": "1480.6",
+        "InvoiceNo": "chrg_68oaojtmv9hy8nku03d",
+        "OrderID": "L80796724",
+        "OrderItem": "L80796724-1",
+        "PaymentChannel": "RCL-Credit Shell",
+        "PaymentDate": "01092026",
+        "Period": "1",
+        "TotalPeriods": "10"
+      },
+      {
+        "ActualReceived": "1233.9",
+        "ExpectedReceived": "1234.0",
+        "InvoiceNo": "chrg_68oao93ibm7b73dl480",
+        "OrderID": "L80797922",
+        "OrderItem": "L80797922-1",
+        "PaymentChannel": "RCL-Credit Shell",
+        "PaymentDate": "01092026",
+        "Period": "1",
+        "TotalPeriods": "10"
+      }
+    ],
+    "wrapper": "RCB"
+  },
+  {
+    "InsuranceGroup": "Health",
+    "InsurerCode": "N105",
+    "TransactionStatus": "pending",
+    "insurer_failures": "0",
+    "items": "2",
+    "observed_at": "2026-09-28 03:50:19",
+    "pending_amount_wrong": "0",
+    "prior_month_paid": "0",
+    "row_count": "18",
+    "samples": [
+      {
+        "ActualReceived": "1480.6",
+        "ExpectedReceived": "1480.6",
+        "InvoiceNo": "",
+        "OrderID": "L80796724",
+        "OrderItem": "L80796724-1",
+        "PaymentChannel": "",
+        "PaymentDate": "",
+        "Period": "3",
+        "TotalPeriods": "10"
+      },
+      {
+        "ActualReceived": "1234.0",
+        "ExpectedReceived": "1234.0",
+        "InvoiceNo": "",
+        "OrderID": "L80797922",
+        "OrderItem": "L80797922-1",
+        "PaymentChannel": "",
+        "PaymentDate": "",
+        "Period": "3",
+        "TotalPeriods": "10"
+      },
+      {
+        "ActualReceived": "1234.0",
+        "ExpectedReceived": "1234.0",
+        "InvoiceNo": "",
+        "OrderID": "L80797922",
+        "OrderItem": "L80797922-1",
+        "PaymentChannel": "",
+        "PaymentDate": "",
+        "Period": "5",
+        "TotalPeriods": "10"
+      }
+    ],
+    "wrapper": "RCB"
+  },
+  {
+    "InsuranceGroup": "Motor",
+    "InsurerCode": "11",
+    "TransactionStatus": "paid",
+    "insurer_failures": "0",
+    "items": "1",
+    "observed_at": "2026-09-28 03:50:19",
+    "pending_amount_wrong": "0",
+    "prior_month_paid": "0",
+    "row_count": "2",
+    "samples": [
+      {
+        "ActualReceived": "645.21",
+        "ExpectedReceived": "0.0",
+        "InvoiceNo": "chrg_689hydn4u3coof2wrnz",
+        "OrderID": "L80738381",
+        "OrderItem": "L80738381-M1",
+        "PaymentChannel": "RCL-Credit Shell",
+        "PaymentDate": "01092026",
+        "Period": "1",
+        "TotalPeriods": "1"
+      },
+      {
+        "ActualReceived": "645.21",
+        "ExpectedReceived": "0.0",
+        "InvoiceNo": "chrg_689hydn4u3coof2wrnz",
+        "OrderID": "L80738381",
+        "OrderItem": "L80738381-M1",
+        "PaymentChannel": "RCL-Credit Shell",
+        "PaymentDate": "01092026",
+        "Period": "1",
+        "TotalPeriods": "1"
+      }
+    ],
+    "wrapper": "RCB"
+  },
+  {
+    "InsuranceGroup": "Motor",
+    "InsurerCode": "17",
+    "TransactionStatus": "paid",
+    "insurer_failures": "0",
+    "items": "1",
+    "observed_at": "2026-09-28 03:50:19",
+    "pending_amount_wrong": "0",
+    "prior_month_paid": "0",
+    "row_count": "1",
+    "samples": [
+      {
+        "ActualReceived": "2250.21",
+        "ExpectedReceived": "1500.06",
+        "InvoiceNo": "chrg_690fl9xlgz9sok03e04",
+        "OrderID": "L80923865",
+        "OrderItem": "L80923865-V1",
+        "PaymentChannel": "RCL-Credit Shell",
+        "PaymentDate": "15092026",
+        "Period": "1",
+        "TotalPeriods": "10"
+      }
+    ],
+    "wrapper": "RCB"
+  },
+  {
+    "InsuranceGroup": "Motor",
+    "InsurerCode": "17",
+    "TransactionStatus": "pending",
+    "insurer_failures": "0",
+    "items": "1",
+    "observed_at": "2026-09-28 03:50:19",
+    "pending_amount_wrong": "9",
+    "prior_month_paid": "0",
+    "row_count": "9",
+    "samples": [
+      {
+        "ActualReceived": null,
+        "ExpectedReceived": "1500.03",
+        "InvoiceNo": "",
+        "OrderID": "L80923865",
+        "OrderItem": "L80923865-V1",
+        "PaymentChannel": "",
+        "PaymentDate": "",
+        "Period": "7",
+        "TotalPeriods": "10"
+      },
+      {
+        "ActualReceived": null,
+        "ExpectedReceived": "1500.03",
+        "InvoiceNo": "",
+        "OrderID": "L80923865",
+        "OrderItem": "L80923865-V1",
+        "PaymentChannel": "",
+        "PaymentDate": "",
+        "Period": "6",
+        "TotalPeriods": "10"
+      },
+      {
+        "ActualReceived": null,
+        "ExpectedReceived": "1500.03",
+        "InvoiceNo": "",
+        "OrderID": "L80923865",
+        "OrderItem": "L80923865-V1",
+        "PaymentChannel": "",
+        "PaymentDate": "",
+        "Period": "2",
+        "TotalPeriods": "10"
+      }
+    ],
+    "wrapper": "RCB"
+  },
+  {
+    "InsuranceGroup": "Motor",
+    "InsurerCode": "27",
+    "TransactionStatus": "paid",
+    "insurer_failures": "0",
+    "items": "1",
+    "observed_at": "2026-09-28 03:50:19",
+    "pending_amount_wrong": "0",
+    "prior_month_paid": "0",
+    "row_count": "4",
+    "samples": [
+      {
+        "ActualReceived": "645.21",
+        "ExpectedReceived": "0.0",
+        "InvoiceNo": "chrg_68ock03j5xda04hgmbc",
+        "OrderID": "L80767177",
+        "OrderItem": "L80767177-M1",
+        "PaymentChannel": "RCL-Credit Shell",
+        "PaymentDate": "01092026",
+        "Period": "1",
+        "TotalPeriods": "1"
+      },
+      {
+        "ActualReceived": "645.21",
+        "ExpectedReceived": "0.0",
+        "InvoiceNo": "chrg_68iihm14piwxqb96ik6",
+        "OrderID": "L80767177",
+        "OrderItem": "L80767177-M1",
+        "PaymentChannel": "RCL-Credit Shell",
+        "PaymentDate": "01092026",
+        "Period": "1",
+        "TotalPeriods": "1"
+      },
+      {
+        "ActualReceived": "645.21",
+        "ExpectedReceived": "645.21",
+        "InvoiceNo": "chrg_68iihm14piwxqb96ik6",
+        "OrderID": "L80767177",
+        "OrderItem": "L80767177-M1",
+        "PaymentChannel": "RCL-Credit Shell",
+        "PaymentDate": "01092026",
+        "Period": "1",
+        "TotalPeriods": "1"
+      }
+    ],
+    "wrapper": "RCB"
+  },
+  {
+    "InsuranceGroup": "Motor",
+    "InsurerCode": "7",
+    "TransactionStatus": "paid",
+    "insurer_failures": "0",
+    "items": "1",
+    "observed_at": "2026-09-28 03:50:19",
+    "pending_amount_wrong": "0",
+    "prior_month_paid": "0",
+    "row_count": "1",
+    "samples": [
+      {
+        "ActualReceived": "967.28",
+        "ExpectedReceived": "967.28",
+        "InvoiceNo": "chrg_64smxash13v1tlzg2ei",
+        "OrderID": "L78813768",
+        "OrderItem": "L78813768-M1",
+        "PaymentChannel": "RCB-CreditShell",
+        "PaymentDate": "01092026",
+        "Period": "1",
+        "TotalPeriods": "1"
+      }
+    ],
+    "wrapper": "RCB"
+  },
+  {
+    "InsuranceGroup": "Health",
+    "InsurerCode": "N017",
+    "TransactionStatus": "paid",
+    "insurer_failures": "0",
+    "items": "2",
+    "observed_at": "2026-09-28 03:50:19",
+    "pending_amount_wrong": "0",
+    "prior_month_paid": "0",
+    "row_count": "4",
+    "samples": [
+      {
+        "ActualReceived": "1654.8",
+        "ExpectedReceived": "1654.8",
+        "InvoiceNo": "chrg_68uufkb7jlumk902z4q",
+        "OrderID": "L80700246",
+        "OrderItem": "L80700246-1",
+        "PaymentChannel": "RCL-Omise QR Prompt Pay-BAY",
+        "PaymentDate": "01092026",
+        "Period": "2",
+        "TotalPeriods": "10"
+      },
+      {
+        "ActualReceived": "1654.8",
+        "ExpectedReceived": "1654.8",
+        "InvoiceNo": "chrg_68btbzyvx0kz8y9jkq0",
+        "OrderID": "L80700246",
+        "OrderItem": "L80700246-1",
+        "PaymentChannel": "RCL-Credit Shell",
+        "PaymentDate": "01092026",
+        "Period": "1",
+        "TotalPeriods": "10"
+      },
+      {
+        "ActualReceived": "1654.8",
+        "ExpectedReceived": "1654.8",
+        "InvoiceNo": "chrg_68btbxxvbm1v74lct76",
+        "OrderID": "L80700230",
+        "OrderItem": "L80700230-1",
+        "PaymentChannel": "RCL-Credit Shell",
+        "PaymentDate": "01092026",
+        "Period": "1",
+        "TotalPeriods": "10"
+      }
+    ],
+    "wrapper": "RCL"
+  },
+  {
+    "InsuranceGroup": "Health",
+    "InsurerCode": "N017",
+    "TransactionStatus": "pending",
+    "insurer_failures": "0",
+    "items": "2",
+    "observed_at": "2026-09-28 03:50:19",
+    "pending_amount_wrong": "0",
+    "prior_month_paid": "0",
+    "row_count": "16",
+    "samples": [
+      {
+        "ActualReceived": "1654.8",
+        "ExpectedReceived": "1654.8",
+        "InvoiceNo": "",
+        "OrderID": "L80700246",
+        "OrderItem": "L80700246-1",
+        "PaymentChannel": "",
+        "PaymentDate": "",
+        "Period": "9",
+        "TotalPeriods": "10"
+      },
+      {
+        "ActualReceived": "1654.8",
+        "ExpectedReceived": "1654.8",
+        "InvoiceNo": "",
+        "OrderID": "L80700230",
+        "OrderItem": "L80700230-1",
+        "PaymentChannel": "",
+        "PaymentDate": "",
+        "Period": "8",
+        "TotalPeriods": "10"
+      },
+      {
+        "ActualReceived": "1654.8",
+        "ExpectedReceived": "1654.8",
+        "InvoiceNo": "",
+        "OrderID": "L80700246",
+        "OrderItem": "L80700246-1",
+        "PaymentChannel": "",
+        "PaymentDate": "",
+        "Period": "7",
+        "TotalPeriods": "10"
+      }
+    ],
+    "wrapper": "RCL"
+  },
+  {
+    "InsuranceGroup": "Health",
+    "InsurerCode": "N079",
+    "TransactionStatus": "paid",
+    "insurer_failures": "0",
+    "items": "5",
+    "observed_at": "2026-09-28 03:50:19",
+    "pending_amount_wrong": "0",
+    "prior_month_paid": "0",
+    "row_count": "10",
+    "samples": [
+      {
+        "ActualReceived": "1896.0",
+        "ExpectedReceived": "2843.0",
+        "InvoiceNo": "chrg_68xqlnyoqk72hqvj7ip",
+        "OrderID": "L80911334",
+        "OrderItem": "L80911334-1",
+        "PaymentChannel": "RCL-Credit Shell",
+        "PaymentDate": "07092026",
+        "Period": "1",
+        "TotalPeriods": "10"
+      },
+      {
+        "ActualReceived": "1896.0",
+        "ExpectedReceived": "2464.2",
+        "InvoiceNo": "chrg_68maj54vkkt2289o903",
+        "OrderID": "L80843199",
+        "OrderItem": "L80843199-1",
+        "PaymentChannel": "RCL-Credit Shell",
+        "PaymentDate": "01092026",
+        "Period": "2",
+        "TotalPeriods": "10"
+      },
+      {
+        "ActualReceived": "567.0",
+        "ExpectedReceived": "0.0",
+        "InvoiceNo": "chrg_691z42z85l8sby2jqjc",
+        "OrderID": "L80901299",
+        "OrderItem": "L80901299-1",
+        "PaymentChannel": "RCL-Omise QR Prompt Pay-BAY",
+        "PaymentDate": "18092026",
+        "Period": "1",
+        "TotalPeriods": "10"
+      }
+    ],
+    "wrapper": "RCL"
+  },
+  {
+    "InsuranceGroup": "Health",
+    "InsurerCode": "N079",
+    "TransactionStatus": "pending",
+    "insurer_failures": "0",
+    "items": "5",
+    "observed_at": "2026-09-28 03:50:19",
+    "pending_amount_wrong": "0",
+    "prior_month_paid": "0",
+    "row_count": "34",
+    "samples": [
+      {
+        "ActualReceived": "1896.0",
+        "ExpectedReceived": "1896.0",
+        "InvoiceNo": "",
+        "OrderID": "L80901299",
+        "OrderItem": "L80901299-1",
+        "PaymentChannel": "",
+        "PaymentDate": "",
+        "Period": "10",
+        "TotalPeriods": "10"
+      },
+      {
+        "ActualReceived": "1896.0",
+        "ExpectedReceived": "1896.0",
+        "InvoiceNo": "",
+        "OrderID": "L80901299",
+        "OrderItem": "L80901299-1",
+        "PaymentChannel": "",
+        "PaymentDate": "",
+        "Period": "9",
+        "TotalPeriods": "10"
+      },
+      {
+        "ActualReceived": "2464.2",
+        "ExpectedReceived": "2464.2",
+        "InvoiceNo": "",
+        "OrderID": "L80843199",
+        "OrderItem": "L80843199-1",
+        "PaymentChannel": "",
+        "PaymentDate": "",
+        "Period": "4",
+        "TotalPeriods": "10"
+      }
+    ],
+    "wrapper": "RCL"
+  },
+  {
+    "InsuranceGroup": "Health",
+    "InsurerCode": "N105",
+    "TransactionStatus": "paid",
+    "insurer_failures": "0",
+    "items": "2",
+    "observed_at": "2026-09-28 03:50:19",
+    "pending_amount_wrong": "0",
+    "prior_month_paid": "0",
+    "row_count": "2",
+    "samples": [
+      {
+        "ActualReceived": "1645.1",
+        "ExpectedReceived": "1480.6",
+        "InvoiceNo": "chrg_68oaojtmv9hy8nku03d",
+        "OrderID": "L80796724",
+        "OrderItem": "L80796724-1",
+        "PaymentChannel": "RCL-Credit Shell",
+        "PaymentDate": "01092026",
+        "Period": "1",
+        "TotalPeriods": "10"
+      },
+      {
+        "ActualReceived": "1233.9",
+        "ExpectedReceived": "1234.0",
+        "InvoiceNo": "chrg_68oao93ibm7b73dl480",
+        "OrderID": "L80797922",
+        "OrderItem": "L80797922-1",
+        "PaymentChannel": "RCL-Credit Shell",
+        "PaymentDate": "01092026",
+        "Period": "1",
+        "TotalPeriods": "10"
+      }
+    ],
+    "wrapper": "RCL"
+  },
+  {
+    "InsuranceGroup": "Health",
+    "InsurerCode": "N105",
+    "TransactionStatus": "pending",
+    "insurer_failures": "0",
+    "items": "2",
+    "observed_at": "2026-09-28 03:50:19",
+    "pending_amount_wrong": "0",
+    "prior_month_paid": "0",
+    "row_count": "18",
+    "samples": [
+      {
+        "ActualReceived": "1234.0",
+        "ExpectedReceived": "1234.0",
+        "InvoiceNo": "",
+        "OrderID": "L80797922",
+        "OrderItem": "L80797922-1",
+        "PaymentChannel": "",
+        "PaymentDate": "",
+        "Period": "7",
+        "TotalPeriods": "10"
+      },
+      {
+        "ActualReceived": "1480.6",
+        "ExpectedReceived": "1480.6",
+        "InvoiceNo": "",
+        "OrderID": "L80796724",
+        "OrderItem": "L80796724-1",
+        "PaymentChannel": "",
+        "PaymentDate": "",
+        "Period": "7",
+        "TotalPeriods": "10"
+      },
+      {
+        "ActualReceived": "1480.6",
+        "ExpectedReceived": "1480.6",
+        "InvoiceNo": "",
+        "OrderID": "L80796724",
+        "OrderItem": "L80796724-1",
+        "PaymentChannel": "",
+        "PaymentDate": "",
+        "Period": "4",
+        "TotalPeriods": "10"
+      }
+    ],
+    "wrapper": "RCL"
+  },
+  {
+    "InsuranceGroup": "Motor",
+    "InsurerCode": "11",
+    "TransactionStatus": "paid",
+    "insurer_failures": "0",
+    "items": "1",
+    "observed_at": "2026-09-28 03:50:19",
+    "pending_amount_wrong": "0",
+    "prior_month_paid": "2",
+    "row_count": "2",
+    "samples": [
+      {
+        "ActualReceived": "645.21",
+        "ExpectedReceived": "0.0",
+        "InvoiceNo": "chrg_689hydn4u3coof2wrnz",
+        "OrderID": "L80738381",
+        "OrderItem": "L80738381-M1",
+        "PaymentChannel": "RCL-Credit Shell",
+        "PaymentDate": "07072026",
+        "Period": "1",
+        "TotalPeriods": "1"
+      },
+      {
+        "ActualReceived": "645.21",
+        "ExpectedReceived": "0.0",
+        "InvoiceNo": "chrg_689hydn4u3coof2wrnz",
+        "OrderID": "L80738381",
+        "OrderItem": "L80738381-M1",
+        "PaymentChannel": "RCL-Credit Shell",
+        "PaymentDate": "07072026",
+        "Period": "1",
+        "TotalPeriods": "1"
+      }
+    ],
+    "wrapper": "RCL"
+  },
+  {
+    "InsuranceGroup": "Motor",
+    "InsurerCode": "17",
+    "TransactionStatus": "paid",
+    "insurer_failures": "0",
+    "items": "1",
+    "observed_at": "2026-09-28 03:50:19",
+    "pending_amount_wrong": "0",
+    "prior_month_paid": "0",
+    "row_count": "1",
+    "samples": [
+      {
+        "ActualReceived": "2250.21",
+        "ExpectedReceived": "1500.06",
+        "InvoiceNo": "chrg_690fl9xlgz9sok03e04",
+        "OrderID": "L80923865",
+        "OrderItem": "L80923865-V1",
+        "PaymentChannel": "RCL-Credit Shell",
+        "PaymentDate": "15092026",
+        "Period": "1",
+        "TotalPeriods": "10"
+      }
+    ],
+    "wrapper": "RCL"
+  },
+  {
+    "InsuranceGroup": "Motor",
+    "InsurerCode": "17",
+    "TransactionStatus": "pending",
+    "insurer_failures": "0",
+    "items": "1",
+    "observed_at": "2026-09-28 03:50:19",
+    "pending_amount_wrong": "9",
+    "prior_month_paid": "0",
+    "row_count": "9",
+    "samples": [
+      {
+        "ActualReceived": null,
+        "ExpectedReceived": "1500.03",
+        "InvoiceNo": "",
+        "OrderID": "L80923865",
+        "OrderItem": "L80923865-V1",
+        "PaymentChannel": "",
+        "PaymentDate": "",
+        "Period": "5",
+        "TotalPeriods": "10"
+      },
+      {
+        "ActualReceived": null,
+        "ExpectedReceived": "1500.03",
+        "InvoiceNo": "",
+        "OrderID": "L80923865",
+        "OrderItem": "L80923865-V1",
+        "PaymentChannel": "",
+        "PaymentDate": "",
+        "Period": "3",
+        "TotalPeriods": "10"
+      },
+      {
+        "ActualReceived": null,
+        "ExpectedReceived": "1500.03",
+        "InvoiceNo": "",
+        "OrderID": "L80923865",
+        "OrderItem": "L80923865-V1",
+        "PaymentChannel": "",
+        "PaymentDate": "",
+        "Period": "4",
+        "TotalPeriods": "10"
+      }
+    ],
+    "wrapper": "RCL"
+  },
+  {
+    "InsuranceGroup": "Motor",
+    "InsurerCode": "27",
+    "TransactionStatus": "paid",
+    "insurer_failures": "0",
+    "items": "1",
+    "observed_at": "2026-09-28 03:50:19",
+    "pending_amount_wrong": "0",
+    "prior_month_paid": "4",
+    "row_count": "4",
+    "samples": [
+      {
+        "ActualReceived": "645.21",
+        "ExpectedReceived": "0.0",
+        "InvoiceNo": "chrg_68iihm14piwxqb96ik6",
+        "OrderID": "L80767177",
+        "OrderItem": "L80767177-M1",
+        "PaymentChannel": "RCL-Credit Shell",
+        "PaymentDate": "30072026",
+        "Period": "1",
+        "TotalPeriods": "1"
+      },
+      {
+        "ActualReceived": "645.21",
+        "ExpectedReceived": "0.0",
+        "InvoiceNo": "chrg_68ock03j5xda04hgmbc",
+        "OrderID": "L80767177",
+        "OrderItem": "L80767177-M1",
+        "PaymentChannel": "RCL-Omise QR Prompt Pay-BAY",
+        "PaymentDate": "14082026",
+        "Period": "1",
+        "TotalPeriods": "1"
+      },
+      {
+        "ActualReceived": "645.21",
+        "ExpectedReceived": "645.21",
+        "InvoiceNo": "chrg_68iihm14piwxqb96ik6",
+        "OrderID": "L80767177",
+        "OrderItem": "L80767177-M1",
+        "PaymentChannel": "RCL-Credit Shell",
+        "PaymentDate": "30072026",
+        "Period": "1",
+        "TotalPeriods": "1"
+      }
+    ],
+    "wrapper": "RCL"
+  },
+  {
+    "InsuranceGroup": "Motor",
+    "InsurerCode": "7",
+    "TransactionStatus": "paid",
+    "insurer_failures": "0",
+    "items": "1",
+    "observed_at": "2026-09-28 03:50:19",
+    "pending_amount_wrong": "0",
+    "prior_month_paid": "1",
+    "row_count": "1",
+    "samples": [
+      {
+        "ActualReceived": "967.28",
+        "ExpectedReceived": "967.28",
+        "InvoiceNo": "chrg_64smxash13v1tlzg2ei",
+        "OrderID": "L78813768",
+        "OrderItem": "L78813768-M1",
+        "PaymentChannel": "RCB-CreditShell",
+        "PaymentDate": "22082025",
+        "Period": "1",
+        "TotalPeriods": "1"
+      }
+    ],
+    "wrapper": "RCL"
+  }
+]
