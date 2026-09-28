@@ -20,3 +20,15 @@ V3 remains held; report SAP posting separately.
 Named risk: runtime lineage assertion intentionally fails on newly encountered unsent nonzero receipts
 without lineage. Fresh preflight must establish the assertion passes. This review is static approval,
 not a claim of completed live verification or deployment.
+
+## Post-deployment independent evidence review
+
+**PASS: the view-only deployment conclusion is supported.** Reviewer /root/review_downstream read
+recorded evidence and ran the saved-evidence verifier; no BQ or file edits. Four DDL jobs succeed;
+schemas match; independently compared definitions preserving internal whitespace and found equality
+after removing only leading comments and outer whitespace. Six preflight failure metrics are zero.
+Live4032rows/523items, duplicate keys0, incomplete schedules0. All10 targets, including eight prior
+principal cases and22.04/645.21 extra receipts, satisfy the confirmed rule. The4036preflight versus4032
+live snapshot distinction is correctly disclosed. No additional deployment blocker found.
+
+Residual limitation: scheduler execution and SAP posting are not verified by view-output evidence.

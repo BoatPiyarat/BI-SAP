@@ -4,6 +4,22 @@ Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request firs
 review history; link the completed review and record its verdict.
 
 
+## RQ-20260928-1014-rcl-four-view-deploy
+Status: OPEN
+Reviewer: Claude Code
+Class: A
+Artifact: commits `3dc57b3` and `36bafc5`; authorized four-view RCL production release.
+Opened: 2026-09-28T10:14:52+07:00
+Claim: user-approved principal rule implemented at dashboard; three downstream receipt gates released.
+Four DDL jobs DONE; definitions/read-back and56/56/13/56 schemas match. Fresh preflight failure metrics0.
+Live4032rows/523items, duplicate keys0, incomplete spines0; all8 prior principal cases and both extras pass.
+Evidence: docs/FINDINGS_RCL_VIEW_DEPLOY_20260928.md, docs/evidence/rcl_downstream_deploy_20260928/,
+scripts/verify_rcl_release_20260928.py; independent static PASS after explicit user principal decision.
+Scope: live views only; no SAP posting claim, interface file, scheduler change or V3 mutation.
+Read-back normalizes BigQuery-stripped leading comments and whitespace only. Preflight and postcheck
+counts are different current-data snapshots, not claimed equal. Rollback retained. Retrospective review
+of user-authorized deployment; prior source-only principal hold is superseded by the recorded decision.
+
 ## RQ-20260927-0731-rcl-downstream
 Status: OPEN
 Reviewer: Claude Code
