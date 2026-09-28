@@ -1,0 +1,26 @@
+[
+  {
+    "name": "rcl_wrapper",
+    "object": "sap_view.RCL_Motor_process_4_creditshell",
+    "captured_at": "2026-09-28T03:32:52.690966+00:00",
+    "columns": 56
+  },
+  {
+    "name": "rcb_wrapper",
+    "object": "sap_view.RCB_Motor_process_4_creditshell",
+    "captured_at": "2026-09-28T03:32:53.190885+00:00",
+    "columns": 56
+  },
+  {
+    "name": "producer",
+    "object": "sap_integration_v2.RCL 04_new order credit shell",
+    "captured_at": "2026-09-28T03:32:52.119072+00:00",
+    "columns": 56
+  },
+  {
+    "name": "health",
+    "object": "sap_data_engineer.RCL_HEALTH",
+    "captured_at": "2026-09-28T03:32:52.147819+00:00",
+    "columns": 56
+  }
+]
