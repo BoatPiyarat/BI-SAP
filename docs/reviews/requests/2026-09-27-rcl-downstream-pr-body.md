@@ -1,0 +1,5 @@
+RCL additional receipts were suppressed when their installment or latest period was Paid. The deployed fix now routes eligible outstanding receipts by invoice identity, preserves ordinary fallback invoices, reports missing paid lineage and allows current payments on older orders. The shared dashboard also applies the user-confirmed rule: both principal fields equal the new charge amount for additional receipts.
+
+Deployed28September2026 to sap_dashboard_carepay_installment, RCL05_newpayment, RCL05_paid by period and RCL_Motor_process_2_newpayment. Fresh preflight, all four definition/schema read-backs and live postcheck pass. No baseline payload loss in preflight, no duplicate receipt identities or incomplete schedules; all8 principal exceptions and both reported extra receipts verify live.
+
+See docs/FINDINGS_RCL_VIEW_DEPLOY_20260928.md for exact job IDs, rollback and scope. No interface-file write, manual SAP import, scheduler change or V3 mutation. Live output success is not a SAP posting claim.

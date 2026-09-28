@@ -1,0 +1,250 @@
+{
+  "creationTime": "1790564521453",
+  "etag": "WhpEYC49lw5AKypRLPrtlw==",
+  "expirationTime": "1790650921453",
+  "id": "pacific-plating-282708:_scriptee947b954e1740a392e26cefa7c7e71a561a0b6b.candidate_newpayment",
+  "kind": "bigquery#table",
+  "lastModifiedTime": "1790564521453",
+  "location": "asia-southeast1",
+  "numActiveLogicalBytes": "243399072",
+  "numBytes": "243399072",
+  "numLongTermBytes": "0",
+  "numLongTermLogicalBytes": "0",
+  "numRows": "391445",
+  "numTotalLogicalBytes": "243399072",
+  "schema": {
+    "fields": [
+      {
+        "name": "CompanyDB",
+        "type": "STRING"
+      },
+      {
+        "name": "OrderID",
+        "type": "STRING"
+      },
+      {
+        "name": "OrderItem",
+        "type": "STRING"
+      },
+      {
+        "name": "InvoiceNo",
+        "type": "STRING"
+      },
+      {
+        "name": "OrderDate",
+        "type": "STRING"
+      },
+      {
+        "name": "InsuredID",
+        "type": "STRING"
+      },
+      {
+        "name": "Title",
+        "type": "STRING"
+      },
+      {
+        "name": "FirstName",
+        "type": "STRING"
+      },
+      {
+        "name": "LastName",
+        "type": "STRING"
+      },
+      {
+        "name": "InsurerCode",
+        "type": "STRING"
+      },
+      {
+        "name": "InsuranceGroup",
+        "type": "STRING"
+      },
+      {
+        "name": "InsuranceType",
+        "type": "STRING"
+      },
+      {
+        "name": "InsuranceProduct",
+        "type": "STRING"
+      },
+      {
+        "name": "ProductType",
+        "type": "STRING"
+      },
+      {
+        "name": "PolicyType",
+        "type": "STRING"
+      },
+      {
+        "name": "Endorse",
+        "type": "STRING"
+      },
+      {
+        "name": "PolicyDate",
+        "type": "STRING"
+      },
+      {
+        "name": "PolicyNo",
+        "type": "STRING"
+      },
+      {
+        "name": "EndorsementNo",
+        "type": "STRING"
+      },
+      {
+        "name": "ChassisNo",
+        "type": "STRING"
+      },
+      {
+        "name": "LicensePlate",
+        "type": "STRING"
+      },
+      {
+        "name": "GrossPremium",
+        "type": "FLOAT"
+      },
+      {
+        "name": "StampDuty",
+        "type": "FLOAT"
+      },
+      {
+        "name": "VAT",
+        "type": "FLOAT"
+      },
+      {
+        "name": "TotalPremium",
+        "type": "FLOAT"
+      },
+      {
+        "name": "WHT",
+        "type": "FLOAT"
+      },
+      {
+        "name": "TotalEIR",
+        "type": "FLOAT"
+      },
+      {
+        "name": "TotalSBT",
+        "type": "FLOAT"
+      },
+      {
+        "name": "ProcessingFee",
+        "type": "FLOAT"
+      },
+      {
+        "name": "ProcessingFeeVat",
+        "type": "FLOAT"
+      },
+      {
+        "name": "ShippingFee",
+        "type": "FLOAT"
+      },
+      {
+        "name": "ShippingFeeVat",
+        "type": "FLOAT"
+      },
+      {
+        "name": "TotalAmount",
+        "type": "FLOAT"
+      },
+      {
+        "name": "Discount",
+        "type": "FLOAT"
+      },
+      {
+        "name": "TransactionStatus",
+        "type": "STRING"
+      },
+      {
+        "name": "SubmissionStatus",
+        "type": "STRING"
+      },
+      {
+        "name": "ApprovalStatus",
+        "type": "STRING"
+      },
+      {
+        "name": "PaymentStatus",
+        "type": "STRING"
+      },
+      {
+        "name": "ExpectedReceived",
+        "type": "FLOAT"
+      },
+      {
+        "name": "ActualReceived",
+        "type": "FLOAT"
+      },
+      {
+        "name": "InterestThisPeriod",
+        "type": "FLOAT"
+      },
+      {
+        "name": "PrincipleThisPeriod",
+        "type": "FLOAT"
+      },
+      {
+        "name": "InterestEIRThisPeriod",
+        "type": "FLOAT"
+      },
+      {
+        "name": "PrincipleEIRThisPeriod",
+        "type": "FLOAT"
+      },
+      {
+        "name": "PaymentDate",
+        "type": "STRING"
+      },
+      {
+        "name": "Period",
+        "type": "INTEGER"
+      },
+      {
+        "name": "TotalPeriods",
+        "type": "INTEGER"
+      },
+      {
+        "name": "PendingPayment",
+        "type": "FLOAT"
+      },
+      {
+        "name": "PaymentMethod",
+        "type": "STRING"
+      },
+      {
+        "name": "PaymentChannel",
+        "type": "STRING"
+      },
+      {
+        "name": "ExpectedDate",
+        "type": "STRING"
+      },
+      {
+        "name": "RefOrder",
+        "type": "STRING"
+      },
+      {
+        "name": "RefundAmountBeforeFee",
+        "type": "FLOAT"
+      },
+      {
+        "name": "RefundAmountAfterFee",
+        "type": "FLOAT"
+      },
+      {
+        "name": "BillingAddress",
+        "type": "STRING"
+      },
+      {
+        "name": "BatchRunDate",
+        "type": "STRING"
+      }
+    ]
+  },
+  "selfLink": "https://bigquery.googleapis.com/bigquery/v2/projects/pacific-plating-282708/datasets/_scriptee947b954e1740a392e26cefa7c7e71a561a0b6b/tables/candidate_newpayment",
+  "tableReference": {
+    "datasetId": "_scriptee947b954e1740a392e26cefa7c7e71a561a0b6b",
+    "projectId": "pacific-plating-282708",
+    "tableId": "candidate_newpayment"
+  },
+  "type": "TABLE"
+}

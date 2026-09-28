@@ -1,0 +1,357 @@
+{
+  "configuration": {
+    "jobType": "QUERY",
+    "query": {
+      "destinationTable": {
+        "datasetId": "sap_integration_v2",
+        "projectId": "pacific-plating-282708",
+        "tableId": "RCL 05_paid by period"
+      },
+      "maximumBytesBilled": "21474836480",
+      "priority": "INTERACTIVE",
+      "query": "CREATE OR REPLACE VIEW `pacific-plating-282708.sap_integration_v2.RCL 05_paid by period` AS\n-- 2026-09-27 downstream candidate; SELECT only, NOT DEPLOYED.\n-- Receipt-aware eligibility: retain legacy latest-period path and reopen for any recent unsent receipt.\nWITH charges AS (\n  SELECT *\n  FROM `pacific-plating-282708.careos.carepay_charges`\n  WHERE status = 'SUCCESSFUL'\n),\n\ncharges_ranking AS (\n  SELECT *,\n    ROW_NUMBER() OVER (PARTITION BY transaction_id ORDER BY installment_number DESC, update_time DESC, create_time DESC, id DESC) AS rank\n  FROM charges\n  QUALIFY rank = 1\n),\n\nsap_paid_periods AS (\n  -- exact per-(OrderItem, Period) existence check -- NOT a MAX watermark, NOT an all-period fan-out\n  SELECT DISTINCT\n    U_OrderItem AS order_item,\n    SAFE_CAST(U_Period AS INT64) AS period\n  FROM `pacific-plating-282708.sap_integration_v2.SAP_LIVE_FULL`\n  WHERE TransactionStatus IN ('Paid', 'paid')\n)\n,\noutstanding_receipt_items AS (\n  -- Any recent unsent receipt can reopen an item, even if a later period is Paid.\n  SELECT DISTINCT OrderItem\n  FROM `pacific-plating-282708.sap_integration_v2.RCL 05_newpayment` n\n  JOIN `pacific-plating-282708.careos.careos_order_items` oi ON oi.human_id = n.OrderItem\n  JOIN `pacific-plating-282708.careos.careos_orders` o ON o.id = oi.order_id\n  JOIN (\n    SELECT transaction_id, installment_number, third_party_id, update_time,\n      ROW_NUMBER() OVER (PARTITION BY transaction_id, installment_number ORDER BY create_time, id) AS source_charge_rank\n    FROM `pacific-plating-282708.careos.carepay_charges`\n    WHERE status='SUCCESSFUL' AND service_provider='RABBIT_LENDING'\n  ) c\n    ON o.payment = CONCAT('transactions/', c.transaction_id)\n    AND c.installment_number = SAFE_CAST(n.Period AS INT64)\n    AND n.InvoiceNo = CASE WHEN c.installment_number = 1\n      THEN CONCAT('2_', IF(c.source_charge_rank=1, COALESCE(c.third_party_id,oi.human_id),c.third_party_id)) ELSE IF(c.source_charge_rank=1,COALESCE(c.third_party_id,oi.human_id),c.third_party_id) END\n    AND c.source_charge_rank >= 1\n  WHERE ActualReceived > 0\n    AND LOWER(TRIM(TransactionStatus)) = 'paid'\n    AND NULLIF(TRIM(InvoiceNo), '') IS NOT NULL\n    AND UPPER(TRIM(InvoiceNo)) != 'NULL'\n    AND DATE(c.update_time)\n      BETWEEN DATE_TRUNC(DATE_SUB(CURRENT_DATE(), INTERVAL 2 MONTH), MONTH)\n      AND CURRENT_DATE()\n)\n\nSELECT DISTINCT\n  orders.human_id,\n  oi.human_id AS order_item,\n  orders.create_time AS order_create_time,\n  orders.update_time AS order_update_time,\n  orders.is_fully_paid,\n  orders.is_cancelled,\n  transactions.payment_option,\n  charges_ranking.installment_number,\n  orders.cancel_time,\n  charges_ranking.update_time AS charges_update_time,\n  CASE\n    WHEN orders.create_time < '2024-03-28' THEN 'icollection'\n    ELSE 'carepay'\n  END AS sql_view_using,\n  orders.product,\n  oi.motor_item_type AS InsuranceType\nFROM `pacific-plating-282708.careos.careos_orders` AS orders\nLEFT JOIN `pacific-plating-282708.careos.careos_order_items` AS oi\n  ON orders.id = oi.order_id\nLEFT JOIN `pacific-plating-282708.careos.carepay_transactions` AS transactions\n  ON CONCAT('transactions/', transactions.id) = orders.payment\nLEFT JOIN charges_ranking\n  ON charges_ranking.transaction_id = transactions.id\nLEFT JOIN outstanding_receipt_items AS outstanding\n  ON outstanding.OrderItem = oi.human_id\nWHERE 1=1\n  AND charges_ranking.installment_number IS NOT NULL\n  AND (\n    DATE(charges_ranking.update_time)\n      BETWEEN DATE_TRUNC(DATE_SUB(CURRENT_DATE(), INTERVAL 2 MONTH), MONTH)\n      AND CURRENT_DATE()\n    OR outstanding.OrderItem IS NOT NULL\n  )\n  AND transactions.payment_option = 'RABBIT_CARE_INSTALLMENT'\n  AND (\n    NOT EXISTS (\n      SELECT 1\n      FROM sap_paid_periods p\n      WHERE p.order_item = oi.human_id\n        AND p.period = charges_ranking.installment_number\n    )\n    OR outstanding.OrderItem IS NOT NULL\n  )\nORDER BY orders.create_time ASC;",
+      "useLegacySql": false
+    }
+  },
+  "etag": "tpxO8td5HbCHhe+VXp0j7Q==",
+  "id": "pacific-plating-282708:asia-southeast1.rcl_release_deploy_gate_20260928_001",
+  "jobCreationReason": {
+    "code": "REQUESTED"
+  },
+  "jobReference": {
+    "jobId": "rcl_release_deploy_gate_20260928_001",
+    "location": "asia-southeast1",
+    "projectId": "pacific-plating-282708"
+  },
+  "kind": "bigquery#job",
+  "principal_subject": "user:data@rabbit.co.th",
+  "selfLink": "https://bigquery.googleapis.com/bigquery/v2/projects/pacific-plating-282708/jobs/rcl_release_deploy_gate_20260928_001?location=asia-southeast1",
+  "statistics": {
+    "creationTime": "1790564948452",
+    "endTime": "1790564949356",
+    "query": {
+      "billingTier": 0,
+      "cacheHit": false,
+      "ddlOperationPerformed": "REPLACE",
+      "ddlTargetTable": {
+        "datasetId": "sap_integration_v2",
+        "projectId": "pacific-plating-282708",
+        "tableId": "RCL 05_paid by period"
+      },
+      "referencedTables": [
+        {
+          "datasetId": "careos",
+          "projectId": "pacific-plating-282708",
+          "tableId": "carepay_transaction_snapshot_price_summaries"
+        },
+        {
+          "datasetId": "careos",
+          "projectId": "pacific-plating-282708",
+          "tableId": "careos_order_items"
+        },
+        {
+          "datasetId": "careos",
+          "projectId": "pacific-plating-282708",
+          "tableId": "carepay_charges"
+        },
+        {
+          "datasetId": "careos",
+          "projectId": "pacific-plating-282708",
+          "tableId": "careos_orders"
+        },
+        {
+          "datasetId": "careos",
+          "projectId": "pacific-plating-282708",
+          "tableId": "cancelled_change_orders"
+        },
+        {
+          "datasetId": "careos",
+          "projectId": "pacific-plating-282708",
+          "tableId": "carepay_transactions"
+        },
+        {
+          "datasetId": "careos",
+          "projectId": "pacific-plating-282708",
+          "tableId": "carepay_refunds"
+        },
+        {
+          "datasetId": "careos",
+          "projectId": "pacific-plating-282708",
+          "tableId": "carepay_transaction_snapshot_installment_details"
+        },
+        {
+          "datasetId": "sap_integration_v2",
+          "projectId": "pacific-plating-282708",
+          "tableId": "SAP_LIVE"
+        },
+        {
+          "datasetId": "careos",
+          "projectId": "pacific-plating-282708",
+          "tableId": "carepay_follow_ups"
+        },
+        {
+          "datasetId": "sap_integration_v2",
+          "projectId": "pacific-plating-282708",
+          "tableId": "SAP_LIVE_2026"
+        },
+        {
+          "datasetId": "careos",
+          "projectId": "pacific-plating-282708",
+          "tableId": "careos_leads"
+        },
+        {
+          "datasetId": "sap_integration_v2",
+          "projectId": "pacific-plating-282708",
+          "tableId": "SAP_LIVE_2025"
+        },
+        {
+          "datasetId": "careos",
+          "projectId": "pacific-plating-282708",
+          "tableId": "carepay_payment_options"
+        },
+        {
+          "datasetId": "careos",
+          "projectId": "pacific-plating-282708",
+          "tableId": "carepay_transaction_snapshots"
+        },
+        {
+          "datasetId": "careos",
+          "projectId": "pacific-plating-282708",
+          "tableId": "carepay_prices"
+        },
+        {
+          "datasetId": "sap_integration_v2",
+          "projectId": "pacific-plating-282708",
+          "tableId": "SAP_LIVE_2024"
+        }
+      ],
+      "schema": {
+        "fields": [
+          {
+            "name": "human_id",
+            "type": "STRING"
+          },
+          {
+            "name": "order_item",
+            "type": "STRING"
+          },
+          {
+            "name": "order_create_time",
+            "type": "TIMESTAMP"
+          },
+          {
+            "name": "order_update_time",
+            "type": "TIMESTAMP"
+          },
+          {
+            "name": "is_fully_paid",
+            "type": "BOOLEAN"
+          },
+          {
+            "name": "is_cancelled",
+            "type": "BOOLEAN"
+          },
+          {
+            "name": "payment_option",
+            "type": "STRING"
+          },
+          {
+            "name": "installment_number",
+            "type": "INTEGER"
+          },
+          {
+            "name": "cancel_time",
+            "type": "TIMESTAMP"
+          },
+          {
+            "name": "charges_update_time",
+            "type": "TIMESTAMP"
+          },
+          {
+            "name": "sql_view_using",
+            "type": "STRING"
+          },
+          {
+            "name": "product",
+            "type": "STRING"
+          },
+          {
+            "name": "InsuranceType",
+            "type": "STRING"
+          }
+        ]
+      },
+      "searchStatistics": {
+        "indexUnusedReasons": [
+          {
+            "baseTable": {
+              "datasetId": "careos",
+              "projectId": "pacific-plating-282708",
+              "tableId": "careos_order_items"
+            },
+            "code": "INDEX_CONFIG_NOT_AVAILABLE",
+            "message": "There is no index configuration for the base table `pacific-plating-282708:careos.careos_order_items`."
+          },
+          {
+            "baseTable": {
+              "datasetId": "careos",
+              "projectId": "pacific-plating-282708",
+              "tableId": "careos_orders"
+            },
+            "code": "INDEX_CONFIG_NOT_AVAILABLE",
+            "message": "There is no index configuration for the base table `pacific-plating-282708:careos.careos_orders`."
+          },
+          {
+            "baseTable": {
+              "datasetId": "careos",
+              "projectId": "pacific-plating-282708",
+              "tableId": "carepay_charges"
+            },
+            "code": "INDEX_CONFIG_NOT_AVAILABLE",
+            "message": "There is no index configuration for the base table `pacific-plating-282708:careos.carepay_charges`."
+          },
+          {
+            "baseTable": {
+              "datasetId": "careos",
+              "projectId": "pacific-plating-282708",
+              "tableId": "carepay_transactions"
+            },
+            "code": "INDEX_CONFIG_NOT_AVAILABLE",
+            "message": "There is no index configuration for the base table `pacific-plating-282708:careos.carepay_transactions`."
+          },
+          {
+            "baseTable": {
+              "datasetId": "careos",
+              "projectId": "pacific-plating-282708",
+              "tableId": "cancelled_change_orders"
+            },
+            "code": "INDEX_CONFIG_NOT_AVAILABLE",
+            "message": "There is no index configuration for the base table `pacific-plating-282708:careos.cancelled_change_orders`."
+          },
+          {
+            "baseTable": {
+              "datasetId": "careos",
+              "projectId": "pacific-plating-282708",
+              "tableId": "careos_leads"
+            },
+            "code": "INDEX_CONFIG_NOT_AVAILABLE",
+            "message": "There is no index configuration for the base table `pacific-plating-282708:careos.careos_leads`."
+          },
+          {
+            "baseTable": {
+              "datasetId": "careos",
+              "projectId": "pacific-plating-282708",
+              "tableId": "carepay_follow_ups"
+            },
+            "code": "INDEX_CONFIG_NOT_AVAILABLE",
+            "message": "There is no index configuration for the base table `pacific-plating-282708:careos.carepay_follow_ups`."
+          },
+          {
+            "baseTable": {
+              "datasetId": "careos",
+              "projectId": "pacific-plating-282708",
+              "tableId": "carepay_payment_options"
+            },
+            "code": "INDEX_CONFIG_NOT_AVAILABLE",
+            "message": "There is no index configuration for the base table `pacific-plating-282708:careos.carepay_payment_options`."
+          },
+          {
+            "baseTable": {
+              "datasetId": "careos",
+              "projectId": "pacific-plating-282708",
+              "tableId": "carepay_prices"
+            },
+            "code": "INDEX_CONFIG_NOT_AVAILABLE",
+            "message": "There is no index configuration for the base table `pacific-plating-282708:careos.carepay_prices`."
+          },
+          {
+            "baseTable": {
+              "datasetId": "careos",
+              "projectId": "pacific-plating-282708",
+              "tableId": "carepay_refunds"
+            },
+            "code": "INDEX_CONFIG_NOT_AVAILABLE",
+            "message": "There is no index configuration for the base table `pacific-plating-282708:careos.carepay_refunds`."
+          },
+          {
+            "baseTable": {
+              "datasetId": "careos",
+              "projectId": "pacific-plating-282708",
+              "tableId": "carepay_transaction_snapshot_installment_details"
+            },
+            "code": "INDEX_CONFIG_NOT_AVAILABLE",
+            "message": "There is no index configuration for the base table `pacific-plating-282708:careos.carepay_transaction_snapshot_installment_details`."
+          },
+          {
+            "baseTable": {
+              "datasetId": "careos",
+              "projectId": "pacific-plating-282708",
+              "tableId": "carepay_transaction_snapshot_price_summaries"
+            },
+            "code": "INDEX_CONFIG_NOT_AVAILABLE",
+            "message": "There is no index configuration for the base table `pacific-plating-282708:careos.carepay_transaction_snapshot_price_summaries`."
+          },
+          {
+            "baseTable": {
+              "datasetId": "careos",
+              "projectId": "pacific-plating-282708",
+              "tableId": "carepay_transaction_snapshots"
+            },
+            "code": "INDEX_CONFIG_NOT_AVAILABLE",
+            "message": "There is no index configuration for the base table `pacific-plating-282708:careos.carepay_transaction_snapshots`."
+          },
+          {
+            "baseTable": {
+              "datasetId": "sap_integration_v2",
+              "projectId": "pacific-plating-282708",
+              "tableId": "SAP_LIVE"
+            },
+            "code": "INDEX_CONFIG_NOT_AVAILABLE",
+            "message": "There is no index configuration for the base table `pacific-plating-282708:sap_integration_v2.SAP_LIVE`."
+          },
+          {
+            "baseTable": {
+              "datasetId": "sap_integration_v2",
+              "projectId": "pacific-plating-282708",
+              "tableId": "SAP_LIVE_2024"
+            },
+            "code": "INDEX_CONFIG_NOT_AVAILABLE",
+            "message": "There is no index configuration for the base table `pacific-plating-282708:sap_integration_v2.SAP_LIVE_2024`."
+          },
+          {
+            "baseTable": {
+              "datasetId": "sap_integration_v2",
+              "projectId": "pacific-plating-282708",
+              "tableId": "SAP_LIVE_2025"
+            },
+            "code": "INDEX_CONFIG_NOT_AVAILABLE",
+            "message": "There is no index configuration for the base table `pacific-plating-282708:sap_integration_v2.SAP_LIVE_2025`."
+          },
+          {
+            "baseTable": {
+              "datasetId": "sap_integration_v2",
+              "projectId": "pacific-plating-282708",
+              "tableId": "SAP_LIVE_2026"
+            },
+            "code": "INDEX_CONFIG_NOT_AVAILABLE",
+            "message": "There is no index configuration for the base table `pacific-plating-282708:sap_integration_v2.SAP_LIVE_2026`."
+          }
+        ],
+        "indexUsageMode": "UNUSED"
+      },
+      "statementType": "CREATE_VIEW",
+      "totalBytesBilled": "0",
+      "totalBytesProcessed": "0",
+      "totalPartitionsProcessed": "0",
+      "totalSlotMs": "0",
+      "transferredBytes": "0"
+    },
+    "startTime": "1790564949138",
+    "totalBytesProcessed": "0",
+    "totalSlotMs": "0"
+  },
+  "status": {
+    "state": "DONE"
+  },
+  "user_email": "data@rabbit.co.th"
+}

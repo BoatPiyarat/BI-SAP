@@ -1,0 +1,78 @@
+{
+  "creationTime": "1790564527212",
+  "etag": "r6Ykt1UW1I1pF4H1M41o8w==",
+  "expirationTime": "1790650927212",
+  "id": "pacific-plating-282708:_scriptee947b954e1740a392e26cefa7c7e71a561a0b6b.candidate_gate",
+  "kind": "bigquery#table",
+  "lastModifiedTime": "1790564527212",
+  "location": "asia-southeast1",
+  "numActiveLogicalBytes": "835771",
+  "numBytes": "835771",
+  "numLongTermBytes": "0",
+  "numLongTermLogicalBytes": "0",
+  "numRows": "6016",
+  "numTotalLogicalBytes": "835771",
+  "schema": {
+    "fields": [
+      {
+        "name": "human_id",
+        "type": "STRING"
+      },
+      {
+        "name": "order_item",
+        "type": "STRING"
+      },
+      {
+        "name": "order_create_time",
+        "type": "TIMESTAMP"
+      },
+      {
+        "name": "order_update_time",
+        "type": "TIMESTAMP"
+      },
+      {
+        "name": "is_fully_paid",
+        "type": "BOOLEAN"
+      },
+      {
+        "name": "is_cancelled",
+        "type": "BOOLEAN"
+      },
+      {
+        "name": "payment_option",
+        "type": "STRING"
+      },
+      {
+        "name": "installment_number",
+        "type": "INTEGER"
+      },
+      {
+        "name": "cancel_time",
+        "type": "TIMESTAMP"
+      },
+      {
+        "name": "charges_update_time",
+        "type": "TIMESTAMP"
+      },
+      {
+        "name": "sql_view_using",
+        "type": "STRING"
+      },
+      {
+        "name": "product",
+        "type": "STRING"
+      },
+      {
+        "name": "InsuranceType",
+        "type": "STRING"
+      }
+    ]
+  },
+  "selfLink": "https://bigquery.googleapis.com/bigquery/v2/projects/pacific-plating-282708/datasets/_scriptee947b954e1740a392e26cefa7c7e71a561a0b6b/tables/candidate_gate",
+  "tableReference": {
+    "datasetId": "_scriptee947b954e1740a392e26cefa7c7e71a561a0b6b",
+    "projectId": "pacific-plating-282708",
+    "tableId": "candidate_gate"
+  },
+  "type": "TABLE"
+}

@@ -1,0 +1,22 @@
+[
+  {
+    "view": "dashboard",
+    "columns": 56,
+    "names_types_order_match": true
+  },
+  {
+    "view": "newpayment",
+    "columns": 56,
+    "names_types_order_match": true
+  },
+  {
+    "view": "gate",
+    "columns": 13,
+    "names_types_order_match": true
+  },
+  {
+    "view": "wrapper",
+    "columns": 56,
+    "names_types_order_match": true
+  }
+]

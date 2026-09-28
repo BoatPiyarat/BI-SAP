@@ -1,0 +1,62 @@
+[
+  {
+    "OrderItem": "L80305641-V1",
+    "Period": 2,
+    "InvoiceNo": "chrg_68deu5b7df67kv7yxfz",
+    "ActualReceived": "1648.65"
+  },
+  {
+    "OrderItem": "L80673380-V1",
+    "Period": 4,
+    "InvoiceNo": "chrg_68xalkz1xl5qxjrkke2",
+    "ActualReceived": "1136.35"
+  },
+  {
+    "OrderItem": "L80570929-V1",
+    "Period": 2,
+    "InvoiceNo": "chrg_68uxtfwqojes0i2ofyu",
+    "ActualReceived": "1854.79"
+  },
+  {
+    "OrderItem": "L80580319-V1",
+    "Period": 2,
+    "InvoiceNo": "chrg_6915gciza85q2p6a1ss",
+    "ActualReceived": "687.68"
+  },
+  {
+    "OrderItem": "L80317696-V1",
+    "Period": 3,
+    "InvoiceNo": "chrg_68n7bh4ujnp7sgj571l",
+    "ActualReceived": "842.31"
+  },
+  {
+    "OrderItem": "L78466814-V1",
+    "Period": 2,
+    "InvoiceNo": "chrg_68ao022t8irh2hl8n5i",
+    "ActualReceived": "1182.34"
+  },
+  {
+    "OrderItem": "L80641527-V1",
+    "Period": 2,
+    "InvoiceNo": "chrg_6905tt2e328w2f1r1nq",
+    "ActualReceived": "449.99"
+  },
+  {
+    "OrderItem": "L78276298-V1",
+    "Period": 4,
+    "InvoiceNo": "chrg_6874vi8l12n8visryk6",
+    "ActualReceived": "967.28"
+  },
+  {
+    "OrderItem": "L79109956-V1",
+    "Period": 1,
+    "InvoiceNo": "2_chrg_68w87npgw0hbvid58ho",
+    "ActualReceived": "645.21"
+  },
+  {
+    "OrderItem": "L80570054-V1",
+    "Period": 1,
+    "InvoiceNo": "2_chrg_68ve8ufva4h1iil7wrn",
+    "ActualReceived": "22.04"
+  }
+]

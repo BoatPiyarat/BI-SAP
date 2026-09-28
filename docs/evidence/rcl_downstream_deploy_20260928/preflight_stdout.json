@@ -1,0 +1,228 @@
+[
+  "Created pacific-plating-282708._scriptee947b954e1740a392e26cefa7c7e71a561a0b6b.evidence_sap\n",
+  "Created pacific-plating-282708._scriptee947b954e1740a392e26cefa7c7e71a561a0b6b.live_dashboard\n",
+  "Created pacific-plating-282708._scriptee947b954e1740a392e26cefa7c7e71a561a0b6b.candidate_dashboard\n",
+  "Created pacific-plating-282708._scriptee947b954e1740a392e26cefa7c7e71a561a0b6b.evidence_paid\n",
+  "Created pacific-plating-282708._scriptee947b954e1740a392e26cefa7c7e71a561a0b6b.baseline_newpayment\n",
+  "Created pacific-plating-282708._scriptee947b954e1740a392e26cefa7c7e71a561a0b6b.baseline_gate\n",
+  "Created pacific-plating-282708._scriptee947b954e1740a392e26cefa7c7e71a561a0b6b.baseline_wrapper\n",
+  "Created pacific-plating-282708._scriptee947b954e1740a392e26cefa7c7e71a561a0b6b.candidate_newpayment\n",
+  "Created pacific-plating-282708._scriptee947b954e1740a392e26cefa7c7e71a561a0b6b.candidate_gate\n",
+  "Created pacific-plating-282708._scriptee947b954e1740a392e26cefa7c7e71a561a0b6b.candidate_wrapper\n",
+  "Created pacific-plating-282708._scriptee947b954e1740a392e26cefa7c7e71a561a0b6b.lineage\n",
+  [
+    {
+      "additional_principal_mismatches": "0",
+      "baseline_rows": "2474",
+      "candidate_rows": "4036",
+      "checked_at_utc": "2026-09-28 03:02:14",
+      "duplicate_event_keys": "0",
+      "incomplete_spines": "0",
+      "removed_first_receipt_payloads": "0",
+      "removed_nonprincipal_dashboard_payloads": "0",
+      "removed_wrapper_payloads": "0",
+      "target_rows": [
+        {
+          "ActualReceived": "645.21",
+          "ExpectedReceived": "0.0",
+          "InvoiceNo": "2_chrg_68w87npgw0hbvid58ho",
+          "OrderID": "L79109956",
+          "OrderItem": "L79109956-V1",
+          "Period": "1",
+          "PrincipleEIRThisPeriod": "645.21",
+          "PrincipleThisPeriod": "645.21"
+        },
+        {
+          "ActualReceived": "1143.54",
+          "ExpectedReceived": "1788.75",
+          "InvoiceNo": "2_chrg_68w7ty3jywde4nj3l1f",
+          "OrderID": "L79109956",
+          "OrderItem": "L79109956-V1",
+          "Period": "1",
+          "PrincipleEIRThisPeriod": "1143.54",
+          "PrincipleThisPeriod": "1143.54"
+        },
+        {
+          "ActualReceived": "0.0",
+          "ExpectedReceived": "1788.75",
+          "InvoiceNo": null,
+          "OrderID": "L79109956",
+          "OrderItem": "L79109956-V1",
+          "Period": "2",
+          "PrincipleEIRThisPeriod": "1788.75",
+          "PrincipleThisPeriod": "1788.75"
+        },
+        {
+          "ActualReceived": "0.0",
+          "ExpectedReceived": "1788.75",
+          "InvoiceNo": null,
+          "OrderID": "L79109956",
+          "OrderItem": "L79109956-V1",
+          "Period": "3",
+          "PrincipleEIRThisPeriod": "1788.75",
+          "PrincipleThisPeriod": "1788.75"
+        },
+        {
+          "ActualReceived": "0.0",
+          "ExpectedReceived": "1788.75",
+          "InvoiceNo": null,
+          "OrderID": "L79109956",
+          "OrderItem": "L79109956-V1",
+          "Period": "4",
+          "PrincipleEIRThisPeriod": "1788.75",
+          "PrincipleThisPeriod": "1788.75"
+        },
+        {
+          "ActualReceived": "0.0",
+          "ExpectedReceived": "1788.75",
+          "InvoiceNo": null,
+          "OrderID": "L79109956",
+          "OrderItem": "L79109956-V1",
+          "Period": "5",
+          "PrincipleEIRThisPeriod": "1788.75",
+          "PrincipleThisPeriod": "1788.75"
+        },
+        {
+          "ActualReceived": "0.0",
+          "ExpectedReceived": "1788.75",
+          "InvoiceNo": null,
+          "OrderID": "L79109956",
+          "OrderItem": "L79109956-V1",
+          "Period": "6",
+          "PrincipleEIRThisPeriod": "1788.75",
+          "PrincipleThisPeriod": "1788.75"
+        },
+        {
+          "ActualReceived": "0.0",
+          "ExpectedReceived": "1788.75",
+          "InvoiceNo": null,
+          "OrderID": "L79109956",
+          "OrderItem": "L79109956-V1",
+          "Period": "7",
+          "PrincipleEIRThisPeriod": "1788.75",
+          "PrincipleThisPeriod": "1788.75"
+        },
+        {
+          "ActualReceived": "0.0",
+          "ExpectedReceived": "1788.75",
+          "InvoiceNo": null,
+          "OrderID": "L79109956",
+          "OrderItem": "L79109956-V1",
+          "Period": "8",
+          "PrincipleEIRThisPeriod": "1788.75",
+          "PrincipleThisPeriod": "1788.75"
+        },
+        {
+          "ActualReceived": "1278.01",
+          "ExpectedReceived": "1300.05",
+          "InvoiceNo": "2_chrg_68vby06tn12c2j8q6tt",
+          "OrderID": "L80570054",
+          "OrderItem": "L80570054-V1",
+          "Period": "1",
+          "PrincipleEIRThisPeriod": "1278.01",
+          "PrincipleThisPeriod": "1278.01"
+        },
+        {
+          "ActualReceived": "22.04",
+          "ExpectedReceived": "0.0",
+          "InvoiceNo": "2_chrg_68ve8ufva4h1iil7wrn",
+          "OrderID": "L80570054",
+          "OrderItem": "L80570054-V1",
+          "Period": "1",
+          "PrincipleEIRThisPeriod": "22.04",
+          "PrincipleThisPeriod": "22.04"
+        },
+        {
+          "ActualReceived": "0.0",
+          "ExpectedReceived": "1300.05",
+          "InvoiceNo": null,
+          "OrderID": "L80570054",
+          "OrderItem": "L80570054-V1",
+          "Period": "2",
+          "PrincipleEIRThisPeriod": "1300.05",
+          "PrincipleThisPeriod": "1300.05"
+        },
+        {
+          "ActualReceived": "0.0",
+          "ExpectedReceived": "1300.05",
+          "InvoiceNo": null,
+          "OrderID": "L80570054",
+          "OrderItem": "L80570054-V1",
+          "Period": "3",
+          "PrincipleEIRThisPeriod": "1300.05",
+          "PrincipleThisPeriod": "1300.05"
+        },
+        {
+          "ActualReceived": "0.0",
+          "ExpectedReceived": "1300.05",
+          "InvoiceNo": null,
+          "OrderID": "L80570054",
+          "OrderItem": "L80570054-V1",
+          "Period": "4",
+          "PrincipleEIRThisPeriod": "1300.05",
+          "PrincipleThisPeriod": "1300.05"
+        },
+        {
+          "ActualReceived": "0.0",
+          "ExpectedReceived": "1300.05",
+          "InvoiceNo": null,
+          "OrderID": "L80570054",
+          "OrderItem": "L80570054-V1",
+          "Period": "5",
+          "PrincipleEIRThisPeriod": "1300.05",
+          "PrincipleThisPeriod": "1300.05"
+        },
+        {
+          "ActualReceived": "0.0",
+          "ExpectedReceived": "1300.05",
+          "InvoiceNo": null,
+          "OrderID": "L80570054",
+          "OrderItem": "L80570054-V1",
+          "Period": "6",
+          "PrincipleEIRThisPeriod": "1300.05",
+          "PrincipleThisPeriod": "1300.05"
+        },
+        {
+          "ActualReceived": "0.0",
+          "ExpectedReceived": "1300.05",
+          "InvoiceNo": null,
+          "OrderID": "L80570054",
+          "OrderItem": "L80570054-V1",
+          "Period": "7",
+          "PrincipleEIRThisPeriod": "1300.05",
+          "PrincipleThisPeriod": "1300.05"
+        },
+        {
+          "ActualReceived": "0.0",
+          "ExpectedReceived": "1300.05",
+          "InvoiceNo": null,
+          "OrderID": "L80570054",
+          "OrderItem": "L80570054-V1",
+          "Period": "8",
+          "PrincipleEIRThisPeriod": "1300.05",
+          "PrincipleThisPeriod": "1300.05"
+        },
+        {
+          "ActualReceived": "0.0",
+          "ExpectedReceived": "1300.05",
+          "InvoiceNo": null,
+          "OrderID": "L80570054",
+          "OrderItem": "L80570054-V1",
+          "Period": "9",
+          "PrincipleEIRThisPeriod": "1300.05",
+          "PrincipleThisPeriod": "1300.05"
+        },
+        {
+          "ActualReceived": "0.0",
+          "ExpectedReceived": "1300.05",
+          "InvoiceNo": null,
+          "OrderID": "L80570054",
+          "OrderItem": "L80570054-V1",
+          "Period": "10",
+          "PrincipleEIRThisPeriod": "1300.05",
+          "PrincipleThisPeriod": "1300.05"
+        }
+      ]
+    }
+  ]
+]

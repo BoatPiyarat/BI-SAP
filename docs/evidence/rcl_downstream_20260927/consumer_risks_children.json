@@ -1,0 +1,36 @@
+[
+  {
+    "jobReference": {
+      "jobId": "script_job_a2b9e06b02bb8d9af02a13681d780b44_1",
+      "location": "asia-southeast1",
+      "projectId": "pacific-plating-282708"
+    },
+    "status": {
+      "state": "DONE"
+    },
+    "destinationTable": {
+      "datasetId": "_b40227f1087cbcbcec8537ef3426bca9d3d3fe18",
+      "projectId": "pacific-plating-282708",
+      "tableId": "anonbe48c422_6cc2_4b26_b493_f93957fba594"
+    },
+    "query_sha256": "f43afee5d86379e6bd0e8924776d9001ffee16637c420d34175fe42f9991b60a",
+    "query_prefix": "WITH old_added AS (\nSELECT a.* FROM `pacific-plating-282708._script3d0fd839afdb1"
+  },
+  {
+    "jobReference": {
+      "jobId": "script_job_3a4815fe94e66d12aa662481286cbf94_0",
+      "location": "asia-southeast1",
+      "projectId": "pacific-plating-282708"
+    },
+    "status": {
+      "state": "DONE"
+    },
+    "destinationTable": {
+      "datasetId": "_scriptf772643a3a2160bb045eb9e1572c53ffb999607b",
+      "projectId": "pacific-plating-282708",
+      "tableId": "live_create"
+    },
+    "query_sha256": "5ac373a4fc028e5df70f1f5f01f781b713b954b0f5527a2b5b2b835ec67afd1b",
+    "query_prefix": "CREATE TEMP TABLE live_create AS -- Full source-only legacy root-fix proposal fo"
+  }
+]

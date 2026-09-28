@@ -3615,3 +3615,18 @@ replayed export runs or destination URIs. REST dry-run at `2026-08-03T08:45:58.5
 at 0 bytes; deploy job `codex_deploy_062_20260803_154635_317` completed DONE, error null, 0/0
 processed/billed. No procedure CALL, GCS copy, or scheduler mutation occurred. `DELIVERED` remains
 strictly distinct from SAP pickup and acknowledgement.
+
+
+## 2026-09-27T07:30:17.702583+07:00 — RCL downstream repair
+
+RCL downstream source fixed: receipt-aware all-period gate, lineage runtime assertion and old-order eligibility/date ordering. Final snapshot 14→1525 wrapper rows, original payload removals/duplicate keys/incomplete spines all0; targetextras22.04/645.21. Source-only, NOT DEPLOYED; 8 later-period principal mappings + operational holds/import idempotency remain release gates. V3 held. See FINDINGS_RCL_DOWNSTREAM_20260927.md.
+
+
+## 2026-09-28T09:54:16.431085+07:00 — Authorized downstream deployment and principal rule
+
+Production deployment authorized; additional-receipt principal formula confirmed as ActualReceived for both fields. Preparing dashboard +3 downstream views. No production change yet: Google Cloud reauthentication pending.
+
+
+## 2026-09-28T10:14:10.790580+07:00 — RCL view deployment complete
+
+DEPLOYED four RCL views: dashboard principal for extras=ActualReceived; newpayment invoice-aware eligibility; all-period receipt gate; Motor wrapper old-order eligibility and deterministic dates. All four read-back/schema checks PASS. Live postcheck10:11ICT:4032rows/523items, duplicates0/incomplete spines0; all10 principal targets pass and both reported extras22.04/645.21 emitted. No SAP import claim, export/scheduler change or V3 mutation. See FINDINGS_RCL_VIEW_DEPLOY_20260928.md.

@@ -1,0 +1,75 @@
+[
+  {
+    "additional_principal_review": [
+      {
+        "ActualReceived": "1648.65",
+        "InvoiceNo": "chrg_68deu5b7df67kv7yxfz",
+        "OrderItem": "L80305641-V1",
+        "Period": "2",
+        "PrincipleEIRThisPeriod": "1907.67",
+        "PrincipleThisPeriod": "1907.67"
+      },
+      {
+        "ActualReceived": "1136.35",
+        "InvoiceNo": "chrg_68xalkz1xl5qxjrkke2",
+        "OrderItem": "L80673380-V1",
+        "Period": "4",
+        "PrincipleEIRThisPeriod": "4200.64",
+        "PrincipleThisPeriod": "4200.64"
+      },
+      {
+        "ActualReceived": "1854.79",
+        "InvoiceNo": "chrg_68uxtfwqojes0i2ofyu",
+        "OrderItem": "L80570929-V1",
+        "Period": "2",
+        "PrincipleEIRThisPeriod": "2500.0",
+        "PrincipleThisPeriod": "2500.0"
+      },
+      {
+        "ActualReceived": "687.68",
+        "InvoiceNo": "chrg_6915gciza85q2p6a1ss",
+        "OrderItem": "L80580319-V1",
+        "Period": "2",
+        "PrincipleEIRThisPeriod": "2471.36",
+        "PrincipleThisPeriod": "2471.36"
+      },
+      {
+        "ActualReceived": "842.31",
+        "InvoiceNo": "chrg_68n7bh4ujnp7sgj571l",
+        "OrderItem": "L80317696-V1",
+        "Period": "3",
+        "PrincipleEIRThisPeriod": "2416.67",
+        "PrincipleThisPeriod": "2416.67"
+      },
+      {
+        "ActualReceived": "1182.34",
+        "InvoiceNo": "chrg_68ao022t8irh2hl8n5i",
+        "OrderItem": "L78466814-V1",
+        "Period": "2",
+        "PrincipleEIRThisPeriod": "2974.97",
+        "PrincipleThisPeriod": "2974.97"
+      },
+      {
+        "ActualReceived": "449.99",
+        "InvoiceNo": "chrg_6905tt2e328w2f1r1nq",
+        "OrderItem": "L80641527-V1",
+        "Period": "2",
+        "PrincipleEIRThisPeriod": "1016.68",
+        "PrincipleThisPeriod": "1016.68"
+      },
+      {
+        "ActualReceived": "967.28",
+        "InvoiceNo": "chrg_6874vi8l12n8visryk6",
+        "OrderItem": "L78276298-V1",
+        "Period": "4",
+        "PrincipleEIRThisPeriod": "2144.82",
+        "PrincipleThisPeriod": "2144.82"
+      }
+    ],
+    "checked_at_utc": "2026-09-27 00:23:25",
+    "live_create_issues": [],
+    "live_create_rows": "14",
+    "old_added_paid": "596",
+    "old_paid_not_verbatim_sap_context": "0"
+  }
+]

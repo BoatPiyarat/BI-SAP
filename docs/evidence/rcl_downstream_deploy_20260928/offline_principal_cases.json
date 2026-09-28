@@ -1,0 +1,146 @@
+[
+  {
+    "case": "L80305641-V1",
+    "observed": [
+      1648.65,
+      1648.65
+    ],
+    "expected": [
+      1648.65,
+      1648.65
+    ],
+    "pass": true
+  },
+  {
+    "case": "L80673380-V1",
+    "observed": [
+      1136.35,
+      1136.35
+    ],
+    "expected": [
+      1136.35,
+      1136.35
+    ],
+    "pass": true
+  },
+  {
+    "case": "L80570929-V1",
+    "observed": [
+      1854.79,
+      1854.79
+    ],
+    "expected": [
+      1854.79,
+      1854.79
+    ],
+    "pass": true
+  },
+  {
+    "case": "L80580319-V1",
+    "observed": [
+      687.68,
+      687.68
+    ],
+    "expected": [
+      687.68,
+      687.68
+    ],
+    "pass": true
+  },
+  {
+    "case": "L80317696-V1",
+    "observed": [
+      842.31,
+      842.31
+    ],
+    "expected": [
+      842.31,
+      842.31
+    ],
+    "pass": true
+  },
+  {
+    "case": "L78466814-V1",
+    "observed": [
+      1182.34,
+      1182.34
+    ],
+    "expected": [
+      1182.34,
+      1182.34
+    ],
+    "pass": true
+  },
+  {
+    "case": "L80641527-V1",
+    "observed": [
+      449.99,
+      449.99
+    ],
+    "expected": [
+      449.99,
+      449.99
+    ],
+    "pass": true
+  },
+  {
+    "case": "L78276298-V1",
+    "observed": [
+      967.28,
+      967.28
+    ],
+    "expected": [
+      967.28,
+      967.28
+    ],
+    "pass": true
+  },
+  {
+    "case": "ordinary",
+    "observed": [
+      110,
+      105
+    ],
+    "expected": [
+      110,
+      105
+    ],
+    "pass": true
+  },
+  {
+    "case": "ordinary_zero_expected",
+    "observed": [
+      9,
+      8
+    ],
+    "expected": [
+      9,
+      8
+    ],
+    "pass": true
+  },
+  {
+    "case": "CMI",
+    "observed": [
+      0,
+      0
+    ],
+    "expected": [
+      0,
+      0
+    ],
+    "pass": true
+  },
+  {
+    "case": "additional_null_actual",
+    "observed": [
+      null,
+      null
+    ],
+    "expected": [
+      null,
+      null
+    ],
+    "pass": true
+  }
+]

@@ -1,0 +1,53 @@
+[
+  {
+    "jobReference": {
+      "jobId": "script_job_0b73a4693db5ec56011ed1bf74434a72_2",
+      "location": "asia-southeast1",
+      "projectId": "pacific-plating-282708"
+    },
+    "status": {
+      "state": "DONE"
+    },
+    "destinationTable": {
+      "datasetId": "_b40227f1087cbcbcec8537ef3426bca9d3d3fe18",
+      "projectId": "pacific-plating-282708",
+      "tableId": "anonb232a032_38df_414b_884f_41cdb382c689"
+    },
+    "query_sha256": "66b8c6b78da79455451358c2a22a918d16f3ad01144f95fe848e01f037a3d545",
+    "query_prefix": "SELECT CURRENT_TIMESTAMP() AS checked_at_utc,\n(SELECT COUNT(*) FROM emitted) AS "
+  },
+  {
+    "jobReference": {
+      "jobId": "script_job_96dd3b2ac2c525d62e527c4c110bbb97_1",
+      "location": "asia-southeast1",
+      "projectId": "pacific-plating-282708"
+    },
+    "status": {
+      "state": "DONE"
+    },
+    "destinationTable": {
+      "datasetId": "_script5e03c759478c4db5d999ed2ef1edaa6894fff6bd",
+      "projectId": "pacific-plating-282708",
+      "tableId": "principal_targets"
+    },
+    "query_sha256": "8fa9231eb0136f4efe5a6fb967d5d56daa3176946220b9f78dc7a2aa8b7b6f54",
+    "query_prefix": "CREATE TEMP TABLE principal_targets AS SELECT OrderID,OrderItem,Period,InvoiceNo"
+  },
+  {
+    "jobReference": {
+      "jobId": "script_job_0a42bda6850355d5894e23428c17fc68_0",
+      "location": "asia-southeast1",
+      "projectId": "pacific-plating-282708"
+    },
+    "status": {
+      "state": "DONE"
+    },
+    "destinationTable": {
+      "datasetId": "_script5e03c759478c4db5d999ed2ef1edaa6894fff6bd",
+      "projectId": "pacific-plating-282708",
+      "tableId": "emitted"
+    },
+    "query_sha256": "7ee59d7265b871a6b9fddf4c45f6930106e7395fce8bf2021eba8e4f6b036abc",
+    "query_prefix": "CREATE TEMP TABLE emitted AS SELECT `CompanyDB`,`OrderID`,`OrderItem`,`InvoiceNo"
+  }
+]

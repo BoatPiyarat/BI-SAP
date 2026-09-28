@@ -1,0 +1,184 @@
+[
+  {
+    "OrderItem": "blank-V1",
+    "emitted": null,
+    "error": "Query error: RCL_MISSING_PAID_RECEIPT_LINEAGE: run downstream receipt diagnostics before export at [1473:2]",
+    "replayed": null,
+    "should_emit": "false"
+  },
+  {
+    "OrderItem": "missing_raw-V1",
+    "emitted": "0",
+    "error": null,
+    "replayed": "0",
+    "should_emit": "false"
+  },
+  {
+    "OrderItem": "literal_null-V1",
+    "emitted": null,
+    "error": "Query error: RCL_MISSING_PAID_RECEIPT_LINEAGE: run downstream receipt diagnostics before export at [1473:2]",
+    "replayed": null,
+    "should_emit": "false"
+  },
+  {
+    "OrderItem": "normal_paid-V1",
+    "emitted": null,
+    "error": "Query error: RCL_MISSING_PAID_RECEIPT_LINEAGE: run downstream receipt diagnostics before export at [1473:2]",
+    "replayed": null,
+    "should_emit": "false"
+  },
+  {
+    "OrderItem": "collision-V1",
+    "emitted": "0",
+    "error": null,
+    "replayed": "0",
+    "should_emit": "false"
+  },
+  {
+    "OrderItem": "zero_expected_first_paid-V1",
+    "emitted": "0",
+    "error": null,
+    "replayed": "0",
+    "should_emit": "false"
+  },
+  {
+    "OrderItem": "exact_paid-V1",
+    "emitted": "0",
+    "error": null,
+    "replayed": "0",
+    "should_emit": "false"
+  },
+  {
+    "OrderItem": "tie-V1",
+    "emitted": "0",
+    "error": null,
+    "replayed": "0",
+    "should_emit": "false"
+  },
+  {
+    "OrderItem": "raw_paid-V1",
+    "emitted": "0",
+    "error": null,
+    "replayed": "0",
+    "should_emit": "false"
+  },
+  {
+    "OrderItem": "null_invoice-V1",
+    "emitted": null,
+    "error": "Query error: RCL_MISSING_PAID_RECEIPT_LINEAGE: run downstream receipt diagnostics before export at [1473:2]",
+    "replayed": null,
+    "should_emit": "false"
+  },
+  {
+    "OrderItem": "invalid_extra_pending-V1",
+    "emitted": "0",
+    "error": null,
+    "replayed": "0",
+    "should_emit": "false"
+  },
+  {
+    "OrderItem": "change_cancelled-V1",
+    "emitted": "0",
+    "error": null,
+    "replayed": "0",
+    "should_emit": "false"
+  },
+  {
+    "OrderItem": "pending_not_topup-V1",
+    "emitted": "0",
+    "error": null,
+    "replayed": "0",
+    "should_emit": "false"
+  },
+  {
+    "OrderItem": "cancelled-V1",
+    "emitted": "0",
+    "error": null,
+    "replayed": "0",
+    "should_emit": "false"
+  },
+  {
+    "OrderItem": "null_expected-V1",
+    "emitted": "0",
+    "error": null,
+    "replayed": "0",
+    "should_emit": "false"
+  },
+  {
+    "OrderItem": "compulsory_first_missing_invoice-V1",
+    "emitted": "1",
+    "error": null,
+    "replayed": "0",
+    "should_emit": "true"
+  },
+  {
+    "OrderItem": "zero_first_missing_invoice-V1",
+    "emitted": "1",
+    "error": null,
+    "replayed": "0",
+    "should_emit": "true"
+  },
+  {
+    "OrderItem": "gap_period-V1",
+    "emitted": "1",
+    "error": null,
+    "replayed": "0",
+    "should_emit": "true"
+  },
+  {
+    "OrderItem": "zero_expected_first_new-V1",
+    "emitted": "1",
+    "error": null,
+    "replayed": "0",
+    "should_emit": "true"
+  },
+  {
+    "OrderItem": "new_period-V1",
+    "emitted": "1",
+    "error": null,
+    "replayed": "0",
+    "should_emit": "true"
+  },
+  {
+    "OrderItem": "topup-V1",
+    "emitted": "1",
+    "error": null,
+    "replayed": "0",
+    "should_emit": "true"
+  },
+  {
+    "OrderItem": "other_period-V1",
+    "emitted": "1",
+    "error": null,
+    "replayed": "0",
+    "should_emit": "true"
+  },
+  {
+    "OrderItem": "period2_prefix-V1",
+    "emitted": "1",
+    "error": null,
+    "replayed": "0",
+    "should_emit": "true"
+  },
+  {
+    "OrderItem": "other_item-V1",
+    "emitted": "1",
+    "error": null,
+    "replayed": "0",
+    "should_emit": "true"
+  },
+  {
+    "OrderItem": "compulsory_zero_first_missing_invoice-V1",
+    "emitted": "1",
+    "error": null,
+    "replayed": "0",
+    "should_emit": "true"
+  },
+  {
+    "OrderItem": "zero_first_tied-V1",
+    "emitted": "1",
+    "error": null,
+    "replayed": "0",
+    "should_emit": "true"
+  }
+]

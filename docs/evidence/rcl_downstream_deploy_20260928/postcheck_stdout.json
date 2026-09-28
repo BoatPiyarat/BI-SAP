@@ -1,0 +1,138 @@
+[
+  "Created pacific-plating-282708._script5e03c759478c4db5d999ed2ef1edaa6894fff6bd.emitted\n",
+  "Created pacific-plating-282708._script5e03c759478c4db5d999ed2ef1edaa6894fff6bd.principal_targets\n",
+  [
+    {
+      "checked_at_utc": "2026-09-28 03:11:23",
+      "duplicate_event_keys": "0",
+      "emitted_reported_extras": [
+        {
+          "ActualReceived": "645.21",
+          "ExpectedReceived": "0.0",
+          "InvoiceNo": "2_chrg_68w87npgw0hbvid58ho",
+          "OrderID": "L79109956",
+          "OrderItem": "L79109956-V1",
+          "Period": "1",
+          "PrincipleEIRThisPeriod": "645.21",
+          "PrincipleThisPeriod": "645.21"
+        },
+        {
+          "ActualReceived": "22.04",
+          "ExpectedReceived": "0.0",
+          "InvoiceNo": "2_chrg_68ve8ufva4h1iil7wrn",
+          "OrderID": "L80570054",
+          "OrderItem": "L80570054-V1",
+          "Period": "1",
+          "PrincipleEIRThisPeriod": "22.04",
+          "PrincipleThisPeriod": "22.04"
+        }
+      ],
+      "incomplete_spines": "0",
+      "output_items": "523",
+      "output_rows": "4032",
+      "principal_targets": [
+        {
+          "ActualReceived": "967.28",
+          "ExpectedReceived": "0.0",
+          "InvoiceNo": "chrg_6874vi8l12n8visryk6",
+          "OrderID": "L78276298",
+          "OrderItem": "L78276298-V1",
+          "Period": "4",
+          "PrincipleEIRThisPeriod": "967.28",
+          "PrincipleThisPeriod": "967.28"
+        },
+        {
+          "ActualReceived": "1182.34",
+          "ExpectedReceived": "0.0",
+          "InvoiceNo": "chrg_68ao022t8irh2hl8n5i",
+          "OrderID": "L78466814",
+          "OrderItem": "L78466814-V1",
+          "Period": "2",
+          "PrincipleEIRThisPeriod": "1182.34",
+          "PrincipleThisPeriod": "1182.34"
+        },
+        {
+          "ActualReceived": "645.21",
+          "ExpectedReceived": "0.0",
+          "InvoiceNo": "2_chrg_68w87npgw0hbvid58ho",
+          "OrderID": "L79109956",
+          "OrderItem": "L79109956-V1",
+          "Period": "1",
+          "PrincipleEIRThisPeriod": "645.21",
+          "PrincipleThisPeriod": "645.21"
+        },
+        {
+          "ActualReceived": "1648.65",
+          "ExpectedReceived": "0.0",
+          "InvoiceNo": "chrg_68deu5b7df67kv7yxfz",
+          "OrderID": "L80305641",
+          "OrderItem": "L80305641-V1",
+          "Period": "2",
+          "PrincipleEIRThisPeriod": "1648.65",
+          "PrincipleThisPeriod": "1648.65"
+        },
+        {
+          "ActualReceived": "842.31",
+          "ExpectedReceived": "0.0",
+          "InvoiceNo": "chrg_68n7bh4ujnp7sgj571l",
+          "OrderID": "L80317696",
+          "OrderItem": "L80317696-V1",
+          "Period": "3",
+          "PrincipleEIRThisPeriod": "842.31",
+          "PrincipleThisPeriod": "842.31"
+        },
+        {
+          "ActualReceived": "22.04",
+          "ExpectedReceived": "0.0",
+          "InvoiceNo": "2_chrg_68ve8ufva4h1iil7wrn",
+          "OrderID": "L80570054",
+          "OrderItem": "L80570054-V1",
+          "Period": "1",
+          "PrincipleEIRThisPeriod": "22.04",
+          "PrincipleThisPeriod": "22.04"
+        },
+        {
+          "ActualReceived": "1854.79",
+          "ExpectedReceived": "0.0",
+          "InvoiceNo": "chrg_68uxtfwqojes0i2ofyu",
+          "OrderID": "L80570929",
+          "OrderItem": "L80570929-V1",
+          "Period": "2",
+          "PrincipleEIRThisPeriod": "1854.79",
+          "PrincipleThisPeriod": "1854.79"
+        },
+        {
+          "ActualReceived": "687.68",
+          "ExpectedReceived": "0.0",
+          "InvoiceNo": "chrg_6915gciza85q2p6a1ss",
+          "OrderID": "L80580319",
+          "OrderItem": "L80580319-V1",
+          "Period": "2",
+          "PrincipleEIRThisPeriod": "687.68",
+          "PrincipleThisPeriod": "687.68"
+        },
+        {
+          "ActualReceived": "449.99",
+          "ExpectedReceived": "0.0",
+          "InvoiceNo": "chrg_6905tt2e328w2f1r1nq",
+          "OrderID": "L80641527",
+          "OrderItem": "L80641527-V1",
+          "Period": "2",
+          "PrincipleEIRThisPeriod": "449.99",
+          "PrincipleThisPeriod": "449.99"
+        },
+        {
+          "ActualReceived": "1136.35",
+          "ExpectedReceived": "0.0",
+          "InvoiceNo": "chrg_68xalkz1xl5qxjrkke2",
+          "OrderID": "L80673380",
+          "OrderItem": "L80673380-V1",
+          "Period": "4",
+          "PrincipleEIRThisPeriod": "1136.35",
+          "PrincipleThisPeriod": "1136.35"
+        }
+      ],
+      "target_principal_failures": "0"
+    }
+  ]
+]

@@ -1,0 +1,135 @@
+{
+  "configuration": {
+    "jobType": "QUERY",
+    "query": {
+      "destinationTable": {
+        "datasetId": "_b40227f1087cbcbcec8537ef3426bca9d3d3fe18",
+        "projectId": "pacific-plating-282708",
+        "tableId": "anonbe48c422_6cc2_4b26_b493_f93957fba594"
+      },
+      "maximumBytesBilled": "21474836480",
+      "priority": "INTERACTIVE",
+      "query": "CREATE TEMP TABLE live_create AS -- Full source-only legacy root-fix proposal for:\n--   pacific-plating-282708.sap_view.RCL_Motor_process_1_create\n--\n-- Root cause:\n--   sap_dashboard_carepay_installment correctly emits an RCL compulsory M1 as one\n--   Period/TotalPeriods 1/1 row. The legacy wrapper then discards it because its\n--   final QUALIFY requires every OrderItem to have more than one row and\n--   TotalPeriods > 1. That schedule rule is valid for voluntary V1, but not M1.\n--\n-- Surgical fix:\n--   * Allow compulsory M1 through only as Period/TotalPeriods 1/1.\n--   * Keep the original multi-row and TotalPeriods > 1 gate for all voluntary rows.\n--   * Require RABBIT_CARE_INSTALLMENT plus at least one SUCCESSFUL\n--     RABBIT_LENDING charge before any row can enter this RCL interface.\n--   * Admit V1 only as an all-or-nothing complete 1..TotalPeriods spine with\n--     non-NULL ExpectedReceived, ActualReceived, and ExpectedDate.\n--   * Preserve all existing SAP, change-order, year, insurer, and Test exclusions.\n--\n-- SELECT only: this file does not replace or deploy the live legacy view.\n\nWITH\n  eligible_rcl_items AS (\n    SELECT DISTINCT order_items.human_id AS OrderItem\n    FROM `pacific-plating-282708.careos.careos_orders` AS orders\n    JOIN `pacific-plating-282708.careos.careos_order_items` AS order_items\n      ON order_items.order_id = orders.id\n    JOIN `pacific-plating-282708.careos.carepay_transactions` AS transactions\n      ON CONCAT('transactions/', transactions.id) = orders.payment\n     AND transactions.payment_option = 'RABBIT_CARE_INSTALLMENT'\n    WHERE EXISTS (\n      SELECT 1\n      FROM `pacific-plating-282708.careos.carepay_charges` AS charges\n      WHERE charges.transaction_id = transactions.id\n        AND charges.status = 'SUCCESSFUL'\n        AND charges.service_provider = 'RABBIT_LENDING'\n    )\n  ),\n\n  interface AS (\n    SELECT dashboard.*\n    FROM `pacific-plating-282708._script7c6faf4dc1f287623ae26f66d20de48b274328dd.live_dashboard` AS dashboard\n    JOIN eligible_rcl_items USING (OrderItem)\n  ),\n\n  filtered AS (\n    SELECT interface.*\n    FROM interface\n    WHERE interface.OrderItem NOT IN (\n      SELECT U_OrderItem\n      FROM `pacific-plating-282708._script7c6faf4dc1f287623ae26f66d20de48b274328dd.evidence_sap`\n    )\n      AND interface.OrderID NOT IN (\n        SELECT current_human_id\n        FROM `pacific-plating-282708.careos.cancelled_change_orders`\n      )\n      AND interface.OrderDate NOT LIKE '%2023%'\n      AND interface.OrderDate NOT LIKE '%2024%'\n      AND interface.InsurerCode NOT IN ('45', '49')\n      AND LOWER(TRIM(COALESCE(interface.FirstName, ''))) != 'test'\n      AND LOWER(TRIM(COALESCE(interface.LastName, ''))) != 'test'\n  ),\n\n  spine_metrics AS (\n    SELECT\n      OrderItem,\n      COUNT(*) AS row_count,\n      COUNT(DISTINCT SAFE_CAST(Period AS INT64)) AS distinct_periods,\n      MIN(SAFE_CAST(Period AS INT64)) AS min_period,\n      MAX(SAFE_CAST(Period AS INT64)) AS max_period,\n      COUNT(DISTINCT SAFE_CAST(TotalPeriods AS INT64)) AS total_period_versions,\n      MAX(SAFE_CAST(TotalPeriods AS INT64)) AS total_periods,\n      COUNTIF(SAFE_CAST(ExpectedReceived AS FLOAT64) IS NULL) AS null_expected_rows,\n      COUNTIF(SAFE_CAST(ActualReceived AS FLOAT64) IS NULL) AS null_actual_rows,\n      COUNTIF(\n        NULLIF(TRIM(COALESCE(ExpectedDate, '')), '') IS NULL\n      ) AS blank_expected_date_rows\n    FROM filtered\n    GROUP BY OrderItem\n  )\n\nSELECT\n  filtered.*\nFROM filtered\nJOIN spine_metrics USING (OrderItem)\nWHERE\n  (\n    filtered.InsuranceType = 'MOTOR_TYPE_COMPULSORY'\n    AND SAFE_CAST(filtered.Period AS INT64) = 1\n    AND SAFE_CAST(filtered.TotalPeriods AS INT64) = 1\n    AND SAFE_CAST(filtered.ExpectedReceived AS FLOAT64) IS NOT NULL\n    AND SAFE_CAST(filtered.ActualReceived AS FLOAT64) IS NOT NULL\n    AND NULLIF(TRIM(COALESCE(filtered.ExpectedDate, '')), '') IS NOT NULL\n  )\n  OR (\n    COALESCE(filtered.InsuranceType, '') != 'MOTOR_TYPE_COMPULSORY'\n    AND spine_metrics.row_count > 1\n    AND spine_metrics.total_periods > 1\n    AND spine_metrics.total_period_versions = 1\n    AND spine_metrics.min_period = 1\n    AND spine_metrics.max_period = spine_metrics.total_periods\n    AND spine_metrics.distinct_periods = spine_metrics.total_periods\n    AND spine_metrics.null_expected_rows = 0\n    AND spine_metrics.null_actual_rows = 0\n    AND spine_metrics.blank_expected_date_rows = 0\n  )\nORDER BY\n  filtered.OrderItem,\n  filtered.Period;\nWITH old_added AS (\nSELECT a.* FROM `pacific-plating-282708._script3d0fd839afdb12a19a0c5b125df9ae7a8484cf15.added` a JOIN `pacific-plating-282708._script3d0fd839afdb12a19a0c5b125df9ae7a8484cf15.receipt_lineage` l ON l.OrderItem=a.OrderItem AND l.Period=a.Period AND l.InvoiceNo IS NOT DISTINCT FROM a.InvoiceNo\nWHERE LOWER(a.TransactionStatus)='paid' AND DATE(l.raw_update_time)<DATE_TRUNC(DATE_SUB(CURRENT_DATE(),INTERVAL 2 MONTH),MONTH)\n), create_issues AS (\nSELECT DISTINCT a.OrderItem,a.Period,a.InvoiceNo,d.rule_code FROM live_create a JOIN `pacific-plating-282708._script7c6faf4dc1f287623ae26f66d20de48b274328dd.lineage_diagnostics` d ON a.OrderItem=d.OrderItem AND a.Period=d.Period AND a.InvoiceNo IS NOT DISTINCT FROM d.InvoiceNo\n)\nSELECT CURRENT_TIMESTAMP() AS checked_at_utc,\n(SELECT COUNT(*) FROM old_added) AS old_added_paid,\n(SELECT COUNT(*) FROM old_added a WHERE TO_JSON_STRING(a) NOT IN (SELECT TO_JSON_STRING(p) FROM `pacific-plating-282708._script7c6faf4dc1f287623ae26f66d20de48b274328dd.evidence_paid` p)) AS old_paid_not_verbatim_sap_context,\n(SELECT COUNT(*) FROM live_create) AS live_create_rows,\nARRAY(SELECT AS STRUCT * FROM create_issues) AS live_create_issues,\nARRAY(SELECT AS STRUCT a.OrderItem,a.Period,a.InvoiceNo,a.ActualReceived,a.PrincipleThisPeriod,a.PrincipleEIRThisPeriod FROM `pacific-plating-282708._script3d0fd839afdb12a19a0c5b125df9ae7a8484cf15.candidate_wrapper` a JOIN `pacific-plating-282708._script3d0fd839afdb12a19a0c5b125df9ae7a8484cf15.receipt_lineage` l ON a.OrderItem=l.OrderItem AND a.Period=l.Period AND a.InvoiceNo IS NOT DISTINCT FROM l.InvoiceNo WHERE l.source_charge_rank>1 AND a.TransactionStatus='paid' AND a.Period>1 AND (a.PrincipleThisPeriod IS DISTINCT FROM a.ActualReceived OR a.PrincipleEIRThisPeriod IS DISTINCT FROM a.ActualReceived)) AS additional_principal_review;",
+      "useLegacySql": false
+    }
+  },
+  "etag": "Xcs0IuFrbN+ZQ4Xbw5OBTQ==",
+  "id": "pacific-plating-282708:asia-southeast1.rcl_downstream_consumer_risks_20260927_001",
+  "jobCreationReason": {
+    "code": "REQUESTED"
+  },
+  "jobReference": {
+    "jobId": "rcl_downstream_consumer_risks_20260927_001",
+    "location": "asia-southeast1",
+    "projectId": "pacific-plating-282708"
+  },
+  "kind": "bigquery#job",
+  "principal_subject": "user:data@rabbit.co.th",
+  "selfLink": "https://bigquery.googleapis.com/bigquery/v2/projects/pacific-plating-282708/jobs/rcl_downstream_consumer_risks_20260927_001?location=asia-southeast1",
+  "statistics": {
+    "creationTime": "1790468599938",
+    "endTime": "1790468616168",
+    "numChildJobs": "2",
+    "query": {
+      "schema": {
+        "fields": [
+          {
+            "mode": "NULLABLE",
+            "name": "checked_at_utc",
+            "type": "TIMESTAMP"
+          },
+          {
+            "mode": "NULLABLE",
+            "name": "old_added_paid",
+            "type": "INTEGER"
+          },
+          {
+            "mode": "NULLABLE",
+            "name": "old_paid_not_verbatim_sap_context",
+            "type": "INTEGER"
+          },
+          {
+            "mode": "NULLABLE",
+            "name": "live_create_rows",
+            "type": "INTEGER"
+          },
+          {
+            "fields": [
+              {
+                "mode": "NULLABLE",
+                "name": "OrderItem",
+                "type": "STRING"
+              },
+              {
+                "mode": "NULLABLE",
+                "name": "Period",
+                "type": "INTEGER"
+              },
+              {
+                "mode": "NULLABLE",
+                "name": "InvoiceNo",
+                "type": "STRING"
+              },
+              {
+                "mode": "NULLABLE",
+                "name": "rule_code",
+                "type": "STRING"
+              }
+            ],
+            "mode": "REPEATED",
+            "name": "live_create_issues",
+            "type": "RECORD"
+          },
+          {
+            "fields": [
+              {
+                "mode": "NULLABLE",
+                "name": "OrderItem",
+                "type": "STRING"
+              },
+              {
+                "mode": "NULLABLE",
+                "name": "Period",
+                "type": "INTEGER"
+              },
+              {
+                "mode": "NULLABLE",
+                "name": "InvoiceNo",
+                "type": "STRING"
+              },
+              {
+                "mode": "NULLABLE",
+                "name": "ActualReceived",
+                "type": "FLOAT"
+              },
+              {
+                "mode": "NULLABLE",
+                "name": "PrincipleThisPeriod",
+                "type": "FLOAT"
+              },
+              {
+                "mode": "NULLABLE",
+                "name": "PrincipleEIRThisPeriod",
+                "type": "FLOAT"
+              }
+            ],
+            "mode": "REPEATED",
+            "name": "additional_principal_review",
+            "type": "RECORD"
+          }
+        ]
+      },
+      "statementType": "SCRIPT",
+      "totalBytesBilled": "1402994688",
+      "totalBytesProcessed": "1401720785",
+      "totalSlotMs": "856605"
+    },
+    "startTime": "1790468599963",
+    "totalBytesProcessed": "1401720785",
+    "totalSlotMs": "856605"
+  },
+  "status": {
+    "state": "DONE"
+  },
+  "user_email": "data@rabbit.co.th"
+}
