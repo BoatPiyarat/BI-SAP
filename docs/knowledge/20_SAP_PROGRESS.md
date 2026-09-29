@@ -1,3 +1,7 @@
+## 2026-09-29 — NonMotor earlier-period recovery prepared, deployment held
+
+Boat authorized the scoped two-view legacy fix. Candidate restores L79180940-1 period5 and retains L79949677-1 period4. Final test view: 1145 rows/129 complete items; 159 historical Paid invoice/amount pairs unchanged; 56-column schema parity. Production NOT changed. Interface preflight BLOCKED (September control absent; nullable NonMotor fields). Enabled automatic export prevents safe isolated deployment until controls resolved or containment approved. See ../FINDINGS_NONMOTOR_PERIOD_GAP_20260929.md.
+
 # 20_SAP_PROGRESS.md
 
 ## 2026-08-25 (later) — built and verified Phase 1 HOLD_EMPTY_INSTALLMENT_DETAILS gate; corrected RCL count to 2

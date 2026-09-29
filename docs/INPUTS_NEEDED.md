@@ -1,3 +1,7 @@
+## OPEN 2026-09-29 — NonMotor missing-period fix release inputs
+
+SQL regression is verified, production unchanged. Need confirmed September accounting period/date controls and reviewed treatment of NULL EndorsementNo/ChassisNo/LicensePlate/RefOrder/BillingAddress for the exact two-item interface candidate. NonMotor scheduler is ENABLED; do not deploy a widened export source while pre-export is blocked without approved containment. See FINDINGS_NONMOTOR_PERIOD_GAP_20260929.md.
+
 # INPUTS NEEDED — things only Boat / Aware / Attila / Finance can answer
 
 ## OPEN 2026-08-27 — Boat: approve the six Unit 2 magnitude thresholds and provenance
