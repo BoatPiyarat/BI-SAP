@@ -1,5 +1,9 @@
 # 20_SAP_PROGRESS.md
 
+## 2026-09-29 — EDC bank mapping investigated; proposal only
+
+User clarified EDC-KBANK output may represent multiple source banks. Fresh live evidence confirms six reusable bank codes, five scoped registry approvals and a KBANK-only V3 hold gate. Mapping must use the source charge and paired method/channel. See [proposal](../EDC_BANK_MAPPING_PROPOSAL_20260929.md). No deployment or interface file; September remains open.
+
 ## 2026-09-26T23:41:18+07:00 — Scenario root-cause map prepared
 
 All 12 sap_view routes checked for the fixed September missing population. Paid: 703 identity-present /203 absent /435 no-order; cancel:134 present /50 absent. Primary blockers and payload/owner risks documented in docs/FINDINGS_CAREOS_SCENARIO_ROOT_CAUSES_20260926.md. Preparation only; no production mutation or V3 work.

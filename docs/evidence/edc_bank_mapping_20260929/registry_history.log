@@ -1,0 +1,15 @@
+== bq_safe_query: dry-run =========================================
+Dry-run estimate: 7920647481 bytes (~7.377 GiB)
+== bq_safe_query: real run (--maximum_bytes_billed=21474836480) ===========
+
+Waiting on bqjob_r7c55f5f061989f29_000001a0ecb5486d_1 ... (0s) Current status: RUNNING
+                                                                                      
+Waiting on bqjob_r7c55f5f061989f29_000001a0ecb5486d_1 ... (1s) Current status: RUNNING
+                                                                                      
+Waiting on bqjob_r7c55f5f061989f29_000001a0ecb5486d_1 ... (2s) Current status: RUNNING
+                                                                                      
+Waiting on bqjob_r7c55f5f061989f29_000001a0ecb5486d_1 ... (3s) Current status: RUNNING
+                                                                                      
+Waiting on bqjob_r7c55f5f061989f29_000001a0ecb5486d_1 ... (4s) Current status: RUNNING
+                                                                                      
+Waiting on bqjob_r7c55f5f061989f29_000001a0ecb5486d_1 ... (4s) Current status: DONE   

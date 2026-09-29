@@ -1,5 +1,9 @@
 # INPUTS NEEDED — things only Boat / Aware / Attila / Finance can answer
 
+## OPEN 2026-09-29 — EDC bank mapping scope and SAP account confirmation
+
+See [mapping proposal](EDC_BANK_MAPPING_PROPOSAL_20260929.md). User has resolved that EDC is multi-bank. Existing five registry approvals cover only Motor ONETIME CREDIT_CARD_INSTALLMENT. Remaining human-owned decisions: exact SCB and TMB/TTB SAP channel/account configuration; approval coverage for FULL_PAYMENT and NonMotor; and effective-date policy for older source events. Unknown bank stays a visible hold. Existing six-bank CASE and SAP mirror history are reference evidence, not blanket approval or a GL audit.
+
 ## OPEN 2026-09-26 — additional receipt accounting and legacy release scope
 
 Source fixes are prepared; see `docs/FINDINGS_RCL_ADDITIONAL_FIX_20260926.md`.

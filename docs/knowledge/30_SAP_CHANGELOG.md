@@ -3491,3 +3491,8 @@ Decided: ไม่ใช้ custom MCP server (ADC) สำหรับ BigQuery 
 workaround query-and-paste (OAuth bug redirect_uri_mismatch ฝั่ง Anthropic)
 
 Established: AI_BOOTSTRAP + CONTEXT/PROGRESS/CHANGELOG pattern; เชื่อม Gmail/Drive สำเร็จ
+
+
+## 2026-09-29 — EDC mapping proposal
+
+Recorded multi-bank user clarification, live six-bank mapping references, scoped registry versus hold-gate inconsistency, current diagnostic link counts and bounded upstream/downstream assessment. Read-only analysis; no production mapping changes or files for SAP.
