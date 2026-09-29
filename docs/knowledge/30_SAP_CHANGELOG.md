@@ -3496,3 +3496,8 @@ Established: AI_BOOTSTRAP + CONTEXT/PROGRESS/CHANGELOG pattern; เชื่อ�
 ## 2026-09-29 — EDC mapping proposal
 
 Recorded multi-bank user clarification, live six-bank mapping references, scoped registry versus hold-gate inconsistency, current diagnostic link counts and bounded upstream/downstream assessment. Read-only analysis; no production mapping changes or files for SAP.
+
+
+## 2026-09-29 — Multi-bank EDC query fix and FA workbook
+
+Prepared15 legacy/upstream views, shared helper and4V3 routines under explicit user approval. All15 nonmapping payload comparisons and schemas preserved;20mapping+10gate fixtures pass. Historical workbook built with9585 proposed differences and83837 investigations, no SAP write/interface file. Deployment record follows in implementation report.

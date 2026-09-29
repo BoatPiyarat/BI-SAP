@@ -1,0 +1,92 @@
+[
+  {
+    "name": "sap_view.RCB_Motor_process_3_change",
+    "file": "sap_view.RCB_Motor_process_3_change.sql",
+    "changes": 2,
+    "archive": false
+  },
+  {
+    "name": "sap_view.RCB_NonMotor_process_2_cancel",
+    "file": "sap_view.RCB_NonMotor_process_2_cancel.sql",
+    "changes": 2,
+    "archive": false
+  },
+  {
+    "name": "sap_integration_v3.vw_onetime_payload_source",
+    "file": "sap_integration_v3.vw_onetime_payload_source.sql",
+    "changes": 2,
+    "archive": false
+  },
+  {
+    "name": "sap_integration_v2.2_nonMotor_items_cancel",
+    "file": "sap_integration_v2.2_nonMotor_items_cancel.sql",
+    "changes": 2,
+    "archive": false
+  },
+  {
+    "name": "sap_integration_v2.sap_motor__carepay_fully_paid",
+    "file": "sap_integration_v2.sap_motor__carepay_fully_paid.sql",
+    "changes": 2,
+    "archive": false
+  },
+  {
+    "name": "sap_integration_v2.02_items_cancel",
+    "file": "sap_integration_v2.02_items_cancel.sql",
+    "changes": 2,
+    "archive": false
+  },
+  {
+    "name": "sap_integration_v2.sap_rcb_motor_all_records",
+    "file": "sap_integration_v2.sap_rcb_motor_all_records.sql",
+    "changes": 2,
+    "archive": false
+  },
+  {
+    "name": "sap_integration_v2.sap_rcb_motor_all_records_2024",
+    "file": "sap_integration_v2.sap_rcb_motor_all_records_2024.sql",
+    "changes": 2,
+    "archive": true
+  },
+  {
+    "name": "sap_integration_v2.rcb_backup_20250705",
+    "file": "sap_integration_v2.rcb_backup_20250705.sql",
+    "changes": 2,
+    "archive": true
+  },
+  {
+    "name": "sap_integration_v2.03_cancel change orders",
+    "file": "sap_integration_v2.03_cancel_change_orders.sql",
+    "changes": 2,
+    "archive": false
+  },
+  {
+    "name": "sap_data_engineer.sap_fixing_rcb",
+    "file": "sap_data_engineer.sap_fixing_rcb.sql",
+    "changes": 2,
+    "archive": false
+  },
+  {
+    "name": "sap_data_engineer.sap_dashboard_carepay_cancelled",
+    "file": "sap_data_engineer.sap_dashboard_carepay_cancelled.sql",
+    "changes": 2,
+    "archive": false
+  },
+  {
+    "name": "sap_data_engineer.RCB_HEALTH",
+    "file": "sap_data_engineer.RCB_HEALTH.sql",
+    "changes": 2,
+    "archive": false
+  },
+  {
+    "name": "sap_data_engineer.RCB_MOTOR",
+    "file": "sap_data_engineer.RCB_MOTOR.sql",
+    "changes": 2,
+    "archive": false
+  },
+  {
+    "name": "sap_data_engineer.sap_dashboard_carepay_fully_paid",
+    "file": "sap_data_engineer.sap_dashboard_carepay_fully_paid.sql",
+    "changes": 2,
+    "archive": false
+  }
+]

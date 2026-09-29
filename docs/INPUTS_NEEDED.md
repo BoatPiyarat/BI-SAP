@@ -798,3 +798,8 @@ genuinely unverified, not confirmed dormant or active.
   2026-07-27 to remove stale `raw_sap_live`/B1 references (see `30_SAP_CHANGELOG.md`).
 - `vw_dash_extract_scheduler_health` (the new widget the dashboard design doc now specifies) is
   designed but not yet built — see `docs/AS_BUILT_V3.md`.
+
+
+## RESOLVED 2026-09-29 — Missing payment mapping fallback policy
+
+User now approves identified bank suffix or no suffix when unknown, including raw-method family for unmapped methods. This supersedes the earlier bank-mapping HOLD proposal and removes SCB/TMB missing-registry entries as a prerequisite for fallback. SAP account-master interpretation and historical correction approval remain FA/Aware checks; no historical batch is authorized.

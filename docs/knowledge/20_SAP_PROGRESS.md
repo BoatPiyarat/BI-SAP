@@ -3619,3 +3619,8 @@ replayed export runs or destination URIs. REST dry-run at `2026-08-03T08:45:58.5
 at 0 bytes; deploy job `codex_deploy_062_20260803_154635_317` completed DONE, error null, 0/0
 processed/billed. No procedure CALL, GCS copy, or scheduler mutation occurred. `DELIVERED` remains
 strictly distinct from SAP pickup and acknowledgement.
+
+
+## 2026-09-29 — Multi-bank EDC implementation validated
+
+User approved legacy/upstream/downstream changes and raw-family/no-bank-suffix fallback. Fifteen view payload comparisons preserve all nonmapping fields and multiplicities; every positional schema preserved. 20 mapping and10 gate fixtures pass. Four V3 routines prepared; procedure branch execution not performed. FA/Aware workbook contains9585 mapping differences and83837 investigations. See docs/EDC_MAPPING_IMPLEMENTATION_20260929.md for deployment status and limits.

@@ -625,3 +625,8 @@ User explicitly requested immediate fix of only sap_dashboard_carepay_installmen
 ## ADDENDUM 2026-09-29 — EDC source bank clarification
 
 User confirms the current EDC-KBANK output label must not be treated as evidence that every underlying charge is KBank. EDC has multiple banks. Proposed resolution maps successful charge payment_method/service_provider to paired SAP method/channel with scoped registry approval. Established bank codes are BBL, KBANK, BAY, KTB, SCB and UOB; TMB and unspecified provider remain unresolved. Approval of a code in one flow does not approve all flows. See docs/EDC_BANK_MAPPING_PROPOSAL_20260929.md. This records source semantics, not deployment authorization.
+
+
+## ADDENDUM 2026-09-29 — Approved payment mapping fallback
+
+Supersedes the earlier proposal to hold missing bank mappings: user approved fixing all legacy EDC producers and related upstream/downstream queries. For missing mappings use the identified source bank suffix, otherwise omit the bank suffix. User explicitly approved raw-method family fallback (CHEQUE -> CHEQUE / RCB-CHEQUE, adding recognized bank suffix when present). NULL bank alone is not a mapping hold. Missing method or ambiguous lineage remains unresolved. Keep paired ALL/ALL CMI, CreditShell and posted SAP reversal rules. Known QR/online-card settlement mappings remain explicit. Details: docs/EDC_MAPPING_IMPLEMENTATION_20260929.md.
