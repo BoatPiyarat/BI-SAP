@@ -1,3 +1,7 @@
+## 2026-09-29 — Scoped production approval: NonMotor earlier-period gap
+
+Boat confirms September 2026 remains open until September month-end; NULL values may be retained for this scoped view change. Explicitly authorizes BigQuery view deployment now and cancels the interface-file generation request. This resolves the prior period/NULL operational deployment blocker for the reviewed two-view fix and companion hold diagnostic. Preserve existing date formulas and NULL values; do not mutate sap_period_lock, scheduler, or create/deliver any interface file. Normal existing consumers are left unchanged. This is a scoped view-release decision, not a general waiver for future exports.
+
 # 10_SAP_CONTEXT.md
 Version: 3.0 (consolidated 2026-07-16 จาก SAP_CONTEXT v2.1 + Team Context 07-14 + main.py จริง)
 กติกา: ไฟล์นี้คือ single source ของ business rules & architecture — แก้เมื่อ rule เปลี่ยนจริงเท่านั้น พร้อมลง CHANGELOG
