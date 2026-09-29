@@ -1,3 +1,7 @@
+## Verified live deployment — 2026-09-29 14:33:26 ICT
+
+Production query job bqjob_r65b4b11cdd043edc_000001a0ec15288c_1 (dryrun 9,561,436,147 bytes): 1,145 rows / 129 items; invalid/duplicate/incomplete spines=0. Companion holds view: 47 held items. L79180940-1 periods1..8 includes Paid period5; L79949677-1 periods1..10 includes Paid period4. Definitions match reviewed SQL; 56-column schema unchanged. NULLs retained, September-open decision recorded. No interface file, scheduler/period-table mutation, or SAP import. Cancel still requires SAP payment acknowledgement and mirror refresh.
+
 ## Deployment update — 2026-09-29
 
 User confirmed September 2026 open, NULLs retained, production view deployment approved, interface-file generation cancelled. Independent review updated to scoped deployment PASS; hashes unchanged.

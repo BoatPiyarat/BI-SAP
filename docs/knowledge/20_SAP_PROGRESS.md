@@ -1,3 +1,7 @@
+## Verified live deployment — 2026-09-29 14:33:26 ICT
+
+Production query job bqjob_r65b4b11cdd043edc_000001a0ec15288c_1 (dryrun 9,561,436,147 bytes): 1,145 rows / 129 items; invalid/duplicate/incomplete spines=0. Companion holds view: 47 held items. L79180940-1 periods1..8 includes Paid period5; L79949677-1 periods1..10 includes Paid period4. Definitions match reviewed SQL; 56-column schema unchanged. NULLs retained, September-open decision recorded. No interface file, scheduler/period-table mutation, or SAP import. Cancel still requires SAP payment acknowledgement and mirror refresh.
+
 ## 2026-09-29 — Scoped production approval: NonMotor earlier-period gap
 
 Boat confirms September 2026 remains open until September month-end; NULL values may be retained for this scoped view change. Explicitly authorizes BigQuery view deployment now and cancels the interface-file generation request. This resolves the prior period/NULL operational deployment blocker for the reviewed two-view fix and companion hold diagnostic. Preserve existing date formulas and NULL values; do not mutate sap_period_lock, scheduler, or create/deliver any interface file. Normal existing consumers are left unchanged. This is a scoped view-release decision, not a general waiver for future exports.
