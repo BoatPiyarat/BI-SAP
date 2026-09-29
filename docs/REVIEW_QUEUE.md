@@ -1,5 +1,16 @@
 ﻿# REVIEW_QUEUE.md — asynchronous mutual review
 
+## RQ-20260929-1735-edc-bank-mapping
+Status: REVIEWED
+Reviewer: Independent Codex reviewer
+Class: A
+Artifact: commit 287a1b9; charge-based EDC mapping proposal and live evidence.
+Opened: 2026-09-29T17:35:29+07:00
+REVIEW REQUEST: verify six-bank mapping, registry scope, KBANK-only hold, diagnostic link counts and dependency limits.
+Verdict: PASS WITH NOTES — docs/reviews/2026-09-29-edc-bank-mapping-independent.md.
+Nonblocking wording narrowed explicitly to RCB_NonMotor_process_2_cancel. No production deployment or interface generation.
+Timestamp is actual artifact author timestamp.
+
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 

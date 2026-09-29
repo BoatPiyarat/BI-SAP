@@ -25,7 +25,7 @@ For these six providers, existing live CASE expressions pair the following chann
 
 Profile scope: all CarePay products, SUCCESSFUL EDC charges with payment_date >= 2026-01-01 and < 2026-10-01, observed September 29; total 15,400. September is still open. These are source-profile counts, not affected export rows or SAP postings. One KRUNGSRI charge has RABBIT_CARE_INSTALLMENT: route separately for flow validation, not automatically ONETIME. Other EDC charges are FULL_PAYMENT or CREDIT_CARD_INSTALLMENT.
 
-Reusable live mapping references: sap_data_engineer.sap_dashboard_carepay_fully_paid, sap_data_engineer.RCB_HEALTH, sap_view.RCB_NonMotor_process_2_cancel, sap_integration_v3.vw_onetime_payload_source. Reuse the explicit six EDC pairs, not their generic ELSE Transfer/Transfer-other fallbacks. NonMotor has method=EDC for any EDC source while channel can fall back to Transfer-other; this is a paired-field inconsistency for unknown banks.
+Reusable live mapping references: sap_data_engineer.sap_dashboard_carepay_fully_paid, sap_data_engineer.RCB_HEALTH, sap_view.RCB_NonMotor_process_2_cancel, sap_integration_v3.vw_onetime_payload_source. Reuse the explicit six EDC pairs, not their generic ELSE Transfer/Transfer-other fallbacks. sap_view.RCB_NonMotor_process_2_cancel sets PaymentMethod=EDC EDC for any EDC source while channel can fall back to Transfer-other; this is a paired-field inconsistency for unknown banks.
 
 Other established channel families in those CASE expressions:
 
