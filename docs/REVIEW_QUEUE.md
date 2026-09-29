@@ -6,7 +6,7 @@ Artifact: 4e04351f41d3b48aafc6bd1aba673c0f23edfe03
 Opened: 2026-09-29T13:13:13+07:00
 Claim: REVIEW REQUEST — recover missing earlier periods, preserve Paid history, quarantine incomplete/duplicate spines.
 Evidence: docs/FINDINGS_NONMOTOR_PERIOD_GAP_20260929.md
-Verdict: SQL regression PASS; production deployment BLOCK and interface release BLOCK. See docs/reviews/2026-09-29-nonmotor-period-gap-independent.md. Operational gate resolution remains pending, not waived.
+Verdict: SQL regression PASS; scoped production deployment PASS after explicit user confirmation of September-open/NULL retention. Interface generation cancelled by user. See docs/reviews/2026-09-29-nonmotor-period-gap-independent.md.
 
 ﻿# REVIEW_QUEUE.md — asynchronous mutual review
 

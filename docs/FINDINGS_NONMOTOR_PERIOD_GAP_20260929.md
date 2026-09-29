@@ -1,3 +1,14 @@
+## Deployment update — 2026-09-29
+
+User confirmed September 2026 open, NULLs retained, production view deployment approved, interface-file generation cancelled. Independent review updated to scoped deployment PASS; hashes unchanged.
+
+Deployed via guarded dry-run + execution:
+- trigger: bqjob_rd46ee18fca78a84_000001a0ec13cdc4_1
+- newpayment: bqjob_r88272caa07f17dc_000001a0ec14049c_1
+- holds: bqjob_r1d758d541e8a8985_000001a0ec143b2e_1
+
+All deployed definitions match reviewed source. Existing trigger 15-column and newpayment 56-column name/type/order schemas unchanged. No CSV/GCS export, period-table change, or scheduler mutation. The previous BLOCK sections below are historical and superseded for this scoped view deployment.
+
 # NonMotor missing-period recovery — 2026-09-29
 
 Status: SQL implemented and regression verified; production deployment BLOCKED; interface preflight BLOCKED. No production view replacement, interface CSV, GCS delivery, or scheduler change performed.

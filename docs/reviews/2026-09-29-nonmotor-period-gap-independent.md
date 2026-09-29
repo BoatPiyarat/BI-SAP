@@ -1,6 +1,6 @@
 # Independent Class-A review — 2026-09-29
 
-Verdict: **SQL regression PASS; production deployment BLOCK; interface release BLOCK.** Reviewer read artifacts only; zero BigQuery queries or production changes.
+Verdict: **SQL regression PASS; scoped production view deployment PASS; interface release NOT REQUESTED / NOT CERTIFIED.** Reviewer read artifacts only; zero BigQuery queries or production changes.
 
 1. Traceability — initial immutable comparison is named by capture_comparison.sql and captured_at 2026-09-29 02:55:39 UTC; release_rows.json/read_release.sql independently yield 1,145 rows / 129 items. Final schema evidence timestamp 2026-09-29T06:08:56.186Z and release job bqjob_r2a938fdc486bf28f_000001a0ebc64d46_1 retained in schema_validation.json.
 2. Provenance — exact reviewed SQL SHA256 below; author commit/session provenance remains required.
@@ -9,15 +9,15 @@ Verdict: **SQL regression PASS; production deployment BLOCK; interface release B
 5. Column order — refreshed final before/candidate schemas identical (56 names/types/positions), canonical ordinal match and exact staged source match confirmed in schema_validation.json.
 6. Grain — item+period anti-match correct; trigger dedup is eligibility only. Export never arbitrarily discards split charges: duplicate/incomplete items held in full.
 7. Distribution — 0 bad spines among 129 final items, statuses only Paid/Pending. Both target spines complete (8/10); missing periods 5/4 Paid. For retained items, all 159 before-Paid rows remain with unchanged InvoiceNo and ActualReceived. Initial comparison contains 47 held-item spines; durable holds view supports diagnosis.
-8. Knowledge — Paid history retained, terminal guards applied, financial/date formulas unchanged. Period control lacks September and August remains past closing without locked_at; current-date clamp is not approval to release. Enabled NonMotor scheduler can defeat separate file hold unless its consumer is gated/contained.
+8. Knowledge — Paid history retained, terminal guards applied, financial/date formulas unchanged. Period-table inconsistency was raised. Boat explicitly confirms September remains open and permits retained NULL values for this scoped deployment (APPROVAL_20260929.md); existing date formulas and consumers remain unchanged. This is a human resolution, not an inferred accounting rule.
 9. Scope — production view change explicitly authorized; holds diagnostic supports same fix. No SAP import/export authorized by this review.
 10. Rollback — verbatim before SQL/metadata and rollback_trigger.sql/rollback_newpayment.sql present; two view restores expected under five minutes (execution untested).
 11. Cost hygiene — reviewer issued no queries; author retained final dry-run 9,873,277,104 bytes and named execution job in schema_validation.json. Verify cost-wrapper cap again in any deployment invocation.
 12. Honest labelling — SQL/data recovery verified; import readiness and SAP acknowledgement not verified. Do not label release_rows.json as ready-to-import.
 
-Deployment blocker (unresolved after one author response): enabled sap-order-payment-non-motor feeds the linked NonMotor exporter; no verified containment prevents automatic export of blocked candidate. Establish an approved pause/gate or resolve release gates before changing live views. Interface blockers: resolve approved open period, required/optional NULL rules and all exact immutable-file gates; no export may bypass these.
+Human resolution: APPROVAL_20260929.md explicitly authorizes deployment of the two reviewed views and companion holds diagnostic, confirms September open and NULL retention, leaves normal consumers unchanged, and withdraws interface-file generation. The prior operational deployment BLOCK is resolved for this exact scope. Do not mutate scheduler or sap_period_lock, or generate/deliver an interface file. No general export waiver or certification is granted.
 
-One-round disposition: final schema and dry-run evidence close those evidence gaps; target_reconcile.json plus verification script establish source/SAP invoice and amount checks on target Paid periods. Operational containment remains unresolved. **No production view mutation, CSV generation, SAP import, or scheduler change occurred in this reviewed unit.**
+One-round disposition: final schema and dry-run evidence close those evidence gaps; target_reconcile.json plus verification script establish source/SAP invoice and amount checks on target Paid periods. Subsequent explicit human decision resolves the operational deployment concern. All three SQL SHA256 values were rechecked and match those below. **Reviewer made no production changes; deployment completion must be evidenced by the author after fresh drift checks.**
 
 Specific residual risks: unchanged annual bounds, unsafe legacy PARSE_DATE/SPLIT, narrowed terminal status spelling list, and upstream snapshot/payment duplicates; quarantine prevents malformed spines but is not full interface validation.
 

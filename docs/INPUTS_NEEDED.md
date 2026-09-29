@@ -1,4 +1,8 @@
-## OPEN 2026-09-29 — NonMotor missing-period fix release inputs
+## 2026-09-29 — Scoped production approval: NonMotor earlier-period gap
+
+Boat confirms September 2026 remains open until September month-end; NULL values may be retained for this scoped view change. Explicitly authorizes BigQuery view deployment now and cancels the interface-file generation request. This resolves the prior period/NULL operational deployment blocker for the reviewed two-view fix and companion hold diagnostic. Preserve existing date formulas and NULL values; do not mutate sap_period_lock, scheduler, or create/deliver any interface file. Normal existing consumers are left unchanged. This is a scoped view-release decision, not a general waiver for future exports.
+
+## RESOLVED FOR VIEW DEPLOYMENT 2026-09-29 — NonMotor missing-period fix release inputs
 
 SQL regression is verified, production unchanged. Need confirmed September accounting period/date controls and reviewed treatment of NULL EndorsementNo/ChassisNo/LicensePlate/RefOrder/BillingAddress for the exact two-item interface candidate. NonMotor scheduler is ENABLED; do not deploy a widened export source while pre-export is blocked without approved containment. See FINDINGS_NONMOTOR_PERIOD_GAP_20260929.md.
 
