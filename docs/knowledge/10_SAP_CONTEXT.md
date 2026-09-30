@@ -630,3 +630,8 @@ User confirms the current EDC-KBANK output label must not be treated as evidence
 ## ADDENDUM 2026-09-29 — Approved payment mapping fallback
 
 Supersedes the earlier proposal to hold missing bank mappings: user approved fixing all legacy EDC producers and related upstream/downstream queries. For missing mappings use the identified source bank suffix, otherwise omit the bank suffix. User explicitly approved raw-method family fallback (CHEQUE -> CHEQUE / RCB-CHEQUE, adding recognized bank suffix when present). NULL bank alone is not a mapping hold. Missing method or ambiguous lineage remains unresolved. Keep paired ALL/ALL CMI, CreditShell and posted SAP reversal rules. Known QR/online-card settlement mappings remain explicit. Details: docs/EDC_MAPPING_IMPLEMENTATION_20260929.md.
+
+
+## 2026-09-30 authoritative EDC correction
+
+Boat clarified that existing EDC remains EDC; identify only the bank suffix from CareOS. Never reclassify existing EDC as Omise/Transfer from the joined charge method. Use RCB-EDC when no bank is identified; OMISE/RCB providers do not establish an EDC bank. The earlier broad mapping deployment and FA workbook are superseded for EDC. Corrective SQL: sql/production/edc_suffix_correction_20260930. Existing authorization includes production legacy views and upstream/downstream changes; no interface file requested.
