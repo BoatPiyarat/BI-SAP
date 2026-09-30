@@ -30,3 +30,8 @@ Full live definitions were captured before edits; rollback files accompany every
 ## 2026-09-30 preflight continuation
 
 Authentication restored by user. Before production mutation, API metadata exposed CLI cache encoding differences in two views. Preserved live nonmapping title strings/comments and exact rollback definitions. Fresh API baseline now used for drift checks. Targeted live-before/rebased-after comparison reports zero nonmapping multiset differences (2026-09-30 07:37:12 UTC). Procedure bodies match the reviewed baseline.
+
+
+## DEPLOYED 2026-09-30
+
+All15 existing views and4 procedure definitions replaced and immediately verified via fresh BigQuery API reads. Every view schema preserved; exact reviewed definitions verified. Shared helper is live. Deployment timestamps/etags: docs/evidence/edc_mapping_fix_20260929/production_deployment.json. Updates use etag-protected metadata API calls, not query jobs. Independent final review and encoding-delta review PASS. No procedure CALL, export, scheduler change or historical SAP update. Workbook remains the September29 source snapshot.

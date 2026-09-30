@@ -3624,3 +3624,8 @@ strictly distinct from SAP pickup and acknowledgement.
 ## 2026-09-29 — Multi-bank EDC implementation validated
 
 User approved legacy/upstream/downstream changes and raw-family/no-bank-suffix fallback. Fifteen view payload comparisons preserve all nonmapping fields and multiplicities; every positional schema preserved. 20 mapping and10 gate fixtures pass. Four V3 routines prepared; procedure branch execution not performed. FA/Aware workbook contains9585 mapping differences and83837 investigations. See docs/EDC_MAPPING_IMPLEMENTATION_20260929.md for deployment status and limits.
+
+
+## 2026-09-30 — Payment mapping production deployment complete
+
+Deployed and verified15 views+4V3 procedures; shared helper live. Bank-aware EDC mapping and approved raw-method/no-suffix fallback active. Preserved schema, source flow exceptions and existing release gates. No SAP mutation/interface export. See docs/EDC_MAPPING_IMPLEMENTATION_20260929.md and deployment evidence.

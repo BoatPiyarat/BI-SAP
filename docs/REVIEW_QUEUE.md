@@ -1,5 +1,17 @@
 ﻿# REVIEW_QUEUE.md — asynchronous mutual review
 
+## RQ-20260930-1437-edc-mapping-deployment
+Status: REVIEWED
+Reviewer: Independent Codex reviewer
+Class: A
+Artifact: b00675d (implementation a96039b plus live encoding preservation).
+Opened: 2026-09-30T14:37:59+07:00
+REVIEW REQUEST: all15 mapping producers, four downstream procedures and helper; deployment source and evidence.
+Verdict: PASS WITH NOTES. See docs/evidence/edc_mapping_fix_20260929/view_review.md and encoding_review_20260930.md.
+All15 nonmapping multisets/schema preserved;30fixtures pass. Full procedure bodies not executed.
+Production19objects verified September30; no export/SAP correction.
+
+
 ## RQ-20260929-1735-edc-bank-mapping
 Status: REVIEWED
 Reviewer: Independent Codex reviewer
