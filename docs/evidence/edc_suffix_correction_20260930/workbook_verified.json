@@ -1,0 +1,29 @@
+{
+  "exact_rows": 784,
+  "payment_method_changes": 0,
+  "non_edc_proposals": 0,
+  "all_pending": true,
+  "sample": [
+    {
+      "H": "EDC EDC",
+      "I": "RCB-EDC-KBANK",
+      "J": "EDC EDC",
+      "K": "RCB-EDC",
+      "M": "RCB"
+    },
+    {
+      "H": "EDC EDC",
+      "I": "RCB-EDC-KBANK",
+      "J": "EDC EDC",
+      "K": "RCB-EDC",
+      "M": "RCB"
+    },
+    {
+      "H": "EDC EDC",
+      "I": "RCB-EDC-KBANK",
+      "J": "EDC EDC",
+      "K": "RCB-EDC",
+      "M": "RCB"
+    }
+  ]
+}

@@ -1,0 +1,1 @@
+SELECT CURRENT_TIMESTAMP() checked_at, PaymentMethod, PaymentChannel, COUNT(*) row_count FROM `pacific-plating-282708.sap_view.RCB_Motor_process_3_change` GROUP BY 1,2,3;

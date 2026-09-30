@@ -1,5 +1,18 @@
 # 30_SAP_CHANGELOG.md
 
+
+## Correction deployed and verified — 2026-09-30 17:06 ICT
+
+Source commit8a8bfdc; independent Class-A PASS WITH NOTES. Metadata deployment at10:05:51–10:06:05UTC changed15 views and3 procedures; EDC hold procedure verified unchanged. All19 definitions re-read and all15 ordered schemas preserved. Live Motor change query at10:06:52UTC returned666 rows, all EDC EDC: RCB-EDC502, BAY86, KTB38, KBANK30, SCB5, UOB4, BBL1. Next fresh query of these production views uses this corrected rule; existing files and already-posted SAP records are not changed. Full procedure execution / next scheduled export not observed.
+
+Corrected workbook SAP_EDC_Bank_Suffix_FA_Review_20260930.xlsx rendered and actual XLSX cells checked:784 exact-charge candidates,0 method changes,0 non-EDC proposals,all Pending;83474 unresolved investigation rows. Sources SAP_LIVE_FULL/CareOS snapshot2026-09-29 11:42:03UTC. Do not use earlier SAP_Payment_Mapping_FA_Review_20260929.xlsx. No interface file generated.
+
+| Built | Verified against real data | Still unverified |
+|---|---|---|
+| EDC-only suffix correction,15 views/3 changed procedures |15 original/candidate multisets and schema comparisons;19 production postreads; live Motor change distribution |Procedure body execution and next scheduled SAP import |
+| Corrected FA workbook |Actual XLSX preserves784 methods; source-match semantics independently reviewed |FA decisions and SAP historical corrections |
+
+
 ## 2026-09-26T23:41:18+07:00 — Scenario root-cause map prepared
 
 All 12 sap_view routes checked for the fixed September missing population. Paid: 703 identity-present /203 absent /435 no-order; cancel:134 present /50 absent. Primary blockers and payload/owner risks documented in docs/FINDINGS_CAREOS_SCENARIO_ROOT_CAUSES_20260926.md. Preparation only; no production mutation or V3 work.
