@@ -25,3 +25,8 @@ Preserved CompanyDB, DocEntry, OrderID, OrderItem, InvoiceNo, current SAP method
 ## Deployment and rollback
 
 Full live definitions were captured before edits; rollback files accompany every existing object. New helper created first for isolated candidate compilation. Existing view/routine replacements require final independent review and fresh drift check. Deploy in producer-first order, then procedures. Preserve 56-column names, types and ordinal positions. Verify fresh definitions and downstream schemas after replacement. September2026 remains open.
+
+
+## 2026-09-30 preflight continuation
+
+Authentication restored by user. Before production mutation, API metadata exposed CLI cache encoding differences in two views. Preserved live nonmapping title strings/comments and exact rollback definitions. Fresh API baseline now used for drift checks. Targeted live-before/rebased-after comparison reports zero nonmapping multiset differences (2026-09-30 07:37:12 UTC). Procedure bodies match the reviewed baseline.

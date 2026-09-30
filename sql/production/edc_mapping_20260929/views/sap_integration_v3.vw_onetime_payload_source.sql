@@ -125,12 +125,12 @@ onetime_master AS (
     order_items.submission_status AS SubmissionStatus,
     order_items.approval_status AS ApprovalStatus,
     transactions.status AS PaymentStatus,
-    ROUND(((1 / 100) * charges.amount),2) AS ActualReceived_master,  -- จำนวนเงินที่ลู��ค้าจ่ายมาจริงๆ ห้ามเปลี่ยน
+    ROUND(((1 / 100) * charges.amount),2) AS ActualReceived_master,  -- à¸ˆà¸³à¸™à¸§à¸™à¹€à¸‡à¸´à¸™à¸—à¸µà¹ˆà¸¥à¸¹à¸�à¸„à¹‰à¸²à¸ˆà¹ˆà¸²à¸¢à¸¡à¸²à¸ˆà¸£à¸´à¸‡à¹† à¸«à¹‰à¸²à¸¡à¹€à¸›à¸¥à¸µà¹ˆà¸¢à¸™
     0 AS PrincipleThisPeriod,
     transaction_snapshot_price_summaries.interest_amount AS InterestEIRThisPeriod,
     0 AS PrincipleEIRThisPeriod,
     CASE
-      -- ��รณีมี BatchRunDate
+      -- à¸�à¸£à¸“à¸µà¸¡à¸µ BatchRunDate
       WHEN sap_batchrun.BatchRunDate IS NOT NULL THEN
         CASE
           WHEN DATE(PARSE_TIMESTAMP('%d%m%Y', sap_batchrun.BatchRunDate))
@@ -142,7 +142,7 @@ onetime_master AS (
           THEN TIMESTAMP(DATE_TRUNC(CURRENT_DATE(), MONTH))
           ELSE PARSE_TIMESTAMP('%d%m%Y', sap_batchrun.BatchRunDate)
         END
-      -- ��รณีไม่มี BatchRunDate
+      -- à¸�à¸£à¸“à¸µà¹„à¸¡à¹ˆà¸¡à¸µ BatchRunDate
       WHEN DATE(COALESCE(charges.payment_date, charges.update_time))
            < DATE_TRUNC(CURRENT_DATE(), MONTH)
            AND CURRENT_DATE() > DATE_ADD(
@@ -262,10 +262,10 @@ SELECT DISTINCT
   CAST(FORMAT_DATE('%d%m%Y', OrderDate) AS STRING) AS OrderDate,
   InsuredID,
   CASE
-    WHEN Title = 'KHUN' THEN 'คุณ'
-    WHEN Title = 'MISS' THEN 'นางสาว'
-    WHEN Title = 'MR' THEN 'นาย'
-    WHEN Title = 'MRS' THEN 'นาง'
+    WHEN Title = 'KHUN' THEN 'à¸„à¸¸à¸“'
+    WHEN Title = 'MISS' THEN 'à¸™à¸²à¸‡à¸ªà¸²à¸§'
+    WHEN Title = 'MR' THEN 'à¸™à¸²à¸¢'
+    WHEN Title = 'MRS' THEN 'à¸™à¸²à¸‡'
     ELSE ''
   END AS Title,
   FirstName,

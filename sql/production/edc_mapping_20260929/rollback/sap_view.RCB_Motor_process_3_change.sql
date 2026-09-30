@@ -1,6 +1,6 @@
 CREATE OR REPLACE VIEW `pacific-plating-282708.sap_view.RCB_Motor_process_3_change` AS
 -- ============================================================
--- SAP INTERFACE v1.1 � all RCB CREDIT_CARD_INSTALLMENT cases
+-- SAP INTERFACE v1.1 — all RCB CREDIT_CARD_INSTALLMENT cases
 -- Started: 2026-08-30
 -- Base: urgent batch derived from sap_dashboard_carepay_fully_paid
 --
@@ -431,5 +431,5 @@ FROM onetime_master_go
 SELECT *
 FROM final_export
 
-ORDER BY OrderItem;
+ORDER BY OrderItem
 ;
