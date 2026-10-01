@@ -1,5 +1,28 @@
 ﻿# REVIEW_QUEUE.md — asynchronous mutual review
 
+## RQ-20260930-1437-edc-mapping-deployment
+Status: REVIEWED
+Reviewer: Independent Codex reviewer
+Class: A
+Artifact: b00675d (implementation a96039b plus live encoding preservation).
+Opened: 2026-09-30T14:37:59+07:00
+REVIEW REQUEST: all15 mapping producers, four downstream procedures and helper; deployment source and evidence.
+Verdict: PASS WITH NOTES. See docs/evidence/edc_mapping_fix_20260929/view_review.md and encoding_review_20260930.md.
+All15 nonmapping multisets/schema preserved;30fixtures pass. Full procedure bodies not executed.
+Production19objects verified September30; no export/SAP correction.
+
+
+## RQ-20260929-1735-edc-bank-mapping
+Status: REVIEWED
+Reviewer: Independent Codex reviewer
+Class: A
+Artifact: commit 287a1b9; charge-based EDC mapping proposal and live evidence.
+Opened: 2026-09-29T17:35:29+07:00
+REVIEW REQUEST: verify six-bank mapping, registry scope, KBANK-only hold, diagnostic link counts and dependency limits.
+Verdict: PASS WITH NOTES — docs/reviews/2026-09-29-edc-bank-mapping-independent.md.
+Nonblocking wording narrowed explicitly to RCB_NonMotor_process_2_cancel. No production deployment or interface generation.
+Timestamp is actual artifact author timestamp.
+
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 

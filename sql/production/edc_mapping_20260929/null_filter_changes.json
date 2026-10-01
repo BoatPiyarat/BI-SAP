@@ -1,0 +1,62 @@
+[
+  {
+    "name": "sap_view.RCB_Motor_process_3_change",
+    "nullSafePredicates": 1
+  },
+  {
+    "name": "sap_view.RCB_NonMotor_process_2_cancel",
+    "nullSafePredicates": 1
+  },
+  {
+    "name": "sap_integration_v3.vw_onetime_payload_source",
+    "nullSafePredicates": 4
+  },
+  {
+    "name": "sap_integration_v2.2_nonMotor_items_cancel",
+    "nullSafePredicates": 4
+  },
+  {
+    "name": "sap_integration_v2.sap_motor__carepay_fully_paid",
+    "nullSafePredicates": 3
+  },
+  {
+    "name": "sap_integration_v2.02_items_cancel",
+    "nullSafePredicates": 3
+  },
+  {
+    "name": "sap_integration_v2.sap_rcb_motor_all_records",
+    "nullSafePredicates": 3
+  },
+  {
+    "name": "sap_integration_v2.sap_rcb_motor_all_records_2024",
+    "nullSafePredicates": 0
+  },
+  {
+    "name": "sap_integration_v2.rcb_backup_20250705",
+    "nullSafePredicates": 5
+  },
+  {
+    "name": "sap_integration_v2.03_cancel change orders",
+    "nullSafePredicates": 3
+  },
+  {
+    "name": "sap_data_engineer.sap_fixing_rcb",
+    "nullSafePredicates": 3
+  },
+  {
+    "name": "sap_data_engineer.sap_dashboard_carepay_cancelled",
+    "nullSafePredicates": 2
+  },
+  {
+    "name": "sap_data_engineer.RCB_HEALTH",
+    "nullSafePredicates": 4
+  },
+  {
+    "name": "sap_data_engineer.RCB_MOTOR",
+    "nullSafePredicates": 3
+  },
+  {
+    "name": "sap_data_engineer.sap_dashboard_carepay_fully_paid",
+    "nullSafePredicates": 3
+  }
+]

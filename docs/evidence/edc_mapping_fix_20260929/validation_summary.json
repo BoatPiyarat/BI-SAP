@@ -1,0 +1,1557 @@
+[
+  {
+    "added_rows": null,
+    "checked_at_utc": "2026-09-29 12:51:43",
+    "delta_examples": [],
+    "new_mapping_distribution": [
+      {
+        "PaymentChannel": "RCB-Omise QR Prompt Pay-BAY",
+        "PaymentMethod": "OME Omise QR Prompt Pay",
+        "row_count": "29"
+      },
+      {
+        "PaymentChannel": "RCB-Omise Credit Card-BAY",
+        "PaymentMethod": "OMC Omise Credit Card",
+        "row_count": "9"
+      },
+      {
+        "PaymentChannel": "RCB-EDC-BAY",
+        "PaymentMethod": "EDC EDC",
+        "row_count": "7"
+      },
+      {
+        "PaymentChannel": "RCB-DIRECT PAYMENT",
+        "PaymentMethod": "DPM จ่ายตรงกับบริษัทประกัน",
+        "row_count": "5"
+      },
+      {
+        "PaymentChannel": "RCB-Transfer-SCB",
+        "PaymentMethod": "TRF Transfer",
+        "row_count": "2"
+      },
+      {
+        "PaymentChannel": "RCB-EDC-UOB",
+        "PaymentMethod": "EDC EDC",
+        "row_count": "2"
+      },
+      {
+        "PaymentChannel": "RCB-EDC-KTB",
+        "PaymentMethod": "EDC EDC",
+        "row_count": "2"
+      },
+      {
+        "PaymentChannel": "RCB-EDC-KBANK",
+        "PaymentMethod": "EDC EDC",
+        "row_count": "2"
+      },
+      {
+        "PaymentChannel": "RCB-Transfer-KTB",
+        "PaymentMethod": "TRF Transfer",
+        "row_count": "1"
+      }
+    ],
+    "new_rows": "59",
+    "nonmapping_changed_groups": "0",
+    "object_name": "sap_view.RCB_Motor_process_3_change",
+    "old_rows": "59",
+    "removed_rows": null
+  },
+  {
+    "added_rows": null,
+    "checked_at_utc": "2026-09-29 12:52:16",
+    "delta_examples": [],
+    "new_mapping_distribution": [
+      {
+        "PaymentChannel": "RCB-DIRECT PAYMENT",
+        "PaymentMethod": "DPM จ่ายตรงกับบริษัทประกัน",
+        "row_count": "2"
+      }
+    ],
+    "new_rows": "2",
+    "nonmapping_changed_groups": "0",
+    "object_name": "sap_view.RCB_NonMotor_process_2_cancel",
+    "old_rows": "2",
+    "removed_rows": null
+  },
+  {
+    "added_rows": null,
+    "checked_at_utc": "2026-09-29 12:51:01",
+    "delta_examples": [],
+    "new_mapping_distribution": [
+      {
+        "PaymentChannel": "RCB-Omise QR Prompt Pay-BAY",
+        "PaymentMethod": "OME Omise QR Prompt Pay",
+        "row_count": "188653"
+      },
+      {
+        "PaymentChannel": "RCB-Omise Credit Card-BAY",
+        "PaymentMethod": "OMC Omise Credit Card",
+        "row_count": "59682"
+      },
+      {
+        "PaymentChannel": "RCB-DIRECT PAYMENT",
+        "PaymentMethod": "DPM จ่ายตรงกับบริษัทประกัน",
+        "row_count": "52564"
+      },
+      {
+        "PaymentChannel": "RCB-EDC-BAY",
+        "PaymentMethod": "EDC EDC",
+        "row_count": "34444"
+      },
+      {
+        "PaymentChannel": "RCB-EDC-KBANK",
+        "PaymentMethod": "EDC EDC",
+        "row_count": "16729"
+      },
+      {
+        "PaymentChannel": "RCB-EDC-KTB",
+        "PaymentMethod": "EDC EDC",
+        "row_count": "13825"
+      },
+      {
+        "PaymentChannel": "RCB-Transfer-KBANK",
+        "PaymentMethod": "TRF Transfer",
+        "row_count": "7328"
+      },
+      {
+        "PaymentChannel": "RCB-Transfer-KTB",
+        "PaymentMethod": "TRF Transfer",
+        "row_count": "6653"
+      },
+      {
+        "PaymentChannel": "RCB-EDC-BBL",
+        "PaymentMethod": "EDC EDC",
+        "row_count": "3811"
+      },
+      {
+        "PaymentChannel": "RCB-Transfer-อื่นๆ",
+        "PaymentMethod": "TRF Transfer",
+        "row_count": "2550"
+      },
+      {
+        "PaymentChannel": "RCB-EDC-UOB",
+        "PaymentMethod": "EDC EDC",
+        "row_count": "1167"
+      },
+      {
+        "PaymentChannel": "RCB-Transfer-SCB",
+        "PaymentMethod": "TRF Transfer",
+        "row_count": "983"
+      },
+      {
+        "PaymentChannel": "RCB-Transfer-BBL",
+        "PaymentMethod": "TRF Transfer",
+        "row_count": "442"
+      },
+      {
+        "PaymentChannel": "RCB-EDC-SCB",
+        "PaymentMethod": "EDC EDC",
+        "row_count": "432"
+      },
+      {
+        "PaymentChannel": "RCB-Transfer-BAY",
+        "PaymentMethod": "TRF Transfer",
+        "row_count": "244"
+      },
+      {
+        "PaymentChannel": "RCB-CHEQUE",
+        "PaymentMethod": "CHEQUE",
+        "row_count": "79"
+      },
+      {
+        "PaymentChannel": "RCB-Transfer",
+        "PaymentMethod": "TRF Transfer",
+        "row_count": "31"
+      },
+      {
+        "PaymentChannel": "RCB-EDC-TMB",
+        "PaymentMethod": "EDC EDC",
+        "row_count": "11"
+      },
+      {
+        "PaymentChannel": "RCB-EDC",
+        "PaymentMethod": "EDC EDC",
+        "row_count": "8"
+      },
+      {
+        "PaymentChannel": "RCB-Transfer-TMB",
+        "PaymentMethod": "TRF Transfer",
+        "row_count": "2"
+      },
+      {
+        "PaymentChannel": "RCB-Transfer-UOB",
+        "PaymentMethod": "TRF Transfer",
+        "row_count": "2"
+      }
+    ],
+    "new_rows": "389640",
+    "nonmapping_changed_groups": "0",
+    "object_name": "sap_integration_v3.vw_onetime_payload_source",
+    "old_rows": "389640",
+    "removed_rows": null
+  },
+  {
+    "added_rows": null,
+    "checked_at_utc": "2026-09-29 12:47:39",
+    "delta_examples": [],
+    "new_mapping_distribution": [
+      {
+        "PaymentChannel": "RCB-Omise QR Prompt Pay-BAY",
+        "PaymentMethod": "OME Omise QR Prompt Pay",
+        "row_count": "132735"
+      },
+      {
+        "PaymentChannel": "RCB-DIRECT PAYMENT",
+        "PaymentMethod": "DPM จ่ายตรงกับบริษัทประกัน",
+        "row_count": "40985"
+      },
+      {
+        "PaymentChannel": "RCB-Omise Credit Card-BAY",
+        "PaymentMethod": "OMC Omise Credit Card",
+        "row_count": "32855"
+      },
+      {
+        "PaymentChannel": "RCB-EDC-BAY",
+        "PaymentMethod": "EDC EDC",
+        "row_count": "22761"
+      },
+      {
+        "PaymentChannel": "RCB-EDC-KBANK",
+        "PaymentMethod": "EDC EDC",
+        "row_count": "6032"
+      },
+      {
+        "PaymentChannel": "RCB-EDC-KTB",
+        "PaymentMethod": "EDC EDC",
+        "row_count": "5736"
+      },
+      {
+        "PaymentChannel": "RCB-Transfer-KBANK",
+        "PaymentMethod": "TRF Transfer",
+        "row_count": "5539"
+      },
+      {
+        "PaymentChannel": "RCB-Transfer-KTB",
+        "PaymentMethod": "TRF Transfer",
+        "row_count": "4680"
+      },
+      {
+        "PaymentChannel": "RCB-EDC-BBL",
+        "PaymentMethod": "EDC EDC",
+        "row_count": "1997"
+      },
+      {
+        "PaymentChannel": "RCB-Transfer-อื่นๆ",
+        "PaymentMethod": "TRF Transfer",
+        "row_count": "1027"
+      },
+      {
+        "PaymentChannel": "RCB-Transfer-SCB",
+        "PaymentMethod": "TRF Transfer",
+        "row_count": "901"
+      },
+      {
+        "PaymentChannel": "RCB-Transfer-BBL",
+        "PaymentMethod": "TRF Transfer",
+        "row_count": "411"
+      },
+      {
+        "PaymentChannel": "RCB-EDC-UOB",
+        "PaymentMethod": "EDC EDC",
+        "row_count": "261"
+      },
+      {
+        "PaymentChannel": "RCB-Transfer-BAY",
+        "PaymentMethod": "TRF Transfer",
+        "row_count": "166"
+      },
+      {
+        "PaymentChannel": "RCB-CHEQUE",
+        "PaymentMethod": "CHEQUE",
+        "row_count": "79"
+      },
+      {
+        "PaymentChannel": "RCB-Transfer",
+        "PaymentMethod": "TRF Transfer",
+        "row_count": "48"
+      },
+      {
+        "PaymentChannel": "RCB-EDC-SCB",
+        "PaymentMethod": "EDC EDC",
+        "row_count": "43"
+      },
+      {
+        "PaymentChannel": "RCB-EDC-TMB",
+        "PaymentMethod": "EDC EDC",
+        "row_count": "7"
+      },
+      {
+        "PaymentChannel": "RCB-EDC",
+        "PaymentMethod": "EDC EDC",
+        "row_count": "6"
+      },
+      {
+        "PaymentChannel": "RCB-Transfer-UOB",
+        "PaymentMethod": "TRF Transfer",
+        "row_count": "2"
+      },
+      {
+        "PaymentChannel": "RCB-Transfer-TMB",
+        "PaymentMethod": "TRF Transfer",
+        "row_count": "1"
+      }
+    ],
+    "new_rows": "256272",
+    "nonmapping_changed_groups": "0",
+    "object_name": "sap_integration_v2.2_nonMotor_items_cancel",
+    "old_rows": "256272",
+    "removed_rows": null
+  },
+  {
+    "added_rows": null,
+    "checked_at_utc": "2026-09-29 12:48:56",
+    "delta_examples": [],
+    "new_mapping_distribution": [
+      {
+        "PaymentChannel": "RCB-Omise QR Prompt Pay-BAY",
+        "PaymentMethod": "OME Omise QR Prompt Pay",
+        "row_count": "200868"
+      },
+      {
+        "PaymentChannel": "RCB-Omise Credit Card-BAY",
+        "PaymentMethod": "OMC Omise Credit Card",
+        "row_count": "64488"
+      },
+      {
+        "PaymentChannel": "RCB-DIRECT PAYMENT",
+        "PaymentMethod": "DPM จ่ายตรงกับบริษัทประกัน",
+        "row_count": "57205"
+      },
+      {
+        "PaymentChannel": "RCB-EDC-BAY",
+        "PaymentMethod": "EDC EDC",
+        "row_count": "36622"
+      },
+      {
+        "PaymentChannel": "RCB-EDC-KBANK",
+        "PaymentMethod": "EDC EDC",
+        "row_count": "17666"
+      },
+      {
+        "PaymentChannel": "RCB-EDC-KTB",
+        "PaymentMethod": "EDC EDC",
+        "row_count": "14712"
+      },
+      {
+        "PaymentChannel": "RCB-Transfer-KBANK",
+        "PaymentMethod": "TRF Transfer",
+        "row_count": "7290"
+      },
+      {
+        "PaymentChannel": "RCB-Transfer-KTB",
+        "PaymentMethod": "TRF Transfer",
+        "row_count": "6707"
+      },
+      {
+        "PaymentChannel": "RCB-EDC-BBL",
+        "PaymentMethod": "EDC EDC",
+        "row_count": "3995"
+      },
+      {
+        "PaymentChannel": "RCB-Transfer-อื่นๆ",
+        "PaymentMethod": "TRF Transfer",
+        "row_count": "2777"
+      },
+      {
+        "PaymentChannel": "RCB-EDC-UOB",
+        "PaymentMethod": "EDC EDC",
+        "row_count": "1375"
+      },
+      {
+        "PaymentChannel": "RCB-Transfer-SCB",
+        "PaymentMethod": "TRF Transfer",
+        "row_count": "968"
+      },
+      {
+        "PaymentChannel": "RCB-Transfer-BBL",
+        "PaymentMethod": "TRF Transfer",
+        "row_count": "456"
+      },
+      {
+        "PaymentChannel": "RCB-EDC-SCB",
+        "PaymentMethod": "EDC EDC",
+        "row_count": "445"
+      },
+      {
+        "PaymentChannel": "RCB-Transfer-BAY",
+        "PaymentMethod": "TRF Transfer",
+        "row_count": "254"
+      },
+      {
+        "PaymentChannel": "RCB-Transfer",
+        "PaymentMethod": "TRF Transfer",
+        "row_count": "48"
+      },
+      {
+        "PaymentChannel": "RCB-EDC",
+        "PaymentMethod": "EDC EDC",
+        "row_count": "13"
+      },
+      {
+        "PaymentChannel": "RCB-EDC-TMB",
+        "PaymentMethod": "EDC EDC",
+        "row_count": "11"
+      },
+      {
+        "PaymentChannel": "RCB-Transfer-UOB",
+        "PaymentMethod": "TRF Transfer",
+        "row_count": "2"
+      },
+      {
+        "PaymentChannel": "RCB-Transfer-TMB",
+        "PaymentMethod": "TRF Transfer",
+        "row_count": "2"
+      },
+      {
+        "PaymentChannel": "RCB-Omise Credit Card",
+        "PaymentMethod": "OMC Omise Credit Card",
+        "row_count": "1"
+      }
+    ],
+    "new_rows": "415905",
+    "nonmapping_changed_groups": "0",
+    "object_name": "sap_integration_v2.sap_motor__carepay_fully_paid",
+    "old_rows": "415905",
+    "removed_rows": null
+  },
+  {
+    "added_rows": null,
+    "checked_at_utc": "2026-09-29 12:46:40",
+    "delta_examples": [],
+    "new_mapping_distribution": [
+      {
+        "PaymentChannel": "RCB-DIRECT PAYMENT",
+        "PaymentMethod": "DPM จ่ายตรงกับบริษัทประกัน",
+        "row_count": "1677"
+      },
+      {
+        "PaymentChannel": "RCB-Omise QR Prompt Pay-BAY",
+        "PaymentMethod": "OME Omise QR Prompt Pay",
+        "row_count": "1312"
+      },
+      {
+        "PaymentChannel": "RCB-Omise Credit Card-BAY",
+        "PaymentMethod": "OMC Omise Credit Card",
+        "row_count": "678"
+      },
+      {
+        "PaymentChannel": "RCB-EDC-BAY",
+        "PaymentMethod": "EDC EDC",
+        "row_count": "313"
+      },
+      {
+        "PaymentChannel": "RCB-EDC-KTB",
+        "PaymentMethod": "EDC EDC",
+        "row_count": "84"
+      },
+      {
+        "PaymentChannel": "RCB-Transfer-KBANK",
+        "PaymentMethod": "TRF Transfer",
+        "row_count": "80"
+      },
+      {
+        "PaymentChannel": "RCB-EDC-KBANK",
+        "PaymentMethod": "EDC EDC",
+        "row_count": "76"
+      },
+      {
+        "PaymentChannel": "RCB-Transfer-KTB",
+        "PaymentMethod": "TRF Transfer",
+        "row_count": "59"
+      },
+      {
+        "PaymentChannel": "RCB-Transfer-อื่นๆ",
+        "PaymentMethod": "TRF Transfer",
+        "row_count": "57"
+      },
+      {
+        "PaymentChannel": "RCB-EDC-BBL",
+        "PaymentMethod": "EDC EDC",
+        "row_count": "43"
+      },
+      {
+        "PaymentChannel": "RCB-Transfer-BAY",
+        "PaymentMethod": "TRF Transfer",
+        "row_count": "11"
+      },
+      {
+        "PaymentChannel": "RCB-Transfer-SCB",
+        "PaymentMethod": "TRF Transfer",
+        "row_count": "10"
+      },
+      {
+        "PaymentChannel": "RCB-EDC-UOB",
+        "PaymentMethod": "EDC EDC",
+        "row_count": "7"
+      },
+      {
+        "PaymentChannel": "RCB-EDC-SCB",
+        "PaymentMethod": "EDC EDC",
+        "row_count": "7"
+      },
+      {
+        "PaymentChannel": "RCB-Transfer-BBL",
+        "PaymentMethod": "TRF Transfer",
+        "row_count": "6"
+      },
+      {
+        "PaymentChannel": "RCB-CHEQUE",
+        "PaymentMethod": "CHEQUE",
+        "row_count": "4"
+      },
+      {
+        "PaymentChannel": "RCB-Transfer",
+        "PaymentMethod": "TRF Transfer",
+        "row_count": "2"
+      }
+    ],
+    "new_rows": "4426",
+    "nonmapping_changed_groups": "0",
+    "object_name": "sap_integration_v2.02_items_cancel",
+    "old_rows": "4426",
+    "removed_rows": null
+  },
+  {
+    "added_rows": null,
+    "checked_at_utc": "2026-09-29 12:50:19",
+    "delta_examples": [],
+    "new_mapping_distribution": [
+      {
+        "PaymentChannel": "RCB-Omise QR Prompt Pay-BAY",
+        "PaymentMethod": "OME Omise QR Prompt Pay",
+        "row_count": "201555"
+      },
+      {
+        "PaymentChannel": "RCB-Omise Credit Card-BAY",
+        "PaymentMethod": "OMC Omise Credit Card",
+        "row_count": "64290"
+      },
+      {
+        "PaymentChannel": "RCB-DIRECT PAYMENT",
+        "PaymentMethod": "DPM จ่ายตรงกับบริษัทประกัน",
+        "row_count": "53501"
+      },
+      {
+        "PaymentChannel": "RCB-EDC-BAY",
+        "PaymentMethod": "EDC EDC",
+        "row_count": "35470"
+      },
+      {
+        "PaymentChannel": "RCB-EDC-KBANK",
+        "PaymentMethod": "EDC EDC",
+        "row_count": "16962"
+      },
+      {
+        "PaymentChannel": "RCB-EDC-KTB",
+        "PaymentMethod": "EDC EDC",
+        "row_count": "14184"
+      },
+      {
+        "PaymentChannel": "RCB-Transfer-KBANK",
+        "PaymentMethod": "TRF Transfer",
+        "row_count": "6774"
+      },
+      {
+        "PaymentChannel": "RCB-Transfer-KTB",
+        "PaymentMethod": "TRF Transfer",
+        "row_count": "6200"
+      },
+      {
+        "PaymentChannel": "RCB-EDC-BBL",
+        "PaymentMethod": "EDC EDC",
+        "row_count": "3862"
+      },
+      {
+        "PaymentChannel": "RCB-Transfer-อื่นๆ",
+        "PaymentMethod": "TRF Transfer",
+        "row_count": "2229"
+      },
+      {
+        "PaymentChannel": "RCB-EDC-UOB",
+        "PaymentMethod": "EDC EDC",
+        "row_count": "1187"
+      },
+      {
+        "PaymentChannel": "RCB-Transfer-SCB",
+        "PaymentMethod": "TRF Transfer",
+        "row_count": "957"
+      },
+      {
+        "PaymentChannel": "RCB-Transfer-BBL",
+        "PaymentMethod": "TRF Transfer",
+        "row_count": "447"
+      },
+      {
+        "PaymentChannel": "RCB-EDC-SCB",
+        "PaymentMethod": "EDC EDC",
+        "row_count": "439"
+      },
+      {
+        "PaymentChannel": "RCB-Transfer-BAY",
+        "PaymentMethod": "TRF Transfer",
+        "row_count": "237"
+      },
+      {
+        "PaymentChannel": "RCB-Transfer",
+        "PaymentMethod": "TRF Transfer",
+        "row_count": "50"
+      },
+      {
+        "PaymentChannel": "RCB-EDC",
+        "PaymentMethod": "EDC EDC",
+        "row_count": "18"
+      },
+      {
+        "PaymentChannel": "RCB-EDC-TMB",
+        "PaymentMethod": "EDC EDC",
+        "row_count": "11"
+      },
+      {
+        "PaymentChannel": "RCB-Transfer-TMB",
+        "PaymentMethod": "TRF Transfer",
+        "row_count": "2"
+      },
+      {
+        "PaymentChannel": "RCB-Transfer-UOB",
+        "PaymentMethod": "TRF Transfer",
+        "row_count": "2"
+      },
+      {
+        "PaymentChannel": "RCB-Omise Credit Card",
+        "PaymentMethod": "OMC Omise Credit Card",
+        "row_count": "1"
+      }
+    ],
+    "new_rows": "408378",
+    "nonmapping_changed_groups": "0",
+    "object_name": "sap_integration_v2.sap_rcb_motor_all_records",
+    "old_rows": "408378",
+    "removed_rows": null
+  },
+  {
+    "added_rows": null,
+    "checked_at_utc": "2026-09-29 12:49:37",
+    "delta_examples": [],
+    "new_mapping_distribution": [
+      {
+        "PaymentChannel": "RCB-Omise QR Prompt Pay-BAY",
+        "PaymentMethod": "OME Omise QR Prompt Pay",
+        "row_count": "5602362"
+      },
+      {
+        "PaymentChannel": "RCB-Omise QR Prompt Pay",
+        "PaymentMethod": "OME Omise QR Prompt Pay",
+        "row_count": "459021"
+      },
+      {
+        "PaymentChannel": "RCB-DIRECT PAYMENT",
+        "PaymentMethod": "DPM จ่ายตรงกับบริษัทประกัน",
+        "row_count": "100270"
+      },
+      {
+        "PaymentChannel": "RCB-Omise Credit Card-BAY",
+        "PaymentMethod": "OMC Omise Credit Card",
+        "row_count": "87142"
+      },
+      {
+        "PaymentChannel": "RCB-Omise Credit Card",
+        "PaymentMethod": "OMC Omise Credit Card",
+        "row_count": "47703"
+      },
+      {
+        "PaymentChannel": "RCB-EDC-BAY",
+        "PaymentMethod": "EDC EDC",
+        "row_count": "37356"
+      },
+      {
+        "PaymentChannel": "RCB-EDC",
+        "PaymentMethod": "EDC EDC",
+        "row_count": "36093"
+      },
+      {
+        "PaymentChannel": "RCB-EDC-KBANK",
+        "PaymentMethod": "EDC EDC",
+        "row_count": "18034"
+      },
+      {
+        "PaymentChannel": "RCB-EDC-KTB",
+        "PaymentMethod": "EDC EDC",
+        "row_count": "14999"
+      },
+      {
+        "PaymentChannel": "RCB-Transfer-อื่นๆ",
+        "PaymentMethod": "TRF Transfer",
+        "row_count": "12117"
+      },
+      {
+        "PaymentChannel": "RCB-Transfer",
+        "PaymentMethod": "TRF Transfer",
+        "row_count": "9838"
+      },
+      {
+        "PaymentChannel": "RCB-Transfer-KBANK",
+        "PaymentMethod": "TRF Transfer",
+        "row_count": "8154"
+      },
+      {
+        "PaymentChannel": "RCB-Transfer-KTB",
+        "PaymentMethod": "TRF Transfer",
+        "row_count": "7250"
+      },
+      {
+        "PaymentChannel": "RCB-DIRECT_DEBIT",
+        "PaymentMethod": "DIRECT_DEBIT",
+        "row_count": "5651"
+      },
+      {
+        "PaymentChannel": "RCB-EDC-BBL",
+        "PaymentMethod": "EDC EDC",
+        "row_count": "4110"
+      },
+      {
+        "PaymentChannel": "RCB-EDC-UOB",
+        "PaymentMethod": "EDC EDC",
+        "row_count": "1392"
+      },
+      {
+        "PaymentChannel": "RCB-Transfer-SCB",
+        "PaymentMethod": "TRF Transfer",
+        "row_count": "1055"
+      },
+      {
+        "PaymentChannel": null,
+        "PaymentMethod": null,
+        "row_count": "980"
+      },
+      {
+        "PaymentChannel": "RCB-Transfer-BAY",
+        "PaymentMethod": "TRF Transfer",
+        "row_count": "782"
+      },
+      {
+        "PaymentChannel": "RCB-Transfer-BBL",
+        "PaymentMethod": "TRF Transfer",
+        "row_count": "493"
+      },
+      {
+        "PaymentChannel": "RCB-EDC-SCB",
+        "PaymentMethod": "EDC EDC",
+        "row_count": "451"
+      },
+      {
+        "PaymentChannel": "RCB-RECURRING",
+        "PaymentMethod": "RECURRING",
+        "row_count": "268"
+      },
+      {
+        "PaymentChannel": "RCB-VEDC",
+        "PaymentMethod": "VEDC",
+        "row_count": "86"
+      },
+      {
+        "PaymentChannel": "RCB-CHEQUE",
+        "PaymentMethod": "CHEQUE",
+        "row_count": "79"
+      },
+      {
+        "PaymentChannel": "RCB-Transfer-UOB",
+        "PaymentMethod": "TRF Transfer",
+        "row_count": "60"
+      },
+      {
+        "PaymentChannel": null,
+        "PaymentMethod": "PAYMENT_METHOD_UNSPECIFIED",
+        "row_count": "20"
+      },
+      {
+        "PaymentChannel": "RCB-EDC-TMB",
+        "PaymentMethod": "EDC EDC",
+        "row_count": "11"
+      },
+      {
+        "PaymentChannel": "RCB-Transfer-TMB",
+        "PaymentMethod": "TRF Transfer",
+        "row_count": "2"
+      }
+    ],
+    "new_rows": "6455779",
+    "nonmapping_changed_groups": "0",
+    "object_name": "sap_integration_v2.sap_rcb_motor_all_records_2024",
+    "old_rows": "6455779",
+    "removed_rows": null
+  },
+  {
+    "added_rows": null,
+    "checked_at_utc": "2026-09-29 12:48:15",
+    "delta_examples": [],
+    "new_mapping_distribution": [
+      {
+        "PaymentChannel": "RCB-Omise QR Prompt Pay-BAY",
+        "PaymentMethod": "OME Omise QR Prompt Pay",
+        "row_count": "135668"
+      },
+      {
+        "PaymentChannel": "RCB-DIRECT PAYMENT",
+        "PaymentMethod": "DPM จ่ายตรงกับบริษัทประกัน",
+        "row_count": "38095"
+      },
+      {
+        "PaymentChannel": "RCB-Omise Credit Card-BAY",
+        "PaymentMethod": "OMC Omise Credit Card",
+        "row_count": "33773"
+      },
+      {
+        "PaymentChannel": "RCB-EDC-BAY",
+        "PaymentMethod": "EDC EDC",
+        "row_count": "22458"
+      },
+      {
+        "PaymentChannel": "RCB-EDC-KBANK",
+        "PaymentMethod": "EDC EDC",
+        "row_count": "6244"
+      },
+      {
+        "PaymentChannel": "RCB-EDC-KTB",
+        "PaymentMethod": "EDC EDC",
+        "row_count": "5677"
+      },
+      {
+        "PaymentChannel": "RCB-Transfer-KBANK",
+        "PaymentMethod": "TRF Transfer",
+        "row_count": "5551"
+      },
+      {
+        "PaymentChannel": "RCB-Transfer-KTB",
+        "PaymentMethod": "TRF Transfer",
+        "row_count": "4764"
+      },
+      {
+        "PaymentChannel": "RCB-EDC-BBL",
+        "PaymentMethod": "EDC EDC",
+        "row_count": "1979"
+      },
+      {
+        "PaymentChannel": "RCB-Transfer-อื่นๆ",
+        "PaymentMethod": "TRF Transfer",
+        "row_count": "1074"
+      },
+      {
+        "PaymentChannel": "RCB-Transfer-SCB",
+        "PaymentMethod": "TRF Transfer",
+        "row_count": "903"
+      },
+      {
+        "PaymentChannel": "RCB-Transfer-BBL",
+        "PaymentMethod": "TRF Transfer",
+        "row_count": "413"
+      },
+      {
+        "PaymentChannel": "RCB-EDC-UOB",
+        "PaymentMethod": "EDC EDC",
+        "row_count": "221"
+      },
+      {
+        "PaymentChannel": "RCB-Transfer-BAY",
+        "PaymentMethod": "TRF Transfer",
+        "row_count": "167"
+      },
+      {
+        "PaymentChannel": "RCB-CHEQUE",
+        "PaymentMethod": "CHEQUE",
+        "row_count": "79"
+      },
+      {
+        "PaymentChannel": "RCB-EDC-SCB",
+        "PaymentMethod": "EDC EDC",
+        "row_count": "42"
+      },
+      {
+        "PaymentChannel": "RCB-Transfer",
+        "PaymentMethod": "TRF Transfer",
+        "row_count": "34"
+      },
+      {
+        "PaymentChannel": "RCB-EDC-TMB",
+        "PaymentMethod": "EDC EDC",
+        "row_count": "7"
+      },
+      {
+        "PaymentChannel": "RCB-EDC",
+        "PaymentMethod": "EDC EDC",
+        "row_count": "6"
+      },
+      {
+        "PaymentChannel": "RCB-Transfer-UOB",
+        "PaymentMethod": "TRF Transfer",
+        "row_count": "2"
+      },
+      {
+        "PaymentChannel": "RCB-Transfer-TMB",
+        "PaymentMethod": "TRF Transfer",
+        "row_count": "1"
+      }
+    ],
+    "new_rows": "257158",
+    "nonmapping_changed_groups": "0",
+    "object_name": "sap_integration_v2.rcb_backup_20250705",
+    "old_rows": "257158",
+    "removed_rows": null
+  },
+  {
+    "added_rows": null,
+    "checked_at_utc": "2026-09-29 12:47:09",
+    "delta_examples": [],
+    "new_mapping_distribution": [
+      {
+        "PaymentChannel": "RCB-Omise QR Prompt Pay-BAY",
+        "PaymentMethod": "OME Omise QR Prompt Pay",
+        "row_count": "6777"
+      },
+      {
+        "PaymentChannel": "RCB-Omise Credit Card-BAY",
+        "PaymentMethod": "OMC Omise Credit Card",
+        "row_count": "2122"
+      },
+      {
+        "PaymentChannel": "RCB-DIRECT PAYMENT",
+        "PaymentMethod": "DPM จ่ายตรงกับบริษัทประกัน",
+        "row_count": "1226"
+      },
+      {
+        "PaymentChannel": "RCB-EDC-BAY",
+        "PaymentMethod": "EDC EDC",
+        "row_count": "951"
+      },
+      {
+        "PaymentChannel": "RCB-Transfer-KBANK",
+        "PaymentMethod": "TRF Transfer",
+        "row_count": "346"
+      },
+      {
+        "PaymentChannel": "RCB-EDC-KBANK",
+        "PaymentMethod": "EDC EDC",
+        "row_count": "274"
+      },
+      {
+        "PaymentChannel": "RCB-Transfer-KTB",
+        "PaymentMethod": "TRF Transfer",
+        "row_count": "271"
+      },
+      {
+        "PaymentChannel": "RCB-EDC-KTB",
+        "PaymentMethod": "EDC EDC",
+        "row_count": "226"
+      },
+      {
+        "PaymentChannel": "RCB-EDC-BBL",
+        "PaymentMethod": "EDC EDC",
+        "row_count": "69"
+      },
+      {
+        "PaymentChannel": "RCB-Transfer-อื่นๆ",
+        "PaymentMethod": "TRF Transfer",
+        "row_count": "51"
+      },
+      {
+        "PaymentChannel": "RCB-Transfer-SCB",
+        "PaymentMethod": "TRF Transfer",
+        "row_count": "50"
+      },
+      {
+        "PaymentChannel": "RCB-Transfer-BBL",
+        "PaymentMethod": "TRF Transfer",
+        "row_count": "38"
+      },
+      {
+        "PaymentChannel": "RCB-Transfer-BAY",
+        "PaymentMethod": "TRF Transfer",
+        "row_count": "15"
+      },
+      {
+        "PaymentChannel": "RCB-EDC-UOB",
+        "PaymentMethod": "EDC EDC",
+        "row_count": "6"
+      },
+      {
+        "PaymentChannel": "RCB-Transfer",
+        "PaymentMethod": "TRF Transfer",
+        "row_count": "6"
+      },
+      {
+        "PaymentChannel": "RCB-EDC",
+        "PaymentMethod": "EDC EDC",
+        "row_count": "4"
+      },
+      {
+        "PaymentChannel": "RCB-EDC-SCB",
+        "PaymentMethod": "EDC EDC",
+        "row_count": "1"
+      }
+    ],
+    "new_rows": "12433",
+    "nonmapping_changed_groups": "0",
+    "object_name": "sap_integration_v2.03_cancel change orders",
+    "old_rows": "12433",
+    "removed_rows": null
+  },
+  {
+    "added_rows": null,
+    "checked_at_utc": "2026-09-29 12:45:57",
+    "delta_examples": [],
+    "new_mapping_distribution": [
+      {
+        "PaymentChannel": "RCB-Omise QR Prompt Pay-BAY",
+        "PaymentMethod": "OME Omise QR Prompt Pay",
+        "row_count": "200868"
+      },
+      {
+        "PaymentChannel": "RCB-Omise Credit Card-BAY",
+        "PaymentMethod": "OMC Omise Credit Card",
+        "row_count": "64488"
+      },
+      {
+        "PaymentChannel": "RCB-DIRECT PAYMENT",
+        "PaymentMethod": "DPM จ่ายตรงกับบริษัทประกัน",
+        "row_count": "57205"
+      },
+      {
+        "PaymentChannel": "RCB-EDC-BAY",
+        "PaymentMethod": "EDC EDC",
+        "row_count": "36622"
+      },
+      {
+        "PaymentChannel": "RCB-EDC-KBANK",
+        "PaymentMethod": "EDC EDC",
+        "row_count": "17666"
+      },
+      {
+        "PaymentChannel": "RCB-EDC-KTB",
+        "PaymentMethod": "EDC EDC",
+        "row_count": "14712"
+      },
+      {
+        "PaymentChannel": "RCB-Transfer-KBANK",
+        "PaymentMethod": "TRF Transfer",
+        "row_count": "7290"
+      },
+      {
+        "PaymentChannel": "RCB-Transfer-KTB",
+        "PaymentMethod": "TRF Transfer",
+        "row_count": "6707"
+      },
+      {
+        "PaymentChannel": "RCB-EDC-BBL",
+        "PaymentMethod": "EDC EDC",
+        "row_count": "3995"
+      },
+      {
+        "PaymentChannel": "RCB-Transfer-อื่นๆ",
+        "PaymentMethod": "TRF Transfer",
+        "row_count": "2777"
+      },
+      {
+        "PaymentChannel": "RCB-EDC-UOB",
+        "PaymentMethod": "EDC EDC",
+        "row_count": "1375"
+      },
+      {
+        "PaymentChannel": "RCB-Transfer-SCB",
+        "PaymentMethod": "TRF Transfer",
+        "row_count": "968"
+      },
+      {
+        "PaymentChannel": "RCB-Transfer-BBL",
+        "PaymentMethod": "TRF Transfer",
+        "row_count": "456"
+      },
+      {
+        "PaymentChannel": "RCB-EDC-SCB",
+        "PaymentMethod": "EDC EDC",
+        "row_count": "445"
+      },
+      {
+        "PaymentChannel": "RCB-Transfer-BAY",
+        "PaymentMethod": "TRF Transfer",
+        "row_count": "254"
+      },
+      {
+        "PaymentChannel": "RCB-Transfer",
+        "PaymentMethod": "TRF Transfer",
+        "row_count": "48"
+      },
+      {
+        "PaymentChannel": "RCB-EDC",
+        "PaymentMethod": "EDC EDC",
+        "row_count": "13"
+      },
+      {
+        "PaymentChannel": "RCB-EDC-TMB",
+        "PaymentMethod": "EDC EDC",
+        "row_count": "11"
+      },
+      {
+        "PaymentChannel": "RCB-Transfer-UOB",
+        "PaymentMethod": "TRF Transfer",
+        "row_count": "2"
+      },
+      {
+        "PaymentChannel": "RCB-Transfer-TMB",
+        "PaymentMethod": "TRF Transfer",
+        "row_count": "2"
+      },
+      {
+        "PaymentChannel": "RCB-Omise Credit Card",
+        "PaymentMethod": "OMC Omise Credit Card",
+        "row_count": "1"
+      }
+    ],
+    "new_rows": "415905",
+    "nonmapping_changed_groups": "0",
+    "object_name": "sap_data_engineer.sap_fixing_rcb",
+    "old_rows": "415905",
+    "removed_rows": null
+  },
+  {
+    "added_rows": null,
+    "checked_at_utc": "2026-09-29 12:44:38",
+    "delta_examples": [],
+    "new_mapping_distribution": [
+      {
+        "PaymentChannel": "RCB-Omise QR Prompt Pay-BAY",
+        "PaymentMethod": "OME Omise QR Prompt Pay",
+        "row_count": "198211"
+      },
+      {
+        "PaymentChannel": "RCB-Omise Credit Card-BAY",
+        "PaymentMethod": "OMC Omise Credit Card",
+        "row_count": "63433"
+      },
+      {
+        "PaymentChannel": "RCB-DIRECT PAYMENT",
+        "PaymentMethod": "DPM จ่ายตรงกับบริษัทประกัน",
+        "row_count": "57205"
+      },
+      {
+        "PaymentChannel": "RCB-EDC-BAY",
+        "PaymentMethod": "EDC EDC",
+        "row_count": "36622"
+      },
+      {
+        "PaymentChannel": "RCB-EDC-KBANK",
+        "PaymentMethod": "EDC EDC",
+        "row_count": "17666"
+      },
+      {
+        "PaymentChannel": "RCB-EDC-KTB",
+        "PaymentMethod": "EDC EDC",
+        "row_count": "14712"
+      },
+      {
+        "PaymentChannel": "RCB-Transfer-KBANK",
+        "PaymentMethod": "TRF Transfer",
+        "row_count": "7290"
+      },
+      {
+        "PaymentChannel": "RCB-Transfer-KTB",
+        "PaymentMethod": "TRF Transfer",
+        "row_count": "6707"
+      },
+      {
+        "PaymentChannel": "RCB-EDC-BBL",
+        "PaymentMethod": "EDC EDC",
+        "row_count": "3995"
+      },
+      {
+        "PaymentChannel": "RCB-EDC-UOB",
+        "PaymentMethod": "EDC EDC",
+        "row_count": "1375"
+      },
+      {
+        "PaymentChannel": "RCB-Transfer-SCB",
+        "PaymentMethod": "TRF Transfer",
+        "row_count": "968"
+      },
+      {
+        "PaymentChannel": "RCB-Transfer-BBL",
+        "PaymentMethod": "TRF Transfer",
+        "row_count": "456"
+      },
+      {
+        "PaymentChannel": "RCB-EDC-SCB",
+        "PaymentMethod": "EDC EDC",
+        "row_count": "445"
+      },
+      {
+        "PaymentChannel": "RCB-Transfer-BAY",
+        "PaymentMethod": "TRF Transfer",
+        "row_count": "254"
+      },
+      {
+        "PaymentChannel": "RCB-EDC",
+        "PaymentMethod": "EDC EDC",
+        "row_count": "13"
+      },
+      {
+        "PaymentChannel": "RCB-EDC-TMB",
+        "PaymentMethod": "EDC EDC",
+        "row_count": "11"
+      },
+      {
+        "PaymentChannel": "RCB-Transfer",
+        "PaymentMethod": "TRF Transfer",
+        "row_count": "5"
+      },
+      {
+        "PaymentChannel": "RCB-Transfer-TMB",
+        "PaymentMethod": "TRF Transfer",
+        "row_count": "2"
+      },
+      {
+        "PaymentChannel": "RCB-Transfer-UOB",
+        "PaymentMethod": "TRF Transfer",
+        "row_count": "2"
+      },
+      {
+        "PaymentChannel": "RCB-Omise Credit Card",
+        "PaymentMethod": "OMC Omise Credit Card",
+        "row_count": "1"
+      }
+    ],
+    "new_rows": "409373",
+    "nonmapping_changed_groups": "0",
+    "object_name": "sap_data_engineer.sap_dashboard_carepay_cancelled",
+    "old_rows": "409373",
+    "removed_rows": null
+  },
+  {
+    "added_rows": null,
+    "checked_at_utc": "2026-09-29 12:43:24",
+    "delta_examples": [],
+    "new_mapping_distribution": [
+      {
+        "PaymentChannel": "RCB-DIRECT PAYMENT",
+        "PaymentMethod": "DPM จ่ายตรงกับบริษัทประกัน",
+        "row_count": "3488"
+      },
+      {
+        "PaymentChannel": "RCB-Omise QR Prompt Pay-BAY",
+        "PaymentMethod": "OME Omise QR Prompt Pay",
+        "row_count": "1206"
+      },
+      {
+        "PaymentChannel": "RCB-EDC-BAY",
+        "PaymentMethod": "EDC EDC",
+        "row_count": "943"
+      },
+      {
+        "PaymentChannel": "RCB-Omise Credit Card-BAY",
+        "PaymentMethod": "OMC Omise Credit Card",
+        "row_count": "654"
+      },
+      {
+        "PaymentChannel": "RCB-EDC-KTB",
+        "PaymentMethod": "EDC EDC",
+        "row_count": "428"
+      },
+      {
+        "PaymentChannel": "RCB-EDC-KBANK",
+        "PaymentMethod": "EDC EDC",
+        "row_count": "387"
+      },
+      {
+        "PaymentChannel": "RCB-EDC-UOB",
+        "PaymentMethod": "EDC EDC",
+        "row_count": "177"
+      },
+      {
+        "PaymentChannel": "RCB-Transfer-KBANK",
+        "PaymentMethod": "TRF Transfer",
+        "row_count": "101"
+      },
+      {
+        "PaymentChannel": "RCB-EDC-BBL",
+        "PaymentMethod": "EDC EDC",
+        "row_count": "96"
+      },
+      {
+        "PaymentChannel": "RCB-Transfer-KTB",
+        "PaymentMethod": "TRF Transfer",
+        "row_count": "20"
+      },
+      {
+        "PaymentChannel": "RCB-Transfer-อื่นๆ",
+        "PaymentMethod": "TRF Transfer",
+        "row_count": "4"
+      },
+      {
+        "PaymentChannel": "RCB-Transfer-SCB",
+        "PaymentMethod": "TRF Transfer",
+        "row_count": "3"
+      },
+      {
+        "PaymentChannel": "RCB-Transfer-BAY",
+        "PaymentMethod": "TRF Transfer",
+        "row_count": "3"
+      },
+      {
+        "PaymentChannel": "RCB-EDC-SCB",
+        "PaymentMethod": "EDC EDC",
+        "row_count": "1"
+      },
+      {
+        "PaymentChannel": "RCB-Transfer-BBL",
+        "PaymentMethod": "TRF Transfer",
+        "row_count": "1"
+      }
+    ],
+    "new_rows": "7512",
+    "nonmapping_changed_groups": "0",
+    "object_name": "sap_data_engineer.RCB_HEALTH",
+    "old_rows": "7512",
+    "removed_rows": null
+  },
+  {
+    "added_rows": null,
+    "checked_at_utc": "2026-09-29 12:43:57",
+    "delta_examples": [],
+    "new_mapping_distribution": [
+      {
+        "PaymentChannel": "RCB-Omise QR Prompt Pay-BAY",
+        "PaymentMethod": "OME Omise QR Prompt Pay",
+        "row_count": "200868"
+      },
+      {
+        "PaymentChannel": "RCB-Omise Credit Card-BAY",
+        "PaymentMethod": "OMC Omise Credit Card",
+        "row_count": "64488"
+      },
+      {
+        "PaymentChannel": "RCB-DIRECT PAYMENT",
+        "PaymentMethod": "DPM จ่ายตรงกับบริษัทประกัน",
+        "row_count": "57205"
+      },
+      {
+        "PaymentChannel": "RCB-EDC-BAY",
+        "PaymentMethod": "EDC EDC",
+        "row_count": "36622"
+      },
+      {
+        "PaymentChannel": "RCB-EDC-KBANK",
+        "PaymentMethod": "EDC EDC",
+        "row_count": "17666"
+      },
+      {
+        "PaymentChannel": "RCB-EDC-KTB",
+        "PaymentMethod": "EDC EDC",
+        "row_count": "14712"
+      },
+      {
+        "PaymentChannel": "RCB-Transfer-KBANK",
+        "PaymentMethod": "TRF Transfer",
+        "row_count": "7290"
+      },
+      {
+        "PaymentChannel": "RCB-Transfer-KTB",
+        "PaymentMethod": "TRF Transfer",
+        "row_count": "6707"
+      },
+      {
+        "PaymentChannel": "RCB-EDC-BBL",
+        "PaymentMethod": "EDC EDC",
+        "row_count": "3995"
+      },
+      {
+        "PaymentChannel": "RCB-Transfer-อื่นๆ",
+        "PaymentMethod": "TRF Transfer",
+        "row_count": "2777"
+      },
+      {
+        "PaymentChannel": "RCB-EDC-UOB",
+        "PaymentMethod": "EDC EDC",
+        "row_count": "1375"
+      },
+      {
+        "PaymentChannel": "RCB-Transfer-SCB",
+        "PaymentMethod": "TRF Transfer",
+        "row_count": "968"
+      },
+      {
+        "PaymentChannel": "RCB-Transfer-BBL",
+        "PaymentMethod": "TRF Transfer",
+        "row_count": "456"
+      },
+      {
+        "PaymentChannel": "RCB-EDC-SCB",
+        "PaymentMethod": "EDC EDC",
+        "row_count": "445"
+      },
+      {
+        "PaymentChannel": "RCB-Transfer-BAY",
+        "PaymentMethod": "TRF Transfer",
+        "row_count": "254"
+      },
+      {
+        "PaymentChannel": "RCB-Transfer",
+        "PaymentMethod": "TRF Transfer",
+        "row_count": "48"
+      },
+      {
+        "PaymentChannel": "RCB-EDC",
+        "PaymentMethod": "EDC EDC",
+        "row_count": "13"
+      },
+      {
+        "PaymentChannel": "RCB-EDC-TMB",
+        "PaymentMethod": "EDC EDC",
+        "row_count": "11"
+      },
+      {
+        "PaymentChannel": "RCB-Transfer-TMB",
+        "PaymentMethod": "TRF Transfer",
+        "row_count": "2"
+      },
+      {
+        "PaymentChannel": "RCB-Transfer-UOB",
+        "PaymentMethod": "TRF Transfer",
+        "row_count": "2"
+      },
+      {
+        "PaymentChannel": "RCB-Omise Credit Card",
+        "PaymentMethod": "OMC Omise Credit Card",
+        "row_count": "1"
+      }
+    ],
+    "new_rows": "415905",
+    "nonmapping_changed_groups": "0",
+    "object_name": "sap_data_engineer.RCB_MOTOR",
+    "old_rows": "415905",
+    "removed_rows": null
+  },
+  {
+    "added_rows": null,
+    "checked_at_utc": "2026-09-29 12:45:22",
+    "delta_examples": [],
+    "new_mapping_distribution": [
+      {
+        "PaymentChannel": "RCB-Omise QR Prompt Pay-BAY",
+        "PaymentMethod": "OME Omise QR Prompt Pay",
+        "row_count": "135231"
+      },
+      {
+        "PaymentChannel": "RCB-DIRECT PAYMENT",
+        "PaymentMethod": "DPM จ่ายตรงกับบริษัทประกัน",
+        "row_count": "38225"
+      },
+      {
+        "PaymentChannel": "RCB-Omise Credit Card-BAY",
+        "PaymentMethod": "OMC Omise Credit Card",
+        "row_count": "33687"
+      },
+      {
+        "PaymentChannel": "RCB-EDC-BAY",
+        "PaymentMethod": "EDC EDC",
+        "row_count": "22519"
+      },
+      {
+        "PaymentChannel": "RCB-EDC-KBANK",
+        "PaymentMethod": "EDC EDC",
+        "row_count": "6276"
+      },
+      {
+        "PaymentChannel": "RCB-EDC-KTB",
+        "PaymentMethod": "EDC EDC",
+        "row_count": "5690"
+      },
+      {
+        "PaymentChannel": "RCB-Transfer-KBANK",
+        "PaymentMethod": "TRF Transfer",
+        "row_count": "5560"
+      },
+      {
+        "PaymentChannel": "RCB-Transfer-KTB",
+        "PaymentMethod": "TRF Transfer",
+        "row_count": "4784"
+      },
+      {
+        "PaymentChannel": "RCB-EDC-BBL",
+        "PaymentMethod": "EDC EDC",
+        "row_count": "2017"
+      },
+      {
+        "PaymentChannel": "RCB-Transfer-อื่นๆ",
+        "PaymentMethod": "TRF Transfer",
+        "row_count": "1058"
+      },
+      {
+        "PaymentChannel": "RCB-Transfer-SCB",
+        "PaymentMethod": "TRF Transfer",
+        "row_count": "906"
+      },
+      {
+        "PaymentChannel": "RCB-Transfer-BBL",
+        "PaymentMethod": "TRF Transfer",
+        "row_count": "413"
+      },
+      {
+        "PaymentChannel": "RCB-EDC-UOB",
+        "PaymentMethod": "EDC EDC",
+        "row_count": "221"
+      },
+      {
+        "PaymentChannel": "RCB-Transfer-BAY",
+        "PaymentMethod": "TRF Transfer",
+        "row_count": "169"
+      },
+      {
+        "PaymentChannel": "RCB-CHEQUE",
+        "PaymentMethod": "CHEQUE",
+        "row_count": "79"
+      },
+      {
+        "PaymentChannel": "RCB-EDC-SCB",
+        "PaymentMethod": "EDC EDC",
+        "row_count": "42"
+      },
+      {
+        "PaymentChannel": "RCB-Transfer",
+        "PaymentMethod": "TRF Transfer",
+        "row_count": "31"
+      },
+      {
+        "PaymentChannel": "RCB-EDC-TMB",
+        "PaymentMethod": "EDC EDC",
+        "row_count": "7"
+      },
+      {
+        "PaymentChannel": "RCB-EDC",
+        "PaymentMethod": "EDC EDC",
+        "row_count": "6"
+      },
+      {
+        "PaymentChannel": "RCB-Transfer-UOB",
+        "PaymentMethod": "TRF Transfer",
+        "row_count": "2"
+      },
+      {
+        "PaymentChannel": "RCB-Transfer-TMB",
+        "PaymentMethod": "TRF Transfer",
+        "row_count": "1"
+      }
+    ],
+    "new_rows": "256924",
+    "nonmapping_changed_groups": "0",
+    "object_name": "sap_data_engineer.sap_dashboard_carepay_fully_paid",
+    "old_rows": "256924",
+    "removed_rows": null
+  }
+]

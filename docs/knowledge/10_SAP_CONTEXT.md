@@ -620,3 +620,18 @@ allocation remains unanswered; runtime holds and import idempotency remain relea
 ## 2026-09-26T21:53:57+07:00 — Latest dashboard-only scope
 
 User explicitly requested immediate fix of only sap_dashboard_carepay_installment and deferred review of its readers. This one view is now deployed; newpayment/gate remain unchanged, V3 held. Deployment and rollback evidence: docs/FINDINGS_RCL_DASHBOARD_DEPLOY_20260926.md. Do not represent this as a complete downstream SAP import fix.
+
+
+## ADDENDUM 2026-09-29 — EDC source bank clarification
+
+User confirms the current EDC-KBANK output label must not be treated as evidence that every underlying charge is KBank. EDC has multiple banks. Proposed resolution maps successful charge payment_method/service_provider to paired SAP method/channel with scoped registry approval. Established bank codes are BBL, KBANK, BAY, KTB, SCB and UOB; TMB and unspecified provider remain unresolved. Approval of a code in one flow does not approve all flows. See docs/EDC_BANK_MAPPING_PROPOSAL_20260929.md. This records source semantics, not deployment authorization.
+
+
+## ADDENDUM 2026-09-29 — Approved payment mapping fallback
+
+Supersedes the earlier proposal to hold missing bank mappings: user approved fixing all legacy EDC producers and related upstream/downstream queries. For missing mappings use the identified source bank suffix, otherwise omit the bank suffix. User explicitly approved raw-method family fallback (CHEQUE -> CHEQUE / RCB-CHEQUE, adding recognized bank suffix when present). NULL bank alone is not a mapping hold. Missing method or ambiguous lineage remains unresolved. Keep paired ALL/ALL CMI, CreditShell and posted SAP reversal rules. Known QR/online-card settlement mappings remain explicit. Details: docs/EDC_MAPPING_IMPLEMENTATION_20260929.md.
+
+
+## 2026-09-30 authoritative EDC correction
+
+Boat clarified that existing EDC remains EDC; identify only the bank suffix from CareOS. Never reclassify existing EDC as Omise/Transfer from the joined charge method. Use RCB-EDC when no bank is identified; OMISE/RCB providers do not establish an EDC bank. The earlier broad mapping deployment and FA workbook are superseded for EDC. Corrective SQL: sql/production/edc_suffix_correction_20260930. Existing authorization includes production legacy views and upstream/downstream changes; no interface file requested.

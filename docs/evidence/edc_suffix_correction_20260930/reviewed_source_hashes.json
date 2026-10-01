@@ -1,0 +1,21 @@
+{
+  "views/sap_data_engineer.RCB_HEALTH.sql": "be43e4e0d5023d83abadc5087faf4405334675d5db5dda40acf9aff85b919f75",
+  "views/sap_data_engineer.RCB_MOTOR.sql": "80dbeed8de2ffd1329f05366f48ff443254fda5a5ab0995448d88ce68931a884",
+  "views/sap_data_engineer.sap_dashboard_carepay_cancelled.sql": "b50ca392a37c470838d3866d8aaa541f3fbb9c2d207d933f8ea9285363e6c21c",
+  "views/sap_data_engineer.sap_dashboard_carepay_fully_paid.sql": "873fce5c065a753ac74c5f1abd50719bfefc22b5be9a19646c45abdfdfa5f5a4",
+  "views/sap_data_engineer.sap_fixing_rcb.sql": "9068ea5f6f1054b050f46c211ecd04e4e886aa5b2997030296b82de892d822ab",
+  "views/sap_integration_v2.02_items_cancel.sql": "922bcd53b3e8f179f9fe8cddb0be74ddefbfd5dac6f905e56e70da3bc69c8535",
+  "views/sap_integration_v2.03_cancel_change_orders.sql": "2e6bfb5d48b439100f0f3b51996c30c76f10faf2b07504a9fcc85c94357b4bd8",
+  "views/sap_integration_v2.2_nonMotor_items_cancel.sql": "8ac3cbab1368b29513447b91d728337832109314ca0ceca23ac32aa9d02763f1",
+  "views/sap_integration_v2.rcb_backup_20250705.sql": "13de242e6d5cfb2ea619475b4e31db3e37113c8c1cf2cb6bf1abb3642f643fef",
+  "views/sap_integration_v2.sap_motor__carepay_fully_paid.sql": "bbc6a63dff26c884757c71ffabcf87120019bf10cad9937fa4d848b4773acc65",
+  "views/sap_integration_v2.sap_rcb_motor_all_records.sql": "ed056f442d1c5758e5438307c89fd180d1729d5b91f4c55b64eedbd7498b36a3",
+  "views/sap_integration_v2.sap_rcb_motor_all_records_2024.sql": "b877e5b705adb32e9f84e191381131d6dab82786f8fcb5a3887cb4207904ee97",
+  "views/sap_integration_v3.vw_onetime_payload_source.sql": "c69bfd38d8d686da15afbdbc2d87fd18ab542d98fefb2a113ea7061758638c02",
+  "views/sap_view.RCB_Motor_process_3_change.sql": "279e10860b02e931cbe291e0968562fb488c824429601997a97ce98f42809b55",
+  "views/sap_view.RCB_NonMotor_process_2_cancel.sql": "5dd24e128fb9f40519a131d346e90a146ebe51d6c482da8eae02a1ede34404c5",
+  "routines/sp_build_v3_edc_onetime_holds.sql": "ffe9f53e8da4cfa966d81903e14242ecbbcef91cf7df8461558abc35fd5f0d22",
+  "routines/sp_build_v3_newpayment_shadow.sql": "96aedfdf949b89d638d9a6e598474cca2af9586c6246de79cc11d10bf47fad87",
+  "routines/sp_build_v3_onetime_create_shadow.sql": "7571668f40bfc5c1a8963f846755a0822e98d6ae4a4c701af3fe583d604079fa",
+  "routines/sp_build_v3_unit3_mapping_holds.sql": "f90695da8d0ddf2626b1e232d5268c70a4145a7cef18938a0a52a2dadd7ddd77"
+}

@@ -1,0 +1,10 @@
+{
+  "snapshot_utc": "2026-09-29 11:42:03",
+  "proposed_differences": 9585,
+  "edc_involved_differences": 784,
+  "no_exact_charge": 83748,
+  "source_rcl_flow_conflicts": 89,
+  "total_investigation": 83837,
+  "total_records": 93422,
+  "workbook": "SAP_Payment_Mapping_FA_Review_20260929.xlsx"
+}

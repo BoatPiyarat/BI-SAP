@@ -1,0 +1,154 @@
+[
+  {
+    "kind": "view",
+    "name": "sap_data_engineer.RCB_HEALTH",
+    "verified_at_utc": "2026-09-30T07:38:38.998150+00:00",
+    "etag": "8EtWw/JeFIqVWfaFP1Jzjw==",
+    "definition_verified": true,
+    "schema_verified": true
+  },
+  {
+    "kind": "view",
+    "name": "sap_data_engineer.RCB_MOTOR",
+    "verified_at_utc": "2026-09-30T07:38:39.671977+00:00",
+    "etag": "ID+TM3Vcqpfl3fZ9Exxteg==",
+    "definition_verified": true,
+    "schema_verified": true
+  },
+  {
+    "kind": "view",
+    "name": "sap_data_engineer.sap_dashboard_carepay_cancelled",
+    "verified_at_utc": "2026-09-30T07:38:40.304628+00:00",
+    "etag": "iS2cUKUHd1OaGyfsxQdfjA==",
+    "definition_verified": true,
+    "schema_verified": true
+  },
+  {
+    "kind": "view",
+    "name": "sap_data_engineer.sap_dashboard_carepay_fully_paid",
+    "verified_at_utc": "2026-09-30T07:38:41.579293+00:00",
+    "etag": "95jwCDyFqkYcOmus8Dg42A==",
+    "definition_verified": true,
+    "schema_verified": true
+  },
+  {
+    "kind": "view",
+    "name": "sap_data_engineer.sap_fixing_rcb",
+    "verified_at_utc": "2026-09-30T07:38:42.184708+00:00",
+    "etag": "kjisA9g8umUP2dJuoCAcFA==",
+    "definition_verified": true,
+    "schema_verified": true
+  },
+  {
+    "kind": "view",
+    "name": "sap_integration_v2.02_items_cancel",
+    "verified_at_utc": "2026-09-30T07:38:43.453796+00:00",
+    "etag": "MOW3j1HI+kmjyK29kMoM0g==",
+    "definition_verified": true,
+    "schema_verified": true
+  },
+  {
+    "kind": "view",
+    "name": "sap_integration_v2.03_cancel change orders",
+    "verified_at_utc": "2026-09-30T07:38:44.212775+00:00",
+    "etag": "aHdLeoMDnJLYOkrLMJOpCg==",
+    "definition_verified": true,
+    "schema_verified": true
+  },
+  {
+    "kind": "view",
+    "name": "sap_integration_v2.2_nonMotor_items_cancel",
+    "verified_at_utc": "2026-09-30T07:38:45.032044+00:00",
+    "etag": "EDIMQ5aGhS3BuYerGVF9dg==",
+    "definition_verified": true,
+    "schema_verified": true
+  },
+  {
+    "kind": "view",
+    "name": "sap_integration_v2.rcb_backup_20250705",
+    "verified_at_utc": "2026-09-30T07:38:45.661641+00:00",
+    "etag": "spop/doiEbsN3f4sEWKBbA==",
+    "definition_verified": true,
+    "schema_verified": true
+  },
+  {
+    "kind": "view",
+    "name": "sap_integration_v2.sap_motor__carepay_fully_paid",
+    "verified_at_utc": "2026-09-30T07:38:46.343751+00:00",
+    "etag": "oDWfnBYVC1R7PTjOiozSbw==",
+    "definition_verified": true,
+    "schema_verified": true
+  },
+  {
+    "kind": "view",
+    "name": "sap_integration_v2.sap_rcb_motor_all_records",
+    "verified_at_utc": "2026-09-30T07:38:47.557680+00:00",
+    "etag": "QVyHReAbkcgDSbJHFAZGog==",
+    "definition_verified": true,
+    "schema_verified": true
+  },
+  {
+    "kind": "view",
+    "name": "sap_integration_v2.sap_rcb_motor_all_records_2024",
+    "verified_at_utc": "2026-09-30T07:38:48.911469+00:00",
+    "etag": "xRQ7LcB2EkduxNk+hLEpfg==",
+    "definition_verified": true,
+    "schema_verified": true
+  },
+  {
+    "kind": "view",
+    "name": "sap_integration_v3.vw_onetime_payload_source",
+    "verified_at_utc": "2026-09-30T07:38:50.032233+00:00",
+    "etag": "adlFDiPGQ5vvYdiUbZuGqw==",
+    "definition_verified": true,
+    "schema_verified": true
+  },
+  {
+    "kind": "view",
+    "name": "sap_view.RCB_Motor_process_3_change",
+    "verified_at_utc": "2026-09-30T07:38:51.202751+00:00",
+    "etag": "Kv23tYG8m6JpM/DPa/Cr2A==",
+    "definition_verified": true,
+    "schema_verified": true
+  },
+  {
+    "kind": "view",
+    "name": "sap_view.RCB_NonMotor_process_2_cancel",
+    "verified_at_utc": "2026-09-30T07:38:52.269583+00:00",
+    "etag": "ISpS3USJmaE1PUtCtpiNkQ==",
+    "definition_verified": true,
+    "schema_verified": true
+  },
+  {
+    "kind": "routine",
+    "name": "sap_integration_v3.sp_build_v3_edc_onetime_holds",
+    "verified_at_utc": "2026-09-30T07:39:27.611224+00:00",
+    "etag": "xHnOSSbmMUe6gbWWysK0aA==",
+    "definition_verified": true,
+    "schema_verified": false
+  },
+  {
+    "kind": "routine",
+    "name": "sap_integration_v3.sp_build_v3_newpayment_shadow",
+    "verified_at_utc": "2026-09-30T07:39:28.043941+00:00",
+    "etag": "6UJzhVP3jvgSB8xokM22og==",
+    "definition_verified": true,
+    "schema_verified": false
+  },
+  {
+    "kind": "routine",
+    "name": "sap_integration_v3.sp_build_v3_onetime_create_shadow",
+    "verified_at_utc": "2026-09-30T07:39:30.990843+00:00",
+    "etag": "fvv8gtJlh+07I9Gzr1xFkQ==",
+    "definition_verified": true,
+    "schema_verified": false
+  },
+  {
+    "kind": "routine",
+    "name": "sap_integration_v3.sp_build_v3_unit3_mapping_holds",
+    "verified_at_utc": "2026-09-30T07:39:31.435471+00:00",
+    "etag": "sNxXn4yVyO6VML/3dZuI9g==",
+    "definition_verified": true,
+    "schema_verified": false
+  }
+]

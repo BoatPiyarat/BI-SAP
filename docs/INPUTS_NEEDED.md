@@ -1,5 +1,9 @@
 # INPUTS NEEDED — things only Boat / Aware / Attila / Finance can answer
 
+## OPEN 2026-09-29 — EDC bank mapping scope and SAP account confirmation
+
+See [mapping proposal](EDC_BANK_MAPPING_PROPOSAL_20260929.md). User has resolved that EDC is multi-bank. Existing five registry approvals cover only Motor ONETIME CREDIT_CARD_INSTALLMENT. Remaining human-owned decisions: exact SCB and TMB/TTB SAP channel/account configuration; approval coverage for FULL_PAYMENT and NonMotor; and effective-date policy for older source events. Unknown bank stays a visible hold. Existing six-bank CASE and SAP mirror history are reference evidence, not blanket approval or a GL audit.
+
 ## OPEN 2026-09-26 — additional receipt accounting and legacy release scope
 
 Source fixes are prepared; see `docs/FINDINGS_RCL_ADDITIONAL_FIX_20260926.md`.
@@ -794,3 +798,8 @@ genuinely unverified, not confirmed dormant or active.
   2026-07-27 to remove stale `raw_sap_live`/B1 references (see `30_SAP_CHANGELOG.md`).
 - `vw_dash_extract_scheduler_health` (the new widget the dashboard design doc now specifies) is
   designed but not yet built — see `docs/AS_BUILT_V3.md`.
+
+
+## RESOLVED 2026-09-29 — Missing payment mapping fallback policy
+
+User now approves identified bank suffix or no suffix when unknown, including raw-method family for unmapped methods. This supersedes the earlier bank-mapping HOLD proposal and removes SCB/TMB missing-registry entries as a prerequisite for fallback. SAP account-master interpretation and historical correction approval remain FA/Aware checks; no historical batch is authorized.

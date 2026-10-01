@@ -1,0 +1,82 @@
+[
+  {
+    "file": "00_mapping_function.sql",
+    "sha256": "0c9e12ccc06b7a4715a84822b3f8a7098438169f861201e0a25953d2a6cfb77f"
+  },
+  {
+    "file": "views/sap_view.RCB_Motor_process_3_change.sql",
+    "sha256": "3221aba167d00aae644a7b1c29f775b23068028ed3e7f5a40840df097869df5c"
+  },
+  {
+    "file": "views/sap_view.RCB_NonMotor_process_2_cancel.sql",
+    "sha256": "1498846d3417968e3b5c8ded6674217ef584adeb3b61218a3487b29bcf1d91c2"
+  },
+  {
+    "file": "views/sap_integration_v3.vw_onetime_payload_source.sql",
+    "sha256": "72250afd6d7bd2e4dbeb15e2e2ce42fb9f27174432d21c932068787528271d8e"
+  },
+  {
+    "file": "views/sap_integration_v2.2_nonMotor_items_cancel.sql",
+    "sha256": "af01903491419a215d23585f342d47270c72002b64f8b3a4c89c39b99f923d87"
+  },
+  {
+    "file": "views/sap_integration_v2.sap_motor__carepay_fully_paid.sql",
+    "sha256": "c136d169ac8966ac6ba40e8e0847b0095a8ed2fc927a0d97a5d77ec9fba3455a"
+  },
+  {
+    "file": "views/sap_integration_v2.02_items_cancel.sql",
+    "sha256": "1b38b463f13607c002fff8aa39bfc5a09951c629a04f05f1af78c76feea9e8cd"
+  },
+  {
+    "file": "views/sap_integration_v2.sap_rcb_motor_all_records.sql",
+    "sha256": "2892270649dd2a92af6b99c39af7bd7ef80185774f80acd80ca5db4a84cc567d"
+  },
+  {
+    "file": "views/sap_integration_v2.sap_rcb_motor_all_records_2024.sql",
+    "sha256": "ee91a5e241fb406e19588883428ab0ad9f480c6902afdc26efbe099fb4476a5e"
+  },
+  {
+    "file": "views/sap_integration_v2.rcb_backup_20250705.sql",
+    "sha256": "e8d4cb23e6d3282d52c0d6e9fa0433c6bc63c1f0f7055023ce4087782a2ec1e0"
+  },
+  {
+    "file": "views/sap_integration_v2.03_cancel_change_orders.sql",
+    "sha256": "121fc63f8aa9aada67c099c290c60efa9cea6b495d3c1eeaa366abccd94458f0"
+  },
+  {
+    "file": "views/sap_data_engineer.sap_fixing_rcb.sql",
+    "sha256": "78120fe31e21cdef413f66b799c7ae7e607ea1d83ef75fc80f4a6854f9e5250c"
+  },
+  {
+    "file": "views/sap_data_engineer.sap_dashboard_carepay_cancelled.sql",
+    "sha256": "c533a0e8b8202f7c1a5f0743d1e43c6fd6fa8feed2b7a8f1c3ba4c809cc8f0bf"
+  },
+  {
+    "file": "views/sap_data_engineer.RCB_HEALTH.sql",
+    "sha256": "35fc0d539879d531e4fbbb48cb470052bebc2af48a721676fba81232119c113a"
+  },
+  {
+    "file": "views/sap_data_engineer.RCB_MOTOR.sql",
+    "sha256": "6e7fe8e921cc983a0f8f0fa6d42007208c3c3451c5794371f7b40de8ba68bcb9"
+  },
+  {
+    "file": "views/sap_data_engineer.sap_dashboard_carepay_fully_paid.sql",
+    "sha256": "bf5f0bd71be2050a4df5785edac1137995f5545d089bb502231e060acbda8d2e"
+  },
+  {
+    "file": "routines/sp_build_v3_edc_onetime_holds.sql",
+    "sha256": "ffe9f53e8da4cfa966d81903e14242ecbbcef91cf7df8461558abc35fd5f0d22"
+  },
+  {
+    "file": "routines/sp_build_v3_newpayment_shadow.sql",
+    "sha256": "5072d612e3c8d971aa1733deba56b0882cb067a857ee248006f4bac2d8d21a53"
+  },
+  {
+    "file": "routines/sp_build_v3_onetime_create_shadow.sql",
+    "sha256": "de837a1f9778f3158a77603cef660f6ee252f1ab75580678dd6be69e26f42d62"
+  },
+  {
+    "file": "routines/sp_build_v3_unit3_mapping_holds.sql",
+    "sha256": "7147a5e4e3818bb18ac9b919e6ce2b36418d46e8d1d07eedacb48c211a2e362d"
+  }
+]
