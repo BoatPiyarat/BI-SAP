@@ -13,7 +13,7 @@
 | `.../agentic_bootstrap/handoff_claude_20261001_nonmotor_changeorder/` | Handoff NonMotor change-order 1 ต.ค. |
 | Google Drive: SAP interface development / careos-sap-daily-routine | **Master** ของ daily routine CareOS→SAP (แก้ที่ Drive เท่านั้น) https://drive.google.com/drive/folders/1-dVcorTnzcYamGw3cOvzC77NyOgfNqZx |
 
-| `22 AI project/Payment/` | เรื่อง payment channel (EDC bank mapping / bank suffix) และ worktree `wt_edc-bank-mapping-20260929` — ดูหัวข้อ 2.1 |
+| `22 AI project/Payment/` | เรื่อง payment channel (EDC bank mapping / bank suffix) — ดูหัวข้อ 2.1 (git worktree `wt_edc-bank-mapping-20260929` อยู่ที่ `agentic_bootstrap/`) |
 
 งาน Motor Commission (คำนวณค่าคอม, payroll) อยู่ที่ `06 Sales/Motor Commission/Motor Commission Engine` แยกจาก SAP แล้ว
 
