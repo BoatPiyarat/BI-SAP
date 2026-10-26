@@ -1,0 +1,1 @@
+SELECT CURRENT_TIMESTAMP() AS checked_at_utc, id AS charge_id, transaction_id, installment_number, third_party_id, status, amount/100 AS amount_thb, payment_method, service_provider, payment_date, create_time, update_time FROM `pacific-plating-282708.careos.carepay_charges` WHERE transaction_id='f91dc989-846a-421a-9888-1cc86f8b004c' ORDER BY installment_number,create_time;

@@ -1,0 +1,1 @@
+SELECT CURRENT_TIMESTAMP() AS checked_at_utc, OrderItem, Period, TotalPeriods, InvoiceNo, TransactionStatus, ExpectedReceived, ActualReceived, PaymentDate, PaymentChannel FROM `pacific-plating-282708.sap_view.RCB_Motor_process_2_cancel_new` WHERE OrderItem='L80517642-1' ORDER BY Period;
