@@ -1,4 +1,98 @@
+## 2026-10-22 — requested change-order recovery awaiting scoped financial decisions
+
+User requested L81072106 Paid, L81048975 Paid, L81036194 Cancelled(Change order); repeated order IDs were deduplicated. Import authorization covers the requested outcome, but does not resolve the monetary/refund ambiguities below. No production upload, CSV, SAP write, refund, or GL certification performed.
+
+Direct RCB_LIVE_DB.dbo.[@INSURANCE] captured 2026-10-22 17:26:36 ICT: no requested target documents. Original L78977757-M1/V1 remain Paid, DocEntry2544908/2544909, Actual645.21/8500.00; original L79012592-M1/V1 remain Paid, DocEntry2548206/2548207, Actual645.21/20370.00. No original change-cancel documents were found.
+
+CareOS source and change-order links prove L78977757 -> L81036194 -> L81072106 and L79012592 -> L81048975. Item-level source cancellations are true on both original pairs and L81036194-M1/V1. Requested final Paid items are active FULL_PAYMENT. These are separate linked stages, not additional independent successful receipts.
+
+Current sap_view.RCB_Motor_process_3_change candidates (not a validated release): L81072106-M1 Actual/Expected645.21; V1 Actual8500.00 Expected5900.00; L81048975-V1 Actual21015.21 Expected12622.79. Source records pending refunds on L81036194 total9145.21 and on L79012592 total8392.42. Do not subtract a merely pending refund or silently carry the full credit into the replacement. Prior Oct19 full-actual approvals were item-specific. User questions are pending for both chains, including intermediate Paid-before-Cancel recovery of L81036194. Preserve existing accepted original invoice identities; the transfer-based generated replacement IDs still require exact provenance review.
+
+Source freshness metadata: careos_order_items modified2026-10-22T10:01:13.192Z, carepay_charges10:01:55.933Z; carepay_refunds last modified2026-10-21T13:15:04.019Z; cancelled_change_orders last modified2026-10-21T15:35:59.808Z. Pending refund claims are from this mirror, not proof of bank payout. Fresh refund evidence is required at release.
+
+Live payment registry at2026-10-22T10:29:11.786Z confirms Credit Shell method / RCB-Credit Shell outbound channel (account9001-17); October OFPR AbsEntry43 is open. Both create/change positional contracts have56columns. Current alternate creditshell view emits NULL monetary values for L81048975 and must not be exported.
+
+Independent reviewer /root/review_request_holds confirms HOLD all requested target rows pending decisions and exact release gates. No safe independent target subset: M1 is part of the unresolved linked chain/shared refund. Conditional sequencing: original change-cancel ACK -> intermediate/replacement Paid ACK -> L81036194 change-cancel ACK -> final L81072106 Paid ACK. Each step requires exact immutable payload validation, independent review, current prior-delivery check, create-only intent/readback, and item-level SAP ACK.
+
+Evidence C:/dev/sap-request-20261022/assessment.json, sap_baseline.json, chain_facts.json, payload.json, current_payment_masters.json. Source job bqjob_rf63958ea8bacb3f_000001a163252f15_1; chain job bqjob_r64861516efeade37_000001a16326c281_1; payload job bqjob_r23584fa16ee6edd4_000001a163265234_1. SQL/logs/metadata: workspace outputs/sap_request_20261022. Repository pull --ff-only failed due pre-existing divergent branches; no merge/rebase or unrelated modifications made. Review status scan reported zero assigned OPEN reviews; no exact-payload release review exists for this request.
+
+
+
+
+## 2026-10-19 — remaining recovery scope explicitly approved
+
+User confirmed L81020554-V1 FULL_PAYMENT keeps ActualReceived15035.00, ExpectedReceived13546.67, Period1/TotalPeriods1, no split. Blank PolicyNo remains allowed. User also explicitly approved inclusion of L81023226-M1/V1 change-cancellation before Paid then Cancelled for L81026484-M1/V1. No further routine scope approval required. Each phase must pass exact validation/independent review and direct SAP acknowledgement before the next. Preserve original invoice/payment fields on cancellations; no customer refund is initiated.
+
+
+## 2026-10-19 20:06 ICT — L80999097-V1 uploaded, pending SAP acknowledgement
+
+One independently reviewed RCB change-order row uploaded create-only to gs://interface-file/RCB_MOTOR/INSURANCE_RCB_03_CHANGE_RECOVERY_20261019_L80999097-V1.csv. Period1/TotalPeriods1, Actual5808.00, Expected5456.00, Credit Shell, PaymentDate07102026 from old change-cancel DocEntry2533076. Byte readback SHA25611a767aaee85402b3325d260af7a3fbb300923ae34a586c62441b30ff6b3e199; generation1792415196680812,1389bytes.
+
+Fresh direct SAP at13:01:36Z had no target; refreshed CareOS evidence unchanged. One applicable October OFPR open; independent workers disabled; no intervening legacy activity. Local prior interface inventory found no target match. Independent exact-content and delivery reviews passed with inventory-scope/single-process notes. UPLOADED_PENDING_ACK, not SAP or GL success; durable intent prohibits resend. Evidence C:/dev/sap-request-20261019-four-items/l80999097_upload_delivery.json and companion manifests/reviews.
+
+L81026484 chain: old L81023226-M1/V1 still Paid in fresh direct SAP despite CareOS cancellation. Prepared extra predecessor change-cancel rows645.21+7500.00 and asked explicit inclusion of these two additional items before new Paid then new Cancelled. L81020554 full-payment amount application question remains pending. No other upload.
+
+
+## 2026-10-19 — superseding FULL_PAYMENT decision for L80999097-V1
+
+User explicitly specified FULL_PAYMENT uses Period=1 and ActualReceived=5808.00. Keep TotalPeriods=1 and existing ExpectedReceived=5456.00. This supersedes the earlier 5456.00 + 352.00 split and removes the next-period clarification and amount-disposition hold for this item. Do not cap ActualReceived, create Period=2, or invent a refund. The difference is explicitly accepted for this item's one-period payload; source, mapping, prior-delivery, exact validation and independent review remain required. This is not a confirmed rule for unrelated RCL installment cases.
+
+
+## 2026-10-19 — L81026484-M1/V1 Paid-before-Cancelled recovery authorized
+
+User explicitly instructed that cancelled items absent from SAP be imported as Paid first, then Cancelled. Apply to the requested L81026484-M1 and L81026484-V1. This overrides their prior missing-predecessor lifecycle hold and permits reconstruction from verified successful-payment evidence despite current CareOS cancellation. It does not authorize invented payments, duplicate sibling allocations, customer refunds, or blind resend. Validate/review exact Paid payload, confirm direct SAP Paid acknowledgement, then derive and validate/review Cancelled from the accepted immutable Paid documents before cancellation upload. Preserve receipt identity and prove change-order provenance from L81023226. No repeat lifecycle approval is needed.
+
+
+## 2026-10-19 — L80999097-V1 Credit Shell allocation confirmed
+
+User instructed: allocate Credit Shell equal to Expected (5456.00), and split the remaining 352.00 as Credit Shell in the next period with ExpectedReceived=0. Total carried credit remains 5808.00; do not discard the remainder or interpret it as a refund. This resolves the amount-disposition question for L80999097-V1 only.
+
+The captured source is FULL_PAYMENT and the live candidate is Period=1/TotalPeriods=1. Pending clarification: does next period explicitly authorize Period=2 and TotalPeriods=2, or refer to an additional receipt row within Period=1? Do not silently increase TotalPeriods or reinterpret the destination. Existing split InvoiceNo, conservation, exact-payload and independent-review gates remain. No payload/upload generated. L81020554-V1 is not covered by this item-specific amount instruction.
+
+
+## 2026-10-19 — user confirmation: blank PolicyNo is allowed
+
+Boat explicitly confirmed in the four-item SAP recovery session that the policy number may be blank. This supersedes earlier required/nonblank PolicyNo wording. Preserve blank PolicyNo without inventing a value; normalize missing source PolicyNo to an empty interface field when preparing a payload. Nonblank PolicyNo still follows the existing length and source-integrity checks.
+
+L81020554-V1 no longer requires source PolicyNo repair and MISSING_POLICY_NUMBER has been removed from its local assessment. The remaining one-period Credit Shell amount discrepancy and alternate-path NULL money still block release. L80999097-V1 financial hold and L81026484-M1/V1 missing-predecessor holds are unchanged. Historical notes asking for the policy number are superseded by this entry. No interface/upload performed; existing validator code has not yet been changed or revalidated.
+
+
+## 2026-10-19 — requested four-item SAP recovery held after live verification
+
+Scope: Paid replacements L81020554-V1 (old L80991502) and L80999097-V1 (old L80806589); Cancelled L81026484-M1/V1. VPN and secure Windows SQL profile succeeded. Direct dbo.[@INSURANCE] SELECT at 2026-10-19T04:59:04Z found no documents for the four targets, and confirmed old change-cancel DocEntry 2540828 / 2533076.
+
+Current candidate evidence (not a release PASS): L81020554-V1 Expected 13546.67 vs Actual 15035.00, missing PolicyNo; L80999097-V1 Expected 5456.00 vs Actual 5808.00. Both are one-period Credit Shell replacements. The alternate creditshell view emits NULL expected/actual values. Source mirror confirms cancellation on both L81026484 items, pending refund records and old-order link L81023226, but no target SAP predecessor. Do not invent Paid/Cancel predecessors or infer refund amounts.
+
+Required inputs: source owner to populate verified L81020554 PolicyNo; Finance/source owner to reconcile replacement discount, carried credit and refund disposition for both Paid items; SAP integration/Finance to resolve the missing-predecessor lifecycle for L81026484. Money differences are candidate comparisons, not certified GL loss/refund liabilities. No CSV, upload, deployment, source change or refund initiated.
+
+Evidence and resumable item states: C:/dev/sap-request-20261019-four-items/assessment.json, sap/, source.json, payload.json and job metadata. Source job bqjob_r85d29b2138ded3a_000001a15287f376_1; payload job bqjob_r79e8e981e3f91a9f_000001a1528a1371_1. Payload dry-run 10032822623 bytes; source charges table modified 2026-10-19T04:03:27.378Z. No GL/JE certification.
+## 2026-10-02 18:05 ICT — current-month local reconciliation review files
+
+See `docs/tasks/TASK_MONTHEND_RECON_20261002.md`. Latest user rule: current-date BatchRunDate and current-month PaymentDate; strict 2026 payment/cancellation event scope. 2 local review files, 6 items, 32 rows. No upload or production change. Source timestamps and outstanding dispositions are in the local output report.
+
+## 2026-09-30 — 2026 charge reconciliation and scoped legacy recovery
+
+Boat explicitly authorized a charge-driven 2026-only reconciliation, a reusable query, V2/sap_view fix proposals, and immediate upload of valid missing rows covered by current views. This scoped instruction supersedes the older blanket production-bucket prohibition for this recovery only. It does not authorize view deployments or V3 changes.
+
+Uploaded 177 validated RCB Motor rows across 159 orders, carrying THB 898,995.29, at 23:21:44 ICT to `gs://interface-file/RCB_MOTOR/INSURANCE_RCB_01_CREATE_RECOVERY_20260930_232138.csv`. Generation 1790785304135095, size and MD5 verified. Independent review passed; a fresh source/SAP preflight found zero blockers. SAP acceptance remains unverified.
+
+Final working list: 4,428 obligations = 177 uploaded + 4,115 covered but held + 136 without verified coverage, including one known scenario. Source baseline: 2026-09-30 14:46:23.688793 UTC. See `docs/FINDINGS_CHARGE_RECOVERY_20260930.md` for sources, nonadditive hold counts, proposals and limits. Two SELECT-only proposals were prepared; no live definitions or V3 objects changed. An isolated handoff branch preserves the original checkout's divergence and unrelated work.
+
 # 30_SAP_CHANGELOG.md
+
+## 2026-09-25 — Mo: same-period RCL additional payments confirmed missing upstream
+
+Read-only live investigation of L80570054 and L79109956 is recorded in
+[the finding](../FINDINGS_RCL_SAME_PERIOD_ADDITIONAL_PAYMENT_20260925.md).
+CarePay has distinct successful period-1 additional charges of THB 22.04 and 645.21.
+The live dashboard's voluntary charge_rank=1 filter drops both. A SELECT-only probe removing
+exactly that predicate recovers both with ExpectedReceived=0 and correct ActualReceived,
+without changing existing period-1 rows. Current SAP_LIVE_FULL lacks both invoice identities;
+the current RCL Motor newpayment wrapper returns neither order. The period-only exclusions in
+RCL 05_newpayment and RCL 05_paid by period independently block recovery once Period 1 is Paid.
+No production mutation, export, backfill, or SAP JE verification. Full population and onset unverified.
+Evidence checks PASS; Class A review pending. No commit/push because the existing checkout is
+diverged and contains unrelated work; no merge/rebase was attempted.
 
 ## 2026-09-17 — workspace cleanup: separate Motor Commission artifacts
 

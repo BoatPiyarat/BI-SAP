@@ -1,0 +1,12 @@
+Scope: Four independent NonMotor workers plus dispatcher and independent hourly watchdog. Existing 01:30 Asia/Bangkok scheduler/topic and SAP vendor pickup remain unchanged.
+
+Deploy private Gen1 python312 functions with same existing data-extraction service account; each worker gets PROCESS env var and new sap-nonmotor-independent-export topic, 540s timeout, 512MB, max instances1. Retry bounded to3 preparation attempts in durable engine. Public HTTP access not used.
+Deploy watchdog to its own topic and a new hourly schedule at minute15 (Asia/Bangkok). It queries daily current-month source coverage once after03:00 and verifies exact receipt acknowledgement separately. Use existing v3-orchestrator-alerts topic with existing notification channels; no SMTP credentials.
+
+Before enabling: Class-A PASS; positive/negative fixtures all4routes; source query dryrun caps; live shadow held/releasable evidence; GCS CAS/claim/readback fault rehearsal; exact code hashes; original function sourcezip/config captured; existing alert policy/channel proven enabled.
+
+Configuration initially disabled. New subscribers deployed without messages. Replace original NonMotor function with dispatcher only after all new components ACTIVE. Set legacy_receipt_cutoff to verified cutover timestamp, capturing every pre-cutover source receipt as potential legacy delivery. Such unresolved legacy receipts held, not resent. Set legacy_last_export_at to observed final successful legacy file log. October open confirmation is user-provided; other months remain fail closed.
+
+Rollback: First set enabled=false using generation-precondition config update. Restore captured original function source using original entry extract_and_store, original topic, SA, timeout300s. Do not resume old exporter while new delivery intents are unresolved; otherwise old code lacks ledger dedup. No deletion of receipt claims or published files.
+
+Full production cutover is gated on independent PASS and verified runtime capabilities, not merely code deployment.

@@ -1,0 +1,71 @@
+SAP interface generator fix proposal — 6 October 2026
+
+Recommendation
+Fix the generator in this order: receipt/lifecycle eligibility and immutable SAP fields; approved payment mappings; complete period spines; status-specific amounts and dates; exact serialization. Extend the existing reconciliation validator/exporter instead of adding another manual CSV repair path. Keep CreditShell/change-order as a separately validated operation.
+
+Evidence and limits
+This proposal uses captured SAP import-result logs dated 1–2 October, not a fresh live-view inspection or a current backlog census. All code conclusions are local-baseline-only. No live view was changed and no interface was uploaded. The replay covers 24 distinct UploadLogID/text pairs and 1,607 workbook rejection records. Repeated submissions remain separate occurrences; category counts overlap. Workbook error annotations can propagate from Ref.Row, so a reported error does not prove every referenced row has that field defect. This scope includes all logged years; it must not be confused with the requested 2026 charge/cancellation event scope.
+
+Reproduction
+Run: python sap_error_proposal_replay.py
+It reads C:/dev/sap-mo-recovery-20261002/email_import_logs.json and email_error_rows.json and writes sap_error_proposal_evidence.json beside the script. Source SHA256 values and per-log counts are retained there. The executed replay found directly observable blank Period in 25 rejected records, blank ActualReceived in 169 rejected records, and PolicyNo longer than 50 in 28 rejected records. These are repeated captured records, not unique items. This checks captured payload defects; it does not emulate SAP posting or prove a proposed patch passes SAP.
+
+Priority 0 — prevent duplicate/reconstructed SAP identities
+Evidence: log 22400 has 37 immutable-InvoiceNo error lines; log 22401 has 43 duplicate-status lines and 7 immutable-InvoiceNo lines. Log 22408 also has 60 duplicate-status lines.
+Change: obtain fresh SAP_LIVE_FULL evidence, deduplicating document versions by DocEntry before interpreting receipts. Classify acknowledged receipts, pending acknowledgement, new payment, and cancel/change separately. Preserve existing Paid/Cancelled InvoiceNo verbatim, together with existing amounts, PaymentDate, method and channel. Generate invoice identity only for genuinely new receipts through the canonical function. Do not strip/add 2_ aliases speculatively or collapse multiple receipts in a period. Recheck uploaded-but-unacknowledged manifests before retry; duplicate rejection alone is not proof of posting success.
+Gate: exact receipt identity and amount checked against SAP and the delivery ledger. Already terminal Cancelled items are held for human handling. A repeat generation against unchanged acknowledged state produces no new receipt to send.
+Acceptance case: replay an already acknowledged receipt and a first-period RCL alias; neither becomes a new invoice. A different legitimate receipt in the same period must remain visible.
+
+Priority 0 — replace channel fallbacks with explicit approved mappings
+Evidence: log 22408 (RCB_MOTOR_PROCESS_3_CHANGE) has 465 channel/account error lines out of 527 rejection lines; log 22409 (CREDITSHELL) has 57 out of 154. Rejected workbook values include RCB-EDC, RCB-CreditShell and RCB. Even a familiar channel can be rejected in a different context; spelling alone is insufficient.
+Change: resolve owning RCB/RCL flow, operation, source payment method, service provider/bank and insurance group against an approved mapping with SAP account configuration. Require one unambiguous result. Accepted history is supporting evidence only for the matching context; refresh active master/account validity where available. Never blanket-replace RCB-EDC with a bank-specific value, reuse expired temporary approvals, or create a new channel literal. Check flow consistency across the whole order and its existing SAP documents.
+Gate: PAYMENT_MASTER_UNVERIFIED or FLOW_MISMATCH holds the affected item/order dependency. Report the missing mapping key and required master/account action.
+Acceptance case: unknown EDC bank stays held; a verified bank/flow mapping passes; a mixed RCB/RCL order is held even when each literal exists independently.
+
+Priority 0 — reconstruct the complete cancel/newpayment schedule from proven predecessors
+Evidence: log 22407 (CANCEL_NEW) has 59 sequence-error lines, including 12 also requiring cancellation to start at period 1. Log 22381 has 25 missing-Period lines in a manually prepared Inter invoice workbook.
+Change: build periods 1..TotalPeriods from the authoritative schedule and reconcile them to SAP documents. For cancellation, capture the full mapped 56-column predecessor payload, prove one unambiguous current predecessor per required period, and preserve immutable fields. Include the complete required spine, not only changed or unpaid periods. Do not invent missing SAP documents. RCB one-time is 1/1; keep the confirmed RCL_CMI 1/1 exception separate. Do not infer 1/1 for the Inter workbook without its actual product/flow contract. Multi-receipt periods need the dedicated receipt-aware path; a one-row-per-period exporter must hold them rather than drop receipts.
+Gate: Paid acknowledgement before cancellation; item-level cancellation date in 2026; complete predecessor and schedule proof. Existing local FULL_CANCEL_PREDECESSOR_PAYLOAD_PROOF_REQUIRED must remain until the full proof is implemented and tested.
+Acceptance case: missing period 1, duplicate period, missing SAP predecessor, and a still-unacknowledged Paid predecessor all remain held; a complete proven cancellation spine passes.
+
+Priority 1 — split Paid, Pending and CreditShell amount preparation
+Evidence: log 22409 has 121 ActualReceived-required error lines. Across the captured workbook rows annotated with this error, 104 Pending records and 65 Paid records actually have blank ActualReceived; 15 Paid records already have a value, demonstrating propagated/group errors.
+Change: for ordinary Pending schedule rows, retain ExpectedReceived and apply the already reviewed local ActualReceived=ExpectedReceived convention; clear InvoiceNo, PaymentDate, PaymentMethod and PaymentChannel. This is schedule representation, not cash receipt. For new Paid rows, derive the amount from successful CarePay charge evidence in satang divided by 100, with verified allocation; never fill Paid ActualReceived from ExpectedReceived merely to pass validation. Preserve SAP-carried Paid amounts. For CreditShell, prove the old cancelled/change-order to replacement relationship and carried amount separately; hold missing/ambiguous links rather than applying the cash-charge fallback.
+Gate: non-null finite two-decimal amounts; exact charge allocation conservation; aggregate amount variance within the approved THB 10 per-order limit, with no tolerance for cross-item misposting. Required Refund amounts must come from the reviewed rule/source, not blanket zero-filling.
+Acceptance case: Pending normalization passes the reviewed convention; missing Paid charge and missing CreditShell predecessor remain held; multi-item allocations conserve the source charge.
+
+Priority 1 — enforce the user's current-date/current-month rule without rewriting history
+Evidence: locked-period errors persist in log 22402 (11 lines), 22408 (6), and 22410 (5). Changing dates alone did not resolve invoice/spine/master failures in the later submissions.
+Change: compute run_date once in Asia/Bangkok and reuse it throughout generation. BatchRunDate=run_date. For NEW unposted ordinary Paid receipts only, retain a raw payment date in the current month; clamp an earlier eligible raw date to the first day of the current month, keeping original source date in audit evidence. Reject future dates. Verify that the target posting period is actually open; CURRENT_DATE does not prove this. Pending PaymentDate remains empty. Existing SAP Paid dates and special CreditShell predecessor dates remain immutable; if outside the current-month constraint, hold the complete dependent payload rather than altering those dates.
+Example if generated on 6 October 2026: BatchRunDate=06102026; an eligible unposted September receipt gets PaymentDate=01102026; an October 5 receipt keeps 05102026. This proposal does not regenerate the Oct 2 files or change their historical BatchRunDate.
+Gate: all nonempty exported PaymentDate values satisfy the current-month requirement, and all carried history stays unchanged; an incompatible spine is held with an explicit reason.
+
+Priority 1 — enforce the positional contract and authoritative master/source fields
+Evidence: 28 captured records with overlength PolicyNo; insurer/vendor/customer master errors in logs 22406/22408/22410; missing Period in the Inter workbook.
+Change: explicit canonical 56-column projection in ordinal order for each operation, validated against its own contract types. Required values cannot be SQL NULL or literal NULL. Use only confirmed optional-field empty conventions; missing InsuredID uses the approved '-' convention. Block overlength PolicyNo without truncation and require source correction. Insurer code and its vendor/customer mapping must be valid. Serialize exact dates, fixed two-decimal amounts, UTF-8 BOM and CRLF; read the final CSV back and compare it with the frozen validated payload.
+Acceptance case: shifted columns, missing required fields, invalid dates, unsupported insurer and overlength identifiers fail before file creation. Verify policy-length boundary 50 against the actual importer: its message says 'less than 50' while the canonical rule blocks greater than 50; the observed >50 failures do not settle that boundary.
+
+Separate vendor issue — B2B SQL syntax
+Evidence: logs 22403 and 22404 report SQL Server 'Incorrect syntax near ... s' while importing the same B2B workbook. This is consistent with unsafe SQL string construction, but the exact offending field and SQL have not been proven.
+Action: give Aware the log IDs and a minimal offending-row reproduction through the established support process. Request parameterized SQL/string handling in the importer. Preserve apostrophes and business text in the interface; do not remove punctuation or apply SQL escaping to CSV values. CSV quoting and SQL parameterization are different layers. No vendor code changes or external message are performed by this proposal.
+
+Implementation seams and rollout
+1. Fetch current definitions and contracts before coding legacy-view changes. Compare them with the Oct 1/2 captures; do not reapply already deployed Pending, refund-zero or header fixes blindly. The earlier SAP_EMAIL_ERROR_REPORT records these as completed, not newly proposed deployments.
+2. Extend sap_monthend_validate.py preparation/validation and source/SAP evidence capture. The local validator already preserves carried receipt identity, normalizes Pending, validates current-month dates and quarantines incomplete cancellation proof. Resolve the inputs causing holds rather than disabling gates. Review its historical hardcoded EDC-bank check against a proper mapping registry; do not generalize an old temporary bank approval.
+3. Keep sap_monthend_export.py as the single frozen-payload writer with manifest/hash/readback checks. Route scheduled and manual outputs through the same gate; this is an integration proposal, not a claim that existing scheduled jobs currently invoke it.
+4. Add replay regression fixtures for each case above, using redacted customer fields. Retain precise attachment/log/row provenance. Obtain independent review of implementation, exact immutable candidate files, and a human-approved pilot before production deployment/upload. Confirm SAP import acknowledgement and JE/accounting evidence after the pilot; file delivery or mirror presence alone is insufficient.
+5. Regenerate the full requested reconciliation with fresh evidence: successful charge date in 2026 for Paid; item cancellation date in 2026 for Cancel; explicit pending population. Retain acknowledged / pending acknowledgement / ready / held / excluded / rejected as mutually exclusive auditable outcomes. Recompute remaining counts; do not reuse log occurrence counts as backlog counts.
+
+Proposed deliverables for implementation
+- Reusable parameterized BigQuery reconciliation/candidate SQL, read-only evidence queries through the mandatory dry-run/cost-capped wrapper.
+- One validator with flow/operation-specific rules and auditable holds.
+- Review-only interface files, exact file manifest, and outstanding summary under the requested 2026 Q3 closing folder.
+- Explicit source/master/vendor action list for cases generation cannot safely repair.
+
+Local evidence references
+C:/dev/sap-mo-recovery-20261002/email_import_logs.json
+C:/dev/sap-mo-recovery-20261002/email_error_rows.json
+C:/dev/sap-email-errors-20261001/SAP_EMAIL_ERROR_REPORT.md
+2026 Q3 closing/reconcile_20261002/scripts/sap_monthend_validate.py
+2026 Q3 closing/reconcile_20261002/scripts/sap_monthend_export.py
+Canonical docs: docs/knowledge/SAP_INTERFACE_VALIDATION_RULES.md and docs/design/SAP_INTERFACE_PRE_EXPORT_GATE.md, subject to later user overrides recorded in the Oct 2 reconciliation handoff.

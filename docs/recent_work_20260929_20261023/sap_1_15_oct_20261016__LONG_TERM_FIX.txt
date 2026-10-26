@@ -1,0 +1,9 @@
+Proposed long-term SAP interface fix (not deployed)
+1. Split four exports into independently retryable jobs; each has bounded execution and records start/end/row count/hash. Derive timeout from measured p99 with headroom. Temporary 300s configuration must be verified with a complete run.
+2. Write immutable staging objects and a manifest. Validate canonical 56-column schema, dates/accounting authorization, master vocabulary, complete installment spine and exact balances before publishing to ingestion bucket.
+3. Persist receipt-level state: eligible -> validated -> uploaded -> SAP acknowledged or rejected. Use item+period+source invoice identity and object generation/hash to prevent duplicate resend. A successful upload is not accounting acceptance.
+4. Retry only failed/unacknowledged work after reconciling SAP and loader results. Do not rerun the full broad exporter as an ad-hoc recovery while known data holds remain.
+5. Alert on timeout execution status, missing expected files, missing acknowledgement and reconciliation drift regardless of log severity. Daily qualified-source counts must conserve across acknowledged/pending/held/excluded/rejected states.
+6. Finance-owned period control must be current; atomically close/open periods. User confirmation October is open authorizes this recovery batch, but stale August control records still require a reviewed permanent correction with authoritative cutoff values.
+7. Fix source replication/lead links and separate change-order/cancellation/credit-shell flows. Preserve previously accepted Paid fields. Keep every excluded row in an owner-assigned exception report.
+Acceptance: injected timeout retries only failed export; all four expected manifests present; receipt counts and totals reconcile; replay creates no duplicate; every reject links to source and owner; monthly rollover test passes.

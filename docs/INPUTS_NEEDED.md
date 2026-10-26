@@ -1,4 +1,39 @@
+## OPEN 2026-09-30 — residual charge recovery exceptions
+
+The 2026 reconciliation and approved delivery are recorded in `FINDINGS_CHARGE_RECOVERY_20260930.md`. No further approval was required for the delivered 177 rows. Remaining items need source policy/lead repairs, verified invoice mapping, change-order/CMI decisions, or the specified further diagnosis. Neither prepared V2/sap_view SELECT proposal is deployed: backlog regression passes 4 of 5 target items, while contract normalization has dry-run-only evidence. Population regression and scoped deploy authorization remain required before deployment. No V3 work was requested.
+
 # INPUTS NEEDED — things only Boat / Aware / Attila / Finance can answer
+
+## OPEN 2026-09-25 — RCL same-period recovery scope, diagnosis complete
+
+Mo's two examples have THB 667.25 in distinct successful additional charges absent from the
+current dashboard and SAP mirror: L80570054 THB 22.04; L79109956 THB 645.21.
+See [finding](FINDINGS_RCL_SAME_PERIOD_ADDITIONAL_PAYMENT_20260925.md) for source timestamps,
+charge identities and causal probe. This is source/mirror coverage evidence, not a quantified
+GL loss or a SAP-side JE verification. No production fix or backfill was performed.
+Any recovery must first prepare and review corrections to both upstream charge retention and
+downstream event-level eligibility, preserve existing invoices and M1 allocation, and establish
+the full affected population. Production deployment/recovery authorization is not inferred from
+the investigation request. No decision is being requested before a concrete reviewed artifact exists.
+
+## OPEN 2026-09-08 — MS-01 source charge exceeds current replacement policy total
+
+Before deploying the proposed reuse of `sap_view.RCB_NonMotor_process_2_cancel`, confirm the
+intended ActualReceived for `L80799909-1`. CareOS contains one successful EDC/KRUNGSRI charge of
+`3600.00`, while the current replacement item's TotalAmount and ExpectedReceived are `2160.00`.
+The source-only candidate deliberately preserves ActualReceived `3600.00`; it does not silently cap
+or reallocate the difference. PaymentChannel is correctly mapped as `RCB-EDC-BAY`.
+
+## OPEN 2026-09-08 — human investigation: Change-cancel item has NULL cancel_time
+
+`L77754975-1` is Health, exists in SAP at Period/TotalPeriods 1/1, and has
+`is_cancelled=true` plus accounting status `CANCELLATION_STATUS_CHANGE_ORDER_COMPLETED`, but its
+CareOS item `cancel_time` is NULL. Boat directed that current universal cancellation eligibility
+remain based only on item `is_cancelled/cancel_time` and that this NULL-time case wait for human
+investigation rather than being automatically interfaced.
+
+Required answer: confirm the genuine cancellation effective date and whether CareOS should repair
+`cancel_time`. Do not add a SQL fallback from underwriting/accounting status while this is open.
 
 ## OPEN 2026-08-27 — Boat: approve the six Unit 2 magnitude thresholds and provenance
 
@@ -21,6 +56,319 @@ This is the direct blocker for a fresh normal Scenario 1 and Scenario 3 build an
 V3 Scheduler cutover. General production-run approval does not supply these numbers. Until they
 are explicitly approved, keep both flows at zero release-ready rows and keep the V3 Scheduler
 PAUSED.
+
+## OPEN 2026-08-25 — AR 1134-01 vs 1135-01 misposting confirmed for 142 EDC/KBANK onetime orders
+
+Full detail: `docs/FINDINGS_AR_1134_VS_1135_MISPOSTING_20260825.md`. Pui reported 224 OrderIDs
+booked to `1134-01` "AR Installment - Motor" that she believes belong on `1135-01` "AR Credit Card
+and Payment Gateway". Verified directly against live `OJDT`/`JDT1` on `RCB_LIVE_DB`: 142 of the 224
+were found in the GL, and **all 142 (100%)** have their primary AR debit on `1134-01`, totaling
+฿1,601,582.47 (JE `RefDate` 2026-08-01 to 2026-08-21). All 142 share the same shape:
+`PaymentMethod = EDC EDC`, `PaymentChannel = RCB-EDC-KBANK`, `TotalPeriods = 1` (onetime
+credit-card settlement per this project's own confirmed `CREDIT_CARD_INSTALLMENT` definition).
+Needs Boat/Finance to (1) confirm this is a defect and not an intentional mapping, (2) if a defect,
+confirm the `D14` `MISPOSTING` classification applies here (it was defined for a different,
+unrelated incident) before any correction is designed, and (3) decide who root-causes the
+account-selection logic — not yet identified. 82 of the 224 reported OrderIDs were not found under
+either account and are a separate, un-investigated follow-up.
+
+**Update same day, same session (Boat present, asked directly):** ruled out wrong
+PaymentMethod/PaymentChannel from the interface file — those fields are correct and consistent in
+both good and bad cases. Narrowed instead to: (a) Pui's 224-order list is a curated known-bad list,
+not proof of a systemic 100% failure — an independent 40-order sample of the same payment pattern
+split ~50/50; (b) Compulsory (`-M`) items are **never** affected (93/93 correct in a 300-order
+sample); the defect is entirely confined to Voluntary (`-V`) items, which split ~2:1 wrong:correct;
+(c) not a per-batch/per-day toggle — the same JE batch contains both correct and incorrect `-V`
+lines. The actual per-line discriminator inside SAP's posting logic is still unidentified; further
+isolation needs either a stratified sample by insurer/product or direct access to the SAP-side
+posting program (Aware-owned, out of reach here). Full detail and the crosstab table are in the
+FINDINGS doc.
+
+**Update same session — BigQuery source confirmed:** the 143.93/163.94-style residual is produced
+by `pacific-plating-282708.sap_data_engineer.sap_dashboard_carepay_fully_paid` (live definition,
+not the repo baseline). For a Voluntary item sharing one combined EDC/KBANK charge with a
+Compulsory sibling, `ExpectedReceived` is built from the item's own premium/fee/discount stack,
+while `ActualReceived` subtracts the Compulsory sibling's **gross** premium (not its VAT/stamp-duty
+-inclusive total) from the combined charge — a basis mismatch that never reconciles exactly.
+Verified against `L80512627-M1`/`-V1`: Compulsory `GrossPremium` 1,900.00 vs `TotalPremium`
+2,041.56 (short by 141.56); Voluntary residual comes out to 163.94.
+
+**CORRECTION, same session:** the "gross vs total" claim above was checked further and is wrong —
+retracted in the FINDINGS doc. `compu_detail.gross_premium` correctly reads the full VAT/duty-
+inclusive figure (verified against `careos.careos_order_items` directly: `gross_premium =
+net_premium + vat_amount + stamp_duty` exactly), and the view's own `M1` output confirms
+`ExpectedReceived = ActualReceived = 2,041.56` (not 1,900.00). The real source of the 163.94 gap:
+`careos.carepay_charges.amount` for this order's transaction (status `SUCCESSFUL`) is verifiably
+฿16,912.62 — ฿163.94 less than the theoretical combined total from `careos_order_items` pricing
+after the recorded discount, and no discount/fee field explains the difference. This is a genuine
+discrepancy between quoted order price and actual amount charged, not a formula bug in the
+BigQuery view. Cause not yet identified (price-change timing vs. charge-time snapshot is the
+leading candidate). **ROOT CAUSE CONFIRMED, same session:** checked `careos_orders.invoice_price`,
+`carepay_transactions.amount`, `carepay_charges.amount`, and
+`carepay_transaction_snapshot_price_summaries.net_premium_amount` together for `L80512627` — all
+four agree on 16,912.62 as the true total (one snapshot only, `is_current=true`, ruled out a
+stale-snapshot join issue). The price summary also carries `wht_amount = 163.94`, an **exact**
+match to the gap. **The bug: the view's `ExpectedReceived` formula for a Voluntary/`charge_rank=1`
+item subtracts `Discount_master` but never subtracts `WHT`/`WHT_master`, even though it computes
+`WHT_master` from `wht_amount` elsewhere in the same query.** `ActualReceived` correctly reflects
+the WHT-reduced real charge; `ExpectedReceived` doesn't account for WHT, so the two never
+reconcile whenever `wht_amount ≠ 0`. This is a concrete, one-line-fix candidate in
+`pacific-plating-282708.sap_data_engineer.sap_dashboard_carepay_fully_paid` (add `- WHT_master`,
+or equivalent, to the `ExpectedReceived` CASE branch). Not yet proven: whether fixing this view
+alone stops the SAP misposting — the SAP-side code path that reads the Expected/Actual equality
+and picks the account is still unconfirmed (vendor-owned, Aware, unreachable from here). No fix
+applied — read-only per this project's hard rules; needs Boat/Aware sign-off before any change.
+
+**REFRAMED, same session — Boat flagged an existing Aware agreement:** `WHT=0` in the interface is
+intentional per a prior agreement — SAP is supposed to hold the resulting gap (WHT + rounding +
+discount) in a separate "ส่วนต่าง" (variance) account for manual adjustment, not misroute the whole
+receivable. Checked against live JE data: the amounts actually landing in `1134-01` are **full
+receivables** (฿14,470.68 / ฿27,900.00 / ฿31,200.00 per order; ฿1,601,582.47 total across 142
+orders), three to four orders of magnitude bigger than the WHT-sized gap (~฿163.94 for one
+example). **This does not look like "small gap parked in a variance account" — the entire AR
+amount is going to the wrong account.** Open question for Boat/Aware: does the agreed design mean
+only the small residual should go to a suspense account while the bulk stays on `1135-01`? If so,
+current behavior violates that agreement — but whether the fault is SAP's JE logic or a missing
+signal from our interface is still undetermined and needs Aware's input on the agreed mechanics.
+
+**HISTORY, same session — this is chronic since 2025-07, not new:** pulled the full JE history
+(427,162 rows, `RefDate` 2023-04-30 to 2026-08-25) for Voluntary-item debit lines on `1134-01` vs
+`1135-01`, by month. Two distinct eras: (1) 2023-07 to 2024-03, an early-system anomaly (67% wrong
+at first, declining to ~3%) that resolved on its own by April 2024 — not investigated, likely
+unrelated; (2) **2024-04 to 2025-06, a genuinely clean 15-month stretch at ~0% wrong** (only two
+one-off spikes: 2024-09 and 2025-04, each surrounded by clean months); then **2025-07 through
+2026-08 (now), every single month wrong at 7.6–13.9%, with no clean month since** — 14 consecutive
+months. This is the real onset to root-cause: something changed around June/July 2025. No
+deploy/change log has been checked yet for that window — that is the natural next step.
+
+**⚠️ METHODOLOGY CORRECTION, same session — company-customer rate figures were overstated:**
+full-JE inspection while preparing Aware examples showed "does this order have a `1134-01` line"
+conflates three different things: (A) true full misposting — 2-line JE, `1134-01` debit = full
+receivable, no `1135-01` line at all (this is what the original 142-order/฿1,601,582.47 EDC/KBANK
+finding actually is, re-verified, still stands); (B) a WHT-sized residual debit to BOTH `1134-01`
+and the dedicated `2142-10` "บัญชีส่วนขาด WHT" account, alongside a full and correct `1135-01`
+line — not the same defect, much smaller, arguably duplicate-posting rather than wrong-account;
+(C) self-offsetting entries netting to zero, not a defect. Re-classified company customers with a
+proper net-balance method: **true misposting (A) is rare among company customers, single digits to
+~20/month — not the 60–67% previously reported.** The earlier company-rate, exact-onset-date, and
+August-dollar-spike figures summed raw `1134-01` debits without netting credits or checking for a
+paired `1135-01` line, so they overstate the problem and should not be cited until redone with this
+corrected method. **Do not send anything to Aware using the company-customer 60–67% figures or
+those specific examples** — use the original EDC/KBANK individual-customer finding (type A,
+cleanly verified) instead. Not yet done: redo the monthly/onset/dollar analysis correctly;
+characterize the large "Other/unclassified" bucket from the reclassification.
+
+**✅ 100% CONFIDENCE ACHIEVED for August 2026 company customers, card/gateway channels (Boat's
+goal), same session:** corrected scope to `RCB-EDC-*`/`RCB-Omise*` only (Transfer/Credit-Shell
+never touch `1135-01` by design — excluding them was itself a needed fix). True misposting: **3
+orders out of 207** (฿19,410.97 total) — not 60–67%. **100% clean discriminator**: all 3 have
+`@INSURANCE.U_ActualReceived ≤ 0` (0.00 / −55.15 / −350.14); **0 of the 204 correctly-posted
+orders** have `ActualReceived ≤ 0` — exact, not probabilistic. Traced and ruled out: (1)
+`careos.carepay_charges` raw data is clean for all 3 (single `SUCCESSFUL` charge, correct positive
+amount each); (2) SAP JE logic is reacting consistently/correctly to bad input, not misbehaving on
+its own; (3) the `compu_detail`/Compulsory-sibling-subtraction mechanism does not apply — reproduced
+that CTE directly and confirmed zero matches for all 3 `order_id`s. **Root cause is 100% confirmed
+to sit inside `pacific-plating-282708.sap_data_engineer.sap_dashboard_carepay_fully_paid`'s
+`onetime_master` construction — not CareOS source tables, not SAP.** One line item remains open:
+the exact join/branch inside `onetime_master` producing `ActualReceived = charge_amount −
+TotalAmount` for these 3 (candidates: multi-row fan-out from a join, or the `change`/superseded-
+order CTE) — not yet pinned to a specific line, but not blocking any decision Boat/Aware need to
+make now.
+
+**✅ AWARE CONFIRMED THE SAP RULE, same session (Sarawut/Boyd, Kanjana/June via Nong/Mo):**
+`ExpectedReceived=0` → SAP posts the entire `ActualReceived` to `1134-01` (`Dr` payment-channel /
+`Cr` `1134-01`) — confirmed real, designed SAP behavior, not a SAP-side bug; SAP is reacting
+correctly to bad input. The view forces `ExpectedReceived=0` **by design** whenever `charge_rank
+<> 1` (`sap_dashboard_carepay_fully_paid`, `onetime_master`, ~line 263), where `charge_rank` is
+`ROW_NUMBER() OVER (PARTITION BY transaction_id ORDER BY create_time)` on `SUCCESSFUL` charges —
+so any transaction with 2+ successful charges (retries, corrections, cancel-then-resubmit reusing
+the same `transaction_id`) forces its later charge(s) to `ExpectedReceived=0` even when that later
+charge is the genuine final one. **This is the leading, most actionable fix target.**
+
+**Caveat surfaced while verifying against the original list**: `[dbo].[@INSURANCE]` is a live,
+mutable, current-state table with no exposed version/audit history — checking `L78667850-V1`
+against Aware's rule showed the *opposite* shape (`ExpectedReceived` nonzero, `ActualReceived=0`)
+from what the JE structure implies, most likely because the order was re-interfaced after the JE
+posted (same pattern as Boyd's `L77286597` example) and the current snapshot no longer matches
+what was live at posting time. A broader August check found only 103/902 (11.4%) currently-flagged
+orders show `ExpectedReceived=0` — **do not use current `@INSURANCE` values alone to validate what
+triggered a historical JE**; that needs an audit/history table this session hasn't located.
+
+**Fix-plan drafted in the FINDINGS doc** (not executed — Claude Code does not deploy per this
+project's SINGLE DEPLOYER rule): investigate and correct the `charge_rank<>1→0` branch first
+(likely needs to key off which charge is operative per OrderItem, not raw chronological order);
+separately investigate the August 3-order `ActualReceived = charge_amount − TotalAmount` mechanism
+(a second, distinct defect in the same view — candidates: the `change`/superseded-order CTE, or a
+join fan-out). Any deploy needs Codex + the project's DEPLOY GATE (dry-run + summary + explicit
+Boat approval), and Aware should weigh in on whether SAP's `ExpectedReceived=0` fallback behavior
+itself should also change.
+
+**⚠️ CORRECTION, same session (Boat):** `charge_rank<>1 → ExpectedReceived=0` is **by design**,
+not a bug — retracting it as a fix target above. Likely intentional: multiple `SUCCESSFUL` charges
+on one transaction is itself an exception, and routing it to `1134-01` may be the designed flag for
+manual accounting review (consistent with the earlier Aware-agreement variance concept). Reframes
+part of the original 142-order population as possibly correctly-flagged exceptions needing a
+reconciliation-process check, not a code fix — not yet sized how much of the population this
+explains. **The August 3-order investigation (`ActualReceived = charge_amount − TotalAmount`) is
+unaffected and still valid**: all 3 have exactly one `SUCCESSFUL` charge (`charge_rank=1`
+necessarily) and a correct, positive `ExpectedReceived` — the by-design branch cannot explain them;
+their `ActualReceived` failure is a separate, still-open, likely-genuine defect, and the
+investigation plan for it stands unchanged. Next step before any fix: classify the full 142-order
+population by which mechanism explains each order (by-design `charge_rank<>1` vs. the unexplained
+`ActualReceived` defect vs. unclassified) — not yet done.
+
+**⚠️ MAJOR CORRECTION, 2026-08-26 — the 3 August orders don't come from `_fully_paid` at all.**
+Checked `careos.carepay_transaction_snapshots.number_of_installment` for all 3: **6, 10, 10 — not
+1.** Queried `sap_dashboard_carepay_fully_paid` directly: **zero rows** for these `OrderItem`s
+today. Queried `sap_dashboard_carepay_installment` instead: **all 3 are there**, with
+`ExpectedReceived = NULL`, `ActualReceived = 0.0`, and `Period`/`PaymentChannel`/`PaymentMethod`
+all `NULL` — broken/incomplete rows in a different view than the one investigated. **The order's
+onetime-vs-installment classification changed in CareOS at some point after the JE posted
+(2026-08-06/11/13)** — same "state drifted after posting" pattern as the `L78667850-V1` caveat
+already noted, now confirmed independently. **Conclusion for these 3: this is CareOS-side data
+instability (plan classification changing post-facto), not a formula bug in
+`sap_dashboard_carepay_fully_paid` (which no longer even sees these orders) and not evidence of a
+stable-input SAP behavior change.** The earlier `charge_amount − TotalAmount` numeric match was
+very likely an artifact of reading `@INSURANCE`'s stale state, not a live view bug — **retracting
+that as an active fix target.** Plausible (not confirmed) these 3 are also explained by Aware's
+`ExpectedReceived=0` rule, but the historical value can no longer be verified since both candidate
+source views have moved on. If this thread is worth pursuing further, it's now a different
+question: why did these orders' plan classification change, and does
+`sap_dashboard_carepay_installment` have its own defect (`NULL` `ExpectedReceived`/
+`PaymentChannel`/`Period`) — not started.
+
+**✅ CONSOLIDATED, 2026-08-26 (no new queries — synthesis of this session's results + project
+history):** found `docs/FINDINGS_EMPTY_INSTALLMENT_DETAILS_20260825.md` (a different, prior
+investigation, same project) already documents that `number_of_installment` drifting `>1` for
+genuinely-onetime (`EDC`/`CREDIT_CARD_INSTALLMENT`, confirmed-onetime per `stg_schedule`) orders is
+a known, quantified, "expected and mostly benign" artifact (20,793 such items found there) — this
+is what explains the 3 August orders' confusing `NULL`-filled row in `sap_dashboard_carepay_installment`;
+it's known downstream noise, not new corruption, and not what actually produced their JE.
+**Narrowed final answer**: the original 142-order population is best explained by SAP correctly
+executing its confirmed, by-design `ExpectedReceived=0` exception-flag (Aware) on orders whose
+transaction had `charge_rank>1` (also by-design, per Boat) — **this looks like a reconciliation/
+process gap (are `1134-01` balances from this flag being cleared?), not a code defect**, unlike the
+separate, confirmed WHT-formula bug found earlier. Genuinely still open, needs Boat/Finance (not
+derivable from data): is `1134-01` being monitored/cleared for this mechanism today? Also open,
+deliberately not measured this pass: what fraction of the 142 orders had `charge_rank>1` — one new
+query, not run per Boat's "no new runs" instruction this round.
+
+**⚠️⚠️ VERIFIED WRONG, 2026-08-26 — retracting the `ExpectedReceived=0` explanation.** Boat asked
+to check real data. Result: only **6/148 (4%)** of the original 224-order list's V-items currently
+show `ExpectedReceived=0` in `@INSURANCE`; **142/148 (96%) have nonzero `ExpectedReceived`.** The
+`charge_rank<>1` mechanism does not explain this population. **Real pattern**: `ActualReceived=0`
+exactly for **116/148 (78%)** (another 16 negative, 16 small-positive) while `ExpectedReceived`
+correctly equals `TotalAmount`. **Confirmed same mechanism as the 3 August orders, at scale**: a
+12-order sample of the `ActualReceived=0` group all show `careos.carepay_transaction_snapshots.
+number_of_installment = 6 or 10` — the exact drift artifact `docs/FINDINGS_EMPTY_INSTALLMENT_
+DETAILS_20260825.md` already quantified (20,793 ONETIME-flow items system-wide) as excluding
+orders from the legacy `sap_dashboard_carepay_fully_paid` view and falling through to the broken
+`sap_dashboard_carepay_installment` path. **Corrected answer**: the bulk of the 224-order
+population is genuine onetime EDC payments whose CareOS installment-count field drifted away from
+1 (known, pre-existing artifact) — not new corruption, not the `ExpectedReceived=0`/`charge_rank`
+mechanism. Still open: the exact live process producing `@INSURANCE`'s row for these (neither
+`_fully_paid` nor `_installment` matches it exactly); whether Aware has a separate confirmed rule
+for "`ActualReceived=0` with positive `ExpectedReceived`" (not yet asked — only two other scenarios
+confirmed so far); and this project's own `AGENT_RULES.md` positional-column-mapping risk is a
+concrete, checkable next hypothesis, not yet verified.
+
+**FINAL STATUS, 2026-08-26 — pushed to the practical limit, one link not closed.** Checked every
+live production interface view: `RCB_Motor_process_create` reads only `_fully_paid`, which returns
+**zero rows** for these orders (ruled out). `RCL_Motor_process_1_create`'s **live** definition (not
+the drifted repo baseline) filters to `payment_option='RABBIT_CARE_INSTALLMENT'`; all 12 sampled
+orders are `CREDIT_CARD_INSTALLMENT` (ruled out). Searched all 12 live `sap_view` objects — none
+reference `carepay_installment`. **No standard, documented production path explains how these
+orders got into `SAP_LIVE_FULL`.** Each order has exactly one `SAP_LIVE_FULL` row (append-only —
+one interfacing event), `OrderDate` in early August 2026, interfaced within days — genuinely new,
+not old orders that drifted years later. **High confidence** the `number_of_installment` drift is
+the right diagnosis of what's different about this population (12/12 sampled show it, matches a
+separately-documented, pre-existing project artifact) — **not confirmed**: the exact live
+process/script that turns that into `ActualReceived=0` in `@INSURANCE`. Candidates: an undocumented
+manual/ad-hoc backfill script (this project is confirmed to deploy those — see
+`RCL_Motor_process_1_create`'s own live "quick fix" history), an Apps Script/scheduled job not
+captured in any `sql/` file read this session, or the drift happening *after* a legitimately-
+computed `ActualReceived=0` (coincidental correlation, not ruled out). **Recommended next step**:
+ask Codex or whoever owns the nightly scheduler which job actually produced the Aug 1–21 interface
+batch — that job's logs would show the real source and close this session's last gap.
+
+**✅ MYSTERY SOLVED, 2026-08-26 — Boat confirms he ran the missing manual backfill himself**
+(force-converting `number_of_installment`-drifted `EDC`/`CREDIT_CARD_INSTALLMENT` orders back to
+onetime). Closes the "which process interfaced these" gap. **Full population pulled directly**:
+`PaymentMethod='EDC EDC'`, `ActualReceived=0`, `ExpectedReceived=TotalAmount`, `BatchRunDate`
+Jul–Aug 2026 → **141 unique OrderItems, ฿1,640,393.50** (2 in July, 139 in August) — matches the
+original 142-order/฿1,601,582.47 finding closely, same population confirmed from a different angle.
+Full list sent to Boat as `tmp_full_list_jul_aug_backfill_pattern.csv`. **Reframed fix target**:
+Boat's own backfill script needs to write the real charged amount (confirmed clean in
+`careos.carepay_charges` throughout this investigation) as `ActualReceived`, instead of whatever
+currently produces `0` — that `0` is what triggers SAP's confirmed `Expected≠Actual→1134-01` rule.
+Draft message to Aware rewritten (`docs/DRAFT_MESSAGE_TO_AWARE_20260825.md`) asking: (1) confirm
+whether fixing `ActualReceived` to the real charged amount alone is sufficient to post to `1135-01`
+correctly; (2) any other field SAP's account-selection depends on; (3) how to correct the 141
+already-misposted records. Not yet sent — Boat's to review/approve.
+
+**✅ EXACT LINE FOUND, same session:** Boat's manual backfill script is the **live** definition of
+`sap_view.RCL_Motor_process_1_create` (repo baseline file is stale, doesn't match — confirmed via
+`INFORMATION_SCHEMA.VIEWS`; its own header: *"QUICK FIX 2026-07-16: Manual backfill RCL creates..."*).
+Root cause pinned to one `CASE` expression: `ActualReceived` for `charge_rank=1` computes
+`charges.amount - add_ons`, but `charges` is `LEFT JOIN`ed on `charges.installment_number =
+transaction_snapshot_installment_details.period` — for our population (`installment_details` empty,
+the pre-existing CareOS artifact), `period` is `NULL`, so the join never matches, `charges.amount`
+and `charge_rank` both come back `NULL`, and the `ELSE COALESCE(charges.amount,
+installment_details.payment_amount)` fallback is also `NULL` (both inputs `NULL`) — resolving to
+`0` on SAP import. **100%-confirmed, code-level root cause.** Full detail and proposed fix (a
+second `charges` join keyed on `transaction_id` alone, as a fallback when `installment_details.id
+IS NULL`, mirroring V3's already-correct `vw_onetime_payload_source` pattern) in the FINDINGS doc.
+Not deployed — this is Boat's own script outside normal `sap_view` governance, so Boat should
+decide the deploy path; recommended to dry-run the fix as a plain `SELECT` against the 141-order
+population before replacing the live view.
+
+**COMPANY-CUSTOMER SPLIT, same session — sharp step-change confirmed at 2025-07:** found
+`careos_orders.data.policyHolder.isCompany`; `[dbo].[@INSURANCE].U_Title` blank is a clean 20/20
+verified proxy for it. Company customers: 0% wrong in 2025-05/06 → **51.3% in 2025-07** → steady
+**60–67%** every month since. Individuals: 0–1% → 12.4% in 2025-07 → steady **5–10%** since. Same
+month, both cohorts, no reversion — one systemic change, not a gradual drift or volume effect.
+Company rate runs 6–9× individual, consistent with the WHT mechanism (Thai WHT applies to juristic
+payers more often than individuals) combined with the missing-`WHT` bug in `ExpectedReceived`.
+Still needed: the actual deploy/change log for late June–early July 2025 (Aware's side, or
+whoever last touched `sap_dashboard_carepay_fully_paid` / CareOS WHT computation) — not checked
+this session.
+
+**MAJOR COMPLICATION, same session — needs Boat/Finance's read before continuing:** pulling 5
+correct + 5 wrong company-customer records per month (all payment channels, not just EDC/KBANK)
+surfaced a dedicated `2142-10` "บัญชีส่วนขาด WHT" variance account already in active use — likely
+the account from the Aware agreement. In these broader-channel examples, the amount hitting
+`1134-01` is small and WHT-sized (not the full receivable), mirrored by an identical debit to
+`2142-10`, while the bulk of the money flows through `2121-02` "Account Payable Trade" (an AP
+account) + a bank/contra line — a JE shape this session cannot confidently interpret. One example
+(`L77603344-V1`) shows the bulk correctly on `1135-01` *and* a small duplicate-looking entry on
+`1134-01` alongside `2142-10` — suggesting the real defect may be narrower than first thought (a
+redundant WHT-sized leak into `1134-01`, not full-receivable misrouting). This does not obviously
+reconcile with the original EDC/KBANK-scoped finding (full receivable, no `1135-01` line at all,
+e.g. `L78667850-V1` ฿14,470.68) — open question whether there are two different mechanisms by
+payment channel, or whether the LineMemo-based join was conflating AR-side and AP-side JEs sharing
+an OrderItem in their memo. **Stopped here rather than speculate further; needs Boat/Finance to
+explain what `2121-02`/`9001-17`/`2142-10` represent in this business's JE design.**
+
+**EXACT DATE + WHY AUGUST, same session:** onset pinned to **2025-07-01** — a single-day spike of
+413 wrong V-item entries (vs. 0–3/day background before), reading as a bulk event, settling to a
+persistent 3–23/day elevated baseline for the 13 months since (steady ฿500K–1.1M/month wrong,
+all V-items). **August 2026 (partial month, data through ~08-21/25) already shows ฿3.99M wrong —
+4–8× the steady monthly baseline and comparable to the original 2025-07 onset spike** — the
+likely reason this became visible enough to notice and report now, after 13 months of a smaller,
+easy-to-miss chronic rate. Not yet done: why August 2026 itself spiked (day-level breakdown not
+pulled for August).
+
+**DEFINITIVE, same session — it's the JE/posting behavior that changed, not the interface:** held
+input constant (`PaymentChannel` + whether `Expected == Actual`) and compared before vs. after
+2025-07 across the full 11,160-row company-customer population. **Before 2025-07: every channel,
+every match-type (including `GAP`/mismatched cases, which already existed then) posted to
+`1135-01` with zero exceptions.** After 2025-07: the *same* channel-and-match-shape input starts
+splitting — Transfer channels ~100% wrong, EDC/Omise `GAP` cases ~50/50, Credit Shell `GAP` ~98%
+wrong, while `EXACT` cases on EDC channels stay 0% wrong. Since a nonzero Expected/Actual gap
+already existed and posted fine before 2025-07, and the same input shape now splits inconsistently
+after, **the interface/input did not change — whatever decides the account at posting time did**,
+right at that boundary. Still needed: the specific deploy/config/code change at that date — not
+queried this session (no access to deploy history from here).
 
 ## URGENT OPEN 2026-08-24 09:28 ICT — Boat ordered V2 production + all schedules stopped tonight, V3 cutover; V3 delivery has never been enabled
 
@@ -782,3 +1130,84 @@ genuinely unverified, not confirmed dormant or active.
   2026-07-27 to remove stale `raw_sap_live`/B1 references (see `30_SAP_CHANGELOG.md`).
 - `vw_dash_extract_scheduler_health` (the new widget the dashboard design doc now specifies) is
   designed but not yet built — see `docs/AS_BUILT_V3.md`.
+
+
+## 2026-10-19 — requested four-item SAP recovery held after live verification
+
+Scope: Paid replacements L81020554-V1 (old L80991502) and L80999097-V1 (old L80806589); Cancelled L81026484-M1/V1. VPN and secure Windows SQL profile succeeded. Direct dbo.[@INSURANCE] SELECT at 2026-10-19T04:59:04Z found no documents for the four targets, and confirmed old change-cancel DocEntry 2540828 / 2533076.
+
+Current candidate evidence (not a release PASS): L81020554-V1 Expected 13546.67 vs Actual 15035.00, missing PolicyNo; L80999097-V1 Expected 5456.00 vs Actual 5808.00. Both are one-period Credit Shell replacements. The alternate creditshell view emits NULL expected/actual values. Source mirror confirms cancellation on both L81026484 items, pending refund records and old-order link L81023226, but no target SAP predecessor. Do not invent Paid/Cancel predecessors or infer refund amounts.
+
+Required inputs: source owner to populate verified L81020554 PolicyNo; Finance/source owner to reconcile replacement discount, carried credit and refund disposition for both Paid items; SAP integration/Finance to resolve the missing-predecessor lifecycle for L81026484. Money differences are candidate comparisons, not certified GL loss/refund liabilities. No CSV, upload, deployment, source change or refund initiated.
+
+Evidence and resumable item states: C:/dev/sap-request-20261019-four-items/assessment.json, sap/, source.json, payload.json and job metadata. Source job bqjob_r85d29b2138ded3a_000001a15287f376_1; payload job bqjob_r79e8e981e3f91a9f_000001a1528a1371_1. Payload dry-run 10032822623 bytes; source charges table modified 2026-10-19T04:03:27.378Z. No GL/JE certification.
+
+
+
+## 2026-10-19 — user confirmation: blank PolicyNo is allowed
+
+Boat explicitly confirmed in the four-item SAP recovery session that the policy number may be blank. This supersedes earlier required/nonblank PolicyNo wording. Preserve blank PolicyNo without inventing a value; normalize missing source PolicyNo to an empty interface field when preparing a payload. Nonblank PolicyNo still follows the existing length and source-integrity checks.
+
+L81020554-V1 no longer requires source PolicyNo repair and MISSING_POLICY_NUMBER has been removed from its local assessment. The remaining one-period Credit Shell amount discrepancy and alternate-path NULL money still block release. L80999097-V1 financial hold and L81026484-M1/V1 missing-predecessor holds are unchanged. Historical notes asking for the policy number are superseded by this entry. No interface/upload performed; existing validator code has not yet been changed or revalidated.
+
+
+## 2026-10-19 — L80999097-V1 Credit Shell allocation confirmed
+
+User instructed: allocate Credit Shell equal to Expected (5456.00), and split the remaining 352.00 as Credit Shell in the next period with ExpectedReceived=0. Total carried credit remains 5808.00; do not discard the remainder or interpret it as a refund. This resolves the amount-disposition question for L80999097-V1 only.
+
+The captured source is FULL_PAYMENT and the live candidate is Period=1/TotalPeriods=1. Pending clarification: does next period explicitly authorize Period=2 and TotalPeriods=2, or refer to an additional receipt row within Period=1? Do not silently increase TotalPeriods or reinterpret the destination. Existing split InvoiceNo, conservation, exact-payload and independent-review gates remain. No payload/upload generated. L81020554-V1 is not covered by this item-specific amount instruction.
+
+
+## 2026-10-19 — L81026484-M1/V1 Paid-before-Cancelled recovery authorized
+
+User explicitly instructed that cancelled items absent from SAP be imported as Paid first, then Cancelled. Apply to the requested L81026484-M1 and L81026484-V1. This overrides their prior missing-predecessor lifecycle hold and permits reconstruction from verified successful-payment evidence despite current CareOS cancellation. It does not authorize invented payments, duplicate sibling allocations, customer refunds, or blind resend. Validate/review exact Paid payload, confirm direct SAP Paid acknowledgement, then derive and validate/review Cancelled from the accepted immutable Paid documents before cancellation upload. Preserve receipt identity and prove change-order provenance from L81023226. No repeat lifecycle approval is needed.
+
+
+## 2026-10-19 — superseding FULL_PAYMENT decision for L80999097-V1
+
+User explicitly specified FULL_PAYMENT uses Period=1 and ActualReceived=5808.00. Keep TotalPeriods=1 and existing ExpectedReceived=5456.00. This supersedes the earlier 5456.00 + 352.00 split and removes the next-period clarification and amount-disposition hold for this item. Do not cap ActualReceived, create Period=2, or invent a refund. The difference is explicitly accepted for this item's one-period payload; source, mapping, prior-delivery, exact validation and independent review remain required. This is not a confirmed rule for unrelated RCL installment cases.
+
+
+## 2026-10-19 — remaining recovery scope explicitly approved
+
+User confirmed L81020554-V1 FULL_PAYMENT keeps ActualReceived15035.00, ExpectedReceived13546.67, Period1/TotalPeriods1, no split. Blank PolicyNo remains allowed. User also explicitly approved inclusion of L81023226-M1/V1 change-cancellation before Paid then Cancelled for L81026484-M1/V1. No further routine scope approval required. Each phase must pass exact validation/independent review and direct SAP acknowledgement before the next. Preserve original invoice/payment fields on cancellations; no customer refund is initiated.
+
+
+## 2026-10-20 06:15 ICT — corrected phase-1 delivery; ACK pending
+
+Original targeted log23028 rejected L80999097-V1 (PaymentChannel mapping). Nightly logs23031/23032/23036 likewise rejected target rows; file-level success-with-error was not target ACK. Evidence: C:/dev/sap-request-20261019-four-items/latest_receipt_analysis.json and raw MIME receipts.
+
+Root cause: historical stored PaymentChannel Code is not current importer U_MappingCode proof. Current dbo.[@PAYMENTCHANNEL] mapping is RCB-Credit Shell (Code Credit Shell; account9001-17); Credit Shell and RCB-CreditShell are invalid outgoing channel mappings. Pre-export now requires exactly one current exact U_MappingCode and a nonblank trimmed account. Method validated separately in dbo.[@PAYMENTMETHOD]. No masters or legacy schedules changed.
+
+Explicit user decisions preserved: FULL_PAYMENT 1/1 Actual5808.00 Expected5456.00 and Actual15035.00 Expected13546.67, no split; blank policy allowed; old L81023226-M1/V1 change-cancel authorized before L81026484 Paid then Cancelled.
+
+Direct SAP at23:12:31Z: target4 absent, old L81023226 pair still Paid; predecessor cancelled documents for other replacements unchanged. Exact content/delivery independent review PASS (/root/payload_review); local prior inventory reconciles known rejected original; current periods open; independent exporter disabled; no concurrent legacy activity after source snapshot. Source successor check finds only L81023226 -> L81026484, no successor of target orders.
+
+Create-only upload and byte readback verified:
+- INSURANCE_RCB_03_CHANGE_RECOVERY_20261020_A.csv: two Paid, SHA cf91e0265f60900992ef2395a95749e65110fe801e93d94c7ed884ff88c784aa, generation1792451677053830 at23:14:37Z.
+- INSURANCE_RCB_02_CANCEL_CHANGE_RECOVERY_20261020_L81023226.csv: two predecessor change-cancellations, SHA cc2ae88f105f036dacae99e47b1b738ab7b33d4e6f80b0c6e8766bd22decb2bc, generation1792451689234199 at23:14:49Z.
+
+Status is UPLOADED_PENDING_ACK, not completed. Durable ledgers phase1_delivery_0.json/phase1_delivery_1.json prohibit replay. Await item-level SAP ACK before dependent L81026484 phases. Never rerun batch after partial/unknown delivery. No source mutation, customer refund, JE certification, legacy deployment, or external messages sent.
+
+
+## 2026-10-20T15:25:22.296093 — L78870324-V1 explicit full-actual approval
+User explicitly authorized Paid ActualReceived8945.22, ExpectedReceived8300.01 retained, Period1/TotalPeriods1. Preserve the645.21 excess in the same approved receipt; do not invent sibling/refund/split. Source ONLINECARD/OMISE maps to OMC Omise Credit Card / RCB-Omise Credit Card-BAY, account1135-01 verified live. Scope now includes this additional Paid import; previous status-only limitation is superseded. Exact candidate awaits independent delivery review. Evidence C:/dev/sap-request-20261019-four-items/l78870324_authority.json and phase4_candidate.json.
+
+
+## 2026-10-22 — requested change-order recovery awaiting scoped financial decisions
+
+User requested L81072106 Paid, L81048975 Paid, L81036194 Cancelled(Change order); repeated order IDs were deduplicated. Import authorization covers the requested outcome, but does not resolve the monetary/refund ambiguities below. No production upload, CSV, SAP write, refund, or GL certification performed.
+
+Direct RCB_LIVE_DB.dbo.[@INSURANCE] captured 2026-10-22 17:26:36 ICT: no requested target documents. Original L78977757-M1/V1 remain Paid, DocEntry2544908/2544909, Actual645.21/8500.00; original L79012592-M1/V1 remain Paid, DocEntry2548206/2548207, Actual645.21/20370.00. No original change-cancel documents were found.
+
+CareOS source and change-order links prove L78977757 -> L81036194 -> L81072106 and L79012592 -> L81048975. Item-level source cancellations are true on both original pairs and L81036194-M1/V1. Requested final Paid items are active FULL_PAYMENT. These are separate linked stages, not additional independent successful receipts.
+
+Current sap_view.RCB_Motor_process_3_change candidates (not a validated release): L81072106-M1 Actual/Expected645.21; V1 Actual8500.00 Expected5900.00; L81048975-V1 Actual21015.21 Expected12622.79. Source records pending refunds on L81036194 total9145.21 and on L79012592 total8392.42. Do not subtract a merely pending refund or silently carry the full credit into the replacement. Prior Oct19 full-actual approvals were item-specific. User questions are pending for both chains, including intermediate Paid-before-Cancel recovery of L81036194. Preserve existing accepted original invoice identities; the transfer-based generated replacement IDs still require exact provenance review.
+
+Source freshness metadata: careos_order_items modified2026-10-22T10:01:13.192Z, carepay_charges10:01:55.933Z; carepay_refunds last modified2026-10-21T13:15:04.019Z; cancelled_change_orders last modified2026-10-21T15:35:59.808Z. Pending refund claims are from this mirror, not proof of bank payout. Fresh refund evidence is required at release.
+
+Live payment registry at2026-10-22T10:29:11.786Z confirms Credit Shell method / RCB-Credit Shell outbound channel (account9001-17); October OFPR AbsEntry43 is open. Both create/change positional contracts have56columns. Current alternate creditshell view emits NULL monetary values for L81048975 and must not be exported.
+
+Independent reviewer /root/review_request_holds confirms HOLD all requested target rows pending decisions and exact release gates. No safe independent target subset: M1 is part of the unresolved linked chain/shared refund. Conditional sequencing: original change-cancel ACK -> intermediate/replacement Paid ACK -> L81036194 change-cancel ACK -> final L81072106 Paid ACK. Each step requires exact immutable payload validation, independent review, current prior-delivery check, create-only intent/readback, and item-level SAP ACK.
+
+Evidence C:/dev/sap-request-20261022/assessment.json, sap_baseline.json, chain_facts.json, payload.json, current_payment_masters.json. Source job bqjob_rf63958ea8bacb3f_000001a163252f15_1; chain job bqjob_r64861516efeade37_000001a16326c281_1; payload job bqjob_r23584fa16ee6edd4_000001a163265234_1. SQL/logs/metadata: workspace outputs/sap_request_20261022. Repository pull --ff-only failed due pre-existing divergent branches; no merge/rebase or unrelated modifications made. Review status scan reported zero assigned OPEN reviews; no exact-payload release review exists for this request.

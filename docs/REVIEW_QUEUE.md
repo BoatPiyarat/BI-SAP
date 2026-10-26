@@ -1,10 +1,489 @@
+## RQ-20260930-charge-recovery-completed-review
+Status: REVIEWED
+Reviewer: Independent Codex reviewer
+Class: A
+Artifact: commit `ea03786c785538ffddd34120644ffa498b8b7bb2`; 2026 reconciliation, exact 177-row export and two SELECT-only proposals.
+Opened: 2026-09-30T23:39:19+07:00
+
+Reconstructed completed review tied to the artifact commit timestamp. Independent review ran on isolated copies before upload. PASS for the exact payload and source-only handoff, not deployment approval. See `docs/reviews/2026-09-30-charge-recovery-review.md`. Parent fresh source/SAP preflight, exact CSV positional round-trip and remote MD5/size/generation checks passed. SAP acceptance is unverified. No V3 change. Git push was blocked by automatic approval review; the configured remote was verified public, and no publication occurred.
+
 ﻿# REVIEW_QUEUE.md — asynchronous mutual review
 
 Canonical queue governed by `docs/AGENT_REVIEW_PROTOCOL.md`. Newest request first. Do not delete
 review history; link the completed review and record its verdict.
 
+## RQ-20260828-0056-v3-unit5-item-validation-quarantine-delta
+Status: REVIEWED
+Reviewer: Claude Code
+Class: A
+Artifact: commit `03edcba` (delta from `37b5a9b`); `sql/ddl/058_v3_unit5_newpayment_shadow.sql`,
+`scripts/check_v3_unit5_required_hold_fix.py`,
+`sql/operator/20260827_verify_v3_unit5_required_hold_fixture.sql`. This entry was already correctly
+queued by Codex (as `Status: OPEN`) on the remote branch before I picked it up — first request this
+session that didn't need backfilling. NOTE: local working tree is currently diverged from remote
+(unpushed local commits reviewing an unrelated smaller delta, `20809d1`); reviewed `03edcba` from
+an isolated detached `git worktree` rather than the primary tree — see full review for detail.
+Opened: 2026-08-28T00:56:45+07:00
+
+Claim: closes Note 1 from `docs/reviews/2026-08-27-37b5a9b-claude.md` (POLICYNO_TOO_LONG and Paid-
+completeness remained candidate-wide fail-closed aborts) by converting all eight item-level pre-
+export rules (spine completeness, status, duplicate identity, PolicyNo length, Paid-required-blank,
+NULL/literal-NULL, and both date-format checks) to a unified whole-OrderItem quarantine, and by
+replacing every remaining wide `SELECT *`/`SELECT DISTINCT *` in DDL 058 with explicit 56-column
+lists. Not deployed, not CALLed.
+
+Verdict: **PASS** — `docs/reviews/2026-08-28-03edcba-claude.md`. Re-ran the offline checker inside
+an isolated worktree against both the pre-fix ref (genuine RED) and current (genuine PASS,
+including the checker's own new positive assertion that all five old candidate-wide abort strings
+are absent and no wide SELECT * remains). Confirmed a new, independent no-leak assertion
+(`Released NEWPAYMENT item still has a validation issue` = 0) beyond the structural guarantees
+already verified in the prior review. Read the expanded fixture in full and confirmed its
+7-held/1-released/zero-held/zero-released assertions, including per-item hold-reason attribution,
+by tracing the logic directly. Confirmed field-name aggregation stays PII-safe across all eight
+rule codes (five emit hardcoded column-name literals, two emit NULL, one reuses the previously-
+verified regex-captured-JSON-key mechanism). No BLOCK. Flagged one process note: the local/remote
+branch divergence itself is a live instance of the "never two agents in the same tree" risk this
+project's own protocol warns against — worth Codex/Boat resolving which lineage is authoritative.
+
+## RQ-20260827-2254-v3-unit5-required-value-quarantine
+Status: REVIEWED
+Reviewer: Claude Code
+Class: A
+Artifact: commit `37b5a9b`; `sql/ddl/058_v3_unit5_newpayment_shadow.sql`,
+`scripts/check_v3_unit5_required_hold_fix.py`,
+`sql/operator/20260827_verify_v3_unit5_required_hold_fixture.sql`. Backfilled request — Codex
+prepared `docs/reviews/2026-08-27-37b5a9b-claude-request.md` but it never got a REVIEW_QUEUE.md
+entry.
+Opened: 2026-08-27T22:53:01+07:00
+
+Claim: fixes the fresh Units 1-5 pilot's fail-closed abort (commit `1f5c20c`,
+`NEWPAYMENT candidate must not contain SQL NULL or literal NULL`, caused by SQL-NULL `LastName` on
+22 spine rows and SQL-NULL `PolicyNo` on 20) by replacing the candidate-wide abort with whole-
+OrderItem quarantine: any item with a NULL/`"NULL"` required field holds its complete period spine
+in a new durable ledger; only clean items publish to the ready table, producer hash, and payload
+identity. Not deployed, not CALLed.
+
+Verdict: **PASS WITH NOTES** — `docs/reviews/2026-08-27-37b5a9b-claude.md`. Traced conservation
+(`COUNT(DISTINCT OrderItem)` on the full candidate set equals released-items plus held-items,
+exact) and confirmed no leak path: producer hash/count is computed from `_candidate_release` only,
+`v3_unit5_payload_identity` inserts are explicitly filtered to released OrderItems, and the
+full-spine-completeness assertion runs before the hold/release split so a released item's spine is
+always its original untouched complete spine (whole-item filtering can't create a partial one).
+Confirmed `invalid_fields` can only ever capture JSON key names (never real values) by the regex's
+own structure — PII-safe. Re-ran the offline regression checker against both the pre-fix ref
+(`1f5c20c`, genuine RED) and current (genuine PASS), and read the isolated fixture SQL in full.
+One finding worth carrying forward, not a blocker: `POLICYNO_TOO_LONG` and Paid-completeness
+remain candidate-wide fail-closed aborts (not item-level quarantine like the NULL fix), so an
+unrelated item's overlong PolicyNo could still take down the whole run — Boat's rule was
+specifically about the NULL incident, so this is flagged as a future scope decision, not a defect.
+No BLOCK. Recommend a second reviewer pass before redeploying DDL 058.
+
+## RQ-20260827-2209-v3-fresh-units1-5-pilot-operator
+Status: REVIEWED
+Reviewer: Claude Code
+Class: A
+Artifact: commits `11b89d2` + `9591052` + `e11a9cd`. Backfilled request — Codex prepared
+`docs/reviews/2026-08-27-11b89d2-claude-request.md` but it never got a REVIEW_QUEUE.md entry;
+found via git log diff against the queue.
+Opened: 2026-08-27T22:09:13+07:00
+
+Claim: a fail-closed, delivery-disabled one-time pilot execution path for fresh V3 Units 1-5
+(`run_v3_fresh_units1_5_delivery_disabled.ps1` + two operator SQL files) that gates exact workflow
+revision `000011-291`, byte-for-byte source identity, `delivery_enabled=false`, zero concurrent
+workflow executions, no active SAP extract, empty bronze prefix, both Scheduler prestates, and a
+19:30–21:59 ICT legacy-overlap block, then requires the reviewed/approved Unit 2 pilot magnitude
+config (25/5%, 10/5%, 500,000-satang/5%) to still have ≥2 hours of validity remaining and its
+39-cell self-baseline PASS to exist, before ever calling the workflow. A `-PreflightOnly` rehearsal
+already completed successfully; `PREFLIGHT_EXECUTION_CREATED=false` — no workflow execution or SAP
+mutation occurred.
+
+Verdict: **PASS WITH NOTES** — `docs/reviews/2026-08-27-11b89d2-claude.md`. Traced all seven
+pre-execution gates individually against source (re-ran the offline checker locally — genuine
+PASS); confirmed `delivery_enabled: false` is an unconditional literal in the workflow YAML with no
+`map.get(args,...)` override path, so the runner's flags file cannot enable delivery regardless of
+what `--data` carries; confirmed the entire delivery/promotion branch, including the only path
+capable of writing `gs://interface-file/`, sits behind that same hardcoded-false switch; checked
+specifically for the DDL 100 class of CASE-ordering defect in the post-run disposition query and
+found the `HELD_MAGNITUDE_REVIEW` branch correctly evaluated first, with `breached_cells=0` as a
+redundant second gate on the PASS branch. Two non-blocking notes: the workflow-identity checker's
+source-comparison has a narrow, comment-only em-dash/`?` carve-out (cannot mask an executable-line
+mismatch, but is a documented exception to "byte-for-byte"); and the runner's correctness after
+`gcloud workflows run` assumes that command returns a terminal execution state, which I could not
+verify from static text alone (the design fails closed either way — a non-`SUCCEEDED` state
+throws). No BLOCK. Recommend a second reviewer pass before the first real (non-preflight)
+production execution, given live SAP-extract/bronze/load/V3-write stakes.
+
+## RQ-20260827-2148-v3-ddl103-validation-hold-uniqueness-delta
+Status: REVIEWED
+Reviewer: Claude Code
+Class: A
+Artifact: commit `9a2b9e7`; `sql/ddl/103_v3_monthend_onetime_immutable_snapshot.sql`,
+`scripts/check_v3_monthend_onetime_snapshot.py`. Backfilled request — Codex prepared
+`docs/reviews/2026-08-27-9a2b9e7-claude-request.md` but it never got a REVIEW_QUEUE.md entry.
+Opened: 2026-08-27T21:48:42+07:00
+
+Claim: closes Note 1 from `docs/reviews/2026-08-27-59a4521-claude.md` (the `_validation_hold` join
+key's `(order_item, period, invoice_no)` uniqueness was assumed, not proven) with a four-line delta
+— an explicit uniqueness ASSERT placed immediately after `_validation_hold` is built and before it
+can fan out `_hold`, plus a matching checker requirement.
+
+Verdict: **PASS** — `docs/reviews/2026-08-27-9a2b9e7-claude.md`. Confirmed the ASSERT's position
+via the diff (between the two relevant `CREATE TEMP TABLE` statements), confirmed BigQuery's
+GROUP BY treats NULL as one group so a NULL-invoice collision is still caught rather than silently
+split, confirmed no other readiness/payload/hold/56-column logic changed (four-line diff only), and
+re-ran the offline checker locally — genuine PASS, and it would fail if the assertion text were
+removed. This closes Note 1 more strongly than the prior review required (an explicit first-class
+assertion at the exact point of risk, not just an indirect downstream conservation catch). No
+BLOCK.
+
+## RQ-20260827-2116-v3-unit2-bootstrap-operator-pilot-limits
+Status: REVIEWED
+Reviewer: Claude Code
+Class: A
+Artifact: commits `759a0c2` (fail-closed Unit 2 magnitude bootstrap operator) and `e8e7364`
+(conservative pilot-limit proposal with stored-result replay). Backfilled request — Codex prepared
+`docs/reviews/2026-08-27-759a0c2-e8e7364-claude-request.md` but it never got a REVIEW_QUEUE.md
+entry; found via git log diff against the queue.
+Opened: 2026-08-27T21:16:39+07:00
+
+Claim: `sql/operator/20260827_bootstrap_v3_unit2_magnitude_after_approval.sql` is a fail-closed,
+one-time operator that stops before CALL unless Boat fills all nine human-owned values (config_id,
+effective_start/end, six magnitude thresholds, approval provenance); the accompanying pilot-limit
+proposal (25/5%, 10/5%, 500,000-satang/5%) is a conservative, non-data-fitted risk policy that
+correctly refuses to pass the existing August 25→27 comparison (39 cells, 15 breached, replayed
+from a stored job without a rerun). Not deployed, not CALLed, not approved.
+
+Verdict: **PASS** — `docs/reviews/2026-08-27-759a0c2-e8e7364-claude.md`. Confirmed every one of
+the twelve human-owned operator variables defaults to real SQL NULL with the three blocking
+ASSERTs positioned before the CALL (re-ran the offline checker locally — genuine PASS); the
+thirteen-argument CALL matches DDL 099's procedure signature exactly, argument-for-argument;
+duplicate/replay protection exists at both the operator's preflight and again inside DDL 099's own
+trusted boundary; postchecks bind every approved field value and genuinely conserve
+magnitude-result-vs-distribution cell counts, not a bare row-count claim; no export/GCS/Scheduler/
+extra-procedure action exists in the operator. Independently re-derived DDL 063's breach predicate
+from source and confirmed it matches the proposal's stated "absolute AND percentage" semantics
+exactly; verified the three force-pass boundary numbers (1,065 records / 498 orders /
+497,720,770 satang) against the largest-magnitude values in the six fully-shown breach rows —
+matched exactly, though the other nine breached cells the proposal only summarizes were not
+independently re-run this session (no live BigQuery access). No BLOCK. Recommend a second reviewer
+pass before the first live CALL, and recommend checking the full 15-cell breach detail (not just
+the six shown rows) before relying on the force-pass figures for any decision.
+
+## RQ-20260827-2035-v3-monthend-onetime-immutable-snapshot
+Status: REVIEWED
+Reviewer: Claude Code
+Class: A
+Artifact: commit `59a4521`; `sql/ddl/103_v3_monthend_onetime_immutable_snapshot.sql`,
+`sql/operator/20260827_monthend_missing_sap_onetime.sql`,
+`scripts/check_v3_monthend_onetime_snapshot.py`. Backfilled request — Codex prepared
+`docs/reviews/2026-08-27-59a4521-claude-request.md` but it never got a REVIEW_QUEUE.md entry;
+found via git log diff against the queue rather than the request file surfacing on its own.
+Opened: 2026-08-27T20:35:50+07:00
+
+Claim: closes all six BLOCK items from the prior review of an earlier revision of the operator
+file (`docs/reviews/2026-08-27-monthend-onetime-claude.md`) by rebuilding Scenario 1's month-end
+ONETIME fallback as a durable, hash-bound, ICT-correct, explicitly-56-column immutable snapshot
+(DDL 103) with a read-only operator that only ever replays one named snapshot_run_id's own
+committed rows. Not deployed; not CALLed.
+
+Verdict: **PASS WITH NOTES** — `docs/reviews/2026-08-27-59a4521-claude.md`. Verified each of the
+six prior BLOCK items is genuinely closed against the actual diff, not just claimed closed in the
+commit message: PICKED_UP correctly split into its own pending-terminal-ack branch instead of
+being treated as terminal; explicit 56-column positional export (re-ran the offline checker
+locally — genuine PASS, not aspirational); every invariant re-asserted over the actual output
+rows (`_target_payload`/`_target_identity`/`_target_hold`), not an intermediate table; durable
+`v3_monthend_onetime_hold` table with a population-conservation ASSERT; a real immutable
+snapshot identity closing the prior TOCTOU gap; ICT (`Asia/Bangkok`) date boundary replacing the
+old UTC one, with the checker grepping against regression back to UTC. Also traced the request's
+specific spec questions: the DDL 085 payload/identity binding re-checks a SHA-256 hash before
+accepting a row, so a stale payload cannot be silently accepted; the one join
+(`_validation_hold` via `order_item,period,invoice_no`) whose uniqueness isn't independently
+proven in this file is fail-closed (a violation would trip the population-conservation ASSERT,
+not silently overcount), consistent with this project's established 1:1 invoice_no-to-charge
+binding elsewhere. No BLOCK. Recommend a second reviewer pass before the first live CALL, per this
+project's standing posture for Class-A production-adjacent artifacts.
+
+## RQ-20260827-1923-v3-common-cutover-control-source
+Status: REVIEWED
+Reviewer: Claude Code
+Class: A
+Artifact: commit `e431337`; `sql/ddl/102_v3_common_scheduler_cutover_control.sql`,
+`scripts/check_v3_common_cutover_control.py`,
+`sql/operator/20260827_v3_common_scheduler_cutover_manual_fallback.sql`. Backfilled request —
+Codex's own local audit (`docs/reviews/2026-08-27-v3-common-cutover-control-source-review.md`)
+explicitly stated its automated Claude review workers failed on exhausted workspace credits and
+asked for an independent review before deployment.
+Opened: 2026-08-27T19:23:09+07:00
+
+Claim: durable evidence control (approval, runtime-evidence registration, claim, finalize,
+abort/rollback) for the one common legacy→V3 preparation Scheduler cutover, gated by a serialized
+singleton mutex, hash-bound prestate/poststate, fresh Scheduler inventory, and an active
+non-bootstrap Unit 2 magnitude PASS. Cannot call Scheduler/Workflows/GCS/SAP/promoter. Not deployed.
+
+Verdict: **PASS WITH NOTES** — `docs/reviews/2026-08-27-e431337-claude.md`. Traced the mutex's
+actual serialization (relies on BigQuery transaction-conflict detection on the row-version UPDATE,
+not just the pre-check), confirmed the config-hash/state-transition separation is deliberate and
+correct (hash excludes `state` on purpose), verified the overlap check is sound given a PAUSED job
+contributes zero windows, cross-checked the bootstrap-run exclusion against DDL 099, and checked
+specifically for the DDL 100 class of CASE-ordering defect (none found). No BLOCK. Notes: 
+`p_workflow_revision` is trusted operator input (same accepted limitation as elsewhere in this
+project); given the scale and production-Scheduler stakes, recommend a second reviewer pass before
+the first live CALL.
+
+## RQ-20260827-1221-v3-ddl100-101-deployment-evidence
+Status: REVIEWED
+Reviewer: Claude Code
+Class: A
+Artifact: `docs/reviews/2026-08-27-ddl100-101-deploy-evidence-codex.md`, verifier, and jobs
+`codex_v3_ddl100_20260827_1215`, `codex_v3_ddl101_20260827_1216`, and
+`codex_v3_verify_ddl100_101_20260827_1218`.
+Opened: 2026-08-27T12:21:00+07:00
+
+Claim: corrected DDL 100 and dependent DDL 101 definitions were deployed in review-approved order
+and remained inert. Exact routine signatures/hashes are recorded; claim and lifecycle tables are
+both empty. No procedure CALL, EXPORT DATA, GCS, interface, SAP, workflow, or Scheduler action
+occurred. Review job provenance and read-only verifier claims; do not repeat deployment or CALL.
+
+Verdict: **PASS** — `docs/reviews/2026-08-27-ddl100-101-deploy-evidence-claude.md` (already
+committed by the time I picked this up; I independently drafted an equivalent review reaching the
+same verdict, then discarded my duplicate in favor of the existing one rather than overwrite it).
+Confirms deployment order matches the DDL 100→101 dependency, parameter counts (3/12/3) match
+source, the verifier is genuinely read-only, and `EXPORT DATA` sits inside a procedure body so
+creating the definition cannot have executed it. No BLOCK.
+
+## RQ-20260827-1208-v3-daily-completeness-atomicity
+Status: REVIEWED
+Reviewer: Claude Code
+Class: A
+Artifact: commit `557598c`; DDL 067 atomicity correction and its source regression checker.
+Opened: 2026-08-27T12:08:00+07:00
+
+Claim: closes the partial-replay note from
+`docs/reviews/2026-08-27-v3-prerequisite-deploy-evidence-claude.md`. DDL 067 now refuses any
+pre-existing run, metric, or evidence rows for the pipeline run and writes metric, evidence, and
+final run rows in one transaction. The deterministic checker was observed RED before the change
+and PASS after it; `git diff --check` is clean. After reauthentication, the exact corrected DDL
+passed authenticated BigQuery dry-run at a lower bound of 0 bytes. Review exact commit `557598c`;
+do not deploy or CALL.
+
+Verdict: **PASS WITH NOTES** — `docs/reviews/2026-08-27-557598c-claude.md` (already committed by
+the time I picked this up; same reconciliation as above). Confirms the transaction correctly
+encloses metric/evidence/run inserts and the two new pre-flight guards close the retry-duplication
+gap. One genuine non-blocking note worth carrying forward: all replay guards run *before*
+`BEGIN TRANSACTION`, so two genuinely concurrent CALLs for the same `pipeline_run_id` could both
+observe zero before either commits — pre-existing, not introduced by this fix, and the calling
+workflow is expected to stay non-overlapping per run, but worth remembering if that assumption
+ever changes. No BLOCK.
+
+## RQ-20260827-0935-v3-lifecycle-case-order-delta
+Status: REVIEWED
+Reviewer: Claude Code
+Class: A
+Artifact: commit `5c8d4e7`; `sql/ddl/100_v3_scenario3_archive_and_lifecycle.sql` line 476, plus new
+`scripts/check_v3_lifecycle_case_order.py`. Backfilled request — author fixed the BLOCK directly
+without opening a queue entry.
+Opened: 2026-08-27T09:34:55+07:00
+
+Claim: closes the sole required correction from `docs/reviews/2026-08-27-051543b-claude.md`
+(RQ-20260827-0916, BLOCK) by changing `WHEN terminal_import_rows != 1` to
+`WHEN terminal_import_rows = 0`, so a `> 1` terminal-LogID count now falls through to the
+previously-unreachable `BLOCKED_IMPORT_LOG_ID_CARDINALITY` branch instead of being swallowed as
+ordinary pending progress. Adds a static regression-guard script.
+
+Verdict: **PASS** — `docs/reviews/2026-08-27-5c8d4e7-delta-claude.md`. Traced all three cases
+(`= 0`, `= 1`, `> 1`) through the fixed CASE and confirmed each now resolves correctly; no other
+branch touched. Both prior BLOCK items (NULL-safety framing, knowledge-consistency with the
+project's own multiple-LogIDs/AMBIGUOUS_ACK handling) are resolved. No further round needed.
+
+## RQ-20260827-0931-v3-prerequisite-deployment-evidence
+Status: REVIEWED
+Reviewer: Claude Code
+Class: A
+Artifact: `docs/reviews/2026-08-27-v3-prerequisite-deploy-evidence-codex.md`; production jobs
+`bqjob_r7c5302ba320cb0c8_000001a041055acc_1`,
+`bqjob_r55a7be3b2b248770_000001a04107efd3_1`, and
+`bqjob_r57665e184876c0a5_000001a041087c78_1`.
+Opened: 2026-08-27T09:31:00+07:00
+
+Claim: only reviewed definition/schema prerequisites were deployed. Postchecks prove exact routine
+presence/signatures/hashes, one new nullable manifest column, zero active magnitude configs,
+zero bootstrap calls, and zero completeness runtime rows. No workflow, promoter, Scheduler, GCS,
+SAP, or ACK action occurred. Review live job provenance and postcheck claims; do not repeat any
+deployment or run a procedure.
+
+Verdict: **PASS WITH NOTES** — `docs/reviews/2026-08-27-v3-prerequisite-deploy-evidence-claude.md`.
+Read all three cited adhoc verification queries in full — genuinely read-only, no CALL/mutation;
+the DDL 070 change is a true no-op on both `CREATE TABLE IF NOT EXISTS` (tables already live) plus
+one genuinely-missing `ADD COLUMN IF NOT EXISTS`, matching the claim exactly. This evidence also
+corrects a gap in my own prior full-delta review: DDL 062's current 13-param signature was already
+live before this batch, not an outstanding dependency as I'd flagged. Found one pre-existing issue
+while reading DDL 067 for this review (not itself a deployment-evidence defect): the newly-deployed
+`sp_build_v3_daily_completeness_snapshot` has no transaction wrapper across its three INSERTs, and
+its only replay guard checks the final `run` table — a failure between the metric/evidence inserts
+and the final insert would let a retry duplicate those rows. Confirmed zero rows exist in any of
+the three completeness tables today, so nothing has duplicated yet; flag as required before this
+procedure is ever CALLed.
+
+## RQ-20260827-0930-v3-promoter-production-candidate
+Status: REVIEWED
+Reviewer: Claude Code
+Class: A
+Artifact: current `infra/sap_delivery_promoter/` at `65bd74a` plus deployment proposal commit
+`337ccc5` (`docs/V3_PROMOTER_DEPLOYMENT_PROPOSAL_20260827.md`).
+Opened: 2026-08-27T09:30:00+07:00
+
+Claim: exact private Cloud Run candidate required before the PASSed workflow replacement. Review
+the complete source delta `daa9331..65bd74a`, including two-name request/response, physical CSV
+header/data-row census, event-identity separation, exact-generation source read, create-only
+destination rewrite, CRC/size/hash binding, error behavior, pinned dependencies, internal-only
+service configuration, proposed IAM scope, acceptance checks, and absent-service rollback.
+
+Evidence: `git diff --check daa9331..65bd74a -- infra/sap_delivery_promoter` is clean; current
+`main.py` and `test_main.py` compile. Local unit execution is blocked only because Flask/GCS test
+dependencies are not installed in this shell; prior reviews passed the earlier test set, but the
+expanded current suite must run in the reviewed build environment before deployment. Live checker
+at `2026-08-27T02:25:17.8741884Z` proves the service is absent. Do not deploy, build remotely,
+change IAM, write GCS, or create Scheduler.
+
+Verdict: **PASS** — `docs/reviews/2026-08-27-65bd74a-promoter-claude.md`. Cross-checked the
+two-name request/response contract directly against the workflow's `promote_daily_archive` step —
+this closes the external-dependency gap my own full-delta workflow review flagged as unverifiable
+from this repo. `destination.rewrite(..., if_generation_match=0)` is the correct create-only GCS
+precondition; the source generation is pinned before both the SHA-256 read and the CSV-shape read,
+so GCS's generation immutability rules out any TOCTOU gap between validation and copy. The 56-column
+canonical header is checked by exact tuple equality, not membership, so a reordered header is
+correctly rejected. Deployment proposal uses `--ingress internal`, `--no-allow-unauthenticated`, and
+a single scoped invoker binding; env vars match the three `configured_name()` calls exactly. No
+BLOCK. Minor non-blocking note: the source object is downloaded twice (once for SHA-256, once for
+CSV shape) — a latency/cost inefficiency, not a correctness issue.
+
+## RQ-20260827-0921-v3-scenario1-lifecycle-adapter
+Status: REVIEWED
+Reviewer: Claude Code
+Class: A
+Artifact: commit `7842cc1`; DDL 101 and its sentinel operator file.
+Opened: 2026-08-27T09:21:00+07:00
+
+Claim: non-destructively adapts the already-reviewed Scenario 1 manual delivery marker into DDL
+100's common export→pickup→import→row-ACK lifecycle. It requires the exact release-ready run,
+unexpired activation approval, byte/name/generation-bound file and SAP manifests, exact released
+identity/archive conservation, and atomically refuses duplicate/racing claims. It performs no
+export, GCS write/copy, delivery, workflow execution, or Scheduler mutation.
+
+Evidence: authenticated BigQuery dry-run passed at 0 bytes after the atomic MERGE hardening;
+`git diff --check` is clean. Review dependency ordering on DDL 100, Scenario 1 manifest joins,
+identity/hash conservation, replay/race behavior, lifecycle count semantics, and sentinel safety.
+Do not deploy or CALL.
+
+Verdict: **PASS WITH NOTES** — `docs/reviews/2026-08-27-7842cc1-claude.md`. Verified every column
+this adapter reads from `v3_onetime_manual_delivery_evidence` against DDL 086's actual schema (all
+present), confirmed the MERGE source is guaranteed single-row, and confirmed the byte-binding
+ASSERTs actually re-verify the manual delivery against `export_file_manifest`/
+`sap_delivery_manifest_v3` rather than trusting the evidence table's self-report. No BLOCK on this
+file's own logic. Note: this adapter's claims flow through DDL 100's
+`vw_v3_flow_export_lifecycle`, which has a separate BLOCK (see below) — deploy together with that
+fix so Scenario 1 doesn't inherit the same blind spot.
+
+## RQ-20260827-0916-v3-scenario3-independent-lifecycle
+Status: REVIEWED
+Reviewer: Claude Code
+Class: A
+Artifact: commit `051543b`; DDL 100 and its three Scenario 3 operator files.
+Opened: 2026-08-27T09:16:00+07:00
+
+Claim: supplies the missing independently deployable Scenario 3 archive-to-ACK chain without
+weakening the broad Unit 5 delivery marker. The archive procedure requires an exact release-ready
+run plus unexpired activation approval, binds immutable Scenario 3 identity/spine evidence to one
+explicit export claim, refuses replay, archives only to the restricted prefix, and leaves a
+recoverable `PREPARING_ARCHIVE` hold if object creation fails. A separate claim-bound delivery
+marker conserves full-spine rows versus event identities before recording exact production-object
+evidence. The lifecycle view treats SAP pickup, terminal parsed import, and row ACK/reject as
+separate stages and blocks duplicate logical keys or count mismatch.
+
+Evidence: authenticated BigQuery dry-run of DDL 100 passed after each hardening round; final pass
+was 2026-08-27 at a lower bound of 0 bytes. `git diff --check` is clean. Review the transaction
+failure boundary around EXPORT DATA, immutable-snapshot bijection, Scenario 3 role isolation,
+filename/shard assumptions, activation-approval use, exact delivery conservation, retry/history
+handling for pickup/import, row-level outcome conservation, and all sentinel operator files.
+Do not deploy, CALL, write GCS, or mutate Scheduler.
+
+Verdict: **BLOCK** — `docs/reviews/2026-08-27-051543b-claude.md`. The 56-column contract
+cross-check, immutable-snapshot bijection, EXPORT DATA transaction boundary, and parameter parity
+all held up under inspection. Hard finding: `vw_v3_flow_export_lifecycle`'s CASE statement
+(lines 476-478) checks `terminal_import_rows != 1` before `ARRAY_LENGTH(terminal_log_ids) != 1`,
+but by that point in the CASE the two values are always equal (duplicate_log_id_rows is already
+ruled out one branch earlier) — so the `> 1` case is swallowed by the `!= 1` branch and labeled
+ordinary `'PICKED_UP_PENDING_TERMINAL_IMPORT'` instead of the intended
+`'BLOCKED_IMPORT_LOG_ID_CARDINALITY'`, which becomes permanently unreachable. This silently
+downgrades exactly the multiple-LogIDs/`AMBIGUOUS_ACK` anomaly `V3_SCENARIO1_MANUAL_FALLBACK.md`
+step 6 already requires distinct handling for. Required correction: split the `= 0` (pending) and
+`> 1` (blocked) cases in that CASE before resubmitting a delta review of just the view.
+
+## RQ-20260827-0905-v3-workflow-live-replacement-delta
+Status: REVIEWED
+Reviewer: Claude Code
+Class: A
+Artifact: exact workflow delta `65ebde3..8a420d7` in
+`infra/v3_nightly_orchestrator.workflows.yaml`. Live revision `000009-e96` was previously proved
+source-identical to `65ebde3` by deployment review
+`docs/reviews/2026-08-05-0e44aec-claude.md`.
+Opened: 2026-08-27T09:05:00+07:00
+
+Claim: this is the complete replacement delta, not merely the already-PASSed `8a420d7` correction.
+Review the five workflow commits after the live base: `30bd693`, `28686d6`, `efd6de0`, `65bd74a`,
+and `8a420d7`. Confirm filename separation, daily-completeness ordering/fail-closed behavior,
+file-row versus event-identity conservation, dependency availability, and that
+`delivery_enabled:false` remains the inert default. Identify any dependency that must be deployed
+before replacing the workflow. Do not deploy, execute the workflow, or mutate Scheduler.
+
+Evidence: `git diff --check 65ebde3..8a420d7 -- infra/v3_nightly_orchestrator.workflows.yaml` is
+clean; the full delta is 279 insertions/14 deletions. Exact `8a420d7` has a static PASS at
+`docs/reviews/2026-08-27-8a420d7-claude.md`; that narrow PASS is not treated as approval of the
+other four live-to-candidate commits.
+
+Verdict: **PASS WITH NOTES** — `docs/reviews/2026-08-27-8a420d7-full-delta-claude.md`. Traced all
+five commits; `30bd693`'s two-name split directly implements
+`FINDINGS_LOG21183_FILENAME_BINDING_GAP_20260805.md`'s required correction, not a divergent design.
+Verified the workflow's 13-value `sp_mark_v3_exact_delivery` CALL construction matches DDL 062's
+current 13-param signature in exact order (checked at HEAD, not just the diff hunks). Confirmed
+`delivery_enabled` is still a hardcoded `false` literal, not caller-overridable. No BLOCK.
+Dependencies that must deploy before this workflow replaces the live one: DDL 070
+(`production_file_name` column), DDL 062 (current 13-param signature — live procedure is still the
+older single-`sap_file_name` version), DDL 067 (daily-completeness snapshot procedure, per
+`28686d6`'s own commit message "never deployed" — not gated by `delivery_enabled`, so this is the
+more urgent of the two), and the external `promotion_service_url` Cloud Run service must accept/
+return the new field names. `run_bq_call`'s built-in dry-run means a missing dependency fails
+closed loudly rather than silently, but sequencing still matters.
+
+## RQ-20260827-0904-v3-unit2-magnitude-bootstrap
+Status: REVIEWED
+Reviewer: Claude Code
+Class: A
+Artifact: commit `46bb3b9`;
+`sql/ddl/099_v3_unit2_magnitude_bootstrap.sql` only.
+Opened: 2026-08-27T09:04:00+07:00
+
+Claim: closes the first-run circular dependency without inventing production thresholds. The
+procedure accepts explicit approved thresholds, requires zero active configs and an exact prior
+successful Units 2-5 archive run, reconstructs and conserves its Unit 2 distribution, then
+atomically records the config, self-baseline cells, and first PASS baseline. Source only: no seed,
+CALL, interface, GCS, workflow, or Scheduler action.
+
+Evidence: authenticated BigQuery dry-run passed at 0 bytes on 2026-08-27. The read-only comparison
+job `bqjob_r653b2df0f1d8c18a_000001a040f3cd28_1` conserved both runs and showed why values cannot
+be guessed: several normal ready cells changed 46–92% while high-volume stable cells changed about
+0–2%. Review atomicity, replay refusal, self-baseline semantics, approval/threshold bounds, grain,
+and parity with DDL 063's distribution logic. Do not deploy or CALL.
+
+Verdict: **PASS** — `docs/reviews/2026-08-27-46bb3b9-claude.md`. Diffed `_distribution`'s CTEs
+field-by-field against DDL 063's inline `event_cells`/`schedule_cells` — identical. Three
+independent ASSERTs (zero active config, unused config_id, no existing distribution/result
+evidence for the baseline run) make the bootstrap genuinely one-time, not one-time-by-convention.
+Self-baseline's hardcoded zero-breach/PASS result is mathematically equivalent to running DDL 063's
+real breach formula against itself. No BLOCK, no notes.
+
 ## RQ-20260827-0630-daily-completeness-fail-closed-delta
-Status: OPEN
+Status: REVIEWED
 Reviewer: Claude Code
 Class: A
 Artifact: commit `8a420d7`; `infra/v3_nightly_orchestrator.workflows.yaml`
@@ -20,6 +499,50 @@ Evidence: workflow YAML parses successfully with 14 top-level keys and all requi
 `git diff --check` is clean. The unchanged DDL 067 passed the authenticated safe-wrapper dry-run
 at 0 bytes on 2026-08-27, so this delta changes workflow source only. Review exact `8a420d7`; do
 not deploy or mutate a scheduler.
+
+Verdict: **PASS** — `docs/reviews/2026-08-27-8a420d7-claude.md`. Traced both subworkflows'
+full step sequence (not just the diff hunks): exception guard → jobComplete gate → row-count gate
+→ new field-count gate → new blank/non-numeric value gate → return, with `fail_closed` confirmed
+to end in an unconditional `raise` so no gate silently falls through. Both required corrections
+are genuinely closed. No further round needed.
+
+## RQ-20260827-0116-v3-split-scenario-activation-control
+Status: REVIEWED
+Reviewer: Claude Code
+Class: A
+Artifact: commits `1a587bc`..`b3d88b3`; `sql/ddl/098_v3_split_scenario_activation_control.sql`
+(new), `scripts/build_v3_scheduler_inventory.py` (new), two new read-only Scenario 3 diagnostics,
+plus unrelated riders `sql/ddl/058_v3_unit5_newpayment_shadow.sql` and
+`sql/operator/20260827_review_v3_unit2_magnitude_bootstrap.sql`. Backfilled request: 56 files /
+64 commits since the last reviewed checkpoint (`573f273`) had zero REVIEW_QUEUE.md entries; per
+user instruction this newest unit was reviewed first, the remaining backlog is still open.
+Opened: 2026-08-27T01:16:03+07:00
+
+Verdict: **PASS WITH NOTES** — `docs/reviews/2026-08-27-b3d88b3-claude.md`. No BigQuery access in
+this review session (document/logic review only). No BLOCK: nothing is deployed or called, no
+number is claimed. Cross-checked the cron non-overlap proof's independent BigQuery recomputation
+against `build_v3_scheduler_inventory.py`'s Python cron matcher field-by-field — they agree.
+Notes: (1) `fn_v3_cron_field_matches` MOD-by-zero on a malformed `*/0` cron atom fails as an
+ungraceful runtime error rather than a named ASSERT — low risk, evidence source is Cloud
+Scheduler's own API; (2) two unrelated small fixes (058 NULL normalization, unit2 magnitude
+bootstrap alias qualification) rode in this commit range without their own callout. Deploy/CALL
+still requires the authenticated dry-run + deployment + successful call `V3_SCENARIO1_MANUAL_FALLBACK.md`
+itself demands before any scenario can be activated.
+
+## RQ-20260826-1100-duplicate-qr-installment-finding-closure
+Status: REVIEWED
+Reviewer: Codex
+Class: A
+Artifact: commit `d19eb9b`; `docs/FINDINGS_DUPLICATE_QR_INSTALLMENT_20260804.md`. Clears the
+long-standing OPEN debt at `RQ-20260811-2001-duplicate-qr-installment-finding` (line ~769).
+Opened: 2026-08-11T20:01:00+07:00 (original request; closed 2026-08-26)
+
+Verdict: **PASS WITH NOTES** — `docs/reviews/2026-08-26-d19eb9b-codex.md`. No exact BigQuery job
+ID/timestamp captured for either the population query or the INCIDENT-002a/002b exclusion check
+(traceability note only, no BigQuery access available in this review session to independently
+re-run either query); INCIDENT-002a/002b exclusion query text not shown. Neither gap changes the
+verdict — no correction, refund, or deploy is authorized by this artifact — but both must be
+closed before the population is cited for downstream correction work.
 
 ## RQ-20260826-0457-v3-create-readiness-report
 Status: REVIEWED
@@ -785,7 +1308,8 @@ primary/fallback delivery, after acceptance rehearsal, then install a 06:00 ICT 
 Evidence: source/test/deployment artifacts and DDL 005/AS_BUILT table-refresh contract.
 
 ## RQ-20260811-2001-duplicate-qr-installment-finding
-Status: OPEN — request Class A review; this finding's own header already states it was never
+Status: REVIEWED (2026-08-26) — see `docs/reviews/2026-08-26-d19eb9b-codex.md`
+Was: OPEN — request Class A review; this finding's own header already states it was never
 reviewed ("Not yet Class-A reviewed"), and it carries a real money-impact conclusion
 (฿1,078,326 total, ฿403,977 in July) that per this project's rules should not sit unreviewed
 indefinitely, even though no correction is authorized or being requested here.

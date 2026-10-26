@@ -1,0 +1,17 @@
+## 2026-10-22 — requested change-order recovery awaiting scoped financial decisions
+
+User requested L81072106 Paid, L81048975 Paid, L81036194 Cancelled(Change order); repeated order IDs were deduplicated. Import authorization covers the requested outcome, but does not resolve the monetary/refund ambiguities below. No production upload, CSV, SAP write, refund, or GL certification performed.
+
+Direct RCB_LIVE_DB.dbo.[@INSURANCE] captured 2026-10-22 17:26:36 ICT: no requested target documents. Original L78977757-M1/V1 remain Paid, DocEntry2544908/2544909, Actual645.21/8500.00; original L79012592-M1/V1 remain Paid, DocEntry2548206/2548207, Actual645.21/20370.00. No original change-cancel documents were found.
+
+CareOS source and change-order links prove L78977757 -> L81036194 -> L81072106 and L79012592 -> L81048975. Item-level source cancellations are true on both original pairs and L81036194-M1/V1. Requested final Paid items are active FULL_PAYMENT. These are separate linked stages, not additional independent successful receipts.
+
+Current sap_view.RCB_Motor_process_3_change candidates (not a validated release): L81072106-M1 Actual/Expected645.21; V1 Actual8500.00 Expected5900.00; L81048975-V1 Actual21015.21 Expected12622.79. Source records pending refunds on L81036194 total9145.21 and on L79012592 total8392.42. Do not subtract a merely pending refund or silently carry the full credit into the replacement. Prior Oct19 full-actual approvals were item-specific. User questions are pending for both chains, including intermediate Paid-before-Cancel recovery of L81036194. Preserve existing accepted original invoice identities; the transfer-based generated replacement IDs still require exact provenance review.
+
+Source freshness metadata: careos_order_items modified2026-10-22T10:01:13.192Z, carepay_charges10:01:55.933Z; carepay_refunds last modified2026-10-21T13:15:04.019Z; cancelled_change_orders last modified2026-10-21T15:35:59.808Z. Pending refund claims are from this mirror, not proof of bank payout. Fresh refund evidence is required at release.
+
+Live payment registry at2026-10-22T10:29:11.786Z confirms Credit Shell method / RCB-Credit Shell outbound channel (account9001-17); October OFPR AbsEntry43 is open. Both create/change positional contracts have56columns. Current alternate creditshell view emits NULL monetary values for L81048975 and must not be exported.
+
+Independent reviewer /root/review_request_holds confirms HOLD all requested target rows pending decisions and exact release gates. No safe independent target subset: M1 is part of the unresolved linked chain/shared refund. Conditional sequencing: original change-cancel ACK -> intermediate/replacement Paid ACK -> L81036194 change-cancel ACK -> final L81072106 Paid ACK. Each step requires exact immutable payload validation, independent review, current prior-delivery check, create-only intent/readback, and item-level SAP ACK.
+
+Evidence C:/dev/sap-request-20261022/assessment.json, sap_baseline.json, chain_facts.json, payload.json, current_payment_masters.json. Source job bqjob_rf63958ea8bacb3f_000001a163252f15_1; chain job bqjob_r64861516efeade37_000001a16326c281_1; payload job bqjob_r23584fa16ee6edd4_000001a163265234_1. SQL/logs/metadata: workspace outputs/sap_request_20261022. Repository pull --ff-only failed due pre-existing divergent branches; no merge/rebase or unrelated modifications made. Review status scan reported zero assigned OPEN reviews; no exact-payload release review exists for this request.

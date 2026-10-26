@@ -1,0 +1,86 @@
+SAP month-end reconciliation — continuation checkpoint, 2026-10-02
+
+LATEST USER INSTRUCTION (supersedes September draft settings):
+BatchRunDate = current Bangkok date (02102026 on this run).
+New interface PaymentDate must lie within current month (October 2026).
+Paid scope: SUCCESSFUL charges with payment_date in calendar 2026 Bangkok.
+Cancel scope: item cancel_time in calendar 2026 Bangkok only.
+User requires reusable SQL, outstanding summary, and LOCAL interface files for review.
+Do not upload interface files.
+
+Output root:
+C:/Users/Developer/OneDrive - Rabbit Internet/Documents/03 Project - Partner/02 SAP/2026 Q3 closing/reconcile_20261002
+
+Completed queries, all through bq_safe_query.sh, dry-run + 20 GiB ceiling:
+sql/paid_reconciliation.sql — 2026-10-02T04:00:23.482612Z
+291073 dated successful charges. Missing-view-check obligations 741, known scenario 1.
+Separate: 13549 ambiguous SAP document obligations, 34 paid-after-cancel obligations,
+53 cancelled lifecycle obligations, 51233 source-identity and 1844 allocation exceptions.
+These are candidate obligations, NOT confirmed losses or new files to resend.
+
+sql/cancel_reconciliation.sql — 2026-10-02T03:59:46Z
+13871 items with 2026 cancellation dates.
+13245 have cancelled-period coverage but retained documents requiring review.
+2 payload candidates; 303 partial/multiple-document cases; 115 missing SAP predecessors;
+134 paid-after-cancel holds; 30 unknown successful-payment-date holds; 24 change routes;
+9 payment/allocation holds; 8 future dates; 1 excluded old-policy case.
+Coverage does not establish import/JE acceptance.
+
+sql/pending_reconciliation.sql — 2026-10-02T04:00:18Z
+Current schedule scope includes 2026 orders/payments OR any current SAP Pending item.
+261 missing pending periods, 95 expected-amount-review periods, 1736 source-paid/SAP-not-paid
+periods (overlap paid work; not additive), 78290 matching pending periods.
+sql/pending_sap_reverse.sql — 2026-10-02T04:01:06Z
+All 400002 SAP Pending documents inventoried, including 9143 missing source-item matches
+and 3 extra pending periods absent from current source schedule. These are review signals,
+not automatically valid reinterface candidates.
+
+sql/paid_amount_reconciliation.sql — 2026-10-02T03:54:06Z
+239518 exact charge amount matches; 289 charge amount differences needing allocation review.
+Not an order-level accounting or GL reconciliation.
+sql/date_scope_exceptions.sql
+404546 successful charges have NULL payment_date (all-time date-unknown population, NOT
+asserted 2026). One cancelled item has unknown cancellation date. Never infer event date
+from update_time/create_time.
+
+Read-only SQL independent review: corrections PASS, subject to successful reruns (now done).
+Reviewer /root/review_reconcile, no mutation or queries by reviewer.
+
+Current interface status: NO NEW CSV INTERFACE GENERATED. Candidate validator is NOT FINAL.
+Captured 788 items across all 12 current sap_view routes plus source/SAP/master/policy evidence.
+Old validation output used September dates and a false cross-view type comparison; it must
+not be reported as a final zero-eligible business result. The local validator now compares
+types to each view's own baseline and uses current date/month, but has not been rerun.
+
+Execution blocker:
+Automatic approval review rejected the next shell command because workspace credits are
+exhausted; it explicitly says this is review failure, not an unsafe-action verdict.
+Do not bypass this by using node child processes or direct fs writes outside permitted roots.
+All already-running query jobs completed. No further external writes or shell execution.
+
+Required continuation after credits restored:
+1. Refresh the dated candidate list from latest paid query (prior capture was 741 candidates;
+   latest missing+known is 742). Capture any new item and required complete sibling evidence.
+2. Finish review corrections in sap_monthend_validate.py:
+   - explicit ordinary RCL versus RCL_CMI segregation;
+   - source current-snapshot and full expected-spine proof;
+   - final accepted-payload + exact SAP receipt charge conservation (not held siblings);
+   - cancel physical schema/type checks and reverse SAP-to-source proof;
+   - preserve existing Paid PaymentMethod/Channel as well as invoice/date/amount;
+   - resolve latest reviewed Pending blank/case rules against older blanket pre-export docs;
+   - user current-month date rule applies to new receipts; do not silently rewrite stored SAP
+     Paid historical dates. If literal all rows must be current month, hold incompatible spines.
+3. Match prior delivered interfaces by exact item/period/invoice/operation, excluding resends.
+4. Add fresh complete evidence for pending-only missing spines not in paid-candidate captures.
+5. Independently review exact final payloads and serializer; export only passing complete items
+   with 56 positional columns, flow/operation-separated filenames, manifest hashes, readback proof.
+6. Save concise outstanding summaries/CSVs alongside reusable SQL in user output root.
+7. Update canonical project task/progress records with user latest rule. Existing original repo
+   is dirty/diverged; git pull --ff-only failed. Do not merge/rebase unrelated work.
+
+Workspace scripts:
+sap_monthend_setup.py, sap_monthend_run.py, sap_monthend_capture.py,
+sap_monthend_policy.py, sap_monthend_enrich.py, sap_monthend_review_fixes.py,
+sap_monthend_validate.py, sap_pending_reconciliation.sql.
+Do not rerun setup/enrich/review_fixes blindly: they rewrite query files and earlier settings.
+Use final SQL files under output/sql as the continuation source.
