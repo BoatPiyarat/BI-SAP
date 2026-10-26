@@ -13,16 +13,23 @@
 | `.../agentic_bootstrap/handoff_claude_20261001_nonmotor_changeorder/` | Handoff NonMotor change-order 1 ต.ค. |
 | Google Drive: SAP interface development / careos-sap-daily-routine | **Master** ของ daily routine CareOS→SAP (แก้ที่ Drive เท่านั้น) https://drive.google.com/drive/folders/1-dVcorTnzcYamGw3cOvzC77NyOgfNqZx |
 
+| `22 AI project/Payment/` | เรื่อง payment channel (EDC bank mapping / bank suffix) และ worktree `wt_edc-bank-mapping-20260929` — ดูหัวข้อ 2.1 |
+
 งาน Motor Commission (คำนวณค่าคอม, payroll) อยู่ที่ `06 Sales/Motor Commission/Motor Commission Engine` แยกจาก SAP แล้ว
+
+## 2.1 Payment channel (อยู่ใน `22 AI project/Payment/`)
+
+| เรื่อง | Path | สรุป / สถานะ |
+|---|---|---|
+| EDC bank mapping | `edc_bank_mapping_impact_20260929/`, `edc_kbank_status_20260929/` | เดิม view hardcode `PaymentChannel='RCB-EDC-KBANK'` ทั้งที่ EDC มีหลายธนาคาร; PR #3 |
+| EDC mapping fix → **superseded** | `edc_mapping_fix_20260929/` | ห้ามใช้ข้อเสนอ EDC→Omise ใน workbook เดิม (ดู `SUPERSEDED.txt`) |
+| EDC suffix correction (ฉบับที่ใช้จริง) | `edc_suffix_correction_20260930/` | EDC ยังเป็น EDC เปลี่ยนเฉพาะ bank suffix ตาม CareOS; deploy 15 views + 3 procedures, review PASS WITH NOTES |
 
 ## 2. งานที่ย้ายมา (อยู่ใน `migrated_from_motor_commission_20261026/`)
 
 | เรื่อง | Path | สรุป / สถานะ |
 |---|---|---|
 | SAP Interface v1.1 (CREDIT_CARD_INSTALLMENT) | `sap_interface_v1_1/` | เริ่ม 30 ส.ค. จาก batch SQL ที่สร้างจาก `sap_dashboard_carepay_fully_paid`; มี PROJECT_CONTEXT + validation |
-| EDC bank mapping | `outputs/edc_bank_mapping_impact_20260929/`, `edc_kbank_status_20260929/` | เดิม view hardcode `PaymentChannel='RCB-EDC-KBANK'` ทั้งที่ EDC มีหลายธนาคาร; PR #3 |
-| EDC mapping fix → **superseded** | `outputs/edc_mapping_fix_20260929/` | ห้ามใช้ข้อเสนอ EDC→Omise ใน workbook เดิม (ดู `SUPERSEDED.txt`) |
-| EDC suffix correction (ฉบับที่ใช้จริง) | `outputs/edc_suffix_correction_20260930/` | EDC ยังเป็น EDC เปลี่ยนเฉพาะ bank suffix ตาม CareOS; deploy 15 views + 3 procedures, review PASS WITH NOTES |
 | Cancel diagnostic | `outputs/sap_cancel_diagnostic_20260929/FINDINGS.md` | ตรวจรายการ cancel ที่ส่ง SAP (read-only) |
 | NonMotor earlier-period gap | `outputs/sap_period_gap_fix_20260929/` | NonMotor payment ถูกข้ามเมื่อ installment หลังจ่ายแล้ว; deploy 29 ก.ย. 14:33 (approval ใน `APPROVAL_20260929.md`) |
 | Month-end reconciliation ก.ย. | `sap_monthend_*.py`, `outputs/SAP_reconciliation_20261002_0900/`, `SAP_RECONCILE_CONTINUATION_20261002.txt`, `sap-request-20261001/` | Paid/Pending/Cancel recon ณ 2 ต.ค. 09:00; checkpoint ระบุกติกา BatchRunDate/PaymentDate |
