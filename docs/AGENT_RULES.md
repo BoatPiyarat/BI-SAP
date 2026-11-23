@@ -69,6 +69,13 @@ require constant clarification.
   definition, preserve every other byte/behavior (including current inline PaymentDate and
   BatchRunDate rules), and prove the compulsory-installment predicate remains unchanged. This is
   not a general exception for `sap_data_engineer` or any other legacy object.
+- **Scoped legacy-view + deployer exception (Boat, 2026-11-24 ICT, chat: "ฉันอนุมัติให้ Claude code แก้ไข view"):**
+  Claude Code may `CREATE OR REPLACE` exactly `sap_data_engineer.sap_dashboard_carepay_fully_paid`,
+  `sap_data_engineer.RCB_HEALTH` and `sap_view.RCB_NonMotor_process_2_cancel`, solely to add the
+  `QR_CODE` + `RABBIT_CASH` → `RCB-Rabbit Card` branches in
+  `sql/production/20261124_deploy_rabbit_card_qr_mapping.sql`, and only via the SHA-guarded
+  `..._deploy.bqscript.sql` after Boat's explicit "deploy OK" in session. Boat's instruction also
+  holds RABBIT_CASH out of SAP until this fix is live. This does not widen any other rule.
 - **Never write to `gs://interface-file/**`.** That is production; SAP pulls it every 15 minutes. Shadow prefixes only.
 - **DEPLOY GATE:** replacing anything existing consumers read (views, tables, procedures — even inside v3) requires: dry-run evidence + a one-paragraph change summary + explicit human "deploy OK" in that session. Building/testing *new* objects needs no approval.
 - **SINGLE DEPLOYER (Boat, 2026-08-02): Codex only.** Claude Code may prepare source, run

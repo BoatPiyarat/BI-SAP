@@ -87,3 +87,53 @@ No view drops RABBIT_CASH by filter: the only provider filters are `!= 'ICOLLECT
 * Legacy-object DDL needs a new explicit Boat exception: the current AGENT_RULES exception covers
   only `sap_dashboard_carepay_installment`.
 * Dry-run, Class-A review, Boat deploy OK, then Codex executes.
+
+## UPDATE 2026-11-24 ~02:15 ICT: spec found, exposure confirmed, fix prepared (not deployed)
+
+### FA spec
+Mo (FA) posted the spec on 2026-09-30 in the SAP Teams group, with Warin and Puii cc'd:
+* **One-Time Order (RCB):** PaymentMethod = PaymentChannel = **`RCB-Rabbit Card`**. FA was to add it
+  to RCB Live and RCB_ISSUE_DB.
+* **CI Order (RCL):** keep the existing SAP payment channel.
+
+### Exposure
+* The legacy export (`data-extraction@` service account) ran at **2026-11-24 01:30 ICT** with
+  `SELECT *` on the 6 `sap_view.RCB_*` interface views.
+* `sap_view.RCB_Motor_process_create` (via `sap_dashboard_carepay_fully_paid`) currently returns:
+  * L79086876-V1: `TRF Transfer / RCB-Transfer-อื่นๆ`, BatchRunDate 23112026;
+  * L81230409-M1: the same.
+* So both were **almost certainly delivered to SAP with the wrong codes**.
+* This is UNVERIFIED at file level: there is no bucket read access, and the export job's result
+  table belongs to another user. Confirm after the next SAP_LIVE extract.
+* The other RABBIT_CASH charges belong to leads L81233037 and L79597130, which have no order yet,
+  so they have not been exported.
+* `SAP_LIVE_FULL` has 0 rows with `Rabbit Card`, so SAP has never received the code. Whether the
+  master data exists in RCB Live is **UNVERIFIED** (FA should confirm).
+
+### Export-path scope
+| exported view | QR mapping source | patched? |
+|---|---|---|
+| `RCB_Motor_process_create` | `sap_dashboard_carepay_fully_paid` | yes |
+| `RCB_NonMotor_process_1_create` | `RCB_HEALTH` | yes |
+| `RCB_NonMotor_process_2_cancel` | own CASE | yes |
+| `RCB_Motor_process_3_change` | hardcodes `EDC EDC` / `fn_rcb_payment_mapping('EDC', …)` for every non-credit-shell row | no |
+| `RCB_Motor_process_2_cancel_new`, `_4_creditshell` | no QR mapping | n/a |
+
+* The `RCB_Motor_process_3_change` behaviour is **pre-existing and out of scope**: any QR change
+  row would post as EDC. It is flagged for a separate fix.
+* Not in the export path, so not patched: `RCB_MOTOR`, `sap_fixing_rcb`,
+  `sap_dashboard_carepay_cancelled`, `fn_rcb_payment_mapping`, the RCL views, and the v3 objects.
+* Separate observation: the stored text of v3 `vw_onetime_payload_source` contains mojibake for
+  `RCB-Transfer-อื่นๆ`. Not investigated.
+
+### Prepared fix
+* Artifact: `sql/production/20261124_deploy_rabbit_card_qr_mapping.sql` (full DDL, reviewable).
+  Execution vehicles: `..._validate.bqscript.sql` and `..._deploy.bqscript.sql`.
+* The scripts assert the live SHA, assert each anchor is unique, insert one WHEN line before the
+  Omise QR line in each of the 2 CASEs per view, and assert the candidate SHA equals the artifact.
+* Evidence:
+  * Mapping-domain diff over all 41 live (payment_method, service_provider) pairs: only
+    `QR_CODE/RABBIT_CASH` changes, `TRF Transfer` → `RCB-Rabbit Card` (job `X724qTn3PBATORDHD5S2VSRHTc7j`).
+  * Validate script: all asserts passed, all 3 candidates compile, 56 columns in the same order
+    (job `job_pWHipfQrDC0jhbMYlW-Asr_QNH2M`).
+* Status: **awaiting Boat "deploy OK"**. Next legacy export is 2026-11-25 01:30 ICT.
