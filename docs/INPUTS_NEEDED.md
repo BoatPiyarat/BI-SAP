@@ -1,5 +1,18 @@
 # INPUTS NEEDED — things only Boat / Aware / Attila / Finance can answer
 
+## URGENT OPEN 2026-11-23 — Boat/Accounting/Tech: SAP codes for Motor QFlow QR via Rabbit gateway (`RABBIT_CASH`)
+
+Details are in `docs/FINDINGS_RABBIT_CASH_QR_GATEWAY_UNMAPPED_20261123.md`. Since 2026-11-23 09:00 ICT,
+successful QR charges with `service_provider='RABBIT_CASH'` fall through to `'TRF Transfer'` /
+`'RCB-Transfer-อื่นๆ'` in the legacy RCB views (NULL in `sap_dashboard_carepay_cancelled`).
+
+1. Accounting: the exact SAP `PaymentMethod` and `PaymentChannel` strings for the new gateway. They
+   were not found by Teams/Outlook search, so paste them or forward the message.
+2. Tech: confirm that `RABBIT_CASH` is the "Rabbit Card Gateway" value and the only new value.
+3. Boat: interim choice. Either hold RABBIT_CASH rows from the RCB exports until the codes exist,
+   or export them as-is and correct later. Also needed: an explicit exception for the legacy
+   `sap_data_engineer`/`sap_view` view edits.
+
 ## OPEN 2026-08-27 — Boat: approve the six Unit 2 magnitude thresholds and provenance
 
 The reviewed bootstrap procedure `sp_bootstrap_v3_unit2_magnitude` is deployed, and baseline run

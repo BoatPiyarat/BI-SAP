@@ -1,5 +1,13 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-11-23 — found new QR provider `RABBIT_CASH` (Motor QFlow gateway switch) unmapped in production views
+
+- Read-only investigation. Successful `RABBIT_CASH` QR charges map to `TRF Transfer` / `RCB-Transfer-อื่นๆ`
+  in RCB_MOTOR, fully_paid, fixing_rcb, RCB_HEALTH and NonMotor cancel, and to NULL in carepay_cancelled.
+- 2 linked motor orders are affected so far, and neither is in SAP yet.
+- Stopped per the money/accounting rule. Findings are in `docs/FINDINGS_RABBIT_CASH_QR_GATEWAY_UNMAPPED_20261123.md`;
+  the inputs needed are in INPUTS_NEEDED.
+
 ## 2026-08-25 (later) — built Phase 1 hold gate (082), prepared Phase 2 diff to 058, corrected RCL count
 
 - Added `sql/ddl/082_v3_rcl_empty_installment_detail_hold.sql`: `vw_v3_rcl_empty_installment_detail_hold`
