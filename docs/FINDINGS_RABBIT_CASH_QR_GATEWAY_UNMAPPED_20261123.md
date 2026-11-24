@@ -137,3 +137,34 @@ Mo (FA) posted the spec on 2026-09-30 in the SAP Teams group, with Warin and Pui
   * Validate script: all asserts passed, all 3 candidates compile, 56 columns in the same order
     (job `job_pWHipfQrDC0jhbMYlW-Asr_QNH2M`).
 * Status: **awaiting Boat "deploy OK"**. Next legacy export is 2026-11-25 01:30 ICT.
+
+## DEPLOYED 2026-11-24 20:55:56 ICT (Boat "deploy OK" in session)
+
+### Deploy
+* Script job: `job_pzB5G-5elUpxeehSxoyS6Db3CfRE`. All SHA and anchor asserts passed. The three
+  `CREATE_VIEW` child jobs ran at 20:55:59, 20:56:02 and 20:56:05. No other CREATE on these views
+  since 2026-11-24 01:00 ICT.
+
+### Post-deploy checks
+* Stored `RCB_NonMotor_process_2_cancel` SHA = candidate `e19526c8…` (exact).
+* Stored `fully_paid` (`4764aeaf…`) and `RCB_HEALTH` (`671e237d…`) = candidate text minus the leading
+  comment header. BigQuery DDL drops comments that come before `WITH`. This was verified by
+  hashing the candidate from its first `WITH`. The change-history header now lives only in the
+  repo artifact.
+* All three views plus `RCB_Motor_process_create`: 56 columns, order unchanged.
+* `sap_view.RCB_Motor_process_create` now returns 4 RABBIT_CASH items, all
+  `RCB-Rabbit Card / RCB-Rabbit Card`, BatchRunDate 24112026:
+  * L79086876-V1
+  * L79597130-V1
+  * L81230409-M1
+  * L81233037-M1
+
+  L79597130 and L81233037 got their orders created on 24 Nov.
+
+### SAP side
+* As of the query, `SAP_LIVE_FULL` has none of the 4 orders (max UpdateDate 2026-11-23).
+* `sap_import_result*` tables have no rows since 2026-11-22, so there is no import-log evidence
+  in BigQuery.
+* Open risk: if SAP imported L79086876-V1 / L81230409-M1 as TRF on 24 Nov 01:30, the 25 Nov
+  re-send will be rejected as a duplicate, and FA/Aware must correct those in SAP.
+* Follow-up check scheduled for 25 Nov.

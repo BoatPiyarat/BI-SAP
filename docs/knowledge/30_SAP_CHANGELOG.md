@@ -1,5 +1,17 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-11-24 20:56 ICT — DEPLOYED RABBIT_CASH → `RCB-Rabbit Card` mapping (3 legacy views)
+
+- Boat gave "deploy OK".
+- `sap_dashboard_carepay_fully_paid`, `RCB_HEALTH` and `RCB_NonMotor_process_2_cancel` were
+  replaced by the SHA-guarded script (job `job_pzB5G-5elUpxeehSxoyS6Db3CfRE`).
+- Verified:
+  - columns unchanged;
+  - 4 RABBIT_CASH items now `RCB-Rabbit Card`.
+- Leading comment headers of 2 views were dropped by BigQuery DDL; they are kept in the repo
+  artifact.
+- SAP import is not yet verifiable (mirror at 23 Nov). Check scheduled for 25 Nov.
+
 ## 2026-11-23 — found new QR provider `RABBIT_CASH` (Motor QFlow gateway switch) unmapped in production views
 
 - Read-only investigation. Successful `RABBIT_CASH` QR charges map to `TRF Transfer` / `RCB-Transfer-อื่นๆ`

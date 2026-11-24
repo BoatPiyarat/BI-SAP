@@ -1,6 +1,6 @@
 # INPUTS NEEDED — things only Boat / Aware / Attila / Finance can answer
 
-## URGENT OPEN 2026-11-23 — Boat/Accounting/Tech: SAP codes for Motor QFlow QR via Rabbit gateway (`RABBIT_CASH`)
+## OPEN 2026-11-23 (fix deployed 11-24) — Boat/Accounting/Tech: SAP codes for Motor QFlow QR via Rabbit gateway (`RABBIT_CASH`)
 
 Details are in `docs/FINDINGS_RABBIT_CASH_QR_GATEWAY_UNMAPPED_20261123.md`. Since 2026-11-23 09:00 ICT,
 successful QR charges with `service_provider='RABBIT_CASH'` fall through to `'TRF Transfer'` /
@@ -8,7 +8,7 @@ successful QR charges with `service_provider='RABBIT_CASH'` fall through to `'TR
 
 1. RESOLVED 2026-11-24: the FA spec (Mo, 2026-09-30) gives One-Time RCB = `RCB-Rabbit Card` for both
    fields, and RCL keeps the existing channel. Still open: FA must confirm `RCB-Rabbit Card` exists in RCB Live master data.
-1b. Boat: "deploy OK" for the prepared fix. Also, the 2 orders L79086876-V1 and L81230409-M1 were most
+1b. DONE 2026-11-24 20:56 ICT: fix deployed. Also, the 2 orders L79086876-V1 and L81230409-M1 were most
    likely exported on 24 Nov 01:30 as TRF Transfer; the SAP-side correction route needs FA/Aware.
 2. Tech: confirm that `RABBIT_CASH` is the "Rabbit Card Gateway" value and the only new value.
 3. Boat: interim choice. Either hold RABBIT_CASH rows from the RCB exports until the codes exist,
