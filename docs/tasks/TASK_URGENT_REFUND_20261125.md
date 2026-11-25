@@ -211,3 +211,25 @@ L78637687-M1 และ L77833033-V1: charge และเลขกรมธรร
 * Spine import result (INSURANCE_RCB_06_MANUAL_RCL_SPINE_COMPLETE, pulled 18:15) is **not in yet** as of
   18:20. Because the cancel is written without waiting (Boat), SAP may reject L80511750, L80513404 or
   L80518454 if the spine failed for them.
+
+## V2 Expected=0 rows: Settlement gap (Boat 2026-11-25 ~18:40 "Fix to all same problem")
+
+* Ning reported that L81070149-V2 and L81088877-V2 show in Insurance Search but not in Settlement.
+  Aware advises: cancel them, then resend with corrected Actual/Expected (shown in Ning's image, which BI
+  has not seen).
+* All 24 auto-recovered Credit Shell V2 items (BatchRunDate 14/16 Nov) have 2 invoice rows. One row has
+  Expected = the full amount; the other has Expected 0.00 and Actual > 0. Expected and Actual totals
+  match for every item.
+* **Caveat:** the same "second row Expected 0" layout appears on about 330 other two-row orders in
+  Oct–Nov: 184 Credit Shell V1, about 140 DPM and 9 M1. Expected 0 may not be the cause on its own,
+  or those orders may be missing from Settlement too. **Needs confirmation from Ning/Aware.**
+* Prepared, NOT written: `sap_integration_v3.diag_manual_cancel_v2fix_20261125`.
+  * 24 items / 48 rows, cancel_new transforms.
+  * Guard hits 0; none already C#-cancelled.
+* Blocked on:
+  1. The target Expected/Actual per invoice row (Aware's image).
+  2. The OrderItem version for the resend: V2 again after the C# cancel, or V3.
+  3. Whether the 184 V1 / DPM orders with the same layout are in Settlement.
+* The cancel goes out only together with a confirmed resend, so SAP never has no AP for these items.
+* The 9 unfixed V1 items (L81064262 etc.) are held. Cancelling them now would make the live view
+  generate V2s with the same Expected 0 layout at 01:30.
