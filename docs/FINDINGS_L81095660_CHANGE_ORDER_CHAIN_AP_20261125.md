@@ -69,3 +69,35 @@ path never updates a row once it is in SAP. This matches the four 14–16 Nov V2
 * Writing interface files to `gs://interface-file` is not allowed for Claude Code (AGENT_RULES).
   Execution belongs to Codex, or to Boat's manual path as used for the November V2s.
 * The file must pass the pre-export gate.
+
+## CORRECTION 2026-11-25 (supersedes "Money issue 1" and the DRAFT split above)
+
+### Earlier items were already cancelled
+My earlier filter `U_OrderID = '<id>'` missed SAP cancel records, which are stored with a `C#`
+prefix on U_OrderID. Both earlier items **are already cancelled in SAP**:
+
+| item | cancel record | status | BatchRunDate |
+|---|---|---|---|
+| L78968613-V1 | `C#L78968613` | Cancelled (Change order / Rejected) | 26102026 |
+| L81069428-V1 | `C#L81069428` | Cancelled (Change order / Rejected) | 27102026 |
+
+* Only L81095660-V1 is live (Paid).
+* There is no double-counted cash.
+
+### Exact precedent: L81135161
+| step | what happened |
+|---|---|
+| chain | L78815384 → L81134119 → L81135161 |
+| V1 cancel | `C#L81135161`, TransactionStatus `Cancelled` (plain), all other fields = the V1 row, BatchRunDate 10112026 |
+| V2 (16112026) | one row per charge; ActualReceived = that charge's real amount; ExpectedReceived = TotalAmount − Discount on the original-charge row (0 on the top-up row); PolicyNo + POLICY UPLOADED filled; PaymentDate rolled to 01112026 for the closed-month charge; ExpectedDate = charge date; RefOrder unchanged |
+
+### Corrected V2 for L81095660 (replaces the 8,444.98 split)
+| row | InvoiceNo | Expected | Actual | PaymentDate | ExpectedDate |
+|---|---|---|---|---|---|
+| 1 | chrg_69c77zaycoo18hbfile | 9,900.00 | 13,580.00 | 01112026 | 14102026 |
+| 2 | chrg_69eypk9sjiaju3h2dcc | 0.00 | 1,455.02 | 01112026 (21 Oct falls in a closed month) | 21102026 |
+
+### Remaining money issue
+* Actual 15,035.02 vs Expected 9,900.00 means the customer is over by **5,135.02**.
+* No CareOS refund exists. FA must handle the refund. This does not block V2.
+* Boat decided on 2026-11-25: cancel the old item and import V2.
