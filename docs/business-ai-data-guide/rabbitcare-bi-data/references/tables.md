@@ -1,0 +1,58 @@
+# Approved tables (pacific-plating-282708, region asia-southeast1)
+
+Use the **report layer first**. Go to raw CareOS only when the report layer lacks the field.
+Sizes/rows from `INFORMATION_SCHEMA.TABLE_STORAGE`, 2026-11-25. All refreshed daily unless noted.
+
+## Tier 1 — report layer (preferred)
+
+| Table | Grain | Rows | Use for |
+|---|---|---|---|
+| `analytics_reports.report_order_items` | ~1 row per order item (policy) — ⚠️ 48 rows duplicate an `item_id` (all-time, 2026-11-25): use `COUNT(DISTINCT item_id)` | ~830k | Premium, policies, product mix, insurer, agent, channel, car details. **Default for sales questions.** |
+| `analytics_reports.report_orders` | 1 row per order (`short_id`) | ~811k | Order counts, order-level dates (approved/paid/printed/shipped), voluntary vs mandatory premium, installment info, renewal. |
+| `analytics_reports.report_leads` | 1 row per lead | ~8.4M | Lead volume, source, conversion funnels. |
+| `analytics_reports.report_renew_orders` / `report_renew_leads` | renewal order / lead | ~32k / ~47k | Renewal analysis. |
+| `analytics_reports.report_rejection` | rejection event | ~5.6M | Lead rejection reasons. |
+| `analytics_reports.report_orders_nonmotor`, `report_leads_nonmotor`, `non_motor_report_order_for_accounting` | non-motor order / lead | small | Health & other non-motor. |
+| `analytics_reports.report_agent_daily_performance` | agent × day | ~24M | Agent activity/performance. Filter by date! |
+| `analytics_reports.report_marketing_daily`, `report_marketing_kpi`, `report_cr_marketing` | channel × day | small | Marketing spend/leads/CR. |
+
+## Tier 2 — dimensions
+
+| Table | Use |
+|---|---|
+| `analytics_dimensional_modelling.dim_days` | Calendar. |
+| `analytics_dimensional_modelling.dim_commission_months` | Commission month (`start_date` = 16th, `end_date` = 15th). |
+| `analytics_dimensional_modelling.dim_work_weeks`, `dim_biweeks` | Work-week / bi-week periods for targets. |
+| `analytics_dimensional_modelling.dim_marketing_channels`, `dim_lead_sources_list` | Channel / lead-source mapping. |
+| `careos.careos_insurance_companies` | Insurer master (`id`, `name_th`, `shortname_en`). |
+
+## Tier 3 — raw CareOS (only when needed; ask BI if unsure)
+
+| Table | Grain | Key notes |
+|---|---|---|
+| `careos.careos_orders` | order | `human_id` = order number. Do **not** use its `is_cancelled` for item cancellation. |
+| `careos.careos_order_items` | order item | `order_id` → `careos_orders.id`; `policy_start_date`, `approval_time`, `submit_date`, `cancel_time`, `motor_item_type`, `product`, premiums. |
+| `careos.carepay_transactions` | payment transaction per order | `order` → order id; `amount` in **satang**; `installments`. |
+| `careos.carepay_charges` | one charge (payment attempt / installment) | `transaction_id`; `amount` in **satang**; `status` (SUCCESSFUL/PENDING/FAILED); `payment_date`; `installment_number`; `service_provider` (`RABBIT_LENDING` = RCL). |
+| `careos.careos_accounting` | accounting / refund status per item | remittance, refund and cancellation workflow fields. |
+
+Raw rules: filter `delete_time IS NULL`; timestamps are UTC; satang ÷ 100; JSON fields (`data`,
+`annotations`) need BI help.
+
+## Never use
+
+- `careos.careos_new_car_package` (~9.6 TB), `careos.careos_car_insurance_packages_join_car_submodels`,
+  `careos.careos_generic_prod_*` — price-catalog tables, huge, not sales data.
+- `SAP`, `sap_view`, `sap_data_engineer`, `sap_integration_v2`, `sap_integration_v3` — accounting
+  interface pipeline. Numbers here follow SAP posting rules, not business definitions.
+- `motor_commission.*` — commission payout engine (governed).
+- `nana*`, `ibroker*`, `*_2021_*` — legacy systems before CareOS (pre-Dec-2022 data).
+- Personal / scratch datasets: `nutthapoj_base`, `pimwis_base`, `pongsakornm_base`,
+  `suphakorn_analytics`, `tsr_arwut`, `temp`, `develop_*`, `staging_*`, `_script*`, and any table
+  named `trial_*` or `backup_*`.
+- `analytics_reports.report_orders_by_agent_by_day` (~69 GB) — use `report_order_items` instead.
+
+## Data history
+
+CareOS data starts **2022-12-19**. Earlier sales lived in legacy systems (Nana/iBroker); combining
+eras needs BI.

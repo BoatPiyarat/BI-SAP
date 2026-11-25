@@ -1,5 +1,12 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-11-25 — business AI data guide skill (non-SAP, Class B)
+
+- Added `docs/business-ai-data-guide/`: Claude skill `rabbitcare-bi-data` (date-basis clarification,
+  metric definitions, approved tables, 7 query templates, new-question playbook) and a design
+  proposal for a governed self-service layer. Read-only BigQuery metadata/profiling only; no DDL,
+  no deploy. All 7 templates dry-run clean; evidence numbers cite `analytics_reports.*` at 2026-11-25.
+
 ## 2026-08-25 (later) — built Phase 1 hold gate (082), prepared Phase 2 diff to 058, corrected RCL count
 
 - Added `sql/ddl/082_v3_rcl_empty_installment_detail_hold.sql`: `vw_v3_rcl_empty_installment_detail_hold`
