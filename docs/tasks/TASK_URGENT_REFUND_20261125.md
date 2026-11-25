@@ -262,3 +262,12 @@ L78637687-M1 และ L77833033-V1: charge และเลขกรมธรร
   `gs://interface-file/RCB_MOTOR/INSURANCE_RCB_08_MANUAL_CANCEL_V2RECOVERY_20261125_000000000000.csv`.
 * Read-back: prod 11 lines = archive 11 lines. Sorted-line SHA-256
   `2ba0d6ff170f4a5df41aace68ffd4c22462413e4887abdc1cb4a36fe7a597018` (**match**).
+
+## SAP RESULTS 2026-11-25 (checked 19:36 ICT)
+* **Spine:** `INSURANCE_RCB_06_MANUAL_RCL_SPINE_COMPLETE_20261125`
+  * Downloaded at 18:15. Upload **LogID 23793 = success** (email 18:31).
+  * The full spine is now in SAP for L80511750, L80513404 and L80518454.
+* **Cancel retry:** `INSURANCE_RCB_07_MANUAL_CANCEL_RETRY_20261125`
+  * Downloaded at 19:15. Upload **LogID 23794 = success** (email 19:32). No rejected rows.
+  * The 7 refund items plus L80511750/L80513404/L80518454 are cancelled in SAP.
+  * Still held: L78637687-M1 and L77833033-V1 (manual JV by FA/Aware).
