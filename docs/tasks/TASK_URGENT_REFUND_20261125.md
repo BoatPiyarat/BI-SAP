@@ -60,3 +60,34 @@ Sources: SAP_LIVE_FULL (load 2026-11-24) and CareOS, queried 2026-11-25 ~16:30 I
 * 2026-11-25 16:15 ICT: SAP DOWNLOAD_GCS_FILE `success` for
   `RCB_MOTOR/INSURANCE_RCB_05_MANUAL_REFUND_PAID_RCL_20261125_000000000000.csv` (Gmail msg 1a211fcc7333f9c1).
 * As of 16:30 ICT the import result email (Upload LogID) has not arrived. Re-check scheduled.
+
+## Phase 1 import RESULT
+* Upload **LogID 23787**, status `success` (no error rows), 2026-11-25 16:32 ICT, Gmail msg 1a2120c52da5d7f9.
+
+## Phase 2 CANCEL delivered 2026-11-25 (Boat: "ไม่ต้องรอพรุ่งนี้ค่ะ ทำเลย")
+* Proof of Paid = SAP import LogID 23787 success. The mirror refresh was not awaited, on Boat's
+  explicit instruction.
+* Snapshot: `sap_integration_v3.diag_manual_refund_phase2_20261125`, 58 rows / 8 items, job
+  `job_Wa7Zvvg6fkbgFuObN86_Oeml04eS`.
+  * 7 Phase-1 items: full spine `Cancelled`, rows identical to Phase 1 except status and BatchRunDate.
+  * L78637687-M1: `Cancelled (Change order / Rejected)`; old side of change order L80756545;
+    InvoiceNo = SAP Paid.
+* Gate G01–G13 PASS:
+  * contract;
+  * no NULL;
+  * full spines;
+  * status vocabulary;
+  * InvoiceNo equal to SAP;
+  * none already cancelled;
+  * dates;
+  * CareOS cancelled;
+  * change-order routing.
+* Blank PaymentDate and Method on cancelled Pending periods matches what SAP has accepted
+  historically: 7,767 of 10,968 C# rows since 2026-10-01.
+* Files:
+  | copy | path | job |
+  |---|---|---|
+  | archive | `gs://rcb-bronze-zone/sap-interface-archive/manual/refund/2026/11/25/MANUALREFUND-CANCEL-20261125/INSURANCE_RCB_07_MANUAL_REFUND_CANCEL_20261125_000000000000.csv` | `job_OZPcT2xVwMkIPT5eK-rWTkZYff4Q` |
+  | production | `gs://interface-file/RCB_MOTOR/INSURANCE_RCB_07_MANUAL_REFUND_CANCEL_20261125_000000000000.csv` | `job_QY3oIVAUROiLyqpbt4oQ_ol5vkOp` |
+* Read-back (`job_taxASe9IaaY194MBQCJnOR-AVpLj`): both 59 lines, identical (sorted SHA `b436fa11…`).
+* Pending: the SAP import email for this file.
