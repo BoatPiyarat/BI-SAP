@@ -1,5 +1,14 @@
 # INPUTS NEEDED — things only Boat / Aware / Attila / Finance can answer
 
+## OPEN 2026-11-25 — FA (Ning/Mo) + Boat: L81095660 change-order chain before the V2 re-import
+
+Details: `docs/FINDINGS_L81095660_CHANGE_ORDER_CHAIN_AP_20261125.md`
+
+1. Should L78968613-V1 and L81069428-V1 (still Paid in SAP) be cancelled as change orders?
+2. The customer overpaid 5,135.02. Is that a refund, a credit shell balance, or something else? This decides V2 Expected/Actual.
+3. Confirm the V2 rows: Expected 9,900.00 / Actual 8,444.98 + 1,455.02, PaymentDate 01112026.
+4. Who writes the file (Codex, or Boat's manual path)? Claude Code may not write to `gs://interface-file`.
+
 ## OPEN 2026-11-23 (fix deployed 11-24) — Boat/Accounting/Tech: SAP codes for Motor QFlow QR via Rabbit gateway (`RABBIT_CASH`)
 
 Details are in `docs/FINDINGS_RABBIT_CASH_QR_GATEWAY_UNMAPPED_20261123.md`. Since 2026-11-23 09:00 ICT,
