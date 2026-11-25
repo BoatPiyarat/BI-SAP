@@ -344,3 +344,6 @@ L78637687-M1 และ L77833033-V1: charge และเลขกรมธรร
   * Read-back: 9 lines; SHA `df8c0398…cc1a` matches the archive.
 * **CMIADJ result:** downloaded at 23:15. Upload **LogID 23797 = success** (email 23:31). No rejected rows.
   * L80984159-V2, L81036453-V2 and L81105944-V2 are in SAP.
+* **REST result:** downloaded at 00:15. Upload **LogID 23798 = success** (email 00:31). No rejected rows.
+  * L81005458-V2, L81064262-V2, L81130736-V2 and L81095660-V2 are in SAP.
+* Remaining open: L80992862 and L81088939 (shared invoice, FA/Aware decision needed).
