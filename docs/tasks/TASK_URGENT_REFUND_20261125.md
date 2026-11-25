@@ -303,3 +303,24 @@ L78637687-M1 และ L77833033-V1: charge และเลขกรมธรร
 * **Open:** FA must confirm the correct Actual split for the 8 held items (CMI double count?),
   then they are sent manually and the hold is removed.
 * **L81162612-V2 result:** downloaded at 21:15. Upload **LogID 23796 = success** (email 21:31). No rejected rows.
+
+## Rabbit Card SAP check + CMI-adjusted V2 (~22:20–23:00 ICT)
+* **Rabbit Card**, checked in the SAP extract file `Results2026_11_25_c9e6f36d.json` (raw SAP, newer than the mirror):
+  * L79597130-V1 and L81233037-M1 have PaymentMethod/Channel = `RCB-Rabbit Card`.
+  * L81237000-M1 is not in SAP yet; probably in the next create run (not checked).
+* **Boat rule (22:30):** if the cancelled old order also bought a CMI, subtract the CMI from the
+  credit-shell row's Actual, the same way the first payment did on the old order.
+  * Applies to L80984159, L81036453 and L81105944 (old order CMI 645.21 each).
+  * After the adjustment, Expected = Actual for all three.
+  * Table: `diag_manual_v2_cmi_adj_20261125`.
+* File `INSURANCE_RCB_10_MANUAL_V2_CMIADJ_20261125` written at 22:55 for the **23:15 pull**.
+  * Archive first; read-back 7 lines, SHA `ea30218a…ad9f` matches.
+  * These items are already held in the view, so there is no auto duplicate.
+* Rule does not apply (no old-order CMI, or totals still off) — still held:
+  * L81005458: totals still off after the CMI adjustment.
+  * L81064262, L81130736: small difference, no CMI.
+  * L80992862, L81088939: no rows generated.
+  * L81095660: no old CMI; Actual 15,035.02 vs Expected 9,900.
+* **View hold extended** with L81095660-V1, so the 26 Nov 01:30 run does not send its mismatched V2.
+  * SHA `5e4acd5d…` → `4db68010…`, guarded on the previous SHA.
+  * Rollback: remove `,'L81095660-V1'` from the list.
