@@ -139,3 +139,14 @@ Sources: SAP_LIVE_FULL (load 2026-11-24) and CareOS, queried 2026-11-25 ~16:30 I
     |---|---|---|
     | spine | ~17:19 | 18:15 |
     | cancel | ~18:18 | 19:15 |
+
+## Group F spine DELIVERED (Boat: "ส่ง ไฟล์ cancel ด่วนค่า ไม่ต้องรอ")
+* The folder was empty after SAP's 17:15 pull of the refund cancel file. The spine was written
+  immediately:
+  `gs://interface-file/RCB_MOTOR/INSURANCE_RCB_06_MANUAL_RCL_SPINE_COMPLETE_20261125_000000000000.csv`
+  (job `job_e619kXX7xYnd5oSnMubz9PQoTqPg`).
+* Read-back is identical to the archive: 30 lines, sorted SHA `f893a5fc…`
+  (job `job_oB7Z5rE56cbgV56bmy2QHWW9MJe6`).
+* The cancel was not sent first. SAP rejects a cancel when the spine is incomplete
+  (`Cancelled must be end to TotalPeriod`, as in nightly 07 LogID 23765).
+* Cancel file scheduled for about 18:18, after SAP's 18:15 pull of the spine.
