@@ -302,3 +302,4 @@ L78637687-M1 และ L77833033-V1: charge และเลขกรมธรร
   * Rollback: recreate the view with the HOLD comment and NOT IN line removed. That yields SHA `ed56e174…`.
 * **Open:** FA must confirm the correct Actual split for the 8 held items (CMI double count?),
   then they are sent manually and the hold is removed.
+* **L81162612-V2 result:** downloaded at 21:15. Upload **LogID 23796 = success** (email 21:31). No rejected rows.
