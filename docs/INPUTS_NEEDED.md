@@ -1,5 +1,22 @@
 # INPUTS NEEDED — things only Boat / Aware / Attila / Finance can answer
 
+## OPEN 2026-11-25 — Boat: time-zone conventions + weekly-bonus date basis
+
+See `docs/FINDINGS_TIMEZONE_CONVENTIONS_AND_WEEKLY_BONUS_20261125.md`. Evidence says CareOS
+order/item timestamps hold Bangkok wall-clock time while CarePay timestamps are true UTC; the weekly-bonus
+view uses `DATE(carepay_charges.payment_date)` unconverted (586 of 89,039 first-installment charges in
+M06–M11 2026 change date; 59 Monday / 14 day-16 early-morning cases could shift week/cycle — impact on pay
+UNVERIFIED). Needed: (1) IT confirmation of both conventions; (2) decision whether commission should use
+Bangkok date.
+
+## OPEN 2026-11-25 — Finance (FA): business-data definitions for the AI data guide
+
+Not written anywhere in Teams / email / repo as of 2026-11-25; the guide marks them ⚠️ TO CONFIRM:
+(1) P&L revenue-recognition date basis and income measure; (2) insurer production-report date basis;
+(3) RCB one-time processing-fee divisor `/107` vs `/103.3` (already listed under accounting standard
+decisions). Also note: `docs/AGENT_RULES.md` "Test customers" line (`'test'` only) is older than the
+2026-08-01 superseding addendum (`'test','test div'`) — Boat to reconcile the rules file.
+
 ## OPEN 2026-08-27 — Boat: approve the six Unit 2 magnitude thresholds and provenance
 
 The reviewed bootstrap procedure `sp_bootstrap_v3_unit2_magnitude` is deployed, and baseline run

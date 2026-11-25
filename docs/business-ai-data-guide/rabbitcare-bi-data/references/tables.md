@@ -35,8 +35,10 @@ Sizes/rows from `INFORMATION_SCHEMA.TABLE_STORAGE`, 2026-11-25. All refreshed da
 | `careos.carepay_transactions` | payment transaction per order | `order` → order id; `amount` in **satang**; `installments`. |
 | `careos.carepay_charges` | one charge (payment attempt / installment) | `transaction_id`; `amount` in **satang**; `status` (SUCCESSFUL/PENDING/FAILED); `payment_date`; `installment_number`; `service_provider` (`RABBIT_LENDING` = RCL). |
 | `careos.careos_accounting` | accounting / refund status per item | remittance, refund and cancellation workflow fields. |
+| `careos.cancelled_change_orders` | change-order link | `old_human_id` → `current_human_id`. Use to count a cancel + replacement once. |
+| `analytics_views.report_daily_cr` | lead-created day | Existing CR definition (view — reads report tables). |
 
-Raw rules: filter `delete_time IS NULL`; timestamps are UTC; satang ÷ 100; JSON fields (`data`,
+Raw rules: filter `delete_time IS NULL`; CareOS order/item timestamps are already Bangkok time but CarePay timestamps are true UTC (see date_basis.md); satang ÷ 100; JSON fields (`data`,
 `annotations`) need BI help.
 
 ## Never use
@@ -51,6 +53,13 @@ Raw rules: filter `delete_time IS NULL`; timestamps are UTC; satang ÷ 100; JSON
   `suphakorn_analytics`, `tsr_arwut`, `temp`, `develop_*`, `staging_*`, `_script*`, and any table
   named `trial_*` or `backup_*`.
 - `analytics_reports.report_orders_by_agent_by_day` (~69 GB) — use `report_order_items` instead.
+
+## Traps
+
+- `analytics_views.nonmotor_income` = customer income-bracket survey answers, **not** company income.
+- `report_*` tables are rebuilt nightly by dbt; if a nightly run fails the table is stale. Check
+  `MAX(created_at_timestamp)` in `report_orders` before quoting "today" / "yesterday".
+- Marketing KPI tables count leads by the dbt `lead_source` mapping; online/offline uses the `is_online_lead` flag.
 
 ## Data history
 

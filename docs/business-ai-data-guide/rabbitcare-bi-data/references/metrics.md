@@ -16,7 +16,8 @@ using in official reports · 🚫 do not self-serve.
 | Gross premium after cancel | `gross_premium_after_cancelled` = 0 when item cancelled else `gross_premium` | ✅ 100% match | Convenient "net of cancellation" measure. |
 | Cash collected | `SUM(carepay_charges.amount)/100` where `status='SUCCESSFUL'` | ✅ (amount stored in **satang**) | Cash view. Installments → many rows per order. |
 | Paid amount (report) | `report_order_items.paid_amount`, `report_orders.amount_paid` | ⚠️ | Check definition with BI before reconciling with Finance. |
-| Revenue / income / commission income | — | 🚫 | Broker income = insurer commission rate × premium, rates are not in the approved tables. Send to BI/Finance. |
+| Revenue / income / commission income | — | 🚫 | Broker income = insurer commission rate × premium, rates are not in the approved tables. Send to BI/Finance. `analytics_views.nonmotor_income` is **not** income — it is a customer income-bracket survey lookup. |
+| Commission "sales" | engine only | 🚫 | Motor = invoice price after discount, paid + submitted in cycle, 1 per chassis; NonMotor = net premium after discount, paid + QC by 18th. See `domain_commission.md`. Will not equal dashboard sales. |
 | Agent commission payout | `motor_commission.*` | 🚫 | Governed payout process; never self-serve. |
 
 ## Count measures
@@ -28,9 +29,11 @@ using in official reports · 🚫 do not self-serve.
 | Voluntary policies | `order_type = 'voluntary'` | `Type 1`, `Type 2+`, `Type 3`, `Type 3+` (`car_insurance_type`). |
 | Compulsory (CMI / พ.ร.บ.) | `order_type = 'mandatory'` or raw `motor_item_type = 'MOTOR_TYPE_COMPULSORY'` | **Never identify CMI by package type.** |
 | Health | raw `careos_order_items.product = 'products/health-insurance'` | Health appears from 2024-10. ⚠️ Non-motor reporting tables are separate — see tables.md. |
-| Renewal vs new | `is_renewal` | ⚠️ renewal flag logic owned by BI. |
-| Cancelled | item: `status = 'cancelled'` in report tables; raw: `is_cancelled IS TRUE OR cancel_time IS NOT NULL` on **`careos_order_items`** | Never use `careos_orders.is_cancelled` (order-level flag is not reliable for item cancellation). |
-| Conversion rate | orders ÷ leads, both on the **same** date basis and cohort | ⚠️ Define the cohort (lead created month vs order month) with the user every time. |
+| Renewal vs new | `is_renewal` | ⚠️ renewal flag logic owned by BI. Renewal *rate* — see `domain_sales_marketing.md`. |
+| Cancelled | item: `status = 'cancelled'` in report tables; raw: `is_cancelled IS TRUE OR cancel_time IS NOT NULL` on **`careos_order_items`** | Never use `careos_orders.is_cancelled` (order-level flag is not reliable for item cancellation). Note: `report_daily_cr` filters cancel at order level and commission views use only one of the two flags — small differences are expected. |
+| Change order | `careos.cancelled_change_orders` (`old_human_id` → `current_human_id`); replacement lead source `Change - Online` / `Change - Offline` | A cancel + replacement is **one sale**. Plain cancel = cancelled item with no link. Pattern P8. |
+| Conversion rate | existing: `analytics_views.report_daily_cr` (online leads by lead-created date; order with same `short_id`, not cancelled, ≤ 4 calendar months) | For any other cohort, define it with the user. See `domain_sales_marketing.md`. |
+| Motorbike | `JSON_VALUE(careos_orders.data, '$.oicCode') LIKE 'TYPE_6%'` | Path confirmed in live view `motor_commission.paid_orders_for_weekly_bonus` (2026-11-25); commission excludes `TYPE_610`,`TYPE_620`. Ask whether to include in "Motor". |
 
 ## Status values seen in `report_order_items` (all-time, 2026-11-25)
 
@@ -42,6 +45,7 @@ using in official reports · 🚫 do not self-serve.
 
 ## Exclusions every official number applies
 
-- Test customers: `LOWER(TRIM(first_name)) = 'test' OR LOWER(TRIM(last_name)) = 'test'` (exact match
-  only — never `LIKE '%test%'`).
+- Test customers: `LOWER(TRIM(first_name)) IN ('test','test div') OR LOWER(TRIM(last_name)) IN ('test','test div')`
+  (exact match only — never `LIKE '%test%'`; source: repo superseding addendum 2026-08-01). IT test orders also
+  exist in production — if totals look odd for a specific day, ask BI.
 - Soft-deleted raw rows: `delete_time IS NULL`.

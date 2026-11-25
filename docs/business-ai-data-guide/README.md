@@ -14,6 +14,13 @@
    หรือ user upload เอง (ชื่อเมนูอาจเปลี่ยนตามเวอร์ชัน claude.ai)
 3. User ต้องมี BigQuery connector ที่สิทธิ์อ่าน dataset ที่อนุญาตเท่านั้น (ดู proposal §3)
 
+## Version
+
+- **v1 (2026-11-25)** — knowledge harvested from Teams, email, repo and BigQuery (see
+  `rabbitcare-bi-data/references/sources.md`): clarifying-question bank, domain files (commission,
+  finance, sales/marketing), mismatch playbook, change-order and freshness patterns, time-zone conventions.
+- v0 (2026-11-25) — date basis, metrics, tables, query patterns.
+
 ## Maintain
 
 - แก้นิยามที่ `references/*.md` แล้ว zip/upload ใหม่ — Git คือ source of truth

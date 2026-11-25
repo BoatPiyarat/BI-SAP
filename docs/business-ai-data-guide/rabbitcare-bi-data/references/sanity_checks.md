@@ -8,7 +8,7 @@
    (e.g. P1 in `query_patterns.sql`). If your fancy query is bigger, you fanned out.
 4. **Cancelled check** — state whether cancelled items are in or out, and how many there were.
 5. **Unit check** — CarePay amounts are satang (÷100). Report-table amounts are baht.
-6. **Time-zone check** — raw timestamps are UTC; group days in `Asia/Bangkok`.
+6. **Time-zone check** — CareOS order/item timestamps are already Bangkok time (`DATE(ts)`); CarePay timestamps are UTC (`DATE(ts, 'Asia/Bangkok')`).
 7. **Impossible-number check** — 100%, perfectly round, or a jump > 2× vs last period → assume the
    query is wrong; investigate before reporting.
 8. **Freshness check** — report tables refresh daily; today's numbers are partial. Say "ข้อมูลถึง

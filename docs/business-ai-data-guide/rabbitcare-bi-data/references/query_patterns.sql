@@ -16,8 +16,8 @@ SELECT
   ROUND(SUM(gross_premium_after_cancelled), 2)           AS gross_premium_net_of_cancel
 FROM `pacific-plating-282708.analytics_reports.report_order_items`
 WHERE create_at_date >= @start_date AND create_at_date < @end_date
-  AND NOT (LOWER(TRIM(IFNULL(customer_first_name, ''))) = 'test'
-        OR LOWER(TRIM(IFNULL(customer_last_name, ''))) = 'test')
+  AND NOT (LOWER(TRIM(IFNULL(customer_first_name, ''))) IN ('test', 'test div')
+        OR LOWER(TRIM(IFNULL(customer_last_name, ''))) IN ('test', 'test div'))
 GROUP BY 1, 2, 3
 ORDER BY 1, 2, 3;
 
@@ -27,10 +27,10 @@ ORDER BY 1, 2, 3;
 -- =====================================================================
 WITH items AS (
   SELECT item_id, gross_premium_after_cancelled AS gp,
-         create_at_date, paid_date, policy_start_date, DATE(approval_time, 'Asia/Bangkok') AS approval_date
+         create_at_date, paid_date, policy_start_date, DATE(approval_time) AS approval_date
   FROM `pacific-plating-282708.analytics_reports.report_order_items`
-  WHERE NOT (LOWER(TRIM(IFNULL(customer_first_name, ''))) = 'test'
-          OR LOWER(TRIM(IFNULL(customer_last_name, ''))) = 'test')
+  WHERE NOT (LOWER(TRIM(IFNULL(customer_first_name, ''))) IN ('test', 'test div')
+          OR LOWER(TRIM(IFNULL(customer_last_name, ''))) IN ('test', 'test div'))
 )
 SELECT 'order_created'  AS date_basis, COUNT(DISTINCT item_id) AS policies, ROUND(SUM(gp), 2) AS gross_premium FROM items WHERE create_at_date    >= @start_date AND create_at_date    < @end_date
 UNION ALL
@@ -56,6 +56,7 @@ ORDER BY 1;
 
 -- =====================================================================
 -- P4. Cash collected by PAYMENT date (finance view, includes every installment)
+--     CarePay timestamps are true UTC -> convert to Bangkok
 --     amount in satang -> /100 ; only SUCCESSFUL charges are cash
 -- =====================================================================
 SELECT
@@ -80,8 +81,8 @@ SELECT
   COUNT(DISTINCT item_id)       AS approved_policies,
   ROUND(SUM(gross_premium), 2)  AS gross_premium
 FROM `pacific-plating-282708.analytics_reports.report_order_items`
-WHERE DATE(approval_time, 'Asia/Bangkok') >= @start_date
-  AND DATE(approval_time, 'Asia/Bangkok') <  @end_date
+WHERE DATE(approval_time) >= @start_date   -- CareOS timestamps already hold Bangkok time: no conversion
+  AND DATE(approval_time) <  @end_date
 GROUP BY 1, 2
 ORDER BY gross_premium DESC;
 
@@ -111,3 +112,38 @@ WHERE create_at_date >= @start_date AND create_at_date < @end_date
   AND (status != 'cancelled' OR status IS NULL)
 GROUP BY 1
 ORDER BY 3 DESC;
+
+-- =====================================================================
+-- P8. Cancellations split into plain cancel vs change order (cancel + replacement = one sale)
+--     basis: item cancel date (CareOS timestamps already Bangkok time); change-order link from careos.cancelled_change_orders
+-- =====================================================================
+WITH cco AS (
+  SELECT DISTINCT old_human_id
+  FROM `pacific-plating-282708.careos.cancelled_change_orders`
+),
+cancelled AS (
+  SELECT oi.short_id, oi.item_id, oi.gross_premium,
+         DATE(oi.cancel_time) AS cancel_date
+  FROM `pacific-plating-282708.analytics_reports.report_order_items` oi
+  WHERE oi.status = 'cancelled'
+    AND DATE(oi.cancel_time) >= @start_date
+    AND DATE(oi.cancel_time) <  @end_date
+)
+SELECT
+  IF(cco.old_human_id IS NOT NULL, 'change_order (replaced)', 'plain_cancel') AS cancel_type,
+  COUNT(DISTINCT c.item_id)         AS items,
+  ROUND(SUM(c.gross_premium), 2)    AS gross_premium
+FROM cancelled c
+LEFT JOIN cco ON cco.old_human_id = c.short_id
+GROUP BY 1;
+
+-- =====================================================================
+-- P9. Freshness check — run before quoting today / yesterday
+-- =====================================================================
+-- created_at_timestamp holds Bangkok wall-clock time (labelled UTC), so compare with Bangkok "now"
+SELECT
+  DATETIME(MAX(created_at_timestamp))                                AS latest_order_in_report_bkk,
+  DATETIME_DIFF(CURRENT_DATETIME('Asia/Bangkok'),
+                DATETIME(MAX(created_at_timestamp)), HOUR)           AS hours_behind_now
+FROM `pacific-plating-282708.analytics_reports.report_orders`
+WHERE created_at_date >= DATE_SUB(CURRENT_DATE('Asia/Bangkok'), INTERVAL 7 DAY);

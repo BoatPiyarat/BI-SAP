@@ -65,6 +65,7 @@ Recommendation: distribute as an org skill; optionally give users a one-line pre
 | D4 | Whether report-table `*_date` columns are Bangkok dates | BI |
 | D5 | Who may access row-level customer data via AI | Data governance / DPO |
 | D6 | Pilot user group and BigQuery quota per user | K.Paul |
+| D7 | Confirm time-zone conventions (CareOS order timestamps = Bangkok wall-clock; CarePay = UTC) and fix in Layer 2 views | BI + IT |
 
 ## 5. Next steps
 

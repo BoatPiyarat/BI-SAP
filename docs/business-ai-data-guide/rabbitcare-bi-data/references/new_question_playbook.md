@@ -44,5 +44,5 @@ expected logic. 4. Run the full period.
 | "ลูกค้ากลุ่ม X ซื้อซ้ำไหม" (retention / repeat) | Grain = customer (`customer_id`); define the repeat window; renewals vs new purchases. |
 | "ช่องทางไหนคุ้มที่สุด" (channel ROI) | Leads & spend from marketing reports, orders from report_order_items, same date basis & cohort. Spend data coverage ⚠️ — confirm with BI. |
 | "ถ้าให้ส่วนลด Y% จะเกิดอะไรขึ้น" (what-if) | Build baseline from data, put the scenario math in a separate clearly-labelled step; never mix assumptions into the base query. |
-| "ระยะเวลาตั้งแต่ … ถึง …" (lead time / SLA) | Use two timestamps on the same grain, convert both to Asia/Bangkok, report median and P90, not only average. Exclude NULL end-dates and say how many. |
+| "ระยะเวลาตั้งแต่ … ถึง …" (lead time / SLA) | Use two timestamps on the same grain, put both in Bangkok time (CareOS order/item timestamps already are; CarePay needs conversion — see date_basis.md), report median and P90, not only average. Exclude NULL end-dates and say how many. |
 | "ยอดของบริษัทประกัน X เทียบกับรายงานของเขา" | Use approval date basis; flag that insurer reports may follow their own cut-off. Reconciliation → BI. |

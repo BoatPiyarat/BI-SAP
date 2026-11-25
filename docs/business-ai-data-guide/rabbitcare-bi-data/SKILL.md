@@ -14,13 +14,14 @@ Answer in the user's language (usually Thai). Keep table/column names in English
 ## The 5 rules you never skip
 
 1. **Clarify before you calculate (mandatory for every money or count metric).**
-   Before running a query for "ยอดขาย / sales / premium / orders / revenue / policies", confirm:
-   - **Period** — which dates exactly (e.g. 1–30 Nov 2026, or commission month Nov = 16 Oct–15 Nov).
-   - **Date basis** — order created date / payment date / policy start date / insurer approval date.
-     See `references/date_basis.md` for which team uses which and why.
-   - **Measure** — gross premium (incl. VAT+stamp), net premium, invoice amount after discount,
-     cash actually collected, or count of orders / policies (items).
-   - **Scope** — Motor voluntary / Compulsory (CMI, พ.ร.บ.) / Health / all; include or exclude cancelled.
+   Ask the **core three** first (they resolve most of the back-and-forth BI sees today):
+   - **Unit** — ยอดเงิน (เบี้ย) or จำนวนออร์เดอร์ / กรมธรรม์ / คัน? If money: gross (incl. VAT+stamp),
+     after discount, actually paid, net premium, or net of cancellations?
+   - **Cancelled & change orders** — included or excluded? (cancel + reissue to the same customer is one sale)
+   - **Date basis + month type** — order created / payment / policy start / insurer approval / submitted to
+     insurer / lead-created month; **calendar month or commission cycle 16th→15th**?
+   Then scope (Motor voluntary / CMI / Motorbike / Health / all) and period. Full question bank and
+   department defaults: `references/clarifying_questions.md`.
    If the user cannot decide, recommend a default **and say which default you used** in the answer
    (see "Defaults" below). Never silently pick one.
 
@@ -48,11 +49,15 @@ Answer in the user's language (usually Thai). Keep table/column names in English
 | Commission / agent payout | commission month (16th → 15th) | **do not compute — refer to BI** | — |
 | Finance cash / collection | payment date (`paid_date` / charge `payment_date`) | cash received (SUCCESSFUL charges) | all |
 | Insurer volume / production report | insurer approval date (`approval_time`) | gross premium | per insurer |
-| P&L revenue recognition | policy start date (`policy_start_date`) | net premium / income per Finance rule | — **confirm with Finance** |
+| P&L revenue recognition | ⚠️ policy start date (`policy_start_date`) — BI's working view, **not yet written down by Finance** | net premium / income per Finance rule | — **confirm with Finance** |
+| Marketing channel performance | lead-created month | order count / fresh premium | fresh leads only |
 
 ## Workflow
 
-1. Classify the request: **known metric** (in `references/metrics.md`) or **new question**.
+1. Classify the request: **known metric** (in `references/metrics.md`), **domain question** (commission,
+   finance, sales/marketing — read the matching `domain_*.md`), **dispute** ("ตัวเลขไม่ตรง" →
+   `references/mismatch_playbook.md`), **new question**, or **not analytics** (single-order lookup,
+   exception approval → route per `clarifying_questions.md`).
 2. Known metric → ask the clarifying questions above, then use the matching pattern in
    `references/query_patterns.sql`.
 3. New/unusual question (new project idea, new segmentation, a ratio nobody has defined) → follow
@@ -62,6 +67,7 @@ Answer in the user's language (usually Thai). Keep table/column names in English
 4. Sanity-check before answering (`references/sanity_checks.md`): compare against a known total,
    check for duplicates from joins, check NULL counts, check that cancelled handling matches.
 5. If a number looks impossible (too big, too round, 100%), assume your query is wrong first.
+6. Always state data freshness (report tables refresh nightly; a failed refresh once halved a day's GWP).
 
 ## When to stop and send the user to BI
 
@@ -76,7 +82,12 @@ Say so plainly: "ตัวเลขนี้ใช้ประกอบการ
 
 | File | Read when |
 |---|---|
+| `references/clarifying_questions.md` | **Read first.** Question bank, department defaults, what to route elsewhere. |
 | `references/date_basis.md` | Any time-based number. **Read first for sales/premium questions.** |
+| `references/domain_commission.md` | Anything about commission, tiers, cycles, clawback, weekly bonus — explain only, never compute pay. |
+| `references/domain_finance.md` | RCB/RCL, SAP posting, refunds, change orders/credit shell, taxes, insurers. |
+| `references/domain_sales_marketing.md` | Leads, lead source, CR, renewal rate, order lifecycle, periods, products. |
+| `references/mismatch_playbook.md` | User says two numbers don't match. |
 | `references/metrics.md` | Definitions of sales, premium, orders, policies, cancellation, installment, etc. |
 | `references/tables.md` | Which table to use, grain, key columns, freshness. |
 | `references/glossary.md` | Business terms: RCB/RCL, CMI, Type 1/2+/3+, renewal, change order, CarePay… |
@@ -84,3 +95,4 @@ Say so plainly: "ตัวเลขนี้ใช้ประกอบการ
 | `references/new_question_playbook.md` | The question is new and no metric exists yet. |
 | `references/sanity_checks.md` | Before you report any number. |
 | `references/answer_template.md` | How to format the answer. |
+| `references/sources.md` | Where each rule came from, how fresh it is, who owns updates. |

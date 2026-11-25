@@ -1,5 +1,15 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-11-25 (later) — business AI data guide v1: knowledge harvest (non-SAP, Class B) + time-zone finding
+
+- Harvested business rules from Teams, email, repo and BigQuery view SQL (read-only) into
+  `docs/business-ai-data-guide/rabbitcare-bi-data/references/` (clarifying questions, commission,
+  finance, sales/marketing, mismatch playbook, sources). Added patterns P8 (change order) and P9 (freshness).
+- Found CareOS order/item timestamps hold Bangkok wall-clock time while CarePay is UTC; fixed the guide's
+  templates (P2/P5/P8 no longer double-convert) and recorded the weekly-bonus exposure in
+  `docs/FINDINGS_TIMEZONE_CONVENTIONS_AND_WEEKLY_BONUS_20261125.md` + `INPUTS_NEEDED.md`. Not fixed (pay impact).
+- Test-customer filter in the guide now follows the 2026-08-01 addendum (`'test','test div'`).
+
 ## 2026-11-25 — business AI data guide skill (non-SAP, Class B)
 
 - Added `docs/business-ai-data-guide/`: Claude skill `rabbitcare-bi-data` (date-basis clarification,

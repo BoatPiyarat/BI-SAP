@@ -10,14 +10,14 @@ in a different month than created. So "Nov sales by created date" and "Nov sales
 date" are materially different numbers — always ask.
 
 **Worked example — October 2026, gross premium net of cancellation, Motor+Health, excl. test
-customers (`report_order_items`, pattern P2, queried 2026-11-25 ~08:00 UTC):**
+customers incl. 'test div' (`report_order_items`, pattern P2, re-queried 2026-11-25 ~09:30 UTC):**
 
 | Counted by | Policies | Gross premium (฿) |
 |---|---|---|
-| Order created date | 18,958 | 182,617,590 |
-| Payment date | 18,597 | 178,879,054 |
-| Policy start date | 18,683 | 176,952,930 |
-| Insurer approval date | 16,759 | 164,314,303 |
+| Order created date | 18,958 | 182,550,094 |
+| Payment date | 18,597 | 178,811,559 |
+| Policy start date | 18,683 | 176,870,234 |
+| Insurer approval date | 16,744 | 164,300,591 |
 
 Same month, same data — a ฿18M (≈10%) spread between the highest and lowest basis. (Illustration of
 the method only; not a certified monthly figure.)
@@ -33,6 +33,8 @@ the method only; not a certified monthly figure.)
 | Submitted to insurer | `submit_time` | `careos_order_items.submit_date` | วันที่ส่งงานให้บริษัทประกัน | Operations / back-office SLA |
 | Cancellation date | `cancel_time`, `report_orders.cancellation_date` | `careos_order_items.cancel_time` | วันที่ยกเลิก | Cancellation & clawback analysis |
 | Commission month | `commission_month` | `analytics_dimensional_modelling.dim_commission_months` | รอบ commission วันที่ 16 → 15 ของเดือนถัดไป (เช่น "Ending on Y2026 M11 D15" = 16 Oct–15 Nov 2026) | Agent commission, sales targets |
+| Lead created | `report_leads.created_at_date` | CareOS leads | วันที่สร้างลีด | **Marketing** (orders attributed to the lead-created month), CR cohorts |
+| QC approved | — (engine) | CareOS QC status | วันที่ QC ผ่าน | NonMotor commission gate (by the 18th) |
 
 ## How to explain the difference to a user (use this wording)
 
@@ -55,8 +57,18 @@ the method only; not a certified monthly figure.)
   have no `approved_date` yet). Counting by approval date excludes pending work — say so.
 - **Installment (RCL) orders have many payment dates.** `paid_date` in report tables is the
   first/qualifying payment; per-installment cash is in `careos.carepay_charges` (one row per charge).
-- **Time zone.** Raw `TIMESTAMP` columns are UTC. Convert with `DATE(ts, 'Asia/Bangkok')` before
-  grouping by day; report tables' `*_date` columns are already dates — ⚠️ TO CONFIRM by BI that they
-  are Bangkok dates before using them for day-level reconciliation.
+- **"Sales" for commission uses two dates at once** — paid in the cycle *and* submitted (Motor) / QC'd
+  (NonMotor) by the cut-off. It will not match any single-date report. See `domain_commission.md`.
+- **SAP posting date ≠ payment date** after month close (moved to the 1st of next open period).
+- **Time zone — two different conventions (measured 2026-11-25):**
+  - **CareOS order/item timestamps** (`careos_orders`, `careos_order_items`, and the `report_*` tables built
+    from them: `create_time`, `approval_time`, `cancel_time`, `policy_start_date`, `created_at_timestamp`)
+    already hold **Bangkok wall-clock time** even though typed TIMESTAMP (the latest order showed ~7 h *ahead*
+    of real UTC). Use `DATE(ts)` — **do not** convert again (converting moved 20% of Nov-2026 items to the wrong day).
+  - **CarePay timestamps** (`carepay_charges.payment_date`, `create_time`) are **true UTC** → use
+    `DATE(ts, 'Asia/Bangkok')`.
+  - The commission engine uses `DATE(carepay_charges.payment_date)` without conversion, so payments made
+    00:00–06:59 Bangkok may land on the previous day / week — ⚠️ reported to BI.
+  - ⚠️ BI to confirm both conventions; they are evidence-based, not documented.
 - **SAP / accounting close uses its own rules** (a payment in a closed accounting period is moved to
   the next open period). Never try to reproduce SAP posting dates — send the user to BI.
