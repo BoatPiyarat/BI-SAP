@@ -342,3 +342,5 @@ L78637687-M1 และ L77833033-V1: charge และเลขกรมธรร
   * The folder was empty (CMIADJ was pulled at 23:15).
   * None of the 4 V2 items was in SAP.
   * Read-back: 9 lines; SHA `df8c0398…cc1a` matches the archive.
+* **CMIADJ result:** downloaded at 23:15. Upload **LogID 23797 = success** (email 23:31). No rejected rows.
+  * L80984159-V2, L81036453-V2 and L81105944-V2 are in SAP.
