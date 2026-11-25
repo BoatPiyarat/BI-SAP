@@ -93,7 +93,16 @@ require constant clarification.
     `gs://rcb-bronze-zone/sap-interface-archive/manual/refund/`.
   * Items on hold (incomplete SAP spine, InvoiceNo mismatch, CareOS not cancelled, duplicates) are
     excluded until resolved.
-- **Never write to `gs://interface-file/**`.** That is production; SAP pulls it every 15 minutes. Shadow prefixes only.
+- **Never write to `gs://interface-file/**`.** That is production; SAP pulls it hourly at minute :15 (result email about 17 minutes later). Shadow prefixes only.
+- **Interface file timing (Boat, 2026-11-25 ICT, chat: "ทุกรายการ interface files ที่แพลร จะนำเข้า รบกวนวางไฟล์ ก่อน นาทีที่ 15 ของทุกชั่วโมงค่ะ"):**
+  every approved manual interface file must be in `gs://interface-file/**`, archived and read back
+  **before minute :15** of the target hour.
+  * Plan each write for a named pull slot (HH:15). Finish the write by **HH:10** at the latest so there
+    is a buffer.
+  * If the folder is still occupied, the earliest write is right after the previous :15 pull (about :17–:20).
+    That still counts as "before :15" for the next slot.
+  * If a write cannot be in place by HH:10, do not write between :10 and :15. Wait for the next slot and tell Boat which slot it moved to.
+  * In every report, state the pull slot the file targets and when its result email is expected (about HH:32).
 - **DEPLOY GATE:** replacing anything existing consumers read (views, tables, procedures — even inside v3) requires: dry-run evidence + a one-paragraph change summary + explicit human "deploy OK" in that session. Building/testing *new* objects needs no approval.
 - **SINGLE DEPLOYER (Boat, 2026-08-02): Codex only.** Claude Code may prepare source, run
   read-only verification, and issue Class A review verdicts, but must not deploy, CALL a mutating
