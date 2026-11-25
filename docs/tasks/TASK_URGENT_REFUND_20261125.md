@@ -55,3 +55,8 @@ Sources: SAP_LIVE_FULL (load 2026-11-24) and CareOS, queried 2026-11-25 ~16:30 I
   mirror proves Phase 1 Paid and the gate PASSes.
 * Groups B, C, F, G and H stay on hold. They need FA/Aware answers, which this approval does not
   supply.
+
+## SAP pickup of the Phase 1 file
+* 2026-11-25 16:15 ICT: SAP DOWNLOAD_GCS_FILE `success` for
+  `RCB_MOTOR/INSURANCE_RCB_05_MANUAL_REFUND_PAID_RCL_20261125_000000000000.csv` (Gmail msg 1a211fcc7333f9c1).
+* As of 16:30 ICT the import result email (Upload LogID) has not arrived. Re-check scheduled.
