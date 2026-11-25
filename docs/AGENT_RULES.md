@@ -100,6 +100,10 @@ require constant clarification.
   * Archive first, then production.
   * Never overwrite=true.
   * Boat's rule: a -V2 with 2 rows whose Actual and Expected totals match is correct. Do not cancel it or create a -V3.
+- **Scoped V2 hold deploy (Boat, 2026-11-25 ~21:00 ICT, chat: "Deploy ok Granted"):** one edit to
+  `sap_view.RCB_Motor_process_3_change`, which adds a NOT IN hold on 9 V1 items whose recovered V2
+  totals do not match. SHA-guarded against a test copy. Plus one manual V2 file for L81162612.
+  Remove the hold only with Boat's approval.
 - **Never write to `gs://interface-file/**`.** That is production; SAP pulls it hourly at minute :15 (result email about 17 minutes later). Shadow prefixes only.
 - **Interface file timing (Boat, 2026-11-25 ICT, chat: "ทุกรายการ interface files ที่แพลร จะนำเข้า รบกวนวางไฟล์ ก่อน นาทีที่ 15 ของทุกชั่วโมงค่ะ"):**
   every approved manual interface file must be in `gs://interface-file/**`, archived and read back

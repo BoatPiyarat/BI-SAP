@@ -280,3 +280,25 @@ L78637687-M1 และ L77833033-V1: charge และเลขกรมธรร
   * The import finished around 20:31, close to the 20:30 extract, so the V2 should come on the
     26 Nov 01:30 run or the 27 Nov 01:30 run.
   * The 26 Nov 10:41 check confirms which.
+
+## Manual V2 and view hold (Boat "Deploy ok Granted", ~21:00 ICT)
+* The manual V2 for the 9 items stopped before any write. The V2 rows built with the live
+  `RCB_Motor_process_3_change` logic (table `diag_manual_v2recovery_paid_20261125`) had matching
+  Expected/Actual totals for **only L81162612**.
+  * L80984159, L81005458, L81036453, L81064262, L81105944 and L81130736 do not match. Three of them
+    differ by exactly the CMI amount.
+  * L80992862 and L81088939 produce no rows. They are held or out of scope; cause not checked.
+  * Details are in BigQuery. The figures are kept out of this doc.
+* **Manual V2 sent: L81162612-V2** (3 rows).
+  * Gate: 56 columns, no NULL keys, not in SAP yet, shared-invoice guard 0.
+  * Archive `MANUALV2-L81162612-20261125`, then production
+    `INSURANCE_RCB_09_MANUAL_V2_L81162612_20261125_000000000000.csv`, written 21:01 for the **21:15 pull**.
+  * Read-back: 4 lines; SHA `93e9d758…afca` matches the archive.
+* **View hold deployed** on `sap_view.RCB_Motor_process_3_change`:
+  * Added `AND base.OrderItem NOT IN (<9 V1 items>)` after the held_items filter.
+  * Test copy `sap_integration_v3.diag_view_rcb_motor_p3_hold_test`: 1,198 rows with the same
+    fingerprint as live.
+  * SHA old `ed56e174…2231` → new `5e4acd5d…c79d`. The deploy was guarded by `newdef = testdef`.
+  * Rollback: recreate the view with the HOLD comment and NOT IN line removed. That yields SHA `ed56e174…`.
+* **Open:** FA must confirm the correct Actual split for the 8 held items (CMI double count?),
+  then they are sent manually and the hold is removed.
