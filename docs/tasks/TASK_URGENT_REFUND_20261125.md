@@ -233,3 +233,24 @@ L78637687-M1 และ L77833033-V1: charge และเลขกรมธรร
 * The cancel goes out only together with a confirmed resend, so SAP never has no AP for these items.
 * The 9 unfixed V1 items (L81064262 etc.) are held. Cancelling them now would make the live view
   generate V2s with the same Expected 0 layout at 01:30.
+
+## Boat decision 2026-11-25 ~18:40: V2 with 2 rows is correct; fix the unfixed items via V2
+
+* Boat ruled that a -V2 with 2 rows whose Actual and Expected totals match is **correct**.
+  * Do not cancel it. Do not create a -V3.
+  * `diag_manual_cancel_v2fix_20261125` is therefore **not used**.
+* Fresh scan (Credit Shell, TotalPeriods 1, all Paid rows Expected 0, -V1, no C#, no -V2):
+  * **9 items from Oct–Nov 2026.** Cancel prepared as `diag_manual_cancel_v2recovery_20261125`.
+    * 10 rows: L81162612 has 2 invoices.
+    * Guard hits 0; no blanks.
+    * Archive written: MANUALCANCEL-V2RECOVERY-20261125 (job_uqigclV0_Aa_R_57qzPFBmOguhNZ).
+    * Production write is scheduled for 19:18 and targets the **20:15 pull** (trig_01FBu3bUmQ1fwhU1SP5J2r7n).
+    * Items: L80984159, L80992862, L81005458, L81036453, L81064262 (Ning's list), L81088939, L81105944, L81130736, L81162612.
+  * **L81095660-V1:** cancel accepted today (LogID 23778). V2 follows automatically.
+  * **20 items from Jan–Sep 2026, not touched.** These are earlier accounting months. Some are the new
+    side of change-order pairs (e.g. L79866100 vs cancelled L79865677). They need Boat's decision.
+    * L79422101, L79601154, L79804748, L79866100, L79890839, L80017728, L80137711, L80228034, L80229909,
+      L80235140, L80242096, L80255101, L80261098, L80321229, L80328964, L80489722, L80512595, L80561105,
+      L80719790, L80961113.
+  * **11 items from 2025:** out of scope (2025 = cancel only).
+* V2 timing: cancel imported 20:15 → 26 Nov extract/mirror → V2 on the 27 Nov 01:30 run (expected).
