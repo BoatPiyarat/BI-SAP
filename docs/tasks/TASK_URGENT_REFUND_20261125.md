@@ -254,3 +254,11 @@ L78637687-M1 และ L77833033-V1: charge และเลขกรมธรร
       L80719790, L80961113.
   * **11 items from 2025:** out of scope (2025 = cancel only).
 * V2 timing: cancel imported 20:15 → 26 Nov extract/mirror → V2 on the 27 Nov 01:30 run (expected).
+
+## V2-RECOVERY CANCEL WRITTEN 2026-11-25 ~19:19 ICT (trig_01FBu3bUmQ1fwhU1SP5J2r7n)
+* Target: the **20:15 ICT pull**. The result email is expected around 20:32.
+* Pre-check: the folder was empty (the retry file was pulled at 19:15).
+* EXPORT job `job_aGRxpJJ2dttltqTq1oF-mMch6ktC` (overwrite=false) wrote
+  `gs://interface-file/RCB_MOTOR/INSURANCE_RCB_08_MANUAL_CANCEL_V2RECOVERY_20261125_000000000000.csv`.
+* Read-back: prod 11 lines = archive 11 lines. Sorted-line SHA-256
+  `2ba0d6ff170f4a5df41aace68ffd4c22462413e4887abdc1cb4a36fe7a597018` (**match**).
