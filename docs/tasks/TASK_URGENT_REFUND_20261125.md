@@ -121,3 +121,21 @@ Sources: SAP_LIVE_FULL (load 2026-11-24) and CareOS, queried 2026-11-25 ~16:30 I
 * Next step for these 4 items, after SAP accepts the spine: cancel as
   `Cancelled (Change order / Rejected)`. They are the old side of change orders L80407934,
   L80532206, L80540087 and L80540467.
+
+## Group F cancel prepared (Boat 2026-11-25: "ส่ง file cancel เข้าไปได้เลยค่ะ ด่วนเลย ขอแค่ลำดับชื่อไฟล์ เรียงตามลำดับ paid ก่อนแล้ว cancel")
+* Cancel snapshot: `sap_integration_v3.diag_manual_rcl_spine_cancel_20261125`, 29 rows.
+  * Rows are identical to the spine snapshot except TransactionStatus
+    `Cancelled (Change order / Rejected)` and BatchRunDate.
+  * All 4 items are confirmed old side of a change order (L80407934, L80532206, L80540087, L80540467).
+  * No NULLs; 0 rows already cancelled in SAP.
+* Archive written: `.../MANUALRCL-SPINE-CANCEL-20261125/INSURANCE_RCB_07_MANUAL_RCL_SPINE_CANCEL_20261125_000000000000.csv`
+  (job `job_71iSBsVBbuZ0FRilIMU1Qr5eNxO1`).
+* Ordering:
+  * Names sort `INSURANCE_RCB_06_…SPINE_COMPLETE` before `INSURANCE_RCB_07_…SPINE_CANCEL`.
+  * Delivery is also sequential, because EXPORT DATA (overwrite=false) cannot write into a
+    non-empty folder and SAP pulls hourly at :15.
+  * Planned slots:
+    | file | written | SAP pull |
+    |---|---|---|
+    | spine | ~17:19 | 18:15 |
+    | cancel | ~18:18 | 19:15 |
