@@ -1,6 +1,15 @@
 # INPUTS NEEDED — things only Boat / Aware / Attila / Finance can answer
 
-## OPEN 2026-11-25 — FA (Ning/Mo) + Boat: L81095660 change-order chain before the V2 re-import
+## OPEN 2026-11-25 (cancel file written 11-25; V2 auto 11-26) — FA (Ning/Mo): L81095660
+
+Items 1, 3 and 4 below are resolved:
+* the earlier items were already cancelled in SAP;
+* V2 follows the live recovery rule;
+* the file was written with Boat's approval.
+
+**Still open, item 2:** the customer overpaid 5,135.02 and CareOS has no refund.
+
+### Original questions
 
 Details: `docs/FINDINGS_L81095660_CHANGE_ORDER_CHAIN_AP_20261125.md`
 

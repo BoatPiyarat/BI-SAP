@@ -1,5 +1,15 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-11-25 ~10:50 ICT — manual CANCEL file L81095660-V1 written (Boat approval); V2 via auto-recovery
+
+- Gate PASS (G01–G14).
+- Archive and production files are identical (SHA `3e95be61…`):
+  `gs://interface-file/RCB_MOTOR/INSURANCE_RCB_02_MANUAL_CANCEL_L81095660_20261125_000000000000.csv`.
+- L81095660-V2 is expected from the live V2-recovery rule in `RCB_Motor_process_3_change` on the
+  26 Nov 01:30 run.
+- Scoped exception recorded in AGENT_RULES.
+- Correction: L78968613-V1 and L81069428-V1 were already cancelled (`C#` rows).
+
 ## 2026-11-24 20:56 ICT — DEPLOYED RABBIT_CASH → `RCB-Rabbit Card` mapping (3 legacy views)
 
 - Boat gave "deploy OK".

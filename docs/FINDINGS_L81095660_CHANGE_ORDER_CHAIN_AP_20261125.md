@@ -101,3 +101,61 @@ prefix on U_OrderID. Both earlier items **are already cancelled in SAP**:
 * Actual 15,035.02 vs Expected 9,900.00 means the customer is over by **5,135.02**.
 * No CareOS refund exists. FA must handle the refund. This does not block V2.
 * Boat decided on 2026-11-25: cancel the old item and import V2.
+
+## EXECUTED 2026-11-25 ~10:50 ICT: manual CANCEL file for L81095660-V1 (Boat approval in session)
+
+### Method
+* The live production view `sap_view.RCB_Motor_process_3_change` already contains the V2-recovery
+  rule (FIX 2026-11-10, Boat). That rule re-sends a Credit Shell item as `-V2` once all of these hold:
+  * its V1 is `Cancelled` in SAP with BatchRunDate on or after 2026-11-10;
+  * its Paid rows have Expected = 0;
+  * no later change order exists.
+* This rule produced the November V2 precedents. So only the V1 cancel was written by hand; V2
+  follows automatically.
+
+### Cancel snapshot
+* Snapshot table: `sap_integration_v3.diag_manual_cancel_l81095660_20261125` (expires +14d).
+  Built by `sql/adhoc/20261125_manual_cancel_L81095660_V1.sql`, job `job_jPEwc7OcQiztpVG_nkPOc3Mlat8a`.
+* The row is the stored SAP row put through the live `RCB_Motor_process_2_cancel_new` transforms:
+  * TransactionStatus `Cancelled`;
+  * InsurerCode prefix split;
+  * `Credit Shell` → `RCB-Credit Shell`;
+  * BatchRunDate 25112026.
+
+### Gate
+G01–G14 PASS:
+* single row;
+* 56-column contract match (name, position, type);
+* no NULL or "NULL";
+* DDMMYYYY dates;
+* status vocabulary;
+* InvoiceNo = stored SAP value;
+* 2-decimal money;
+* PolicyNo ≤ 50;
+* RCB/Motor only;
+* spine 1/1;
+* Paid predecessor exists and is not yet cancelled;
+* other columns match the SAP row;
+* V2-recovery preconditions hold.
+
+### Files written (identical content, SHA-256 of lines `3e95be61a48974faa79d19053de9cdbac3539d2396d9a91e1acf0074394f4366`)
+| copy | path | job |
+|---|---|---|
+| archive | `gs://rcb-bronze-zone/sap-interface-archive/manual/cancel/2026/11/25/MANUALCANCEL-L81095660-20261125/INSURANCE_RCB_02_MANUAL_CANCEL_L81095660_20261125_000000000000.csv` | `job_lFGfjsWSPkU9ZfrrBXUGbed0zPGm` |
+| production | `gs://interface-file/RCB_MOTOR/INSURANCE_RCB_02_MANUAL_CANCEL_L81095660_20261125_000000000000.csv` | `job_5NTysRieikV6QZWd0k-byBm9l3sw` |
+
+Read-back of the production file (job `job_Rj90SCFlZ46n3c-GtrwAkKt0q4Wf`): 2 lines, LF, exact
+56-name header, 56 fields.
+
+### Expected timeline
+| when | what |
+|---|---|
+| ≤15 min after write | SAP pulls the file |
+| 25 Nov 20:30 | SAP extract runs |
+| 26 Nov 01:00 | load into the mirror |
+| 26 Nov 01:30 | `RCB_Motor_process_3_change` auto-sends L81095660-V2 |
+| 27 Nov 01:00 | V2 visible in the mirror |
+
+### Follow-ups
+* Scheduled check: 26 Nov 10:41 ICT.
+* Still open for FA: the customer overpaid 5,135.02 and no refund exists in CareOS.
