@@ -197,3 +197,17 @@ L78637687-M1 และ L77833033-V1: charge และเลขกรมธรร
 - L81085876-M1: ยังไม่อยู่ใน SAP จะส่งรอบถัดไปค่ะ
 
 ผลทั้งหมดจะเห็นใน SAP หลัง import วันนี้ พรุ่งนี้เช้าพี่โบ๊ทจะยืนยันสถานะอีกครั้งค่ะ
+
+## CANCEL RETRY WRITTEN 2026-11-25 18:18–18:20 ICT (scheduled task trig_01AMZhi897mtE75nsew6QbEA)
+
+* Timing rule (Boat 25 Nov): files must be in place before :15. This file targets the **19:15 ICT pull**;
+  the result email is expected around 19:32.
+* Pre-check: `gs://interface-file/RCB_MOTOR/` was empty. SAP downloaded the spine file at 18:15
+  (DOWNLOAD_GCS_FILE success, email 18:15:05).
+* EXPORT DATA (overwrite=false) job `job_D3CtJNhMrgUec6jlvfdkICVXfpqP` wrote
+  `gs://interface-file/RCB_MOTOR/INSURANCE_RCB_07_MANUAL_CANCEL_RETRY_20261125_000000000000.csv`.
+* Read-back: prod 81 lines = archive 81 lines. Sorted-line SHA-256 for both is
+  `f3787506a2f4bfffdb189cd7be67023754dc053d14d751189baffc3705e9991b` (**match**).
+* Spine import result (INSURANCE_RCB_06_MANUAL_RCL_SPINE_COMPLETE, pulled 18:15) is **not in yet** as of
+  18:20. Because the cancel is written without waiting (Boat), SAP may reject L80511750, L80513404 or
+  L80518454 if the spine failed for them.
