@@ -160,6 +160,11 @@ require constant clarification.
 ### Storage
 - **Google Drive is backup only; never use it as a knowledge source.** Read from the repository.
   A Drive folder may be incomplete or stale and has previously caused incorrect analysis.
+  **Narrow exception (Boat, 2026-11-25):** for the business AI data guide only
+  (`docs/business-ai-data-guide/`), Drive may be read as a *secondary* knowledge source. Every
+  Drive-derived rule must cite file title, link and last-modified date; newer Teams/email/repo
+  decisions win; payroll files and personal data are never harvested. SAP-integration work keeps
+  the original rule.
 - Every working repository must have a configured Git remote. A local/OneDrive-only repository is
   a single point of failure; treat a missing remote as a same-day operational risk.
 - `SAP_LIVE` is append-only audit history. Daily BQ-row/SQL-source-row amplification measured
