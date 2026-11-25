@@ -84,6 +84,15 @@ require constant clarification.
     `gs://rcb-bronze-zone/sap-interface-archive/manual/cancel/`.
   * The V2 then follows via the live V2-recovery rule in `RCB_Motor_process_3_change`.
   * No other file and no other item.
+- **Scoped urgent-refund exception (Boat, 2026-11-25 ICT, chat: "คุณทำ this task too manual urgent" + earlier "อนุมัติให้วางไฟล์ interface ที่ตรวจสอบผ่านแล้ว"):**
+  * Claude Code may write gate-PASSed manual files for FA's tab `urgent_refund to cust`.
+  * Phase 1 is the PAID spine of 7 RCL Credit Shell items, from
+    `sap_integration_v3.diag_manual_refund_phase1_20261125`.
+  * Phase 2 (CANCEL) only goes in a later file, after SAP accepts Phase 1.
+  * Destination: `gs://interface-file/RCB_MOTOR/`, plus an identical archive under
+    `gs://rcb-bronze-zone/sap-interface-archive/manual/refund/`.
+  * Items on hold (incomplete SAP spine, InvoiceNo mismatch, CareOS not cancelled, duplicates) are
+    excluded until resolved.
 - **Never write to `gs://interface-file/**`.** That is production; SAP pulls it every 15 minutes. Shadow prefixes only.
 - **DEPLOY GATE:** replacing anything existing consumers read (views, tables, procedures — even inside v3) requires: dry-run evidence + a one-paragraph change summary + explicit human "deploy OK" in that session. Building/testing *new* objects needs no approval.
 - **SINGLE DEPLOYER (Boat, 2026-08-02): Codex only.** Claude Code may prepare source, run
