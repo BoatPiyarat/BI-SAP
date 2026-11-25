@@ -271,3 +271,12 @@ L78637687-M1 และ L77833033-V1: charge และเลขกรมธรร
   * Downloaded at 19:15. Upload **LogID 23794 = success** (email 19:32). No rejected rows.
   * The 7 refund items plus L80511750/L80513404/L80518454 are cancelled in SAP.
   * Still held: L78637687-M1 and L77833033-V1 (manual JV by FA/Aware).
+
+## V2-RECOVERY CANCEL RESULT (checked 20:36 ICT)
+* `INSURANCE_RCB_08_MANUAL_CANCEL_V2RECOVERY_20261125`: downloaded 20:15, Upload **LogID 23795 = success**
+  (email 20:31). No rejected rows.
+* All 9 V1 items are cancelled in SAP.
+* Expected: V2 is re-sent automatically by the live recovery once the mirror shows the cancels.
+  * The import finished around 20:31, close to the 20:30 extract, so the V2 should come on the
+    26 Nov 01:30 run or the 27 Nov 01:30 run.
+  * The 26 Nov 10:41 check confirms which.
