@@ -49,3 +49,9 @@ Sources: SAP_LIVE_FULL (load 2026-11-24) and CareOS, queried 2026-11-25 ~16:30 I
    * Group A rows get `Cancelled`.
    * Group D (L78637687-M1) gets `Cancelled (Change order / Rejected)`.
 3. Open questions to FA/Aware: groups B, C, F, G, H.
+
+## Boat approval 2026-11-25 (chat "อนุมัติ"), after the triage report
+* Approves the plan above: Phase 2 cancel for groups A + D, delivered automatically after the
+  mirror proves Phase 1 Paid and the gate PASSes.
+* Groups B, C, F, G and H stay on hold. They need FA/Aware answers, which this approval does not
+  supply.
