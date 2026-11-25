@@ -150,3 +150,50 @@ Sources: SAP_LIVE_FULL (load 2026-11-24) and CareOS, queried 2026-11-25 ~16:30 I
 * The cancel was not sent first. SAP rejects a cancel when the spine is incomplete
   (`Cancelled must be end to TotalPeriod`, as in nightly 07 LogID 23765).
 * Cancel file scheduled for about 18:18, after SAP's 18:15 pull of the spine.
+
+## Refund cancel REJECTED, then retry (2026-11-25 17:31)
+* `INSURANCE_RCB_07_MANUAL_REFUND_CANCEL_20261125`: LogID **23791**, status `error`, whole file:
+  `Row#This entry already exists in the following tables (ODBC -2035)`.
+* Root cause: L78637687-M1.
+  * Its InvoiceNo `chrg_6876a79qa0rpfs9iwd0` and PolicyNo `W19DVF-005-000` are Paid on the active
+    item L80756545-M1.
+  * This is the same cause Boat explained to Aware on 2026-10-27.
+  * Live `RCB_Motor_process_2_cancel_new` excludes such rows (final NOT EXISTS on stg_sap_state).
+    The manual files did not apply this guard. **Lesson: always apply the cancel_new
+    shared-invoice/policy guard to manual cancels.**
+* The same guard also blocks L77833033-V1 (shares invoice and PolicyNo `DW-70-68/018878` with
+  Paid L80407934-V1).
+* Retry snapshot: `sap_integration_v3.diag_manual_cancel_retry_20261125`, 80 rows / 10 items.
+  * 7 refund items: `Cancelled`.
+  * L80511750-V1, L80513404-V1, L80518454-V1: `Cancelled (Change order / Rejected)`.
+  * Guard hits = 0; full spines.
+* Archive: `.../MANUALCANCEL-RETRY-20261125/INSURANCE_RCB_07_MANUAL_CANCEL_RETRY_20261125_000000000000.csv`
+  (job `job_9V-PF2dVVSdZPJP_YgjjIHLD398R`).
+* Production write is scheduled for ~18:18, after SAP's 18:15 pull of the spine file.
+* HOLD for Aware (manual JV, like the 27 Oct advice): L78637687-M1 and L77833033-V1. Each old
+  document's charge and policy carry over to an active new order.
+
+## Draft reply to Mo (not sent; Boat sends herself)
+โม อัปเดตรายการ urgent_refund to cust ค่ะ
+
+**สรุป:** ส่ง Paid เข้า SAP แล้ว 7 รายการ ส่วน cancel จะเข้ารอบ 19:15 คืนนี้ (รอบแรกโดน SAP reject ทั้งไฟล์ เลยส่งใหม่) และมี 2 รายการที่ต้องให้ Aware ทำ JV แทนค่ะ
+
+**1. Paid เข้า SAP แล้ว (LogID 23787, 16:32) / Cancel เข้ารอบ 19:15**
+L80731453, L80776827, L80991399, L81017535, L81058304, L81072618, L81131068
+
+**2. เติมงวดให้ครบแล้วค่อย cancel (ไฟล์ครบงวดเข้ารอบ 18:15 / cancel เข้ารอบ 19:15)**
+L80511750, L80513404, L80518454
+
+**3. มีใน SAP ครบอยู่แล้ว (Paid + Cancelled) รบกวนเช็ค JE ฝั่ง SAP/Aware**
+L78637687-V1, L78773608-V1, L79949677, L81085876-V1
+
+**4. ต้องให้ Aware ช่วย (ส่ง cancel ผ่าน interface ไม่ได้)**
+L78637687-M1 และ L77833033-V1: charge และเลขกรมธรรม์ถูกใช้ต่อใน order ใหม่ที่ยัง active (L80756545-M1, L80407934-V1) SAP เลยขึ้น error ODBC -2035 รบกวนให้ Aware ทำ manual JV เหมือนเคสวันที่ 27 ต.ค. ค่ะ
+
+**5. รอโมยืนยัน**
+- L80992193-M1, L78773608-M1: ใน CareOS ยังไม่ได้ยกเลิก ต้องยกเลิกใน CareOS ก่อนไหมคะ
+- L80568487 (M1/V1): ใน SAP มีแต่รายการ Cancel ไม่มี Paid รบกวนเช็คกับ Aware
+- L81096435-V1: ข้อมูลงวดซ้ำ และยอด refund 8,199.98 มากกว่ายอดที่จ่าย 6,444.86 พี่โบ๊ทกำลังตรวจสอบ
+- L81085876-M1: ยังไม่อยู่ใน SAP จะส่งรอบถัดไปค่ะ
+
+ผลทั้งหมดจะเห็นใน SAP หลัง import วันนี้ พรุ่งนี้เช้าพี่โบ๊ทจะยืนยันสถานะอีกครั้งค่ะ
