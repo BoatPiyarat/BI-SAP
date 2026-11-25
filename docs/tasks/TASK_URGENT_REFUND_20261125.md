@@ -338,3 +338,7 @@ L78637687-M1 และ L77833033-V1: charge และเลขกรมธรร
   * L80992862: credit-shell charge `chrg_6970sg…` is Paid on L80990640-V1.
   * L81088939: charge `chrg_699h45…` is Paid on L81090658-M1, and was also used by cancelled L79124284.
   * Sending either would hit ODBC -2035. FA/Aware decision needed.
+* **REST file written 23:19 ICT** (`INSURANCE_RCB_11_MANUAL_V2_REST_20261125_000000000000.csv`), targeting the **00:15 pull**.
+  * The folder was empty (CMIADJ was pulled at 23:15).
+  * None of the 4 V2 items was in SAP.
+  * Read-back: 9 lines; SHA `df8c0398…cc1a` matches the archive.
