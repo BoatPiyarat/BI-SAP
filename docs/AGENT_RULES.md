@@ -76,6 +76,14 @@ require constant clarification.
   `sql/production/20261124_deploy_rabbit_card_qr_mapping.sql`, and only via the SHA-guarded
   `..._deploy.bqscript.sql` after Boat's explicit "deploy OK" in session. Boat's instruction also
   holds RABBIT_CASH out of SAP until this fix is live. This does not widen any other rule.
+- **Scoped interface-file exception (Boat, 2026-11-25 ICT, chat: "อนุมัติให้วางไฟล์ interface ที่ตรวจสอบผ่านแล้ว เข้าใน bucket ได้ค่ะ" + "Cancel รายการเก่า เพื่อนำเข้า รายการใหม่ V2"):**
+  * Claude Code may write exactly one manual CANCEL file for `L81095660-V1`, built from
+    `sap_integration_v3.diag_manual_cancel_l81095660_20261125` after its gate PASS
+    (`sql/adhoc/20261125_manual_cancel_L81095660_V1.sql`).
+  * Destination: `gs://interface-file/RCB_MOTOR/`, plus an identical archive copy under
+    `gs://rcb-bronze-zone/sap-interface-archive/manual/cancel/`.
+  * The V2 then follows via the live V2-recovery rule in `RCB_Motor_process_3_change`.
+  * No other file and no other item.
 - **Never write to `gs://interface-file/**`.** That is production; SAP pulls it every 15 minutes. Shadow prefixes only.
 - **DEPLOY GATE:** replacing anything existing consumers read (views, tables, procedures — even inside v3) requires: dry-run evidence + a one-paragraph change summary + explicit human "deploy OK" in that session. Building/testing *new* objects needs no approval.
 - **SINGLE DEPLOYER (Boat, 2026-08-02): Codex only.** Claude Code may prepare source, run
