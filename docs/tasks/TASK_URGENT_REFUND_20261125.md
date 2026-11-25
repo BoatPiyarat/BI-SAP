@@ -324,3 +324,17 @@ L78637687-M1 และ L77833033-V1: charge และเลขกรมธรร
 * **View hold extended** with L81095660-V1, so the 26 Nov 01:30 run does not send its mismatched V2.
   * SHA `5e4acd5d…` → `4db68010…`, guarded on the previous SHA.
   * Rollback: remove `,'L81095660-V1'` from the list.
+
+## Rest of the V2 (Boat ~22:45 "The rest put actual charges, no care the actual vs expect")
+* Table `diag_manual_v2_rest_20261125`, 8 rows. Items: L81005458-V2, L81064262-V2, L81130736-V2, L81095660-V2.
+  * Actual = the real charges.
+  * L81005458 credit-shell row still has the old-order CMI 645.21 subtracted (Boat's CMI rule).
+  * Guard 0; none of them in SAP.
+* Archive written: MANUALV2-REST-20261125.
+* Production write is scheduled for 23:18 → **00:15 pull** (trig_01VBiLr57TufHpYZ1A27LLir). It could not be
+  written at 22:59 because the CMIADJ file is still waiting for the 23:15 pull.
+  * Correction: an earlier note said "23:38"; that was a misread timestamp.
+* Not sendable; held by the shared-invoice rule:
+  * L80992862: credit-shell charge `chrg_6970sg…` is Paid on L80990640-V1.
+  * L81088939: charge `chrg_699h45…` is Paid on L81090658-M1, and was also used by cancelled L79124284.
+  * Sending either would hit ODBC -2035. FA/Aware decision needed.
