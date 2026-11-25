@@ -11,5 +11,5 @@
 6. **Time-zone check** — CareOS order/item timestamps are already Bangkok time (`DATE(ts)`); CarePay timestamps are UTC (`DATE(ts, 'Asia/Bangkok')`).
 7. **Impossible-number check** — 100%, perfectly round, or a jump > 2× vs last period → assume the
    query is wrong; investigate before reporting.
-8. **Freshness check** — report tables refresh daily; today's numbers are partial. Say "ข้อมูลถึง
+8. **Freshness check** — run P9; today's numbers are partial and dashboards may refresh at different times than report tables. Say "ข้อมูลถึง
    ณ วันที่ …".

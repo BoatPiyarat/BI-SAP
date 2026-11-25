@@ -16,6 +16,8 @@
 
 ## Version
 
+- **v1.1 (2026-11-25)** — Google Drive added as a secondary source (policy decks, KPI config, SAP data dictionary,
+  onboarding deck); commission cycle/basis corrected; freshness corrected; open conflicts in `docs/INPUTS_NEEDED.md`.
 - **v1 (2026-11-25)** — knowledge harvested from Teams, email, repo and BigQuery (see
   `rabbitcare-bi-data/references/sources.md`): clarifying-question bank, domain files (commission,
   finance, sales/marketing), mismatch playbook, change-order and freshness patterns, time-zone conventions.

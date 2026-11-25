@@ -1,5 +1,14 @@
 # INPUTS NEEDED — things only Boat / Aware / Attila / Finance can answer
 
+## OPEN 2026-11-25 — Boat / BI: rule conflicts found when adding Google Drive to the AI data guide
+
+1. Motor commission cycle assignment: memo says payment date; engine READMEs (Nov 2026) use order created 16→15 +
+   submission by ~16th. State one rule for the guide.
+2. CI overdue-commission window: Drive WIs / Jul-2026 deck = 4–9 days (rate ฿20→฿10 proposed); Oct-2026 email = 8–10 days.
+3. Health TSR / Renewal Health / Top-Up (NM_TOPUP?) tier tables exist only as Jun-2026 proposals — approved version?
+4. Priceza dbt mapping fix (prepared 2026-10-09) — merged?
+5. Which BigQuery table the KPI Config sheet (targets, working days, spend) syncs to; dbt refresh schedule for `analytics_reports`.
+
 ## OPEN 2026-11-25 — Boat: time-zone conventions + weekly-bonus date basis
 
 See `docs/FINDINGS_TIMEZONE_CONVENTIONS_AND_WEEKLY_BONUS_20261125.md`. Evidence says CareOS

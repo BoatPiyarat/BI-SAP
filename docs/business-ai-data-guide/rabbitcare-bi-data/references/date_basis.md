@@ -57,8 +57,8 @@ the method only; not a certified monthly figure.)
   have no `approved_date` yet). Counting by approval date excludes pending work — say so.
 - **Installment (RCL) orders have many payment dates.** `paid_date` in report tables is the
   first/qualifying payment; per-installment cash is in `careos.carepay_charges` (one row per charge).
-- **"Sales" for commission uses two dates at once** — paid in the cycle *and* submitted (Motor) / QC'd
-  (NonMotor) by the cut-off. It will not match any single-date report. See `domain_commission.md`.
+- **"Sales" for commission uses several dates at once** — Motor: order created in the cycle (engine) + paid + submitted
+  by ~16th; NonMotor: paid in the cycle + QC'd by the 18th. It will not match any single-date report. See `domain_commission.md`.
 - **SAP posting date ≠ payment date** after month close (moved to the 1st of next open period).
 - **Time zone — two different conventions (measured 2026-11-25):**
   - **CareOS order/item timestamps** (`careos_orders`, `careos_order_items`, and the `report_*` tables built

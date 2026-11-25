@@ -15,7 +15,10 @@ Motor sales count for commission at submission; Health at QC approval. Status va
 - **Fresh** lead = anything not mapped to Renewal / Retainer / Database.
 - **Online vs offline** = CareOS flag `is_online_lead`, **not** the `lead_source` label (some "Other - online"
   sources are flagged offline). Say which one you used.
-- Known issue since 9 Oct 2026: Priceza retainer leads may be counted as Fresh in `total_fresh_lead_non_dup`.
+- **Known issue — Priceza**: since 2024-01 the dbt mapping classified Priceza leads as Retainer, so `lead_source='Priceza'`
+  was missing; all Priceza CareOS sources also have `is_online_lead = false` (assignment report shows 0 Priceza). A fix was
+  prepared 9 Oct 2026 — ask BI whether it is merged before quoting Priceza leads, CPL or CR. CR/KPI views exclude Priceza on purpose.
+- Legacy (Nana-era) numbered lead sources (01. Organic … 12. Car Dealer) apply only to pre-CareOS reports.
 - Lead re-pooling (คละลีด / mass assign of in-progress leads > 2 weeks old) is **not** new leads; it can reset
   assignment dates.
 - Lead assignment rules (company practice): new hires receive leads from 13:00 on onboarding day (from 9 Nov 2026);
@@ -43,7 +46,22 @@ Motor sales count for commission at submission; Health at QC approval. Status va
 - Targets seen (Aug 2025, may be stale): Renewal team 68% / 70% / 72% for month 1 / 2 / 3+.
 - Advance renewal: insurers accept submission only within ~60 days before start.
 - For retention questions, use a **first-purchase-year cohort**.
+- **Second RR method (retention / audit)**: car-level matched cohort — cars with a net policy starting in month M; renewed
+  if the same car (chassis; fallback customer) has a net order in **any channel** starting **300–430 days later**. Used for
+  the 2026 growth-attribution (EY) work. Operational RR (team KPI) ≠ retention RR — always ask which.
 - Some renewal orders are created in bulk manually (e.g. certain insurers) — not from normal lead flow.
+
+## Targets & spend
+
+- Agent targets live in the "BigQuery - B2C - KPI Config File" sheet: per agent per commission period (keyed to the
+  15th); new joiners pro-rated from a newbie minimum (100k, experienced 150k) by remaining working days; resigned = 0.
+  Working-day flag and daily/lead forecasts are in the same sheet. ⚠️ Ask BI which BigQuery table it syncs to.
+- Marketing spend (FB, Google, Affiliate, TikTok, Priceza) comes from the same sheet; FB excludes campaigns named "tele";
+  **last 7 days of spend are provisional** (re-checked weekly).
+- B2B lead-generation partners ("Health Check – Insurance/Banking" sheets, CPL = spend ÷ leads) are a separate
+  business from B2C CareOS leads — route to BI.
+- Growth-attribution channel groups (Acquisition / Online Paid / Unpaid, first-touch per car) are an EY-project method,
+  not a standard KPI.
 
 ## Periods
 

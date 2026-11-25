@@ -67,7 +67,8 @@ Answer in the user's language (usually Thai). Keep table/column names in English
 4. Sanity-check before answering (`references/sanity_checks.md`): compare against a known total,
    check for duplicates from joins, check NULL counts, check that cancelled handling matches.
 5. If a number looks impossible (too big, too round, 100%), assume your query is wrong first.
-6. Always state data freshness (report tables refresh nightly; a failed refresh once halved a day's GWP).
+6. Always state data freshness — run pattern P9 (report tables are usually ~1 h behind raw CareOS, but a failed refresh
+   once halved a day's GWP).
 
 ## When to stop and send the user to BI
 

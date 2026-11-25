@@ -14,6 +14,7 @@ close, SAP correction, refund approval or insurer billing → BI / FA, not self-
     + follow-up + number_of_installment > 1; CMI = `service_provider = 'RABBIT_LENDING'` (can be a single period).
 - **Credit-card installment** (`CREDIT_CARD_INSTALLMENT`): bank pays Rabbit in full → RCB / one-time.
   Rabbit itself offers no card installment plans.
+- SAP order-item suffixes: `-V1` voluntary, `-M1` compulsory (CMI), `-1` NonMotor.
 - New **Rabbit Card Gateway** replacing Omise QR from late 2026 (channel `RCB-Rabbit Card`).
 
 ## When money is "revenue" in SAP
@@ -24,7 +25,8 @@ close, SAP correction, refund approval or insurer billing → BI / FA, not self-
 - Cheque / credit term: goes to SAP only when money is actually received.
 - SAP excludes orders ≤ 2024 and 2025 non-cancel rows by design → **SAP vs BI totals for 2024–2025 will never match**.
 - ⚠️ TO CONFIRM (FA): P&L revenue-recognition date basis (policy start vs approval vs payment) and income
-  measure — **not written anywhere in Teams/email/repo** as of 2026-11-25. Do not state one as fact.
+  measure — **not written anywhere in Teams/email/repo** as of 2026-11-25. Do not state one as fact. (Drive shows FA keeps three parallel installment accounting views — by created date, payment date
+  and coverage date — evidence that no single basis is agreed.)
 
 ## Premium components & the SAP naming trap
 
@@ -60,7 +62,10 @@ close, SAP correction, refund approval or insurer billing → BI / FA, not self-
 - Regulator guidance (20 Nov 2026): premium refunds are **in full**; no deduction of vouchers, discounts or fees.
 - CI (RCL) cancellations: insurer short-rate return goes to the customer with no other deduction.
 - Corporate customers' 1% WHT: deduct at refund only if the WHT certificate (50 ทวิ) was not received.
-- Insurer return premium = pro-rata or short-rate, as stated by insurer (net + stamp + VAT).
+- Insurer return premium = pro-rata or short-rate, as stated by insurer (net + stamp + VAT); the draft refund SOP (Mar 2026)
+  says insurers use short-rate for both Motor and NonMotor.
+- RCL installment follow-up (work instructions 2026): overdue 1–3 days system reminders, 4–9 days collection calls,
+  day 9 cancellation notice, day 10 insurer asked to cancel.
 
 ## Insurers
 

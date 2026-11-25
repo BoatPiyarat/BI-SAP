@@ -1,5 +1,14 @@
 # 30_SAP_CHANGELOG.md
 
+## 2026-11-25 (evening) — business AI data guide v1.1: Google Drive added as secondary source (non-SAP, Class B)
+
+- Boat instruction: add Google Drive. AGENT_RULES now carries a narrow exception (guide only; SAP work unchanged).
+- Two read-only Drive harvests (policies/schemes; definitions/KPI specs); payroll & personal-data files skipped.
+- Skill updated: Motor commission cycle per engine README (order created 16→15, conflict with memo flagged), team-specific
+  commission basis, weekly thresholds, SV rates, OTB/probation/refer rules, Priceza known-issue reworded, second RR method,
+  targets/spend source, freshness corrected (report tables ~1 h behind, not nightly), onboarding-deck facts, Motorbike code sets.
+- Open conflicts logged in `INPUTS_NEEDED.md`.
+
 ## 2026-11-25 (later) — business AI data guide v1: knowledge harvest (non-SAP, Class B) + time-zone finding
 
 - Harvested business rules from Teams, email, repo and BigQuery view SQL (read-only) into

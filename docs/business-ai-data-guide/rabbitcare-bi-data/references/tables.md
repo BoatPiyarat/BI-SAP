@@ -1,7 +1,8 @@
 # Approved tables (pacific-plating-282708, region asia-southeast1)
 
 Use the **report layer first**. Go to raw CareOS only when the report layer lacks the field.
-Sizes/rows from `INFORMATION_SCHEMA.TABLE_STORAGE`, 2026-11-25. All refreshed daily unless noted.
+Sizes/rows from `INFORMATION_SCHEMA.TABLE_STORAGE`, 2026-11-25. Raw `careos.*` loads by incremental MERGE about every hour;
+`report_*` tables were ~1 h behind when checked (2026-11-25 17:30 ICT) — always run P9 before quoting today.
 
 ## Tier 1 — report layer (preferred)
 
@@ -57,9 +58,21 @@ Raw rules: filter `delete_time IS NULL`; CareOS order/item timestamps are alread
 ## Traps
 
 - `analytics_views.nonmotor_income` = customer income-bracket survey answers, **not** company income.
-- `report_*` tables are rebuilt nightly by dbt; if a nightly run fails the table is stale. Check
+- `report_*` tables are built by dbt (raw → `analytics_base` → `analytics_interim` → `analytics_dimensional_modelling` →
+  `analytics_reports`); if a run fails the table goes stale (one failure halved a day's GWP). Check
   `MAX(created_at_timestamp)` in `report_orders` before quoting "today" / "yesterday".
 - Marketing KPI tables count leads by the dbt `lead_source` mapping; online/offline uses the `is_online_lead` flag.
+
+## Other useful facts (BI onboarding deck, Nov 2026)
+
+- `report_orders` / `report_leads` are partitioned by `created_at_date` — always filter on it.
+- Do-not-call list `auto_report.report_exclude_phone_dont_call_pdpa_blacklist` must be applied to **every** contact list.
+- `auto_report.motor_order_gwp` (1 row per order) keeps the **first** order of a change-order chain as active — same count
+  as pattern P8 but a different row kept; don't mix the two.
+- Legacy systems: `nana*` (stopped Jan 2025), `ibroker_adb` (ADB broker, to Feb 2025), `ibroker_rb_nonmotor` (to Aug 2026).
+  Nana-era GWP = gross × 0.9308; the iCollection ledger (`ibrokerrb_2021_08_16`) must never be added to GWP. Cross-era
+  history → BI only.
+- Data requests go to data@ / Jira (SLA: acknowledge 15 min, freshness issue 30 min, new development 3 days–2 weeks).
 
 ## Data history
 

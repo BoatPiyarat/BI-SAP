@@ -11,13 +11,14 @@ them to confirm with BI.
 
 | | Dashboard / report sales | Commission sales (Motor) | Commission sales (NonMotor) |
 |---|---|---|---|
-| Amount | gross premium (or after discount) | **invoice price after discount** (voluntary item carries the fees; CMI split out) | **net premium after discount** ("เบี้ยหลังส่วนลด") |
-| Which date puts it in the period | order created (usually) | **paid** in cycle 16th→15th **and submitted to insurer (แจ้งงาน)** by cut-off; not submitted → carries to the cycle it is submitted ("ยกยอด") | **paid** 16th→15th **and QC approved by the 18th** |
+| Amount | gross premium (or after discount) | **varies by team** (engine, M07 2026): Fresh tier on **net** premium; Database = rate × **net** (was invoiced before M07); Academy threshold on **gross**; weekly bonus uses invoice price after discount | **net premium after discount** ("เบี้ยหลังส่วนลด") |
+| Which date puts it in the period | order created (usually) | **order created** 16th→15th (`DATE(create_time)`, engine README Nov 2026) **+ paid + QC-passed + submitted to insurer (แจ้งงาน) by ~16th**; not submitted → carries to the cycle it is submitted ("ยกยอด"). The memo wording says "payment date" — ⚠️ BI to state one rule | **paid** 16th→15th **and QC approved by the 18th** |
 | Cancelled | depends on filter | item not cancelled; later cancellation = clawback next cycle | same; clawback rules below |
 | Duplicates | none | **1 car (chassis) × 1 seller × 1 cycle counts once**, per Vol / CMI | **1 customer in the same coverage period counts once** |
 | Installment | annual premium | first successful installment date | counted only when a payment is recorded; counts as annual premium |
 
-Source: Motor scheme memo eff. 16 Mar 2026 (M03, CEO-approved); BI emails 9–23 Nov 2026; live view
+Source: Motor scheme memo eff. 16 Mar 2026 (M03, CEO-approved) and "TSR Motor Commission Policy 2026" decks (Drive);
+engine notes (Drive: Motor Commission PROJECT_KNOWLEDGE, M10 MASTER README, Nov 2026); BI emails 9–23 Nov 2026; live view
 `motor_commission.paid_orders_for_weekly_bonus` (2026-11-25).
 
 ## Cycle & cut-offs
@@ -50,17 +51,35 @@ Source: Motor scheme memo eff. 16 Mar 2026 (M03, CEO-approved); BI emails 9–23
   **order was created**.
 - Paid weekly bonus is **never clawed back**. Exceptions (อนุโลม) count for commission only, not weekly.
 
+Weekly thresholds (policy eff. 1 Apr 2026): Motor Fresh ฿100,000, Motor Database ฿40,000 per week; prizes
+2,000/1,000/500 (Fresh) and 1,000/500/300 (Database). Base = paid premium of orders created and QC-passed.
+
+## Other pay components (explain only)
+
+- **Probation** = first 119 days; Fresh/Renew get the higher of the per-policy special rate or the tier.
+- **On-Time Bonus** abolished for all TSRs from 1 Apr 2026; BackOffice still has a flat OTB (engine rule).
+- **Licence incentive** ฿1,000/month with a valid broker licence registered under Rabbit Care Broker.
+- **Refer incentive** ฿100 per referral pair (Refer-Renew form), paid to the referrer; new order must be lead type
+  NEW, QC-passed, not cancelled, not CMI-only.
+- **Exclusion flags** in the Motor engine (meaning to confirm with BI): Type 3 premium < ฿600, short-term, special programs.
+- Pay conditions: employed on pay date, no disciplinary investigation, confirmed premium only; clawback allowed
+  after payout for cancellation/refund or falsified data.
+
 ## Supervisor metrics
 
-SV commission = % of team's **paid premium net of cancellations** in the cycle; team = assignment at
+SV commission = % of team's **paid premium net of cancellations** in the cycle (policy 2026: Fresh 0.30%, Renew 0.12%,
+Database 1.00%; Inbound SV = 0.5 × lowest TSR commission in team; Academy SV fixed per TSR transferred); team = assignment at
 the cycle snapshot (transfers/resignations handled per cycle).
 
 ## Open / unstable (say so if asked)
 
-- Motor cycle assignment: memo says payment date; engine also requires submission — both apply.
+- Motor cycle assignment: memo says payment date; engine README (Nov 2026) uses **order created 16→15** + submission — BI to confirm one rule.
 - New-hire Fresh scheme (hires from 16 Sep 2026) pending COO approval; M11 paid on old method.
 - Self/family purchases counting toward tier — no rule yet (decision due ~27 Nov 2026).
-- CI overdue-commission window changed during 2026 (4–9 days → 8–10 days).
+- CI overdue-commission window: Drive work instructions & Jul-2026 deck say **4–9 days** after due date (rate proposed ฿20→฿10/call);
+  an Oct-2026 email for M9/M10 says 8–10 days. Conflicting — confirm with BI.
+- Health TSR / Renewal Health / Top-Up tier tables exist only as **proposals (Jun 2026)** in Drive; approval not found —
+  never quote them as current. Savings-type life products are paid per application and excluded from tiers.
 - "Database tier" means different tables in Motor (4–8% of paid premium) vs NonMotor (3–15% of net premium).
 
 ## Where the data is
