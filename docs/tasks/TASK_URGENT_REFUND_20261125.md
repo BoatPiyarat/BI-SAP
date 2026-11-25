@@ -91,3 +91,33 @@ Sources: SAP_LIVE_FULL (load 2026-11-24) and CareOS, queried 2026-11-25 ~16:30 I
   | production | `gs://interface-file/RCB_MOTOR/INSURANCE_RCB_07_MANUAL_REFUND_CANCEL_20261125_000000000000.csv` | `job_QY3oIVAUROiLyqpbt4oQ_ol5vkOp` |
 * Read-back (`job_taxASe9IaaY194MBQCJnOR-AVpLj`): both 59 lines, identical (sorted SHA `b436fa11…`).
 * Pending: the SAP import email for this file.
+
+## Group F: complete the RCL spine (Boat 2026-11-25: "เรานำเข้าให้ครบงวด")
+* Items: L77833033-V1, L80511750-V1, L80513404-V1, L80518454-V1.
+* Method: the LogID 21178 fix, i.e. a NEWPAYMENT file with the full 1..N spine.
+  * Period 1 is mirrored from SAP: InvoiceNo, PaymentDate, Method, Channel and RefOrder verbatim.
+    This avoids `Cannot change InvoiceNo`.
+  * Periods 2..N are Pending from `sap_dashboard_carepay_installment`, with financials identical
+    to SAP's period 1.
+* Snapshot: `sap_integration_v3.diag_manual_rcl_spine_complete_20261125`, 29 rows / 4 items, job
+  `job_K776IrauuE5lLFvI24ly-ytg_wVi`.
+* Gate PASS:
+  * contract;
+  * no NULL;
+  * spine 1..N with only period 1 Paid;
+  * period 1 = SAP (InvoiceNo, PaymentDate, Actual);
+  * Pending blanks;
+  * dates;
+  * no CareOS charge in periods 2..N;
+  * ΣExpected = TotalAmount − Discount (L80518454: 22,211.23 − 666.34 = 21,544.89; L77833033 off
+    by 0.02 rounding).
+* Archive written: `.../manual/refund/2026/11/25/MANUALRCL-SPINE-20261125/INSURANCE_RCB_06_MANUAL_RCL_SPINE_COMPLETE_20261125_000000000000.csv`
+  (job `job_VoTDKX3rpnFBjTT3KLBlwPCB1-RD`, 30 lines).
+* The production EXPORT was refused with "destination is not empty".
+  * `EXPORT DATA overwrite=false` checks the folder, and `RCB_MOTOR/` still held the not-yet-pulled
+    `INSURANCE_RCB_07_MANUAL_REFUND_CANCEL_20261125` file.
+  * `overwrite=true` was NOT used, because it could delete pending production files.
+  * Retry once SAP has pulled the cancel file.
+* Next step for these 4 items, after SAP accepts the spine: cancel as
+  `Cancelled (Change order / Rejected)`. They are the old side of change orders L80407934,
+  L80532206, L80540087 and L80540467.
