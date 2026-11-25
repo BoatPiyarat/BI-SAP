@@ -168,3 +168,33 @@ Mo (FA) posted the spec on 2026-09-30 in the SAP Teams group, with Warin and Pui
 * Open risk: if SAP imported L79086876-V1 / L81230409-M1 as TRF on 24 Nov 01:30, the 25 Nov
   re-send will be rejected as a duplicate, and FA/Aware must correct those in SAP.
 * Follow-up check scheduled for 25 Nov.
+
+## CHECK 2026-11-25 10:05 ICT
+
+### Wrong-code batch was imported (24 Nov 01:30)
+`SAP_LIVE_FULL` (UpdateDate 2026-11-24 load) contains these two items as
+`TRF Transfer / RCB-Transfer-อื่นๆ`, Fully paid, BatchRunDate 23112026:
+
+| item | InvoiceNo |
+|---|---|
+| L81230409-M1 | `6b03bb582b4f8285fb4d0f45` |
+| L79086876-V1 | `6b041521c008190b0f1118d8` |
+
+* **Needs an FA/Aware correction in SAP.** BI will not resend them, because the create view
+  excludes items already in SAP.
+
+### First `RCB-Rabbit Card` batch (25 Nov 01:30)
+* `data-extraction@` ran all 6 `sap_view.RCB_*` jobs, all DONE.
+* `RCB_Motor_process_create` now returns 3 RABBIT_CASH items, BatchRunDate 25112026:
+
+| item | THB |
+|---|---|
+| L79597130-V1 | 5,800.00 |
+| L81233037-M1 | 645.21 |
+| L81237000-M1 (new) | 645.21 |
+
+* Import outcome is **UNKNOWN**:
+  * the mirror only reflects the 24 Nov extract;
+  * `sap_import_result*` has no rows since 2026-11-20;
+  * no reject reports were found in Outlook or Teams since 24 Nov.
+* Re-check is scheduled for 26 Nov 10:41 ICT, after the 26 Nov 01:00 load.
