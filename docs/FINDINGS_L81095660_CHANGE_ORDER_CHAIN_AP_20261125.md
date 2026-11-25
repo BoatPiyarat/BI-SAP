@@ -159,3 +159,9 @@ Read-back of the production file (job `job_Rj90SCFlZ46n3c-GtrwAkKt0q4Wf`): 2 lin
 ### Follow-ups
 * Scheduled check: 26 Nov 10:41 ICT.
 * Still open for FA: the customer overpaid 5,135.02 and no refund exists in CareOS.
+
+## SAP IMPORT LOG 2026-11-25: cancel ACCEPTED
+* SAP downloaded the file at 15:15 ICT (DOWNLOAD_GCS_FILE success).
+* Import result: Upload **LogID 23778**, status `success`, file
+  `RCB_MOTOR_INSURANCE_RCB_02_MANUAL_CANCEL_L81095660_20261125_000000000000.csv`.
+* Next: the 25 Nov 20:30 extract, then the 26 Nov 01:00 load, then the 26 Nov 01:30 auto V2.

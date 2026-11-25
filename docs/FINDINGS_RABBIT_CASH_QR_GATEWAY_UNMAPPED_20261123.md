@@ -198,3 +198,29 @@ Mo (FA) posted the spec on 2026-09-30 in the SAP Teams group, with Warin and Pui
   * `sap_import_result*` has no rows since 2026-11-20;
   * no reject reports were found in Outlook or Teams since 24 Nov.
 * Re-check is scheduled for 26 Nov 10:41 ICT, after the 26 Nov 01:00 load.
+
+## SAP IMPORT LOG 2026-11-25 (email from rcare_sap_b1@rabbitcare.com, read 15:45 ICT)
+
+### Create file
+* File: `RCB_MOTOR_INSURANCE_RCB_01_RCB_MOTOR_PROCESS_1_CREATE_20261124.csv`, Upload **LogID 23759**,
+  status `success with error`.
+* Created 12 JEs, `RCB-JE-FullPayment` 261110767–261110778.
+
+### The 3 RCB-Rabbit Card items
+* L79597130-V1, L81233037-M1 and L81237000-M1 are **not** in the error list, so they were accepted
+  by import (INFERRED from the log).
+* Confirm on the mirror after the 26 Nov load.
+
+### Rows rejected in the same file (unrelated to Rabbit Card)
+| reason | count | orders |
+|---|---|---|
+| PolicyNo > 50 characters | 7 | L78964002, L79035853, L79080734, L79106158, L79260030, L79402747, L81132503 |
+| InsurerCode not found in DB (vendor/customer code missing) | 3 | L78989298, L80964850, L81209745 |
+
+* The PolicyNo > 50 rows contradict the confirmed rule "PolicyNo > 50 = BLOCK before export": the
+  legacy create view still sends them.
+
+### Other files in the 25 Nov run
+* `07 RCL_MOTOR_PROCESS_3_CANCEL`: status `error` (LogID 23765).
+* `08 RCL_MOTOR_PROCESS_4_CREDITSHELL`: status `error` (LogID 23766).
+* Not investigated here.
