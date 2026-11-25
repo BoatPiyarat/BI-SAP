@@ -93,6 +93,13 @@ require constant clarification.
     `gs://rcb-bronze-zone/sap-interface-archive/manual/refund/`.
   * Items on hold (incomplete SAP spine, InvoiceNo mismatch, CareOS not cancelled, duplicates) are
     excluded until resolved.
+- **Scoped V2-recovery cancel exception (Boat, 2026-11-25 ICT, chat: "รายการอื่นที่ มีปัญหาเดียวกันและยังไม่มีการแก้ไข เป็น V2 ดำเนินการแบบเดียวกันได้เลยค่ะ"):**
+  one manual CANCEL file for 9 Credit Shell V1 items whose Paid rows all have Expected 0
+  (`sap_integration_v3.diag_manual_cancel_v2recovery_20261125`, 10 rows). The live V2 recovery then
+  re-sends them as -V2.
+  * Archive first, then production.
+  * Never overwrite=true.
+  * Boat's rule: a -V2 with 2 rows whose Actual and Expected totals match is correct. Do not cancel it or create a -V3.
 - **Never write to `gs://interface-file/**`.** That is production; SAP pulls it hourly at minute :15 (result email about 17 minutes later). Shadow prefixes only.
 - **Interface file timing (Boat, 2026-11-25 ICT, chat: "ทุกรายการ interface files ที่แพลร จะนำเข้า รบกวนวางไฟล์ ก่อน นาทีที่ 15 ของทุกชั่วโมงค่ะ"):**
   every approved manual interface file must be in `gs://interface-file/**`, archived and read back
