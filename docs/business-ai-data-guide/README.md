@@ -1,3 +1,6 @@
+> **Moved 2026-11-26:** this skill now lives in its own repository `rabbitcare-bi-data-skill` (separate from BI-SAP).
+> This folder is a frozen snapshot; make new changes in the new repo.
+
 # Business AI Data Guide (pacific-plating-282708)
 
 คู่มือ data สำหรับ AI ของ business user — ให้ AI ถามนิยามก่อนคำนวณ และดึงข้อมูลจากตารางที่ถูกต้อง
