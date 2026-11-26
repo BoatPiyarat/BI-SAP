@@ -364,3 +364,19 @@ L78637687-M1 และ L77833033-V1: charge และเลขกรมธรร
   * No import-result email as of 10:42.
   * Needs owner identification.
 * Pending decision: 20 Jan–Sep 2026 items with the same pattern.
+
+## 20 Jan–Sep 2026 items: CHECK (Boat 26 Nov "ตรวจสอบก่อน ว่า มี V2 หรือยัง / มี settlement หรือ activity โดย accounting")
+* **Correction: none of the 20 has the Expected-0 problem.**
+  * Each V1 has 2–3 invoice rows. The non-credit-shell row carries the full Expected, and total Expected
+    equals the premium (13,192 to 56,123.56).
+  * The 25 Nov scan filtered to Credit Shell rows **before** testing MAX(Expected)=0, so it saw only the
+    Expected-0 top-up row. False positive.
+  * The 9 Oct–Nov items were real cases: every V1 row there had Expected 0.
+* **V2:** none of the 20 has a -V2/-M2 in SAP, and none appears in cancelled_change_orders as an old order.
+* **Settlement or accounting activity** (SAP_LIVE_2026 + SAP_LIVE raw flags):
+  * L80255101-V1: U_IsSettled=true and IsSettledComm=Y on invoice `1_L80255101-V1`, i.e. settled.
+  * L80561105-V1: U_IsNotSettled changed Y → N → Y between 18 Aug and 15 Oct (accounting updates).
+  * L80242096-M1 (not the V item): settled (true/Y/Y).
+  * L80229909-M1: IsNotSettled=Y.
+  * No JE / InvoiceId / SaleOrderId on any of them.
+* **Decision: no action for all 20.** None is a real Expected-0 case; L80255101 and L80561105 are also touched by accounting.
