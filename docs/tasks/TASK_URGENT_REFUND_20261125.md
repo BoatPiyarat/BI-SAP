@@ -347,3 +347,20 @@ L78637687-M1 และ L77833033-V1: charge และเลขกรมธรร
 * **REST result:** downloaded at 00:15. Upload **LogID 23798 = success** (email 00:31). No rejected rows.
   * L81005458-V2, L81064262-V2, L81130736-V2 and L81095660-V2 are in SAP.
 * Remaining open: L80992862 and L81088939 (shared invoice, FA/Aware decision needed).
+
+## MORNING CHECK 2026-11-26 10:42 ICT
+* The mirror (26 Nov 01:00 load) reflects SAP only up to 25 Nov ~15:31, the 20:30 extract.
+* **Rabbit Card**
+  * L79597130-V1 and L81233037-M1 are in `SAP_LIVE_FULL` with channel `RCB-Rabbit Card`.
+  * L81237000-M1 is not in the mirror. It is also not in the error list of the 25 Nov create file (LogID 23799, "success with error", 4 JEs 261110857–860; same 10 old PolicyNo/InsurerCode errors).
+  * Confirm on the 27 Nov mirror.
+* **Refund cancels:** C# rows present in the mirror for all 10 items in LogID 23794, plus C#L81095660-V1.
+* **V2**
+  * All manual V2s were accepted on 25 Nov: LogIDs 23796, 23797 and 23798.
+  * The mirror does not show them yet, nor the 9 C# rows from LogID 23795; expected on the 27 Nov load.
+  * The view hold kept the 01:30 run from duplicating them. 03_CHANGE LogID 23801 = "success with error" (not yet itemised).
+* **Unknown file:** SAP downloaded `INSURANCE_RCB_04_CREDITSHELL_PAID_RECOVERY_20261126_URGENT_REFUND_1ITEMS.csv` at 09:15 ICT 26 Nov.
+  * This session did not write it, and no BigQuery job references it.
+  * No import-result email as of 10:42.
+  * Needs owner identification.
+* Pending decision: 20 Jan–Sep 2026 items with the same pattern.
