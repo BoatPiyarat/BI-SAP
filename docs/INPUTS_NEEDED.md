@@ -2,6 +2,10 @@
 
 ## OPEN 2026-11-25 — Boat / BI: rule conflicts found when adding Google Drive to the AI data guide
 
+**Resolved by Boat 2026-11-26:** (1) Motor cycle = order created date; (2) CI window = 8–10 days (cancellation
+timeline changed); (3) do not use unapproved proposals — reference the commission engine in OneDrive; P&L basis: the AI
+must ask the user before returning a result (no default). Items 4–5 remain open.
+
 1. Motor commission cycle assignment: memo says payment date; engine READMEs (Nov 2026) use order created 16→15 +
    submission by ~16th. State one rule for the guide.
 2. CI overdue-commission window: Drive WIs / Jul-2026 deck = 4–9 days (rate ฿20→฿10 proposed); Oct-2026 email = 8–10 days.
@@ -21,7 +25,7 @@ Bangkok date.
 ## OPEN 2026-11-25 — Finance (FA): business-data definitions for the AI data guide
 
 Not written anywhere in Teams / email / repo as of 2026-11-25; the guide marks them ⚠️ TO CONFIRM:
-(1) P&L revenue-recognition date basis and income measure; (2) insurer production-report date basis;
+(1) ~~P&L basis~~ resolved 2026-11-26: ask the user each time; (2) insurer production-report date basis;
 (3) RCB one-time processing-fee divisor `/107` vs `/103.3` (already listed under accounting standard
 decisions). Also note: `docs/AGENT_RULES.md` "Test customers" line (`'test'` only) is older than the
 2026-08-01 superseding addendum (`'test','test div'`) — Boat to reconcile the rules file.

@@ -49,7 +49,7 @@ Answer in the user's language (usually Thai). Keep table/column names in English
 | Commission / agent payout | commission month (16th → 15th) | **do not compute — refer to BI** | — |
 | Finance cash / collection | payment date (`paid_date` / charge `payment_date`) | cash received (SUCCESSFUL charges) | all |
 | Insurer volume / production report | insurer approval date (`approval_time`) | gross premium | per insurer |
-| P&L revenue recognition | ⚠️ policy start date (`policy_start_date`) — BI's working view, **not yet written down by Finance** | net premium / income per Finance rule | — **confirm with Finance** |
+| P&L / revenue | **No default — always ask the user first** (created / payment / policy start / approval / SAP posting date; gross vs net vs income) | ask | ask |
 | Marketing channel performance | lead-created month | order count / fresh premium | fresh leads only |
 
 ## Workflow

@@ -28,7 +28,7 @@ the method only; not a certified monthly figure.)
 |---|---|---|---|---|
 | Order created | `report_order_items.create_at_date`, `report_orders.created_at_date` | `careos_orders.create_time` / `careos_order_items.create_time` | วันที่สร้างออร์เดอร์ในระบบ CareOS (ลูกค้าตกลงซื้อ/agent ปิดการขาย) | Sales team, agent daily performance, marketing conversion |
 | Payment date | `report_order_items.paid_date`, `report_orders.paid_date` | `carepay_charges.payment_date` where `status='SUCCESSFUL'` | วันที่ลูกค้าชำระเงินสำเร็จ (งวดแรก / เต็มจำนวน) | Finance cash / collection, SAP interface (PaymentDate) |
-| Policy start date | `policy_start_date` | `careos_order_items.policy_start_date` | วันที่ความคุ้มครองเริ่ม | **P&L / accounting revenue recognition**, renewal planning |
+| Policy start date | `policy_start_date` | `careos_order_items.policy_start_date` | วันที่ความคุ้มครองเริ่ม | P&L view **when the user chooses it** (ask first), renewal planning |
 | Insurer approval date | `report_order_items.approval_time`, `report_orders.approved_date` | `careos_order_items.approval_time` | วันที่บริษัทประกันอนุมัติ / ออกกรมธรรม์ (policy uploaded) | **Insurer-side production / reconciliation with insurers** |
 | Submitted to insurer | `submit_time` | `careos_order_items.submit_date` | วันที่ส่งงานให้บริษัทประกัน | Operations / back-office SLA |
 | Cancellation date | `cancel_time`, `report_orders.cancellation_date` | `careos_order_items.cancel_time` | วันที่ยกเลิก | Cancellation & clawback analysis |
@@ -41,7 +41,7 @@ the method only; not a certified monthly figure.)
 > ขึ้นอยู่กับว่าจะเอาตัวเลขไปใช้มุมไหนครับ/ค่ะ
 > - **มุมทีมขาย / ผลงาน agent** → นับตาม *วันที่สร้างออร์เดอร์* เพราะสะท้อนวันที่ปิดการขายได้จริง
 > - **มุมการเงิน / เงินเข้า** → นับตาม *วันที่ชำระเงิน* เพราะเป็นวันที่เงินเข้าบริษัทจริง (และเป็นวันที่ส่งเข้า SAP)
-> - **มุมบัญชี P&L (รับรู้รายได้)** → นับตาม *policy start date* เพราะรายได้รับรู้เมื่อความคุ้มครองเริ่ม
+> - **มุมบัญชี P&L (รับรู้รายได้)** → ไม่มีค่าเริ่มต้น ต้องถามผู้ใช้ก่อนเสมอ ว่าจะใช้วันไหน (เช่น policy start date = รับรู้เมื่อความคุ้มครองเริ่ม หรือวันชำระเงิน / วันที่ลงบัญชี SAP) และใช้เบี้ย gross / net หรือรายได้ค่าคอม
 > - **มุมบริษัทประกัน** → นับตาม *วันที่ประกันอนุมัติ (policy approve date)* เพราะประกันนับยอดผลิตจากกรมธรรม์ที่ออกแล้ว
 > - **มุม commission** → นับตาม *รอบ commission (16–15)* ซึ่งไม่ตรงกับเดือนปฏิทิน
 >

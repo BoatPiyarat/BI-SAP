@@ -24,9 +24,10 @@ close, SAP correction, refund approval or insurer billing → BI / FA, not self-
 - FA announces each month's close instant (usually 1st–3rd of next month, ~14:00–16:00). RCL closes separately.
 - Cheque / credit term: goes to SAP only when money is actually received.
 - SAP excludes orders ≤ 2024 and 2025 non-cancel rows by design → **SAP vs BI totals for 2024–2025 will never match**.
-- ⚠️ TO CONFIRM (FA): P&L revenue-recognition date basis (policy start vs approval vs payment) and income
-  measure — **not written anywhere in Teams/email/repo** as of 2026-11-25. Do not state one as fact. (Drive shows FA keeps three parallel installment accounting views — by created date, payment date
-  and coverage date — evidence that no single basis is agreed.)
+- **P&L / revenue view: always ask the user which basis they need before returning a result** (BI Manager decision
+  2026-11-26). Offer: order created date, payment date, policy start (coverage) date, insurer approval date, or SAP posting
+  date; and the measure (gross / net premium, commission income). FA keeps parallel accounting views by created, payment
+  and coverage date, so there is no single default — never pick one silently.
 
 ## Premium components & the SAP naming trap
 
@@ -64,8 +65,9 @@ close, SAP correction, refund approval or insurer billing → BI / FA, not self-
 - Corporate customers' 1% WHT: deduct at refund only if the WHT certificate (50 ทวิ) was not received.
 - Insurer return premium = pro-rata or short-rate, as stated by insurer (net + stamp + VAT); the draft refund SOP (Mar 2026)
   says insurers use short-rate for both Motor and NonMotor.
-- RCL installment follow-up (work instructions 2026): overdue 1–3 days system reminders, 4–9 days collection calls,
-  day 9 cancellation notice, day 10 insurer asked to cancel.
+- RCL installment follow-up: the cancellation timeline changed in 2026; the CI commission window is now 8–10 days after due
+  date (BI Manager 2026-11-26). Older work instructions (4–9 days, cancel notice day 9) are superseded — ask Collections
+  for the current step dates if needed.
 
 ## Insurers
 
